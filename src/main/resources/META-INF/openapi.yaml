@@ -1,0 +1,11 @@
+paths:
+  /api-docs:
+    get:
+      tags:
+        - API
+      summary: OpenAPI-definition
+      parameters: []
+      x-auth-type: None
+      responses:
+        '200':
+          description: ok

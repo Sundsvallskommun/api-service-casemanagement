@@ -1,0 +1,8 @@
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+    <s:Body>
+        <s:Fault>
+            <faultcode>s:Client</faultcode>
+            <faultstring xml:lang="sv-SE">Arende missing for Dnr: BYGG 2022-000001</faultstring>
+        </s:Fault>
+    </s:Body>
+</s:Envelope>

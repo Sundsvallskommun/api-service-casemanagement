@@ -1,0 +1,9 @@
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+    <s:Body>
+        <SaveNewHandelseResponse xmlns="www.tekis.se/ServiceContract">
+            <SaveNewHandelseResult>
+                <HandelseId>362294</HandelseId>
+            </SaveNewHandelseResult>
+        </SaveNewHandelseResponse>
+    </s:Body>
+</s:Envelope>

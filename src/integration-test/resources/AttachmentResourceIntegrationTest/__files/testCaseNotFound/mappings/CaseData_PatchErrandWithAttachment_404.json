@@ -1,0 +1,41 @@
+{
+  "request": {
+    "urlPathPattern": "/case-data/\\d.\\d/errands/(.+)/attachments",
+    "method": "PATCH",
+    "bodyPatterns": [
+      {
+        "contains": "ARENDE_NOT_FOUND"
+      }
+    ]
+  },
+  "response": {
+    "status": 404,
+    "bodyFileName": "testCaseNotFound/response/CaseData_PatchErrandsWithAttachment_404.json",
+    "headers": {
+      "Access-Control-Allow-Headers": [
+        "*"
+      ],
+      "Access-Control-Allow-Methods": [
+        "*"
+      ],
+      "Access-Control-Allow-Origin": [
+        "*"
+      ],
+      "Access-Control-Expose-Headers": [
+        ""
+      ],
+      "Content-Type": [
+        "application/json"
+      ],
+      "Date": [
+        "Thu, 09 Jun 2022 12:42:25 GMT"
+      ],
+      "Transfer-Encoding": [
+        "chunked"
+      ],
+      "X-Request-ID": [
+        "e19981ad-34b2-4e14-88f5-133f61ca85aa"
+      ]
+    }
+  }
+}

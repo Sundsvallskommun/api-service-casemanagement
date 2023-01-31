@@ -1,0 +1,33 @@
+{
+  "request": {
+    "url": "/Ecos2PublicServices/MinutMiljoService.svc",
+    "method": "POST",
+    "bodyPatterns": [
+      {
+        "and": [
+          {
+            "contains": "AddDocumentsToCase"
+          },
+          {
+            "contains": "INTERNAL_SERVER_ERROR"
+          }
+        ]
+      }
+    ]
+  },
+  "response": {
+    "status": 500,
+    "bodyFileName": "testInternalServerError/response/EcosAddDocumentsToCase500.xml",
+    "headers": {
+      "Content-Type": "text/xml; charset=utf-8",
+      "Vary": "Accept-Encoding",
+      "Server": "Microsoft-IIS/10.0",
+      "X-Powered-By": "ASP.NET",
+      "Date": "Wed, 28 Jul 2021 09:32:38 GMT",
+      "Persistent-Auth": "true",
+      "Cache-Control": "private",
+      "X-AspNet-Version": "4.0.30319",
+      "Set-Cookie": "ASP.NET_SessionId=2ih1nqy0igdxjlzxular3k4t; path=/; HttpOnly; SameSite=Lax"
+    }
+  }
+}

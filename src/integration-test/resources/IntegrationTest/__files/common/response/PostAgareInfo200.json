@@ -1,0 +1,26 @@
+{
+  "statusKod": 0,
+  "statusMeddelande": "",
+  "fel": null,
+  "data": [
+    {
+      "fnr": 22069858,
+      "uuidFastighet": "e19981ad-34b2-4e14-88f5-133f61ca85aa",
+      "typAvAganderatt": "L",
+      "uuidAganderatt": "e19981ad-34b2-4e14-88f5-133f61ca85aa",
+      "akt": "91/30",
+      "identitetsnummer": "16123456-1234",
+      "uuidInskrivenPerson": "e19981ad-34b2-4e14-88f5-133f61ca85aa",
+      "inskrivetEfternamn": null,
+      "inskrivetFornamn": null,
+      "gallandeEfternamn": null,
+      "gallandeMellannamn": null,
+      "gallandeFornamn": null,
+      "inskrivetOrganisationsnamn": "SUNDSVALLS KOMMUN",
+      "gallandeOrganisationsnamn": "SUNDSVALLS KOMMUN",
+      "juridiskForm": "82",
+      "andelTaljare": 1,
+      "andelNamnare": 1
+    }
+  ]
+}

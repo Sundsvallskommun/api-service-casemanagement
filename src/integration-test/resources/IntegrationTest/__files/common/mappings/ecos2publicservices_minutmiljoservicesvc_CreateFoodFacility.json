@@ -1,0 +1,31 @@
+{
+  "id": "e19981ad-34b2-4e14-88f5-133f61ca85aa",
+  "name": "ecos2publicservices_minutmiljoservicesvc_CreateFoodFacility",
+  "request": {
+    "url": "/Ecos2PublicServices/MinutMiljoService.svc",
+    "method": "POST",
+    "bodyPatterns": [
+      {
+        "contains": "CreateFoodFacility"
+      }
+    ]
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "common/response/EcosCreateFoodFacility200.xml",
+    "headers": {
+      "Content-Type": "text/xml; charset=utf-8",
+      "Vary": "Accept-Encoding",
+      "Server": "Microsoft-IIS/10.0",
+      "X-Powered-By": "ASP.NET",
+      "Date": "Wed, 28 Jul 2021 09:32:38 GMT",
+      "Persistent-Auth": "true",
+      "Cache-Control": "private",
+      "X-AspNet-Version": "4.0.30319",
+      "Set-Cookie": "ASP.NET_SessionId=2ih1nqy0igdxjlzxular3k4t; path=/; HttpOnly; SameSite=Lax"
+    }
+  },
+  "uuid": "e19981ad-34b2-4e14-88f5-133f61ca85aa",
+  "persistent": true,
+  "insertionIndex": 13
+}

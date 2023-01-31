@@ -1,0 +1,19 @@
+{
+  "statusKod": 0,
+  "statusMeddelande": "",
+  "fel": null,
+  "data": [
+    {
+      "identitetsnummer": "16123456-1234",
+      "adresstyp": "LFADR",
+      "coAdress": null,
+      "utdelningsadress1": null,
+      "utdelningsadress2": "BOX 123",
+      "utdelningsadress3": null,
+      "utdelningsadress4": null,
+      "postnummer": "123 45",
+      "postort": "SUNDSVALL",
+      "land": null
+    }
+  ]
+}
