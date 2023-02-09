@@ -824,6 +824,9 @@ public class EcosService {
         try (var factory = Validation.buildDefaultValidatorFactory()) {
             Validator validator = factory.getValidator();
             
+            if (eCase.getCaseType().equals(CaseType.UPPDATERING_RISKKLASSNING)) {
+                return;
+            }
             Set<ConstraintViolation<EnvironmentalCaseDTO>> violations = validator.validate(eCase,
                 EnvironmentalConstraints.class);
             
