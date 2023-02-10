@@ -99,6 +99,8 @@ import minutmiljo.EstateSvcDto;
 import minutmiljo.FacilityAddressSvcDto;
 import minutmiljo.FilterBedSvcDto;
 import minutmiljo.GetCase;
+import minutmiljo.GetProcessTypes;
+import minutmiljo.GetProcessTypesResponse;
 import minutmiljo.GetRiskClass2024BaseDataResponse;
 import minutmiljo.HeatCollectorTubeSvcDto;
 import minutmiljo.InfiltrationPlantSvcDto;
@@ -156,6 +158,10 @@ public class EcosService {
     public GetRiskClass2024BaseDataResponse getRisklasses(){
         
         return riskClassService.getBaseRiskData();
+    }
+    
+    public GetProcessTypesResponse getGetProcessTypes(){
+        return minutMiljoClient.getProcessTypes(new GetProcessTypes());
     }
     
     public RegisterDocumentCaseResultSvcDto postCase(EnvironmentalCaseDTO caseInput) throws ApplicationException {

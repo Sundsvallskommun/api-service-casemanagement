@@ -38,6 +38,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import minutmiljo.GetProcessTypes;
+import minutmiljo.GetProcessTypesResponse;
 import minutmiljo.GetRiskClass2024BaseDataResponse;
 import minutmiljoV2.RegisterDocumentCaseResultSvcDto;
 
@@ -115,5 +117,10 @@ public class CaseResource {
     @GetMapping(path = "/riskklass", produces = {APPLICATION_PROBLEM_JSON_VALUE})
     public ResponseEntity<GetRiskClass2024BaseDataResponse> getRiskklasses() {
         return ResponseEntity.ok(ecosService.getRisklasses());
+    }
+    
+    @GetMapping(path = "/processtype", produces = {APPLICATION_PROBLEM_JSON_VALUE})
+    public ResponseEntity<GetProcessTypesResponse> getProcessTypes() {
+        return ResponseEntity.ok(ecosService.getGetProcessTypes());
     }
 }

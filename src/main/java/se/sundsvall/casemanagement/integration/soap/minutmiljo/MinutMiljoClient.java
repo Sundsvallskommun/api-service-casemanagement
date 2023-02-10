@@ -20,6 +20,8 @@ import minutmiljo.CreatePersonParty;
 import minutmiljo.CreatePersonPartyResponse;
 import minutmiljo.GetCase;
 import minutmiljo.GetCaseResponse;
+import minutmiljo.GetProcessTypes;
+import minutmiljo.GetProcessTypesResponse;
 import minutmiljo.GetRiskClass2024BaseData;
 import minutmiljo.GetRiskClass2024BaseDataResponse;
 import minutmiljo.SaveFoodFacility2024RiskClassData;
@@ -89,4 +91,7 @@ public interface MinutMiljoClient {
     
     @PostMapping(consumes = TEXT_XML_UTF8, headers = {"SOAPAction=urn:Ecos.API.MinutMiljo.Service.V1/IMinutMiljoService/GetRiskClass2024BaseData"} )
     GetRiskClass2024BaseDataResponse getRiskklasses(GetRiskClass2024BaseData getRiskClass2024BaseData);
+    
+    @PostMapping(consumes = TEXT_XML_UTF8, headers = {"SOAPAction=urn:Ecos.API.MinutMiljo.Service.V1/IMinutMiljoService/GetProcessTypes"} )
+    GetProcessTypesResponse getProcessTypes(GetProcessTypes getProcessTypes);
 }
