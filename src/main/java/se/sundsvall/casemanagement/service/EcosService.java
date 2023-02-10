@@ -99,6 +99,7 @@ import minutmiljo.EstateSvcDto;
 import minutmiljo.FacilityAddressSvcDto;
 import minutmiljo.FilterBedSvcDto;
 import minutmiljo.GetCase;
+import minutmiljo.GetRiskClass2024BaseDataResponse;
 import minutmiljo.HeatCollectorTubeSvcDto;
 import minutmiljo.InfiltrationPlantSvcDto;
 import minutmiljo.LocationSvcDto;
@@ -150,6 +151,11 @@ public class EcosService {
             filename = attachmentDTO.getName() + extension;
         }
         return filename;
+    }
+    
+    public GetRiskClass2024BaseDataResponse getRisklasses(){
+        
+        return riskClassService.getBaseRiskData();
     }
     
     public RegisterDocumentCaseResultSvcDto postCase(EnvironmentalCaseDTO caseInput) throws ApplicationException {
@@ -702,6 +708,8 @@ public class EcosService {
                 Constants.ECOS_PROCESS_TYPE_ID_ANMALAN_ANDRING_AVLOPPSANORDNING;
             case ANMALAN_HALSOSKYDDSVERKSAMHET ->
                 Constants.ECOS_PROCESS_TYPE_ID_ANMALAN_HALSOSKYDDSVERKSAMHET;
+            case UPPDATERING_RISKKLASSNING ->
+                Constants.ECOS_PROCESS_TYPE_ID_UPPDATERING_RISKKLASS;
             default -> throw new ApplicationException("CaseType: " + caseType + " is not valid...");
         };
     }
