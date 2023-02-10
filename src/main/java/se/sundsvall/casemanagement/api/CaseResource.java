@@ -112,8 +112,7 @@ public class CaseResource {
         }
     }
     
-    @GetMapping(path = "/riskklass", consumes = MediaType.APPLICATION_JSON_VALUE, produces =
-        {APPLICATION_PROBLEM_JSON_VALUE})
+    @GetMapping(path = "/riskklass", produces = {APPLICATION_PROBLEM_JSON_VALUE})
     public ResponseEntity<GetRiskClass2024BaseDataResponse> getRiskklasses() {
         return ResponseEntity.ok(ecosService.getRisklasses());
     }
