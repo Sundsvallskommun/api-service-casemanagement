@@ -95,11 +95,11 @@ public class RiskClassService {
                                 .withCaseId(caseId))
                         )))
                 .getSearchFacilityResult()
-                .getSearchFacilityResultSvcDto()
-                .get(0))
+                .getSearchFacilityResultSvcDto())
             //TODO VERY TEMPORARTY
-            .orElse(new SearchFacilityResultSvcDto()
-                .withFacilityId("00560a12-fb46-4d0f-94eb-781bd6bd8584"))
+            .orElse(List.of(new SearchFacilityResultSvcDto()
+                .withFacilityId("00560a12-fb46-4d0f-94eb-781bd6bd8584")))
+            .get(0)
             .getFacilityId();
     }
     
