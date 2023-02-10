@@ -20,6 +20,7 @@ import minutmiljo.CreatePersonParty;
 import minutmiljo.CreatePersonPartyResponse;
 import minutmiljo.GetCase;
 import minutmiljo.GetCaseResponse;
+import minutmiljo.GetRiskClass2024BaseData;
 import minutmiljo.GetRiskClass2024BaseDataResponse;
 import minutmiljo.SaveFoodFacility2024RiskClassData;
 import minutmiljo.SearchCase;
@@ -87,5 +88,5 @@ public interface MinutMiljoClient {
     void updateRiskClass(SaveFoodFacility2024RiskClassData data);
     
     @PostMapping(consumes = TEXT_XML_UTF8, headers = {"SOAPAction=urn:Ecos.API.MinutMiljo.Service.V1/IMinutMiljoService/GetRiskClass2024BaseData"} )
-    GetRiskClass2024BaseDataResponse getRiskklasses();
+    GetRiskClass2024BaseDataResponse getRiskklasses(GetRiskClass2024BaseData getRiskClass2024BaseData);
 }

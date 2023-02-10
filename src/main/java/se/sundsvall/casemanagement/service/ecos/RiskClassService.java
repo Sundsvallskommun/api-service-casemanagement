@@ -18,6 +18,7 @@ import minutmiljo.ArrayOfSaveRiskClass2024ProductGroupDto;
 import minutmiljo.CalculateRiskClass2024;
 import minutmiljo.CalculateRiskClass2024SvcDto;
 import minutmiljo.FacilityPartyOrganizationNumberFilterSvcDto;
+import minutmiljo.GetRiskClass2024BaseData;
 import minutmiljo.GetRiskClass2024BaseDataResponse;
 import minutmiljo.SaveFoodFacility2024RiskClassData;
 import minutmiljo.SaveRiskClass2024ActivityDto;
@@ -57,8 +58,8 @@ public class RiskClassService {
 
 
     public GetRiskClass2024BaseDataResponse getBaseRiskData() {
-        
-       return minutMiljoClient.getRiskklasses();
+       
+       return minutMiljoClient.getRiskklasses(new GetRiskClass2024BaseData());
 
     }
 
