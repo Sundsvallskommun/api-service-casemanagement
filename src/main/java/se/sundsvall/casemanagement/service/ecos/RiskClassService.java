@@ -18,6 +18,7 @@ import minutmiljo.ArrayOfguid;
 import minutmiljo.FacilityFacilityStatusIdsFilterSvcDto;
 import minutmiljo.FacilityFacilityTypeIdsFilterSvcDto;
 import minutmiljo.FacilityNotFilterSvcDto;
+import minutmiljo.FacilityPartyOrganizationNumberFilterSvcDto;
 import minutmiljo.FacilitySinglePartyRoleFilterSvcDto;
 import minutmiljo.GetRiskClass2024BaseData;
 import minutmiljo.GetRiskClass2024BaseDataResponse;
@@ -86,8 +87,8 @@ public class RiskClassService {
                                     .withGuid(List.of("9A748E4E-BD7E-481A-B449-73CBD0992213",
                                         "80FFA45C-B3DF-4A10-8DB3-A042F36C64B7")))))
                         // OrgNr
-                        .withFacilityFilterSvcDto(new FacilitySinglePartyRoleFilterSvcDto()
-                            .withPartyId(orgNr)
+                        .withFacilityFilterSvcDto(new FacilityPartyOrganizationNumberFilterSvcDto()
+                            .withOrganizationNumber(orgNr)
                         ))))
             .getSearchFacilityResult()
             .getSearchFacilityResultSvcDto()
