@@ -20,7 +20,6 @@ import minutmiljo.FacilityFacilityStatusIdsFilterSvcDto;
 import minutmiljo.FacilityFacilityTypeIdsFilterSvcDto;
 import minutmiljo.FacilityNotFilterSvcDto;
 import minutmiljo.FacilityPartyOrganizationNumberFilterSvcDto;
-import minutmiljo.FacilitySinglePartyRoleFilterSvcDto;
 import minutmiljo.GetRiskClass2024BaseData;
 import minutmiljo.GetRiskClass2024BaseDataResponse;
 import minutmiljo.SaveFoodFacility2024RiskClassData;
@@ -29,6 +28,7 @@ import minutmiljo.SaveRiskClass2024CertificationDto;
 import minutmiljo.SaveRiskClass2024DataDto;
 import minutmiljo.SaveRiskClass2024ProductGroupDto;
 import minutmiljo.SearchFacility;
+import minutmiljo.SearchFacilityResultSvcDto;
 import minutmiljo.SearchFacilitySvcDto;
 
 @Service
@@ -49,7 +49,7 @@ public class RiskClassService {
     
     
     public String updateRiskClass(EnvironmentalCaseDTO caseInput, String caseId) {
-        var facilityId = searchFacility(caseId,extractOrgNr(caseInput));
+        var facilityId = searchFacility(caseId, extractOrgNr(caseInput));
         addFacilityToCase(facilityId, caseId);
         var data = createSaveRiskClassObject(facilityId, caseId, caseInput);
         
@@ -74,29 +74,32 @@ public class RiskClassService {
             .orElse("");
     }
     
-    private String searchFacility(String caseId,String orgNr) {
-        return minutMiljoClient.searchFacility(new SearchFacility()
-                .withSearchFacilitySvcDto(new SearchFacilitySvcDto()
-                    .withFacilityFilters(new ArrayOfFacilityFilterSvcDto()
-                        // Livsmedelsanläggning
-                        .withFacilityFilterSvcDto(new FacilityFacilityTypeIdsFilterSvcDto()
-                            .withFacilityTypeIds("4958BC00-76E8-4D5B-A862-AAF8E815202A"))
-                        //ej Makulerad or Upphörd/skrotad
-                        .withFacilityFilterSvcDto(new FacilityNotFilterSvcDto()
-                            .withFilter(new FacilityFacilityStatusIdsFilterSvcDto()
-                                .withFacilityStatusIds(new ArrayOfguid()
-                                    .withGuid(List.of("9A748E4E-BD7E-481A-B449-73CBD0992213",
-                                        "80FFA45C-B3DF-4A10-8DB3-A042F36C64B7")))))
-                        // OrgNr
-                        .withFacilityFilterSvcDto(new FacilityPartyOrganizationNumberFilterSvcDto()
-                            .withOrganizationNumber(orgNr))
-                        //CaseId
-                        .withFacilityFilterSvcDto(new FacilityCaseIdFilterSvcDto()
-                            .withCaseId(caseId))
-                    )))
-            .getSearchFacilityResult()
-            .getSearchFacilityResultSvcDto()
-            .get(0)
+    private String searchFacility(String caseId, String orgNr) {
+        return Optional.ofNullable(minutMiljoClient.searchFacility(new SearchFacility()
+                    .withSearchFacilitySvcDto(new SearchFacilitySvcDto()
+                        .withFacilityFilters(new ArrayOfFacilityFilterSvcDto()
+                            // Livsmedelsanläggning
+                            .withFacilityFilterSvcDto(new FacilityFacilityTypeIdsFilterSvcDto()
+                                .withFacilityTypeIds("4958BC00-76E8-4D5B-A862-AAF8E815202A"))
+                            //ej Makulerad or Upphörd/skrotad
+                            .withFacilityFilterSvcDto(new FacilityNotFilterSvcDto()
+                                .withFilter(new FacilityFacilityStatusIdsFilterSvcDto()
+                                    .withFacilityStatusIds(new ArrayOfguid()
+                                        .withGuid(List.of("9A748E4E-BD7E-481A-B449-73CBD0992213",
+                                            "80FFA45C-B3DF-4A10-8DB3-A042F36C64B7")))))
+                            // OrgNr
+                            .withFacilityFilterSvcDto(new FacilityPartyOrganizationNumberFilterSvcDto()
+                                .withOrganizationNumber(orgNr))
+                            //CaseId
+                            .withFacilityFilterSvcDto(new FacilityCaseIdFilterSvcDto()
+                                .withCaseId(caseId))
+                        )))
+                .getSearchFacilityResult()
+                .getSearchFacilityResultSvcDto()
+                .get(0))
+            //TODO VERY TEMPORARTY
+            .orElse(new SearchFacilityResultSvcDto()
+                .withFacilityId("00560a12-fb46-4d0f-94eb-781bd6bd8584"))
             .getFacilityId();
     }
     
