@@ -7,6 +7,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -18,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import se.sundsvall.casemanagement.api.model.EnvironmentalCaseDTO;
 import se.sundsvall.casemanagement.api.model.OrganizationDTO;
+import se.sundsvall.casemanagement.api.model.RiskClassDTO;
 import se.sundsvall.casemanagement.integration.soap.minutmiljo.MinutMiljoClient;
 
 import minutmiljo.ArrayOfSearchFacilityResultSvcDto;
@@ -56,4 +58,33 @@ class RiskClassServiceTest {
         verify(minutMiljoClient, times(1)).updateRiskClass(any());
         verifyNoMoreInteractions(minutMiljoClient);
     }
+    
+    
+    @Test
+    void saveRiskClass(){
+        
+        RiskClassDTO dto = RiskClassDTO.builder()
+            .withActivities(List.of(RiskClassDTO.ActivitesDTO.builder().withActivityId(
+                "someActivityId").withSlvCode("someSlvCode").withStartDate(LocalDateTime.now().toString()).build()))
+            .withThirdPartyCertifications(List.of(RiskClassDTO.ThirdPartyCertifications.builder().withThirdPartyCertificationId("someId").withThirdPartyCertificationText("someText").build()))
+            .withFacilityId("someId")
+            .withIsSeasonal(true)
+            .withCaseId("someCaseId")
+            .withIsMobileFacility(true)
+            .withMobileFacilityNote("someNote")
+            .withProductGroups(List.of(RiskClassDTO.ProductGroups.builder().withProductGroupId(
+                "someProductGroupId").withSlvCode("someSlvCode").build()))
+            .withMainOrientationId("someOrientation")
+            .withProductionSizeSlvCode("someSize")
+            .withSeasonalNote("someNote")
+            .withProductionSizeId("someProductionSizeId")
+            .withMainOrientationSlvCode("someMainOrientationSlvCode")
+            .build();
+        
+         service.saveRiskClass(dto);
+    
+        verify(minutMiljoClient, times(1)).updateRiskClass(any());
+        verifyNoMoreInteractions(minutMiljoClient);
+    }
+    
 }

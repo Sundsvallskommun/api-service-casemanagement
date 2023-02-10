@@ -25,6 +25,7 @@ import se.sundsvall.casemanagement.api.model.CaseResourceResponseDTO;
 import se.sundsvall.casemanagement.api.model.EnvironmentalCaseDTO;
 import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
 import se.sundsvall.casemanagement.api.model.PlanningPermissionCaseDTO;
+import se.sundsvall.casemanagement.api.model.RiskClassDTO;
 import se.sundsvall.casemanagement.service.ByggrService;
 import se.sundsvall.casemanagement.service.CaseDataService;
 import se.sundsvall.casemanagement.service.CaseMappingService;
@@ -41,6 +42,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import minutmiljo.GetProcessTypes;
 import minutmiljo.GetProcessTypesResponse;
 import minutmiljo.GetRiskClass2024BaseDataResponse;
+import minutmiljo.SaveRiskClass2024DataDto;
 import minutmiljoV2.RegisterDocumentCaseResultSvcDto;
 
 @RestController
@@ -114,13 +116,19 @@ public class CaseResource {
         }
     }
     
-    @GetMapping(path = "/riskklass", produces = {APPLICATION_PROBLEM_JSON_VALUE})
-    public ResponseEntity<GetRiskClass2024BaseDataResponse> getRiskklasses() {
-        return ResponseEntity.ok(ecosService.getRisklasses());
+    @PostMapping(path = "/saveRisklassbeta", consumes = MediaType.APPLICATION_JSON_VALUE, produces = {APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE})
+    public ResponseEntity<Void> saveRisklassDirectly(@RequestBody RiskClassDTO dto){
+        ecosService.saveRiskClass(dto);
+        return ResponseEntity.ok().build();
     }
     
-    @GetMapping(path = "/processtype", produces = {APPLICATION_PROBLEM_JSON_VALUE})
-    public ResponseEntity<GetProcessTypesResponse> getProcessTypes() {
-        return ResponseEntity.ok(ecosService.getGetProcessTypes());
-    }
+//    @GetMapping(path = "/riskklass", produces = {APPLICATION_PROBLEM_JSON_VALUE})
+//    public ResponseEntity<GetRiskClass2024BaseDataResponse> getRiskklasses() {
+//        return ResponseEntity.ok(ecosService.getRisklasses());
+//    }
+//
+//    @GetMapping(path = "/processtype", produces = {APPLICATION_PROBLEM_JSON_VALUE})
+//    public ResponseEntity<GetProcessTypesResponse> getProcessTypes() {
+//        return ResponseEntity.ok(ecosService.getGetProcessTypes());
+//    }
 }
