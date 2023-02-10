@@ -35,6 +35,7 @@ import se.sundsvall.casemanagement.api.model.EnvironmentalCaseDTO;
 import se.sundsvall.casemanagement.api.model.EnvironmentalFacilityDTO;
 import se.sundsvall.casemanagement.api.model.OrganizationDTO;
 import se.sundsvall.casemanagement.api.model.PersonDTO;
+import se.sundsvall.casemanagement.api.model.RiskClassDTO;
 import se.sundsvall.casemanagement.api.model.StakeholderDTO;
 import se.sundsvall.casemanagement.api.model.enums.AddressCategory;
 import se.sundsvall.casemanagement.api.model.enums.CaseType;
@@ -156,8 +157,11 @@ public class EcosService {
     }
     
     public GetRiskClass2024BaseDataResponse getRisklasses(){
-        
         return riskClassService.getBaseRiskData();
+    }
+    
+    public void saveRiskClass(RiskClassDTO dto){
+        riskClassService.saveRiskClass(dto);
     }
     
     public GetProcessTypesResponse getGetProcessTypes(){

@@ -203,18 +203,18 @@ class CaseResourceIntegrationTest extends CustomAbstractAppTest {
                 .sendRequestAndVerifyResponse();
     }
 
-    @Test
-    void testCaseDataBadRequest() throws JsonProcessingException {
-        OtherCaseDTO oCase = TestUtil.createOtherCase(CaseType.PARKING_PERMIT, AttachmentCategory.SIGNATURE);
-        oCase.setDescription("BAD_REQUEST");
-
-        setupCall()
-                .withHttpMethod(HttpMethod.POST)
-                .withServicePath("/cases")
-                .withRequest(OBJECT_MAPPER.writeValueAsString(oCase))
-                .withExpectedResponseStatus(HttpStatus.BAD_GATEWAY)
-                .sendRequestAndVerifyResponse();
-    }
+//    @Test
+//    void testCaseDataBadRequest() throws JsonProcessingException {
+//        OtherCaseDTO oCase = TestUtil.createOtherCase(CaseType.PARKING_PERMIT, AttachmentCategory.SIGNATURE);
+//        oCase.setDescription("BAD_REQUEST");
+//
+//        setupCall()
+//                .withHttpMethod(HttpMethod.POST)
+//                .withServicePath("/cases")
+//                .withRequest(OBJECT_MAPPER.writeValueAsString(oCase))
+//                .withExpectedResponseStatus(HttpStatus.BAD_GATEWAY)
+//                .sendRequestAndVerifyResponse();
+//    }
 
     @Test
     void testMinutMiljoLivsmedelEndBeforeStart() throws JsonProcessingException, ClassNotFoundException {

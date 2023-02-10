@@ -1,5 +1,6 @@
 package se.sundsvall.casemanagement.service.ecos;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import se.sundsvall.casemanagement.api.model.EnvironmentalCaseDTO;
 import se.sundsvall.casemanagement.api.model.OrganizationDTO;
+import se.sundsvall.casemanagement.api.model.RiskClassDTO;
 import se.sundsvall.casemanagement.integration.soap.minutmiljo.MinutMiljoClient;
 
 import minutmiljo.AddFacilityToCase;
@@ -131,6 +133,57 @@ public class RiskClassService {
                  .ofNullable(dto.getExtraParameters().get(THIRD_PARTY_CERTS)).orElse("").split (
                     ","))))
                     */);
+    }
+    
+    
+    public void saveRiskClass(RiskClassDTO dto) {
+        var data = new SaveFoodFacility2024RiskClassData()
+            .withModel(new SaveRiskClass2024DataDto()
+                .withCaseId(dto.getCaseId())
+                .withFacilityId(dto.getFacilityId())
+                .withMainOrientationId(dto.getMainOrientationId())
+                .withMainOrientationSlvCode(dto.getMainOrientationSlvCode())
+                .withProductionSizeId(dto.getProductionSizeId())
+                .withProductionSizeSlvCode(dto.getProductionSizeSlvCode())
+                .withIsSeasonal(dto.getIsSeasonal())
+                .withSeasonalNote(dto.getSeasonalNote())
+                .withIsMobileFacility(dto.getIsMobileFacility())
+                .withMobileFacilityNote(dto.getMobileFacilityNote())
+                .withActivities(mapActivitiesDTO(dto.getActivities()))
+                .withProductGroups(mapProductGroupsDTO(dto.getProductGroups()))
+                .withThirdPartyCertifications(mapThirdPartyCertifications(dto.getThirdPartyCertifications())));
+        minutMiljoClient.updateRiskClass(data);
+    }
+    
+    private ArrayOfSaveRiskClass2024ActivityDto mapActivitiesDTO(List<RiskClassDTO.ActivitesDTO> activities) {
+        return new ArrayOfSaveRiskClass2024ActivityDto()
+            .withSaveRiskClass2024ActivityDto(activities.stream()
+                .map(activityDto -> new SaveRiskClass2024ActivityDto()
+                    .withActivityId(activityDto.getActivityId())
+                    .withSlvCode(activityDto.getSlvCode())
+                    .withStartDate(LocalDateTime.now())
+                ).toList());
+    }
+    
+    
+    private ArrayOfSaveRiskClass2024ProductGroupDto mapProductGroupsDTO(List<RiskClassDTO.ProductGroups> productGroups) {
+        return new ArrayOfSaveRiskClass2024ProductGroupDto()
+            .withSaveRiskClass2024ProductGroupDto(productGroups.stream()
+                .map(productGroup -> new SaveRiskClass2024ProductGroupDto()
+                    .withSlvCode(productGroup.getSlvCode())
+                    .withProductGroupId(productGroup.getProductGroupId()))
+                .toList());
+    }
+    
+    private ArrayOfSaveRiskClass2024CertificationDto mapThirdPartyCertifications(List<RiskClassDTO.ThirdPartyCertifications> dtos) {
+        
+        return new ArrayOfSaveRiskClass2024CertificationDto()
+            .withSaveRiskClass2024CertificationDto(
+                dtos.stream()
+                    .map(dto -> new SaveRiskClass2024CertificationDto()
+                        .withThirdPartyCertificationId(dto.getThirdPartyCertificationId())
+                        .withThirdPartyCertificationText(dto.getThirdPartyCertificationText()))
+                    .toList());
     }
     
     
