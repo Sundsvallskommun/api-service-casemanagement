@@ -75,7 +75,7 @@ public class RiskClassService {
     }
     
     private String searchFacility(String caseId, String orgNr) {
-        return Optional.ofNullable(minutMiljoClient.searchFacility(new SearchFacility()
+        var result = Optional.ofNullable(minutMiljoClient.searchFacility(new SearchFacility()
                     .withSearchFacilitySvcDto(new SearchFacilitySvcDto()
                         .withFacilityFilters(new ArrayOfFacilityFilterSvcDto()
                             // Livsmedelsanläggning
@@ -98,9 +98,13 @@ public class RiskClassService {
                 .getSearchFacilityResultSvcDto())
             //TODO VERY TEMPORARTY
             .orElse(List.of(new SearchFacilityResultSvcDto()
-                .withFacilityId("00560a12-fb46-4d0f-94eb-781bd6bd8584")))
-            .get(0)
-            .getFacilityId();
+                .withFacilityId("00560a12-fb46-4d0f-94eb-781bd6bd8584")));
+        
+        if (result.isEmpty()) {
+            return "00560a12-fb46-4d0f-94eb-781bd6bd8584";
+        } else {
+            return result.get(0).getFacilityId();
+        }
     }
     
     private void addFacilityToCase(String facilityId, String caseId) {
