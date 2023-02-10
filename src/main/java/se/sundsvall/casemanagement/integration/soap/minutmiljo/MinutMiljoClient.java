@@ -86,7 +86,7 @@ public interface MinutMiljoClient {
     @PostMapping(consumes = TEXT_XML_UTF8, headers = {"SOAPAction=urn:Ecos.API.MinutMiljo.Service.V1/IMinutMiljoService/SearchFacility"})
     SearchFacilityResponse searchFacility(SearchFacility searchFacility);
     
-    @PostMapping(consumes = TEXT_XML_UTF8, headers = {"SOAPAction=urn:Ecos.API.MinutMiljo.Service.V1/IMinutMiljoService/SaveFoodFacility2024RiskclassData"})
+    @PostMapping(consumes = TEXT_XML_UTF8, headers = {"SOAPAction=urn:Ecos.API.MinutMiljo.Service.V1/IMinutMiljoService/SaveFoodFacility2024RiskClassData"})
     void updateRiskClass(SaveFoodFacility2024RiskClassData data);
     
     @PostMapping(consumes = TEXT_XML_UTF8, headers = {"SOAPAction=urn:Ecos.API.MinutMiljo.Service.V1/IMinutMiljoService/GetRiskClass2024BaseData"} )
