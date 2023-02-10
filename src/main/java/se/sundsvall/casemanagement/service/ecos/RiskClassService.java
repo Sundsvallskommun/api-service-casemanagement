@@ -15,7 +15,10 @@ import minutmiljo.ArrayOfFacilityFilterSvcDto;
 import minutmiljo.ArrayOfSaveRiskClass2024ActivityDto;
 import minutmiljo.ArrayOfSaveRiskClass2024CertificationDto;
 import minutmiljo.ArrayOfSaveRiskClass2024ProductGroupDto;
+import minutmiljo.CalculateRiskClass2024;
+import minutmiljo.CalculateRiskClass2024SvcDto;
 import minutmiljo.FacilityPartyOrganizationNumberFilterSvcDto;
+import minutmiljo.GetRiskClass2024BaseDataResponse;
 import minutmiljo.SaveFoodFacility2024RiskClassData;
 import minutmiljo.SaveRiskClass2024ActivityDto;
 import minutmiljo.SaveRiskClass2024CertificationDto;
@@ -32,8 +35,7 @@ public class RiskClassService {
     private final static String MAIN_ORIENTATION_ID="MainOrientationId";
     private final static String PROD_SIZE_ID="ProductionSizeId";
     private final static String IS_SEASONAL="IsSeasonal";
-    private final static String SEASONAL_NOTE="seasonalNote"
-        ;
+    private final static String SEASONAL_NOTE="seasonalNote";
     private final static String ACTIVITIES="activities";
     private final static String PRODUCT_GROUPS="productGroups";
     private final static String THIRD_PARTY_CERTS="thirdPartyCertifications";
@@ -54,23 +56,22 @@ public class RiskClassService {
     }
 
 
-//    protected RiskClass2024BaseDataSvcDto getBaseRiskData() {
-//        return new RiskClass2024BaseDataSvcDto()
-//            .withMainOrientations(new ArrayOfRiskClass2024MainOrientationSvcDto()
-//                .withRiskClass2024MainOrientationSvcDto(new RiskClass2024MainOrientationSvcDto()));
-//
-//    }
-//
-//    protected void getCalculatedRiskData(GetRiskClass2024BaseDataResponse riskClassDetails) {
-//
-//        var details = riskClassDetails.getGetRiskClass2024BaseDataResult()
-//            .getMainOrientations()
-//            .getRiskClass2024MainOrientationSvcDto();
-//
-//        new CalculateRiskClass2024().withModel(new CalculateRiskClass2024SvcDto());
-//
-//
-//    }
+    public GetRiskClass2024BaseDataResponse getBaseRiskData() {
+        
+       return minutMiljoClient.getRiskklasses();
+
+    }
+
+    protected void getCalculatedRiskData(GetRiskClass2024BaseDataResponse riskClassDetails) {
+
+        var details = riskClassDetails.getGetRiskClass2024BaseDataResult()
+            .getMainOrientations()
+            .getRiskClass2024MainOrientationSvcDto();
+
+        new CalculateRiskClass2024().withModel(new CalculateRiskClass2024SvcDto());
+
+
+    }
     
     private String extractOrgNr(EnvironmentalCaseDTO eCase) {
         
