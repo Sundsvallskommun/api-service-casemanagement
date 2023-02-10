@@ -119,16 +119,18 @@ public class RiskClassService {
         
         return new SaveFoodFacility2024RiskClassData()
             .withModel(new SaveRiskClass2024DataDto()
-                
-                .withCaseId(caseId)
-                .withFacilityId(facilityId)
-                .withMainOrientationSlvCode(dto.getExtraParameters().get(MAIN_ORIENTATION_ID))
-                .withProductionSizeSlvCode(dto.getExtraParameters().get(PROD_SIZE_ID))
-                .withIsSeasonal(Optional.ofNullable(dto.getExtraParameters().get(IS_SEASONAL)).orElse("").equalsIgnoreCase("true"))
-                .withSeasonalNote(dto.getExtraParameters().get(SEASONAL_NOTE))
-                .withActivities(mapActivities(List.of(Optional.ofNullable(dto.getExtraParameters().get(ACTIVITIES)).orElse("").split(","))))
-                .withProductGroups(mapProductGroups(List.of(Optional.ofNullable(dto.getExtraParameters().get(PRODUCT_GROUPS)).orElse("").split(","))))
-                .withThirdPartyCertifications(mapThirdPartyCertifications(List.of(Optional.ofNullable(dto.getExtraParameters().get(THIRD_PARTY_CERTS)).orElse("").split(",")))));
+                    .withCaseId(caseId)
+                    .withFacilityId(facilityId)
+                    .withMainOrientationSlvCode(dto.getExtraParameters().get(MAIN_ORIENTATION_ID))
+                    .withProductionSizeSlvCode(dto.getExtraParameters().get(PROD_SIZE_ID))
+                    .withIsSeasonal(Optional.ofNullable(dto.getExtraParameters().get(IS_SEASONAL)).orElse("").equalsIgnoreCase("true"))
+                    .withSeasonalNote(dto.getExtraParameters().get(SEASONAL_NOTE))
+                    .withActivities(mapActivities(List.of(Optional.ofNullable(dto.getExtraParameters().get(ACTIVITIES)).orElse("").split(","))))
+                    .withProductGroups(mapProductGroups(List.of(Optional.ofNullable(dto.getExtraParameters().get(PRODUCT_GROUPS)).orElse("").split(","))))
+                /*.withThirdPartyCertifications(mapThirdPartyCertifications(List.of(Optional
+                 .ofNullable(dto.getExtraParameters().get(THIRD_PARTY_CERTS)).orElse("").split (
+                    ","))))
+                    */);
     }
     
     
@@ -151,16 +153,16 @@ public class RiskClassService {
     }
     
     //TODO WIP
-    private ArrayOfSaveRiskClass2024CertificationDto mapThirdPartyCertifications(List<String> dtos) {
-        
-        return new ArrayOfSaveRiskClass2024CertificationDto()
-            .withSaveRiskClass2024CertificationDto(
-                dtos.stream()
-                    .map(dto -> new SaveRiskClass2024CertificationDto()
-                        .withThirdPartyCertificationId(dto)
-                        .withThirdPartyCertificationText(dto))
-                    .toList());
-    }
+//    private ArrayOfSaveRiskClass2024CertificationDto mapThirdPartyCertifications(List<String> dtos) {
+//
+//        return new ArrayOfSaveRiskClass2024CertificationDto()
+//            .withSaveRiskClass2024CertificationDto(
+//                dtos.stream()
+//                    .map(dto -> new SaveRiskClass2024CertificationDto()
+//                        .withThirdPartyCertificationId(dto)
+//                        .withThirdPartyCertificationText(dto))
+//                    .toList());
+//    }
     
     
 }
