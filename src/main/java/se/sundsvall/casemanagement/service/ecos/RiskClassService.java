@@ -15,6 +15,7 @@ import minutmiljo.ArrayOfSaveRiskClass2024ActivityDto;
 import minutmiljo.ArrayOfSaveRiskClass2024CertificationDto;
 import minutmiljo.ArrayOfSaveRiskClass2024ProductGroupDto;
 import minutmiljo.ArrayOfguid;
+import minutmiljo.FacilityCaseIdFilterSvcDto;
 import minutmiljo.FacilityFacilityStatusIdsFilterSvcDto;
 import minutmiljo.FacilityFacilityTypeIdsFilterSvcDto;
 import minutmiljo.FacilityNotFilterSvcDto;
@@ -48,7 +49,7 @@ public class RiskClassService {
     
     
     public String updateRiskClass(EnvironmentalCaseDTO caseInput, String caseId) {
-        var facilityId = searchFacility(extractOrgNr(caseInput));
+        var facilityId = searchFacility(caseId,extractOrgNr(caseInput));
         addFacilityToCase(facilityId, caseId);
         var data = createSaveRiskClassObject(facilityId, caseId, caseInput);
         
@@ -73,7 +74,7 @@ public class RiskClassService {
             .orElse("");
     }
     
-    private String searchFacility(String orgNr) {
+    private String searchFacility(String caseId,String orgNr) {
         return minutMiljoClient.searchFacility(new SearchFacility()
                 .withSearchFacilitySvcDto(new SearchFacilitySvcDto()
                     .withFacilityFilters(new ArrayOfFacilityFilterSvcDto()
@@ -88,8 +89,11 @@ public class RiskClassService {
                                         "80FFA45C-B3DF-4A10-8DB3-A042F36C64B7")))))
                         // OrgNr
                         .withFacilityFilterSvcDto(new FacilityPartyOrganizationNumberFilterSvcDto()
-                            .withOrganizationNumber(orgNr)
-                        ))))
+                            .withOrganizationNumber(orgNr))
+                        //CaseId
+                        .withFacilityFilterSvcDto(new FacilityCaseIdFilterSvcDto()
+                            .withCaseId(caseId))
+                    )))
             .getSearchFacilityResult()
             .getSearchFacilityResultSvcDto()
             .get(0)
