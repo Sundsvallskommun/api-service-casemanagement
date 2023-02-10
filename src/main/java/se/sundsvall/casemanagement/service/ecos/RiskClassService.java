@@ -1,6 +1,5 @@
 package se.sundsvall.casemanagement.service.ecos;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,9 +14,11 @@ import minutmiljo.ArrayOfFacilityFilterSvcDto;
 import minutmiljo.ArrayOfSaveRiskClass2024ActivityDto;
 import minutmiljo.ArrayOfSaveRiskClass2024CertificationDto;
 import minutmiljo.ArrayOfSaveRiskClass2024ProductGroupDto;
-import minutmiljo.CalculateRiskClass2024;
-import minutmiljo.CalculateRiskClass2024SvcDto;
-import minutmiljo.FacilityPartyOrganizationNumberFilterSvcDto;
+import minutmiljo.ArrayOfguid;
+import minutmiljo.FacilityFacilityStatusIdsFilterSvcDto;
+import minutmiljo.FacilityFacilityTypeIdsFilterSvcDto;
+import minutmiljo.FacilityNotFilterSvcDto;
+import minutmiljo.FacilitySinglePartyRoleFilterSvcDto;
 import minutmiljo.GetRiskClass2024BaseData;
 import minutmiljo.GetRiskClass2024BaseDataResponse;
 import minutmiljo.SaveFoodFacility2024RiskClassData;
@@ -31,15 +32,14 @@ import minutmiljo.SearchFacilitySvcDto;
 @Service
 public class RiskClassService {
     
+    private final static String MAIN_ORIENTATION_ID = "MainOrientationId";
+    private final static String PROD_SIZE_ID = "ProductionSizeId";
+    private final static String IS_SEASONAL = "IsSeasonal";
+    private final static String SEASONAL_NOTE = "seasonalNote";
+    private final static String ACTIVITIES = "activities";
+    private final static String PRODUCT_GROUPS = "productGroups";
+    private final static String THIRD_PARTY_CERTS = "thirdPartyCertifications";
     private final MinutMiljoClient minutMiljoClient;
-    
-    private final static String MAIN_ORIENTATION_ID="MainOrientationId";
-    private final static String PROD_SIZE_ID="ProductionSizeId";
-    private final static String IS_SEASONAL="IsSeasonal";
-    private final static String SEASONAL_NOTE="seasonalNote";
-    private final static String ACTIVITIES="activities";
-    private final static String PRODUCT_GROUPS="productGroups";
-    private final static String THIRD_PARTY_CERTS="thirdPartyCertifications";
     
     public RiskClassService(MinutMiljoClient minutMiljoClient) {
         this.minutMiljoClient = minutMiljoClient;
@@ -57,7 +57,7 @@ public class RiskClassService {
     }
     
     public GetRiskClass2024BaseDataResponse getBaseRiskData() {
-       return minutMiljoClient.getRiskklasses(new GetRiskClass2024BaseData());
+        return minutMiljoClient.getRiskklasses(new GetRiskClass2024BaseData());
     }
     
     private String extractOrgNr(EnvironmentalCaseDTO eCase) {
@@ -74,11 +74,21 @@ public class RiskClassService {
     
     private String searchFacility(String orgNr) {
         return minutMiljoClient.searchFacility(new SearchFacility()
-            .withSearchFacilitySvcDto(new SearchFacilitySvcDto()
-                .withFacilityFilters(new ArrayOfFacilityFilterSvcDto()
-                    .withFacilityFilterSvcDto(new FacilityPartyOrganizationNumberFilterSvcDto()
-                        .withOrganizationNumber(orgNr)
-                    ))))
+                .withSearchFacilitySvcDto(new SearchFacilitySvcDto()
+                    .withFacilityFilters(new ArrayOfFacilityFilterSvcDto()
+                        // Livsmedelsanläggning
+                        .withFacilityFilterSvcDto(new FacilityFacilityTypeIdsFilterSvcDto()
+                            .withFacilityTypeIds("4958BC00-76E8-4D5B-A862-AAF8E815202A"))
+                        //ej Makulerad or Upphörd/skrotad
+                        .withFacilityFilterSvcDto(new FacilityNotFilterSvcDto()
+                            .withFilter(new FacilityFacilityStatusIdsFilterSvcDto()
+                                .withFacilityStatusIds(new ArrayOfguid()
+                                    .withGuid(List.of("9A748E4E-BD7E-481A-B449-73CBD0992213",
+                                        "80FFA45C-B3DF-4A10-8DB3-A042F36C64B7")))))
+                        // OrgNr
+                        .withFacilityFilterSvcDto(new FacilitySinglePartyRoleFilterSvcDto()
+                            .withPartyId(orgNr)
+                        ))))
             .getSearchFacilityResult()
             .getSearchFacilityResultSvcDto()
             .get(0)
@@ -118,6 +128,7 @@ public class RiskClassService {
                     .withSlvCode(activityDto)
                 ).toList());
     }
+    
     //TODO WIP
     private ArrayOfSaveRiskClass2024ProductGroupDto mapProductGroups(List<String> productGroupIds) {
         return new ArrayOfSaveRiskClass2024ProductGroupDto()
@@ -126,6 +137,7 @@ public class RiskClassService {
                     .withSlvCode(productGroupId))
                 .toList());
     }
+    
     //TODO WIP
     private ArrayOfSaveRiskClass2024CertificationDto mapThirdPartyCertifications(List<String> dtos) {
         
