@@ -106,7 +106,7 @@ public final class Constants {
     // Anmälan av hälsoskyddsverksamhet
     public static final String ECOS_PROCESS_TYPE_ID_ANMALAN_HALSOSKYDDSVERKSAMHET = "AF6D94EC-94FB-4C0A-AF39-CC5E4C732D4B";
     // Uppdatering av riskklass
-    public static final String ECOS_PROCESS_TYPE_ID_UPPDATERING_RISKKLASS = "";
+    public static final String ECOS_PROCESS_TYPE_ID_UPPDATERING_RISKKLASS = ECOS_PROCESS_TYPE_ID_REGISTRERING_AV_LIVSMEDEL;
 
     public static final String ECOS_DOCUMENT_STATUS_INKOMMEN = "F6F4B956-36D7-4CBF-8BCA-713219BFD5F2";
     public static final String ECOS_FACILITY_STATUS_ID_ANMALD_ANSOKT = "88E11CAA-DF35-4C5E-94A8-3C7B0369D8F2";
