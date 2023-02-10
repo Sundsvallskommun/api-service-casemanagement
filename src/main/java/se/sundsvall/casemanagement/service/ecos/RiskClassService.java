@@ -55,23 +55,9 @@ public class RiskClassService {
         return null;
         
     }
-
-
+    
     public GetRiskClass2024BaseDataResponse getBaseRiskData() {
-       
        return minutMiljoClient.getRiskklasses(new GetRiskClass2024BaseData());
-
-    }
-
-    protected void getCalculatedRiskData(GetRiskClass2024BaseDataResponse riskClassDetails) {
-
-        var details = riskClassDetails.getGetRiskClass2024BaseDataResult()
-            .getMainOrientations()
-            .getRiskClass2024MainOrientationSvcDto();
-
-        new CalculateRiskClass2024().withModel(new CalculateRiskClass2024SvcDto());
-
-
     }
     
     private String extractOrgNr(EnvironmentalCaseDTO eCase) {
@@ -112,19 +98,12 @@ public class RiskClassService {
         return new SaveFoodFacility2024RiskClassData()
             .withModel(new SaveRiskClass2024DataDto()
                 
-                //TODO input from createLoop
                 .withCaseId(caseId)
                 .withFacilityId(facilityId)
-                //TODO Extra params?
-                .withMainOrientationId(dto.getExtraParameters().get(MAIN_ORIENTATION_ID))
-                //.withMainOrientationSlvCode()
-                //TODO Extra params?
-                .withProductionSizeId(dto.getExtraParameters().get(PROD_SIZE_ID))
-                //.withProductionSizeSlvCode()
-                //TODO Extra params?
+                .withMainOrientationSlvCode(dto.getExtraParameters().get(MAIN_ORIENTATION_ID))
+                .withProductionSizeSlvCode(dto.getExtraParameters().get(PROD_SIZE_ID))
                 .withIsSeasonal(Optional.ofNullable(dto.getExtraParameters().get(IS_SEASONAL)).orElse("").equalsIgnoreCase("true"))
                 .withSeasonalNote(dto.getExtraParameters().get(SEASONAL_NOTE))
-                //TODO Extra params?
                 .withActivities(mapActivities(List.of(Optional.ofNullable(dto.getExtraParameters().get(ACTIVITIES)).orElse("").split(","))))
                 .withProductGroups(mapProductGroups(List.of(Optional.ofNullable(dto.getExtraParameters().get(PRODUCT_GROUPS)).orElse("").split(","))))
                 .withThirdPartyCertifications(mapThirdPartyCertifications(List.of(Optional.ofNullable(dto.getExtraParameters().get(THIRD_PARTY_CERTS)).orElse("").split(",")))));
@@ -132,13 +111,11 @@ public class RiskClassService {
     
     
     //TODO WIP
-    private ArrayOfSaveRiskClass2024ActivityDto mapActivities(List<?> activities) {
+    private ArrayOfSaveRiskClass2024ActivityDto mapActivities(List<String> activities) {
         return new ArrayOfSaveRiskClass2024ActivityDto()
             .withSaveRiskClass2024ActivityDto(activities.stream()
                 .map(activityDto -> new SaveRiskClass2024ActivityDto()
-                    .withActivityId("?")
-                    .withSlvCode("?")
-                    .withStartDate(LocalDateTime.parse("2020-01-01T12:12"))
+                    .withSlvCode(activityDto)
                 ).toList());
     }
     //TODO WIP
@@ -146,18 +123,18 @@ public class RiskClassService {
         return new ArrayOfSaveRiskClass2024ProductGroupDto()
             .withSaveRiskClass2024ProductGroupDto(productGroupIds.stream()
                 .map(productGroupId -> new SaveRiskClass2024ProductGroupDto()
-                    .withProductGroupId(productGroupId))
+                    .withSlvCode(productGroupId))
                 .toList());
     }
     //TODO WIP
-    private ArrayOfSaveRiskClass2024CertificationDto mapThirdPartyCertifications(List<?> dtos) {
+    private ArrayOfSaveRiskClass2024CertificationDto mapThirdPartyCertifications(List<String> dtos) {
         
         return new ArrayOfSaveRiskClass2024CertificationDto()
             .withSaveRiskClass2024CertificationDto(
                 dtos.stream()
                     .map(dto -> new SaveRiskClass2024CertificationDto()
-                        .withThirdPartyCertificationId("?")
-                        .withThirdPartyCertificationText("?"))
+                        .withThirdPartyCertificationId(dto)
+                        .withThirdPartyCertificationText(dto))
                     .toList());
     }
     
