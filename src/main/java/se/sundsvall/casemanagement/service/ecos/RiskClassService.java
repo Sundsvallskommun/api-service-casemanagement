@@ -1,14 +1,14 @@
 package se.sundsvall.casemanagement.service.ecos;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import org.zalando.problem.Problem;
+import org.zalando.problem.Status;
 
 import se.sundsvall.casemanagement.api.model.EnvironmentalCaseDTO;
 import se.sundsvall.casemanagement.api.model.OrganizationDTO;
-import se.sundsvall.casemanagement.api.model.RiskClassDTO;
 import se.sundsvall.casemanagement.integration.soap.minutmiljo.MinutMiljoClient;
 
 import minutmiljo.AddFacilityToCase;
@@ -22,15 +22,12 @@ import minutmiljo.FacilityFacilityStatusIdsFilterSvcDto;
 import minutmiljo.FacilityFacilityTypeIdsFilterSvcDto;
 import minutmiljo.FacilityNotFilterSvcDto;
 import minutmiljo.FacilityPartyOrganizationNumberFilterSvcDto;
-import minutmiljo.GetRiskClass2024BaseData;
-import minutmiljo.GetRiskClass2024BaseDataResponse;
 import minutmiljo.SaveFoodFacility2024RiskClassData;
 import minutmiljo.SaveRiskClass2024ActivityDto;
 import minutmiljo.SaveRiskClass2024CertificationDto;
 import minutmiljo.SaveRiskClass2024DataDto;
 import minutmiljo.SaveRiskClass2024ProductGroupDto;
 import minutmiljo.SearchFacility;
-import minutmiljo.SearchFacilityResultSvcDto;
 import minutmiljo.SearchFacilitySvcDto;
 
 @Service
@@ -58,10 +55,6 @@ public class RiskClassService {
         minutMiljoClient.updateRiskClass(data);
         return null;
         
-    }
-    
-    public GetRiskClass2024BaseDataResponse getBaseRiskData() {
-        return minutMiljoClient.getRiskklasses(new GetRiskClass2024BaseData());
     }
     
     private String extractOrgNr(EnvironmentalCaseDTO eCase) {
@@ -98,15 +91,9 @@ public class RiskClassService {
                         )))
                 .getSearchFacilityResult()
                 .getSearchFacilityResultSvcDto())
-            //TODO VERY TEMPORARTY
-            .orElse(List.of(new SearchFacilityResultSvcDto()
-                .withFacilityId("00560a12-fb46-4d0f-94eb-781bd6bd8584")));
+            .orElseThrow(() -> Problem.valueOf(Status.NOT_FOUND, "Could not find facility "));
         
-        if (result.isEmpty()) {
-            return "00560a12-fb46-4d0f-94eb-781bd6bd8584";
-        } else {
-            return result.get(0).getFacilityId();
-        }
+        return result.get(0).getFacilityId();
     }
     
     private void addFacilityToCase(String facilityId, String caseId) {
@@ -121,73 +108,19 @@ public class RiskClassService {
         
         return new SaveFoodFacility2024RiskClassData()
             .withModel(new SaveRiskClass2024DataDto()
-                    .withCaseId(caseId)
-                    .withFacilityId(facilityId)
-                    .withMainOrientationSlvCode(dto.getExtraParameters().get(MAIN_ORIENTATION_ID))
-                    .withProductionSizeSlvCode(dto.getExtraParameters().get(PROD_SIZE_ID))
-                    .withIsSeasonal(Optional.ofNullable(dto.getExtraParameters().get(IS_SEASONAL)).orElse("").equalsIgnoreCase("true"))
-                    .withSeasonalNote(dto.getExtraParameters().get(SEASONAL_NOTE))
-                    .withActivities(mapActivities(List.of(Optional.ofNullable(dto.getExtraParameters().get(ACTIVITIES)).orElse("").split(","))))
-                    .withProductGroups(mapProductGroups(List.of(Optional.ofNullable(dto.getExtraParameters().get(PRODUCT_GROUPS)).orElse("").split(","))))
-                /*.withThirdPartyCertifications(mapThirdPartyCertifications(List.of(Optional
-                 .ofNullable(dto.getExtraParameters().get(THIRD_PARTY_CERTS)).orElse("").split (
-                    ","))))
-                    */);
+                .withCaseId(caseId)
+                .withFacilityId(facilityId)
+                .withMainOrientationSlvCode(dto.getExtraParameters().get(MAIN_ORIENTATION_ID))
+                .withProductionSizeSlvCode(dto.getExtraParameters().get(PROD_SIZE_ID))
+                .withIsSeasonal(Optional.ofNullable(dto.getExtraParameters().get(IS_SEASONAL)).orElse("").equalsIgnoreCase("true"))
+                .withSeasonalNote(dto.getExtraParameters().get(SEASONAL_NOTE))
+                .withActivities(mapActivities(List.of(Optional.ofNullable(dto.getExtraParameters().get(ACTIVITIES)).orElse("").split(","))))
+                .withProductGroups(mapProductGroups(List.of(Optional.ofNullable(dto.getExtraParameters().get(PRODUCT_GROUPS)).orElse("").split(","))))
+                .withThirdPartyCertifications(mapThirdPartyCertifications(List.of(Optional.ofNullable(dto.getExtraParameters().get(THIRD_PARTY_CERTS))
+                    .orElse("")
+                    .split(",")))));
     }
     
-    
-    public void saveRiskClass(RiskClassDTO dto) {
-        var data = new SaveFoodFacility2024RiskClassData()
-            .withModel(new SaveRiskClass2024DataDto()
-                .withCaseId(dto.getCaseId())
-                .withFacilityId(dto.getFacilityId())
-                .withMainOrientationId(dto.getMainOrientationId())
-                .withMainOrientationSlvCode(dto.getMainOrientationSlvCode())
-                .withProductionSizeId(dto.getProductionSizeId())
-                .withProductionSizeSlvCode(dto.getProductionSizeSlvCode())
-                .withIsSeasonal(dto.getIsSeasonal())
-                .withSeasonalNote(dto.getSeasonalNote())
-                .withIsMobileFacility(dto.getIsMobileFacility())
-                .withMobileFacilityNote(dto.getMobileFacilityNote())
-                .withActivities(mapActivitiesDTO(dto.getActivities()))
-                .withProductGroups(mapProductGroupsDTO(dto.getProductGroups()))
-                .withThirdPartyCertifications(mapThirdPartyCertifications(dto.getThirdPartyCertifications())));
-        minutMiljoClient.updateRiskClass(data);
-    }
-    
-    private ArrayOfSaveRiskClass2024ActivityDto mapActivitiesDTO(List<RiskClassDTO.ActivitesDTO> activities) {
-        return new ArrayOfSaveRiskClass2024ActivityDto()
-            .withSaveRiskClass2024ActivityDto(activities.stream()
-                .map(activityDto -> new SaveRiskClass2024ActivityDto()
-                    .withActivityId(activityDto.getActivityId())
-                    .withSlvCode(activityDto.getSlvCode())
-                    .withStartDate(LocalDateTime.now())
-                ).toList());
-    }
-    
-    
-    private ArrayOfSaveRiskClass2024ProductGroupDto mapProductGroupsDTO(List<RiskClassDTO.ProductGroups> productGroups) {
-        return new ArrayOfSaveRiskClass2024ProductGroupDto()
-            .withSaveRiskClass2024ProductGroupDto(productGroups.stream()
-                .map(productGroup -> new SaveRiskClass2024ProductGroupDto()
-                    .withSlvCode(productGroup.getSlvCode())
-                    .withProductGroupId(productGroup.getProductGroupId()))
-                .toList());
-    }
-    
-    private ArrayOfSaveRiskClass2024CertificationDto mapThirdPartyCertifications(List<RiskClassDTO.ThirdPartyCertifications> dtos) {
-        
-        return new ArrayOfSaveRiskClass2024CertificationDto()
-            .withSaveRiskClass2024CertificationDto(
-                dtos.stream()
-                    .map(dto -> new SaveRiskClass2024CertificationDto()
-                        .withThirdPartyCertificationId(dto.getThirdPartyCertificationId())
-                        .withThirdPartyCertificationText(dto.getThirdPartyCertificationText()))
-                    .toList());
-    }
-    
-    
-    //TODO WIP
     private ArrayOfSaveRiskClass2024ActivityDto mapActivities(List<String> activities) {
         return new ArrayOfSaveRiskClass2024ActivityDto()
             .withSaveRiskClass2024ActivityDto(activities.stream()
@@ -196,7 +129,6 @@ public class RiskClassService {
                 ).toList());
     }
     
-    //TODO WIP
     private ArrayOfSaveRiskClass2024ProductGroupDto mapProductGroups(List<String> productGroupIds) {
         return new ArrayOfSaveRiskClass2024ProductGroupDto()
             .withSaveRiskClass2024ProductGroupDto(productGroupIds.stream()
@@ -205,17 +137,14 @@ public class RiskClassService {
                 .toList());
     }
     
-    //TODO WIP
-//    private ArrayOfSaveRiskClass2024CertificationDto mapThirdPartyCertifications(List<String> dtos) {
-//
-//        return new ArrayOfSaveRiskClass2024CertificationDto()
-//            .withSaveRiskClass2024CertificationDto(
-//                dtos.stream()
-//                    .map(dto -> new SaveRiskClass2024CertificationDto()
-//                        .withThirdPartyCertificationId(dto)
-//                        .withThirdPartyCertificationText(dto))
-//                    .toList());
-//    }
+    private ArrayOfSaveRiskClass2024CertificationDto mapThirdPartyCertifications(List<String> dtos) {
+        return new ArrayOfSaveRiskClass2024CertificationDto()
+            .withSaveRiskClass2024CertificationDto(
+                dtos.stream()
+                    .map(dto -> new SaveRiskClass2024CertificationDto()
+                        .withThirdPartyCertificationText(dto))
+                    .toList());
+    }
     
     
 }
