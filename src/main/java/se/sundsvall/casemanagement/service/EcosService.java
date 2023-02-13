@@ -35,7 +35,6 @@ import se.sundsvall.casemanagement.api.model.EnvironmentalCaseDTO;
 import se.sundsvall.casemanagement.api.model.EnvironmentalFacilityDTO;
 import se.sundsvall.casemanagement.api.model.OrganizationDTO;
 import se.sundsvall.casemanagement.api.model.PersonDTO;
-import se.sundsvall.casemanagement.api.model.RiskClassDTO;
 import se.sundsvall.casemanagement.api.model.StakeholderDTO;
 import se.sundsvall.casemanagement.api.model.enums.AddressCategory;
 import se.sundsvall.casemanagement.api.model.enums.CaseType;
@@ -100,9 +99,6 @@ import minutmiljo.EstateSvcDto;
 import minutmiljo.FacilityAddressSvcDto;
 import minutmiljo.FilterBedSvcDto;
 import minutmiljo.GetCase;
-import minutmiljo.GetProcessTypes;
-import minutmiljo.GetProcessTypesResponse;
-import minutmiljo.GetRiskClass2024BaseDataResponse;
 import minutmiljo.HeatCollectorTubeSvcDto;
 import minutmiljo.InfiltrationPlantSvcDto;
 import minutmiljo.LocationSvcDto;
@@ -154,18 +150,6 @@ public class EcosService {
             filename = attachmentDTO.getName() + extension;
         }
         return filename;
-    }
-    
-    public GetRiskClass2024BaseDataResponse getRisklasses(){
-        return riskClassService.getBaseRiskData();
-    }
-    
-    public void saveRiskClass(RiskClassDTO dto){
-        riskClassService.saveRiskClass(dto);
-    }
-    
-    public GetProcessTypesResponse getGetProcessTypes(){
-        return minutMiljoClient.getProcessTypes(new GetProcessTypes());
     }
     
     public RegisterDocumentCaseResultSvcDto postCase(EnvironmentalCaseDTO caseInput) throws ApplicationException {

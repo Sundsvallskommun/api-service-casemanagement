@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -25,7 +24,6 @@ import se.sundsvall.casemanagement.api.model.CaseResourceResponseDTO;
 import se.sundsvall.casemanagement.api.model.EnvironmentalCaseDTO;
 import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
 import se.sundsvall.casemanagement.api.model.PlanningPermissionCaseDTO;
-import se.sundsvall.casemanagement.api.model.RiskClassDTO;
 import se.sundsvall.casemanagement.service.ByggrService;
 import se.sundsvall.casemanagement.service.CaseDataService;
 import se.sundsvall.casemanagement.service.CaseMappingService;
@@ -39,10 +37,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import minutmiljo.GetProcessTypes;
-import minutmiljo.GetProcessTypesResponse;
-import minutmiljo.GetRiskClass2024BaseDataResponse;
-import minutmiljo.SaveRiskClass2024DataDto;
 import minutmiljoV2.RegisterDocumentCaseResultSvcDto;
 
 @RestController
@@ -115,20 +109,4 @@ public class CaseResource {
             throw Problem.valueOf(Status.BAD_REQUEST, "Only cases created in CaseData can be updated.");
         }
     }
-    
-    @PostMapping(path = "/saveRisklassbeta", consumes = MediaType.APPLICATION_JSON_VALUE, produces = {APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE})
-    public ResponseEntity<Void> saveRisklassDirectly(@RequestBody RiskClassDTO dto){
-        ecosService.saveRiskClass(dto);
-        return ResponseEntity.ok().build();
-    }
-    
-//    @GetMapping(path = "/riskklass", produces = {APPLICATION_PROBLEM_JSON_VALUE})
-//    public ResponseEntity<GetRiskClass2024BaseDataResponse> getRiskklasses() {
-//        return ResponseEntity.ok(ecosService.getRisklasses());
-//    }
-//
-//    @GetMapping(path = "/processtype", produces = {APPLICATION_PROBLEM_JSON_VALUE})
-//    public ResponseEntity<GetProcessTypesResponse> getProcessTypes() {
-//        return ResponseEntity.ok(ecosService.getGetProcessTypes());
-//    }
 }
