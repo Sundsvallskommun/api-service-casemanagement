@@ -155,6 +155,12 @@ public class EcosService {
     public RegisterDocumentCaseResultSvcDto postCase(EnvironmentalCaseDTO caseInput) throws ApplicationException {
         
         validate(caseInput);
+        // If caseType is UPPDATERING_RISKKLASSNING we should only do this step and this step only
+        if (caseInput.getCaseType().equals(CaseType.UPPDATERING_RISKKLASSNING)) {
+            var caseId = caseMappingService.getCaseMapping(caseInput.getExternalCaseId()).getCaseId();
+            riskClassService.updateRiskClass(caseInput, caseId);
+            return new RegisterDocumentCaseResultSvcDto().withCaseNumber(caseId);
+        }
         
         EnvironmentalFacilityDTO eFacility = caseInput.getFacilities().get(0);
         
@@ -199,8 +205,6 @@ public class EcosService {
                     createIndividualSewage(eFacility, propertyInfo, registerDocumentResult);
                 case ANMALAN_HALSOSKYDDSVERKSAMHET ->
                     createHealthProtectionFacility(eFacility, propertyInfo, registerDocumentResult);
-                case UPPDATERING_RISKKLASSNING ->
-                    riskClassService.updateRiskClass(caseInput, registerDocumentResult.getCaseId());
                 default ->
                     throw new ApplicationException("CaseType: " + caseInput.getCaseType() + " is not valid. There is a problem in the API validation.");
             };
@@ -702,8 +706,7 @@ public class EcosService {
                 Constants.ECOS_PROCESS_TYPE_ID_ANMALAN_ANDRING_AVLOPPSANORDNING;
             case ANMALAN_HALSOSKYDDSVERKSAMHET ->
                 Constants.ECOS_PROCESS_TYPE_ID_ANMALAN_HALSOSKYDDSVERKSAMHET;
-            case UPPDATERING_RISKKLASSNING ->
-                Constants.ECOS_PROCESS_TYPE_ID_UPPDATERING_RISKKLASS;
+            case UPPDATERING_RISKKLASSNING -> Constants.ECOS_PROCESS_TYPE_ID_UPPDATERING_RISKKLASS;
             default -> throw new ApplicationException("CaseType: " + caseType + " is not valid...");
         };
     }
