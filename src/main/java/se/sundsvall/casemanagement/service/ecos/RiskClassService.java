@@ -51,7 +51,6 @@ public class RiskClassService {
         var facilityId = searchFacility(caseId, extractOrgNr(caseInput));
         addFacilityToCase(facilityId, caseId);
         var data = createSaveRiskClassObject(facilityId, caseId, caseInput);
-        
         minutMiljoClient.updateRiskClass(data);
         return null;
         
