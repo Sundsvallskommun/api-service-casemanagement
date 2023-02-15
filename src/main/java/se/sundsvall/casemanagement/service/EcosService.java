@@ -155,14 +155,8 @@ public class EcosService {
     public RegisterDocumentCaseResultSvcDto postCase(EnvironmentalCaseDTO caseInput) throws ApplicationException {
         
         validate(caseInput);
-        // If caseType is UPPDATERING_RISKKLASSNING we should only do this step and this step only
-        if (caseInput.getCaseType().equals(CaseType.UPPDATERING_RISKKLASSNING)) {
-            var caseId = caseMappingService.getCaseMapping(caseInput.getExternalCaseId()).getCaseId();
-            riskClassService.updateRiskClass(caseInput, caseId);
-            return new RegisterDocumentCaseResultSvcDto().withCaseNumber(caseId);
-        }
         
-        EnvironmentalFacilityDTO eFacility = caseInput.getFacilities().get(0);
+        var eFacility = caseInput.getFacilities().get(0);
         
         FbPropertyInfo propertyInfo = null;
         if (eFacility.getAddress() != null && eFacility.getAddress().getPropertyDesignation() != null) {
@@ -172,13 +166,13 @@ public class EcosService {
         
         // Do requests to SearchParty for every stakeholder and collect these stakeholders to be able to add them
         // to the facility later.
-        List<PartySvcDto> partyList = new ArrayList<>();
+        var partyList = new ArrayList<PartySvcDto>();
         
         // The stakeholder is stored with associated roles so that we can set roles later.
-        HashMap<String, ArrayOfguid> partyRoles = new HashMap<>();
+        var partyRoles = new HashMap<String, ArrayOfguid>();
         
         // If the stakeholder is missing in Ecos, we keep it in this list and create them later (CreateParty)
-        List<StakeholderDTO> missingStakeholderDTOS = new ArrayList<>();
+        var missingStakeholderDTOS = new ArrayList<StakeholderDTO>();
         
         RegisterDocumentCaseResultSvcDto registerDocumentResult;
         
@@ -205,6 +199,8 @@ public class EcosService {
                     createIndividualSewage(eFacility, propertyInfo, registerDocumentResult);
                 case ANMALAN_HALSOSKYDDSVERKSAMHET ->
                     createHealthProtectionFacility(eFacility, propertyInfo, registerDocumentResult);
+                case UPPDATERING_RISKKLASSNING ->
+                    riskClassService.updateRiskClass(caseInput, registerDocumentResult.getCaseId());
                 default ->
                     throw new ApplicationException("CaseType: " + caseInput.getCaseType() + " is not valid. There is a problem in the API validation.");
             };
@@ -220,12 +216,13 @@ public class EcosService {
         }
         
         // Persist the connection between OeP-case and Ecos-case
-        caseMappingService.postCaseMapping(new CaseMapping(
-            caseInput.getExternalCaseId(),
-            registerDocumentResult.getCaseId(),
-            SystemType.ECOS,
-            caseInput.getCaseType(),
-            isNull(caseInput.getExtraParameters()) ? null : caseInput.getExtraParameters().get(SERVICE_NAME)));
+        caseMappingService.postCaseMapping(CaseMapping.builder()
+            .withExternalCaseId(caseInput.getExternalCaseId())
+            .withCaseId(registerDocumentResult.getCaseId())
+            .withSystem(SystemType.ECOS)
+            .withCaseType(caseInput.getCaseType())
+            .withServiceName(isNull(caseInput.getExtraParameters()) ? null : caseInput.getExtraParameters().get(SERVICE_NAME))
+            .build());
         return registerDocumentResult;
     }
     
