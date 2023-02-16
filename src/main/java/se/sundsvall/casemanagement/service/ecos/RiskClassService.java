@@ -10,6 +10,7 @@ import org.zalando.problem.Status;
 import se.sundsvall.casemanagement.api.model.EnvironmentalCaseDTO;
 import se.sundsvall.casemanagement.api.model.OrganizationDTO;
 import se.sundsvall.casemanagement.integration.soap.minutmiljo.MinutMiljoClient;
+import se.sundsvall.casemanagement.service.util.CaseUtil;
 
 import minutmiljo.AddFacilityToCase;
 import minutmiljo.ArrayOfFacilityFilterSvcDto;
@@ -55,15 +56,14 @@ public class RiskClassService {
     }
     
     private String extractOrgNr(EnvironmentalCaseDTO eCase) {
-        
-        return eCase.getStakeholders().stream()
+        return CaseUtil.getSokigoFormattedOrganizationNumber(eCase.getStakeholders().stream()
             .map(stakeholderDTO -> {
                 if (stakeholderDTO instanceof OrganizationDTO orgDTO) {
                     return orgDTO.getOrganizationNumber();
                 } else return "";
             })
             .findFirst()
-            .orElse("");
+            .orElse(""));
     }
     
     private String searchFacility(String orgNr) {
