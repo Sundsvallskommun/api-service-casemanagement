@@ -17,7 +17,7 @@ import minutmiljo.ArrayOfSaveRiskClass2024ActivityDto;
 import minutmiljo.ArrayOfSaveRiskClass2024CertificationDto;
 import minutmiljo.ArrayOfSaveRiskClass2024ProductGroupDto;
 import minutmiljo.ArrayOfguid;
-import minutmiljo.FacilityCaseIdFilterSvcDto;
+import minutmiljo.FacilityAndFilterSvcDto;
 import minutmiljo.FacilityFacilityStatusIdsFilterSvcDto;
 import minutmiljo.FacilityFacilityTypeIdsFilterSvcDto;
 import minutmiljo.FacilityNotFilterSvcDto;
@@ -48,7 +48,7 @@ public class RiskClassService {
     
     
     public void updateRiskClass(EnvironmentalCaseDTO caseInput, String caseId) {
-        var facilityId = searchFacility(caseId, extractOrgNr(caseInput));
+        var facilityId = searchFacility(extractOrgNr(caseInput));
         addFacilityToCase(facilityId, caseId);
         var data = createSaveRiskClassObject(facilityId, caseId, caseInput);
         minutMiljoClient.updateRiskClass(data);
@@ -66,23 +66,34 @@ public class RiskClassService {
             .orElse("");
     }
     
-    private String searchFacility(String caseId, String orgNr) {
-        var result = Optional.ofNullable(minutMiljoClient.searchFacility(new SearchFacility()
+    private String searchFacility(String orgNr) {
+        
+        
+        var facilityTypeFilter = new FacilityFacilityTypeIdsFilterSvcDto()
+            .withFacilityTypeIds("4958BC00-76E8-4D5B-A862-AAF8E815202A");
+        
+        var notFacilityStatusFilters = new FacilityNotFilterSvcDto()
+            .withFilter(new FacilityFacilityStatusIdsFilterSvcDto()
+                .withFacilityStatusIds(new ArrayOfguid()
+                    .withGuid(List.of("9A748E4E-BD7E-481A-B449-73CBD0992213",
+                        "80FFA45C-B3DF-4A10-8DB3-A042F36C64B7"))));
+        
+        var orgFilter = new FacilityPartyOrganizationNumberFilterSvcDto()
+            .withOrganizationNumber(orgNr);
+        
+        
+        var result = Optional.ofNullable(minutMiljoClient
+                .searchFacility(new SearchFacility()
                     .withSearchFacilitySvcDto(new SearchFacilitySvcDto()
                         .withFacilityFilters(new ArrayOfFacilityFilterSvcDto()
-                            // Livsmedelsanläggning
-                            .withFacilityFilterSvcDto(new FacilityFacilityTypeIdsFilterSvcDto()
-                                .withFacilityTypeIds("4958BC00-76E8-4D5B-A862-AAF8E815202A"))
-                            //ej Makulerad or Upphörd/skrotad
-                            .withFacilityFilterSvcDto(new FacilityNotFilterSvcDto()
-                                .withFilter(new FacilityFacilityStatusIdsFilterSvcDto()
-                                    .withFacilityStatusIds(new ArrayOfguid()
-                                        .withGuid(List.of("9A748E4E-BD7E-481A-B449-73CBD0992213",
-                                            "80FFA45C-B3DF-4A10-8DB3-A042F36C64B7")))))
-                            // OrgNr
-                            .withFacilityFilterSvcDto(new FacilityPartyOrganizationNumberFilterSvcDto()
-                                .withOrganizationNumber(orgNr))
-                        )))
+                            .withFacilityFilterSvcDto(
+                                new FacilityAndFilterSvcDto()
+                                    .withFilters(new ArrayOfFacilityFilterSvcDto()
+                                        .withFacilityFilterSvcDto(
+                                            facilityTypeFilter,
+                                            notFacilityStatusFilters,
+                                            orgFilter))
+                            ))))
                 .getSearchFacilityResult()
                 .getSearchFacilityResultSvcDto())
             .orElseThrow(() -> Problem.valueOf(Status.NOT_FOUND, "Could not find facility "));
