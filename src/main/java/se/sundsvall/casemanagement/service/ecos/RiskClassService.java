@@ -69,30 +69,36 @@ public class RiskClassService {
     private String searchFacility(String orgNr) {
         
         
-
-        
-        
         var facilityTypeFilter = new FacilityFacilityTypeIdsFilterSvcDto()
             .withFacilityTypeIds("4958BC00-76E8-4D5B-A862-AAF8E815202A");
+        
+        var facilityStatusFilter =
+            new FacilityFacilityStatusIdsFilterSvcDto()
+                .withFacilityStatusIds(new ArrayOfguid().withGuid(
+                    "88E11CAA-DF35-4C5E-94A8-3C7B0369D8F2", //Anmäld/Ansökt
+                    "64B2DB7A-9A11-4F20-A57C-8122B1A469E6", // Inaktiv
+                    "D203BB33-EB9A-4679-8E1C-BBD8AF86E554", //Aktiv
+                    "C5A98B2B-C2B8-428E-B597-A3F97A77B818" ///Beviljad
+                ));
         
         var notFacilityStatusFilters = new FacilityNotFilterSvcDto()
             .withFilter(new FacilityFacilityStatusIdsFilterSvcDto()
                 .withFacilityStatusIds(new ArrayOfguid()
-                    .withGuid(List.of("9A748E4E-BD7E-481A-B449-73CBD0992213",
-                        "80FFA45C-B3DF-4A10-8DB3-A042F36C64B7"))));
+                    .withGuid(List.of("9A748E4E-BD7E-481A-B449-73CBD0992213", //Upphörd/Skrotad
+                        "80FFA45C-B3DF-4A10-8DB3-A042F36C64B7")))); // Makulerad
         
         var orgFilter = new FacilityPartyOrganizationNumberFilterSvcDto()
             .withOrganizationNumber(orgNr);
-    
-    
+        
+        
         var andFilter =
             new FacilityAndFilterSvcDto().withFilters(new ArrayOfFacilityFilterSvcDto()
                 .withFacilityFilterSvcDto(facilityTypeFilter, notFacilityStatusFilters));
         
         var result = Optional.ofNullable(minutMiljoClient
                 .searchFacility(new SearchFacility().withSearchFacilitySvcDto(new SearchFacilitySvcDto()
-                        .withFacilityFilters(new ArrayOfFacilityFilterSvcDto()
-                            .withFacilityFilterSvcDto(andFilter, orgFilter))))
+                    .withFacilityFilters(new ArrayOfFacilityFilterSvcDto()
+                        .withFacilityFilterSvcDto(facilityStatusFilter, facilityTypeFilter, notFacilityStatusFilters, orgFilter))))
                 .getSearchFacilityResult()
                 .getSearchFacilityResultSvcDto())
             .orElseThrow(() -> Problem.valueOf(Status.NOT_FOUND, "Could not find facility "));
