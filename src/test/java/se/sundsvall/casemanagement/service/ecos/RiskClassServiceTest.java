@@ -47,9 +47,8 @@ class RiskClassServiceTest {
         dto.setStakeholders(List.of(stakeholder));
         dto.setExtraParameters(Map.of("", ""));
         
-        var result = service.updateRiskClass(dto, "someCaseId");
+         service.updateRiskClass(dto, "someCaseId");
         
-        assertThat(result).isNull();
         
         verify(minutMiljoClient, times(1)).searchFacility(any());
         verify(minutMiljoClient, times(1)).addFacilityToCase(any());
