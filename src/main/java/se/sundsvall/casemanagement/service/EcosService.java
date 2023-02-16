@@ -174,8 +174,6 @@ public class EcosService {
         // If the stakeholder is missing in Ecos, we keep it in this list and create them later (CreateParty)
         var missingStakeholderDTOS = new ArrayList<StakeholderDTO>();
         
-        RegisterDocumentCaseResultSvcDto registerDocumentResult;
-        
         // -----> SearchParty
         populatePartyList(caseInput, partyRoles, partyList, missingStakeholderDTOS);
         
@@ -183,7 +181,7 @@ public class EcosService {
         createParty(partyRoles, partyList, missingStakeholderDTOS);
         
         // -----> RegisterDocument
-        registerDocumentResult = registerDocument(caseInput);
+        var registerDocumentResult = registerDocument(caseInput);
         
         // -----> AddPartyToCase
         addPartyToCase(partyRoles, partyList, registerDocumentResult.getCaseId());
@@ -199,8 +197,6 @@ public class EcosService {
                     createIndividualSewage(eFacility, propertyInfo, registerDocumentResult);
                 case ANMALAN_HALSOSKYDDSVERKSAMHET ->
                     createHealthProtectionFacility(eFacility, propertyInfo, registerDocumentResult);
-                case UPPDATERING_RISKKLASSNING ->
-                    riskClassService.updateRiskClass(caseInput, registerDocumentResult.getCaseId());
                 default ->
                     throw new ApplicationException("CaseType: " + caseInput.getCaseType() + " is not valid. There is a problem in the API validation.");
             };
@@ -211,18 +207,16 @@ public class EcosService {
             }
             
         } else {
+            if (caseInput.getCaseType().equals(CaseType.UPPDATERING_RISKKLASSNING)) {
+                riskClassService.updateRiskClass(caseInput, registerDocumentResult.getCaseId());
+                return registerDocumentResult;
+            }
             // -----> CreateOccurrenceOnCase
             createOccurrenceOnCase(registerDocumentResult.getCaseId());
         }
         
         // Persist the connection between OeP-case and Ecos-case
-        caseMappingService.postCaseMapping(CaseMapping.builder()
-            .withExternalCaseId(caseInput.getExternalCaseId())
-            .withCaseId(registerDocumentResult.getCaseId())
-            .withSystem(SystemType.ECOS)
-            .withCaseType(caseInput.getCaseType())
-            .withServiceName(isNull(caseInput.getExtraParameters()) ? null : caseInput.getExtraParameters().get(SERVICE_NAME))
-            .build());
+        caseMappingService.postCaseMapping(CaseMapping.builder().withExternalCaseId(caseInput.getExternalCaseId()).withCaseId(registerDocumentResult.getCaseId()).withSystem(SystemType.ECOS).withCaseType(caseInput.getCaseType()).withServiceName(isNull(caseInput.getExtraParameters()) ? null : caseInput.getExtraParameters().get(SERVICE_NAME)).build());
         return registerDocumentResult;
     }
     
@@ -644,16 +638,9 @@ public class EcosService {
         
         var eFacility = eCase.getFacilities().get(0);
         
-        var fixedFacilityType =
-            Optional.ofNullable(Optional.ofNullable(eCase.getExtraParameters())
-                    .orElse(Map.of())
-                    .get("fixedFacilityType"))
-                .orElse("").trim();
+        var fixedFacilityType = Optional.ofNullable(Optional.ofNullable(eCase.getExtraParameters()).orElse(Map.of()).get("fixedFacilityType")).orElse("").trim();
         
-        var propertyDesignation = Optional.ofNullable(Optional.ofNullable(eFacility.getAddress())
-                .orElse(new AddressDTO())
-                .getPropertyDesignation())
-            .orElse("").trim().toUpperCase();
+        var propertyDesignation = Optional.ofNullable(Optional.ofNullable(eFacility.getAddress()).orElse(new AddressDTO()).getPropertyDesignation()).orElse("").trim().toUpperCase();
         
         if (!fixedFacilityType.isEmpty()) {
             registerDocumentCaseSvcDtoV2.setCaseSubtitle(fixedFacilityType);
@@ -703,8 +690,7 @@ public class EcosService {
                 Constants.ECOS_PROCESS_TYPE_ID_ANMALAN_ANDRING_AVLOPPSANORDNING;
             case ANMALAN_HALSOSKYDDSVERKSAMHET ->
                 Constants.ECOS_PROCESS_TYPE_ID_ANMALAN_HALSOSKYDDSVERKSAMHET;
-            case UPPDATERING_RISKKLASSNING ->
-                Constants.ECOS_PROCESS_TYPE_ID_UPPDATERING_RISKKLASS;
+            case UPPDATERING_RISKKLASSNING -> Constants.ECOS_PROCESS_TYPE_ID_UPPDATERING_RISKKLASS;
             default -> throw new ApplicationException("CaseType: " + caseType + " is not valid...");
         };
     }
@@ -830,8 +816,7 @@ public class EcosService {
             if (eCase.getCaseType().equals(CaseType.UPPDATERING_RISKKLASSNING)) {
                 return;
             }
-            Set<ConstraintViolation<EnvironmentalCaseDTO>> violations = validator.validate(eCase,
-                EnvironmentalConstraints.class);
+            Set<ConstraintViolation<EnvironmentalCaseDTO>> violations = validator.validate(eCase, EnvironmentalConstraints.class);
             
             if (!violations.isEmpty()) {
                 throw new ConstraintViolationException(violations);
@@ -851,8 +836,8 @@ public class EcosService {
                 case CONTACT_PERSON -> Constants.ECOS_ROLE_ID_KONTAKTPERSON;
                 case APPLICANT -> Constants.ECOS_ROLE_ID_SOKANDE;
                 case INSTALLER -> Constants.ECOS_ROLE_ID_INSTALLATOR;
-                default -> throw new ApplicationException(
-                    "The request contained a stakeholder role that was not expected. This should be discovered in the validation of the input. Something in the validation is wrong.");
+                default ->
+                    throw new ApplicationException("The request contained a stakeholder role that was not expected. This should be discovered in the validation of the input. Something in the validation is wrong.");
             };
             
             roles.getGuid().add(roleId);
@@ -972,10 +957,7 @@ public class EcosService {
         CaseSvcDto ecosCase = minutMiljoClient.getCase(getCase).getGetCaseResult();
         
         List<OccurrenceListItemSvcDto> listOfOccurrence;
-        if (ecosCase != null
-            && ecosCase.getOccurrences() != null
-            && ecosCase.getOccurrences().getOccurrenceListItemSvcDto() != null
-            && !ecosCase.getOccurrences().getOccurrenceListItemSvcDto().isEmpty()) {
+        if (ecosCase != null && ecosCase.getOccurrences() != null && ecosCase.getOccurrences().getOccurrenceListItemSvcDto() != null && !ecosCase.getOccurrences().getOccurrenceListItemSvcDto().isEmpty()) {
             CaseStatusDTO caseStatusDTO = new CaseStatusDTO();
             caseStatusDTO.setSystem(SystemType.ECOS);
             caseStatusDTO.setExternalCaseId(externalCaseId);
