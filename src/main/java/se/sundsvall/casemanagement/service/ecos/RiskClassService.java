@@ -47,13 +47,11 @@ public class RiskClassService {
     }
     
     
-    public String updateRiskClass(EnvironmentalCaseDTO caseInput, String caseId) {
+    public void updateRiskClass(EnvironmentalCaseDTO caseInput, String caseId) {
         var facilityId = searchFacility(caseId, extractOrgNr(caseInput));
         addFacilityToCase(facilityId, caseId);
         var data = createSaveRiskClassObject(facilityId, caseId, caseInput);
         minutMiljoClient.updateRiskClass(data);
-        return null;
-        
     }
     
     private String extractOrgNr(EnvironmentalCaseDTO eCase) {
