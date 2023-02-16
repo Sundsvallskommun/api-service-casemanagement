@@ -69,6 +69,9 @@ public class RiskClassService {
     private String searchFacility(String orgNr) {
         
         
+
+        
+        
         var facilityTypeFilter = new FacilityFacilityTypeIdsFilterSvcDto()
             .withFacilityTypeIds("4958BC00-76E8-4D5B-A862-AAF8E815202A");
         
@@ -80,20 +83,16 @@ public class RiskClassService {
         
         var orgFilter = new FacilityPartyOrganizationNumberFilterSvcDto()
             .withOrganizationNumber(orgNr);
-        
+    
+    
+        var andFilter =
+            new FacilityAndFilterSvcDto().withFilters(new ArrayOfFacilityFilterSvcDto()
+                .withFacilityFilterSvcDto(facilityTypeFilter, notFacilityStatusFilters));
         
         var result = Optional.ofNullable(minutMiljoClient
-                .searchFacility(new SearchFacility()
-                    .withSearchFacilitySvcDto(new SearchFacilitySvcDto()
+                .searchFacility(new SearchFacility().withSearchFacilitySvcDto(new SearchFacilitySvcDto()
                         .withFacilityFilters(new ArrayOfFacilityFilterSvcDto()
-                            .withFacilityFilterSvcDto(
-                                new FacilityAndFilterSvcDto()
-                                    .withFilters(new ArrayOfFacilityFilterSvcDto()
-                                        .withFacilityFilterSvcDto(
-                                            facilityTypeFilter,
-                                            notFacilityStatusFilters,
-                                            orgFilter))
-                            ))))
+                            .withFacilityFilterSvcDto(andFilter, orgFilter))))
                 .getSearchFacilityResult()
                 .getSearchFacilityResultSvcDto())
             .orElseThrow(() -> Problem.valueOf(Status.NOT_FOUND, "Could not find facility "));
