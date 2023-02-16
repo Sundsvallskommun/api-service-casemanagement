@@ -43,7 +43,7 @@ class RiskClassServiceTest {
         
         var dto = new EnvironmentalCaseDTO();
         var stakeholder = new OrganizationDTO();
-        stakeholder.setOrganizationNumber("someOrgnr");
+        stakeholder.setOrganizationNumber("123456-7890");
         dto.setStakeholders(List.of(stakeholder));
         dto.setExtraParameters(Map.of("", ""));
         
