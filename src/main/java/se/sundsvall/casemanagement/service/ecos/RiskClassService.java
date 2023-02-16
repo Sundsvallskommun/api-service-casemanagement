@@ -82,9 +82,6 @@ public class RiskClassService {
                             // OrgNr
                             .withFacilityFilterSvcDto(new FacilityPartyOrganizationNumberFilterSvcDto()
                                 .withOrganizationNumber(orgNr))
-                            //CaseId
-                            .withFacilityFilterSvcDto(new FacilityCaseIdFilterSvcDto()
-                                .withCaseId(caseId))
                         )))
                 .getSearchFacilityResult()
                 .getSearchFacilityResultSvcDto())
