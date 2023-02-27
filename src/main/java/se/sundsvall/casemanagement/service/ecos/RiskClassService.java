@@ -90,11 +90,6 @@ public class RiskClassService {
         var orgFilter = new FacilityPartyOrganizationNumberFilterSvcDto()
             .withOrganizationNumber(orgNr);
         
-        
-        var andFilter =
-            new FacilityAndFilterSvcDto().withFilters(new ArrayOfFacilityFilterSvcDto()
-                .withFacilityFilterSvcDto(facilityTypeFilter, notFacilityStatusFilters));
-        
         var result = Optional.ofNullable(minutMiljoClient
                 .searchFacility(new SearchFacility().withSearchFacilitySvcDto(new SearchFacilitySvcDto()
                     .withFacilityFilters(new ArrayOfFacilityFilterSvcDto()
@@ -140,6 +135,9 @@ public class RiskClassService {
     }
     
     private ArrayOfSaveRiskClass2024ProductGroupDto mapProductGroups(List<String> productGroupIds) {
+        if(productGroupIds.get(0).isEmpty()){
+            return null;
+        }
         return new ArrayOfSaveRiskClass2024ProductGroupDto()
             .withSaveRiskClass2024ProductGroupDto(productGroupIds.stream()
                 .map(productGroupId -> new SaveRiskClass2024ProductGroupDto()
