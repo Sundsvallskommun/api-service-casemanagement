@@ -45,7 +45,9 @@ class RiskClassServiceTest {
         var stakeholder = new OrganizationDTO();
         stakeholder.setOrganizationNumber("123456-7890");
         dto.setStakeholders(List.of(stakeholder));
-        dto.setExtraParameters(Map.of("", ""));
+        dto.setExtraParameters(Map.of("activities", "123,123, 123",
+            "productGroups", "123, 123, 123",
+            "thirdPartyCertifications", "12, 123,12"));
         
          service.updateRiskClass(dto, "someCaseId");
         

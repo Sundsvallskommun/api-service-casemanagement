@@ -1,5 +1,7 @@
 package se.sundsvall.casemanagement.service.ecos;
 
+
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,7 +20,6 @@ import minutmiljo.ArrayOfSaveRiskClass2024ActivityDto;
 import minutmiljo.ArrayOfSaveRiskClass2024CertificationDto;
 import minutmiljo.ArrayOfSaveRiskClass2024ProductGroupDto;
 import minutmiljo.ArrayOfguid;
-import minutmiljo.FacilityAndFilterSvcDto;
 import minutmiljo.FacilityFacilityStatusIdsFilterSvcDto;
 import minutmiljo.FacilityFacilityTypeIdsFilterSvcDto;
 import minutmiljo.FacilityNotFilterSvcDto;
@@ -46,7 +47,6 @@ public class RiskClassService {
     public RiskClassService(MinutMiljoClient minutMiljoClient) {
         this.minutMiljoClient = minutMiljoClient;
     }
-    
     
     public void updateRiskClass(EnvironmentalCaseDTO caseInput, String caseId) {
         var facilityId = searchFacility(extractOrgNr(caseInput));
@@ -119,14 +119,18 @@ public class RiskClassService {
                 .withProductionSizeSlvCode(dto.getExtraParameters().get(PROD_SIZE_ID))
                 .withIsSeasonal(Optional.ofNullable(dto.getExtraParameters().get(IS_SEASONAL)).orElse("").equalsIgnoreCase("true"))
                 .withSeasonalNote(dto.getExtraParameters().get(SEASONAL_NOTE))
-                .withActivities(mapActivities(List.of(Optional.ofNullable(dto.getExtraParameters().get(ACTIVITIES)).orElse("").split(","))))
-                .withProductGroups(mapProductGroups(List.of(Optional.ofNullable(dto.getExtraParameters().get(PRODUCT_GROUPS)).orElse("").split(","))))
-                .withThirdPartyCertifications(mapThirdPartyCertifications(List.of(Optional.ofNullable(dto.getExtraParameters().get(THIRD_PARTY_CERTS))
-                    .orElse("")
-                    .split(",")))));
+                .withActivities(mapActivities(dto.getExtraParameters().get(ACTIVITIES)))
+                .withProductGroups(mapProductGroups(dto.getExtraParameters().get(PRODUCT_GROUPS)))
+                .withThirdPartyCertifications(mapThirdPartyCertifications(dto.getExtraParameters().get(THIRD_PARTY_CERTS))));
     }
     
-    private ArrayOfSaveRiskClass2024ActivityDto mapActivities(List<String> activities) {
+    private ArrayOfSaveRiskClass2024ActivityDto mapActivities(String activityString) {
+        if (activityString == null) {
+            return null;
+        }
+        var activities = splitString(activityString);
+        
+        
         return new ArrayOfSaveRiskClass2024ActivityDto()
             .withSaveRiskClass2024ActivityDto(activities.stream()
                 .map(activityDto -> new SaveRiskClass2024ActivityDto()
@@ -134,8 +138,14 @@ public class RiskClassService {
                 ).toList());
     }
     
-    private ArrayOfSaveRiskClass2024ProductGroupDto mapProductGroups(List<String> productGroupIds) {
-        if(productGroupIds.get(0).isEmpty()){
+    private ArrayOfSaveRiskClass2024ProductGroupDto mapProductGroups(String productGroupIdString) {
+        if (productGroupIdString == null) {
+            return null;
+        }
+        
+        var productGroupIds = splitString(productGroupIdString);
+        
+        if (productGroupIds.get(0).isEmpty()) {
             return null;
         }
         return new ArrayOfSaveRiskClass2024ProductGroupDto()
@@ -145,13 +155,25 @@ public class RiskClassService {
                 .toList());
     }
     
-    private ArrayOfSaveRiskClass2024CertificationDto mapThirdPartyCertifications(List<String> dtos) {
+    private ArrayOfSaveRiskClass2024CertificationDto mapThirdPartyCertifications(String thirdPartyCertString) {
+        if (thirdPartyCertString == null) {
+            return null;
+        }
+        var dtos = splitString(thirdPartyCertString);
+        
         return new ArrayOfSaveRiskClass2024CertificationDto()
             .withSaveRiskClass2024CertificationDto(
                 dtos.stream()
                     .map(dto -> new SaveRiskClass2024CertificationDto()
                         .withThirdPartyCertificationText(dto))
                     .toList());
+    }
+    
+    private List<String> splitString(String string) {
+        return Arrays.stream(string.split(" "))
+            .map(s -> s.split(","))
+            .flatMap(Arrays::stream)
+            .toList();
     }
     
     
