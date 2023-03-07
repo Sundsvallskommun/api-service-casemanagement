@@ -39,7 +39,9 @@ public class RiskClassService {
     private final static String PROD_SIZE_ID = "ProductionSizeId";
     private final static String IS_SEASONAL = "IsSeasonal";
     private final static String SEASONAL_NOTE = "seasonalNote";
-    private final static String ACTIVITIES = "activities";
+    //Since there is too many activities for one extra parameter (on the openE side)
+    // we need to split it up indifferent extra parameters.
+    private final static List<String> ACTIVITIES = List.of("activities", "activities2", "activities3", "activities4");
     private final static String PRODUCT_GROUPS = "productGroups";
     private final static String THIRD_PARTY_CERTS = "thirdPartyCertifications";
     private final MinutMiljoClient minutMiljoClient;
@@ -119,16 +121,23 @@ public class RiskClassService {
                 .withProductionSizeSlvCode(dto.getExtraParameters().get(PROD_SIZE_ID))
                 .withIsSeasonal(Optional.ofNullable(dto.getExtraParameters().get(IS_SEASONAL)).orElse("").equalsIgnoreCase("true"))
                 .withSeasonalNote(dto.getExtraParameters().get(SEASONAL_NOTE))
-                .withActivities(mapActivities(dto.getExtraParameters().get(ACTIVITIES)))
+                .withActivities(mapActivities(dto))
                 .withProductGroups(mapProductGroups(dto.getExtraParameters().get(PRODUCT_GROUPS)))
                 .withThirdPartyCertifications(mapThirdPartyCertifications(dto.getExtraParameters().get(THIRD_PARTY_CERTS))));
     }
     
-    private ArrayOfSaveRiskClass2024ActivityDto mapActivities(String activityString) {
-        if (activityString == null) {
+    private ArrayOfSaveRiskClass2024ActivityDto mapActivities(EnvironmentalCaseDTO dto) {
+        StringBuilder activityString = new StringBuilder();
+        
+        for (var activityParam : ACTIVITIES) {
+            
+            activityString.append(dto.getExtraParameters().get(activityParam)).append(",");
+        }
+        
+        if (activityString.length() == 0) {
             return null;
         }
-        var activities = splitString(activityString);
+        var activities = splitString(activityString.toString());
         
         
         return new ArrayOfSaveRiskClass2024ActivityDto()
