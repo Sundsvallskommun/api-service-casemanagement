@@ -131,7 +131,8 @@ public class RiskClassService {
         
         for (var activityParam : ACTIVITIES) {
             
-            activityString.append(dto.getExtraParameters().get(activityParam)).append(",");
+            activityString.append(Optional.ofNullable(dto.getExtraParameters().get(activityParam)).orElse(" ")).append(
+                ",");
         }
         
         if (activityString.length() == 0) {

@@ -46,7 +46,7 @@ class RiskClassServiceTest {
         stakeholder.setOrganizationNumber("123456-7890");
         dto.setStakeholders(List.of(stakeholder));
         dto.setExtraParameters(Map.of("activities", "1,1, 1","activities2", "2,2, 2",
-            "activities3", "3,3, 3","activities4", "4,4, 4",
+            "activities3", "3,3, 3",
             "productGroups", "123, 123, 123",
             "thirdPartyCertifications", "12, 123,12"));
         
