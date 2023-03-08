@@ -143,9 +143,10 @@ public class RiskClassService {
         
         return new ArrayOfSaveRiskClass2024ActivityDto()
             .withSaveRiskClass2024ActivityDto(activities.stream()
-                .map(activityDto -> new SaveRiskClass2024ActivityDto()
-                    .withSlvCode(activityDto)
-                ).toList());
+                .map(ActivitySlv-> new SaveRiskClass2024ActivityDto()
+                    .withSlvCode(ActivitySlv))
+                .filter(activityDto -> !activityDto.getSlvCode().isEmpty())
+                .toList());
     }
     
     private ArrayOfSaveRiskClass2024ProductGroupDto mapProductGroups(String productGroupIdString) {
