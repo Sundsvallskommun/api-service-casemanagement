@@ -179,7 +179,7 @@ public class RiskClassService {
         var dtos = splitString(thirdPartyCertString);
         
         if (dtos.get(0).isEmpty()) {
-            return null;
+            return new ArrayOfSaveRiskClass2024CertificationDto().withSaveRiskClass2024CertificationDto(new SaveRiskClass2024CertificationDto());
         }
         return new ArrayOfSaveRiskClass2024CertificationDto()
             .withSaveRiskClass2024CertificationDto(
