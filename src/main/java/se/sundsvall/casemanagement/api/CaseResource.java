@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -37,6 +38,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import minutmiljo.GetRiskClass2024BaseDataResponse;
 import minutmiljoV2.RegisterDocumentCaseResultSvcDto;
 
 @RestController
@@ -108,5 +110,11 @@ public class CaseResource {
         } else {
             throw Problem.valueOf(Status.BAD_REQUEST, "Only cases created in CaseData can be updated.");
         }
+    }
+    
+    @Operation(description = "Get information about riskClassData.")
+    @GetMapping(path = "/riskklass", produces = {APPLICATION_PROBLEM_JSON_VALUE})
+    public ResponseEntity<GetRiskClass2024BaseDataResponse> getRiskklasses() {
+        return ResponseEntity.ok(ecosService.getRisklasses());
     }
 }
