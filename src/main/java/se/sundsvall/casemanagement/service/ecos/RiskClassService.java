@@ -174,13 +174,10 @@ public class RiskClassService {
     
     private ArrayOfSaveRiskClass2024CertificationDto mapThirdPartyCertifications(String thirdPartyCertString) {
         if (thirdPartyCertString == null) {
-            return null;
+            return new ArrayOfSaveRiskClass2024CertificationDto().withSaveRiskClass2024CertificationDto(new SaveRiskClass2024CertificationDto());
         }
         var dtos = splitString(thirdPartyCertString);
         
-        if (dtos.get(0).isEmpty()) {
-            return new ArrayOfSaveRiskClass2024CertificationDto().withSaveRiskClass2024CertificationDto(new SaveRiskClass2024CertificationDto());
-        }
         return new ArrayOfSaveRiskClass2024CertificationDto()
             .withSaveRiskClass2024CertificationDto(
                 dtos.stream()
