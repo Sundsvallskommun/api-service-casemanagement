@@ -149,7 +149,7 @@ public class RiskClassService {
         
         return new ArrayOfSaveRiskClass2024ActivityDto()
             .withSaveRiskClass2024ActivityDto(activities.stream()
-                .map(ActivitySlv-> new SaveRiskClass2024ActivityDto()
+                .map(ActivitySlv -> new SaveRiskClass2024ActivityDto()
                     .withSlvCode(ActivitySlv))
                 .filter(activityDto -> !activityDto.getSlvCode().isEmpty())
                 .toList());
@@ -178,6 +178,9 @@ public class RiskClassService {
         }
         var dtos = splitString(thirdPartyCertString);
         
+        if (dtos.get(0).isEmpty()) {
+            return null;
+        }
         return new ArrayOfSaveRiskClass2024CertificationDto()
             .withSaveRiskClass2024CertificationDto(
                 dtos.stream()
