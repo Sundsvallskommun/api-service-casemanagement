@@ -24,6 +24,8 @@ import minutmiljo.FacilityFacilityStatusIdsFilterSvcDto;
 import minutmiljo.FacilityFacilityTypeIdsFilterSvcDto;
 import minutmiljo.FacilityNotFilterSvcDto;
 import minutmiljo.FacilityPartyOrganizationNumberFilterSvcDto;
+import minutmiljo.GetRiskClass2024BaseData;
+import minutmiljo.GetRiskClass2024BaseDataResponse;
 import minutmiljo.SaveFoodFacility2024RiskClassData;
 import minutmiljo.SaveRiskClass2024ActivityDto;
 import minutmiljo.SaveRiskClass2024CertificationDto;
@@ -55,6 +57,10 @@ public class RiskClassService {
         addFacilityToCase(facilityId, caseId);
         var data = createSaveRiskClassObject(facilityId, caseId, caseInput);
         minutMiljoClient.updateRiskClass(data);
+    }
+    
+    public GetRiskClass2024BaseDataResponse getBaseRiskData() {
+        return minutMiljoClient.getRiskklasses(new GetRiskClass2024BaseData());
     }
     
     private String extractOrgNr(EnvironmentalCaseDTO eCase) {

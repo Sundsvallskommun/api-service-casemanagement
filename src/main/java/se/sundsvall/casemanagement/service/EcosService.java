@@ -99,6 +99,7 @@ import minutmiljo.EstateSvcDto;
 import minutmiljo.FacilityAddressSvcDto;
 import minutmiljo.FilterBedSvcDto;
 import minutmiljo.GetCase;
+import minutmiljo.GetRiskClass2024BaseDataResponse;
 import minutmiljo.HeatCollectorTubeSvcDto;
 import minutmiljo.InfiltrationPlantSvcDto;
 import minutmiljo.LocationSvcDto;
@@ -150,6 +151,10 @@ public class EcosService {
             filename = attachmentDTO.getName() + extension;
         }
         return filename;
+    }
+    
+    public GetRiskClass2024BaseDataResponse getRisklasses(){
+        return riskClassService.getBaseRiskData();
     }
     
     public RegisterDocumentCaseResultSvcDto postCase(EnvironmentalCaseDTO caseInput) throws ApplicationException {
