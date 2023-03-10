@@ -38,6 +38,7 @@ import se.sundsvall.casemanagement.service.util.Constants;
         CaseType.Constants.ANMALAN_ANDRING_AVLOPPSANLAGGNING_VALUE,
         CaseType.Constants.ANMALAN_ANDRING_AVLOPPSANORDNING_VALUE,
         CaseType.Constants.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP_VALUE,
+        CaseType.Constants.UPPDATERING_RISKKLASSNING_VALUE,
         CaseType.Constants.ANMALAN_HALSOSKYDDSVERKSAMHET_VALUE}),
     @Type(value = OtherCaseDTO.class, names = {
         CaseType.Constants.PARKING_PERMIT_VALUE,

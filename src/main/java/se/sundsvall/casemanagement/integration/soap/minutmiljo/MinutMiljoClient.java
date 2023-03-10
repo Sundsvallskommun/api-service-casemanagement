@@ -2,6 +2,7 @@ package se.sundsvall.casemanagement.integration.soap.minutmiljo;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import minutmiljo.AddDocumentsToCase;
+import minutmiljo.AddFacilityToCase;
 import minutmiljo.AddPartyToCase;
 import minutmiljo.AddPartyToFacility;
 import minutmiljo.CreateFoodFacility;
@@ -19,8 +20,15 @@ import minutmiljo.CreatePersonParty;
 import minutmiljo.CreatePersonPartyResponse;
 import minutmiljo.GetCase;
 import minutmiljo.GetCaseResponse;
+import minutmiljo.GetProcessTypes;
+import minutmiljo.GetProcessTypesResponse;
+import minutmiljo.GetRiskClass2024BaseData;
+import minutmiljo.GetRiskClass2024BaseDataResponse;
+import minutmiljo.SaveFoodFacility2024RiskClassData;
 import minutmiljo.SearchCase;
 import minutmiljo.SearchCaseResponse;
+import minutmiljo.SearchFacility;
+import minutmiljo.SearchFacilityResponse;
 import minutmiljo.SearchParty;
 import minutmiljo.SearchPartyResponse;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -71,5 +79,16 @@ public interface MinutMiljoClient {
 
     @PostMapping(consumes = TEXT_XML_UTF8, headers = {"SOAPAction=urn:Ecos.API.MinutMiljo.Service.V1/IMinutMiljoService/CreateHealthProtectionFacility"})
     CreateHealthProtectionFacilityResponse createHealthProtectionFacility(CreateHealthProtectionFacility createHealthProtectionFacility);
-
+    
+    @PostMapping(consumes = TEXT_XML_UTF8, headers = {"SOAPAction=urn:Ecos.API.MinutMiljo.Service.V1/IMinutMiljoService/AddFacilityToCase"})
+    void addFacilityToCase(AddFacilityToCase addFacilityToCase);
+    
+    @PostMapping(consumes = TEXT_XML_UTF8, headers = {"SOAPAction=urn:Ecos.API.MinutMiljo.Service.V1/IMinutMiljoService/SearchFacility"})
+    SearchFacilityResponse searchFacility(SearchFacility searchFacility);
+    
+    @PostMapping(consumes = TEXT_XML_UTF8, headers = {"SOAPAction=urn:Ecos.API.MinutMiljo.Service.V1/IMinutMiljoService/SaveFoodFacility2024RiskClassData"})
+    void updateRiskClass(SaveFoodFacility2024RiskClassData data);
+    
+    @PostMapping(consumes = TEXT_XML_UTF8, headers = {"SOAPAction=urn:Ecos.API.MinutMiljo.Service.V1/IMinutMiljoService/GetRiskClass2024BaseData"} )
+    GetRiskClass2024BaseDataResponse getRiskklasses(GetRiskClass2024BaseData getRiskClass2024BaseData);
 }
