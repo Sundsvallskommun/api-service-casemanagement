@@ -6,6 +6,7 @@ public final class Constants {
     }
 
     ////////////////// ByggR
+    public static final String BYGGR_ARENDEMENING_NYBYGGNAD_FORHANDSBESKED = "Förhandsbesked för nybyggnad av";
     public static final String BYGGR_ARENDEMENING_BYGGLOV_FOR_NYBYGGNAD_AV = "Bygglov för nybyggnad av";
     public static final String BYGGR_ARENDEMENING_BYGGLOV_FOR_TILLBYGGNAD = "Bygglov för tillbyggnad av";
     public static final String BYGGR_ARENDEMENING_BYGGLOV_ANDRING_ANSOKAN_OM_ = "Bygglov för";
@@ -20,6 +21,7 @@ public final class Constants {
     public static final String BYGGR_HANDELSE_RUBRIK_MANUELL_HANTERING = "Manuell hantering";
     public static final String BYGGR_HANDELSE_RUBRIK_KOMPLETTERING_TILL_ADMIN = "Komplettering till Admin";
     public static final String BYGGR_HANDELSE_RUBRIK_BYGGLOV = "Bygglov";
+    public static final String BYGGR_HANDELSE_RUBRIK_FORHANDSBESKED = "Förhandsbesked";
     public static final String BYGGR_HANDELSE_RUBRIK_STRANDSKYDD ="Strandskyddsdispens";
     public static final String BYGGR_HANDELSESLAG_STRANDSKYDD ="Strand";
     public static final String BYGGR_HANDELSE_RUBRIK_ANMALAN_ATTEFALL = "Anmälan Attefall";
@@ -43,6 +45,7 @@ public final class Constants {
     public static final String BYGGR_HANDELSETYP_KOMPLETTERINGSFORELAGGANDE_PAMINNELSE = "KOMP1";
 
     public static final String BYGGR_HANDELSESLAG_BYGGLOV = "Bygglov";
+    public static final String BYGGR_HANDELSESLAG_FORHANDSBESKED = "Förhandsbesked";
     public static final String BYGGR_HANDELSESLAG_SLUTBESKED = "SLU";
     public static final String BYGGR_HANDELSESLAG_AVSKRIVNING = "UAB";
     public static final String BYGGR_HANDELSESLAG_MANUELL_HANTERING_KRAVS = "MANHANT";
@@ -70,6 +73,7 @@ public final class Constants {
     public static final String BYGGR_ARENDEGRUPP_LOV_ANMALNINGSARENDE = "LOV";
     public static final String BYGGR_ARENDEGRUPP_STRANDSKYDD = "STRA";
     public static final String BYGGR_ARENDETYP_BYGGLOV_FOR = "BL";
+    public static final String BYGGR_ARENDETYP_FORHANDSBESKED = "FÖRF";
     public static final String BYGGR_ARENDETYP_ANMALAN_ATTEFALL = "ATTANM";
     public static final String BYGGR_ARENDETYP_STRANDSKYDD="DI";
     

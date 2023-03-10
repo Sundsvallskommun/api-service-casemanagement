@@ -4,6 +4,7 @@ import static java.util.function.Predicate.not;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.ANDRING_ANSOKAN_OM_BYGGLOV;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.ANMALAN_ATTEFALL;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.NYBYGGNAD_FORHANDSBESKED;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.STRANDSKYDD_ANDRAD_ANVANDNING;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.STRANDSKYDD_ANLAGGANDE;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.STRANDSKYDD_ANORDNANDE;
@@ -12,6 +13,7 @@ import static se.sundsvall.casemanagement.api.model.enums.CaseType.TILLBYGGNAD_A
 import static se.sundsvall.casemanagement.api.model.enums.FacilityType.FIREPLACE;
 import static se.sundsvall.casemanagement.api.model.enums.FacilityType.FIREPLACE_SMOKECHANNEL;
 import static se.sundsvall.casemanagement.service.util.Constants.BYGGR_ARENDETYP_BYGGLOV_FOR;
+import static se.sundsvall.casemanagement.service.util.Constants.BYGGR_ARENDETYP_FORHANDSBESKED;
 import static se.sundsvall.casemanagement.service.util.Constants.SERVICE_NAME;
 
 import java.text.MessageFormat;
@@ -200,6 +202,10 @@ public class ByggrService {
                 .withRubrik(Constants.BYGGR_HANDELSE_RUBRIK_STRANDSKYDD)
                 .withHandelsetyp(Constants.BYGGR_HANDELSETYP_ANSOKAN)
                 .withHandelseslag(Constants.BYGGR_HANDELSESLAG_STRANDSKYDD);
+            case NYBYGGNAD_FORHANDSBESKED -> handelse
+                .withRubrik(Constants.BYGGR_HANDELSE_RUBRIK_FORHANDSBESKED)
+                .withHandelsetyp(Constants.BYGGR_HANDELSETYP_ANSOKAN)
+                .withHandelseslag(Constants.BYGGR_HANDELSESLAG_FORHANDSBESKED);
             case NYBYGGNAD_ANSOKAN_OM_BYGGLOV,
                 TILLBYGGNAD_ANSOKAN_OM_BYGGLOV,
                 ANDRING_ANSOKAN_OM_BYGGLOV -> handelse
@@ -315,6 +321,10 @@ public class ByggrService {
                 .withArendetyp(Constants.BYGGR_ARENDETYP_STRANDSKYDD)
                 .withArendeklass(getArendeKlass(pCase.getFacilities()))
                 .withArendeslag(pCase.getCaseType().getArendeslag());
+            case NYBYGGNAD_FORHANDSBESKED -> arende
+                .withArendetyp(BYGGR_ARENDETYP_FORHANDSBESKED)
+                .withArendeklass(getArendeKlass(pCase.getFacilities()))
+                .withArendeslag(pCase.getCaseType().getArendeslag());
             case NYBYGGNAD_ANSOKAN_OM_BYGGLOV,
                 TILLBYGGNAD_ANSOKAN_OM_BYGGLOV -> arende
                 .withArendetyp(BYGGR_ARENDETYP_BYGGLOV_FOR)
@@ -383,6 +393,7 @@ public class ByggrService {
         
         
         var caseTypes = Map.of(
+            NYBYGGNAD_FORHANDSBESKED, Constants.BYGGR_ARENDEMENING_NYBYGGNAD_FORHANDSBESKED,
             NYBYGGNAD_ANSOKAN_OM_BYGGLOV, Constants.BYGGR_ARENDEMENING_BYGGLOV_FOR_NYBYGGNAD_AV,
             TILLBYGGNAD_ANSOKAN_OM_BYGGLOV, Constants.BYGGR_ARENDEMENING_BYGGLOV_FOR_TILLBYGGNAD,
             ANDRING_ANSOKAN_OM_BYGGLOV, Constants.BYGGR_ARENDEMENING_BYGGLOV_ANDRING_ANSOKAN_OM_,
@@ -855,41 +866,41 @@ public class ByggrService {
         
         // OEP-status = Klart
         else if (Constants.BYGGR_HANDELSETYP_BESLUT.equals(handelsetyp)
-            && (Constants.BYGGR_HANDELSESLAG_SLUTBESKED.equals(handelseslag)
-            || Constants.BYGGR_HANDELSESLAG_AVSKRIVNING.equals(handelseslag))) {
+                 && (Constants.BYGGR_HANDELSESLAG_SLUTBESKED.equals(handelseslag)
+                     || Constants.BYGGR_HANDELSESLAG_AVSKRIVNING.equals(handelseslag))) {
             // SLU, UAB
             return handelseslag;
         }
         
         // OEP-status = Kompletterad
         else if (Constants.BYGGR_HANDELSETYP_HANDLING.equals(handelsetyp)
-            && Constants.BYGGR_HANDELSESLAG_KOMPLETTERANDE_HANDLINGAR.equals(handelseslag)
-            || Constants.BYGGR_HANDELSESLAG_KOMPLETTERANDE_BYGGLOVHANDLINGAR.equals(handelseslag)
-            || Constants.BYGGR_HANDELSESLAG_KOMPLETTERANDE_TEKNISKA_HANDLINGAR.equals(handelseslag)
-            || Constants.BYGGR_HANDELSESLAG_REVIDERADE_HANDLINGAR.equals(handelseslag)) {
+                 && Constants.BYGGR_HANDELSESLAG_KOMPLETTERANDE_HANDLINGAR.equals(handelseslag)
+                 || Constants.BYGGR_HANDELSESLAG_KOMPLETTERANDE_BYGGLOVHANDLINGAR.equals(handelseslag)
+                 || Constants.BYGGR_HANDELSESLAG_KOMPLETTERANDE_TEKNISKA_HANDLINGAR.equals(handelseslag)
+                 || Constants.BYGGR_HANDELSESLAG_REVIDERADE_HANDLINGAR.equals(handelseslag)) {
             // KOMPL, KOMPBYGG, KOMPTEK, KOMPREV
             return handelseslag;
         }
         
         // OEP-status = Under behandling
         else if (Constants.BYGGR_HANDELSETYP_ATOMHANDELSE.equals(handelsetyp)
-            && Constants.BYGGR_HANDELSESLAG_ATOM_KVITTENS.equals(handelseslag)
-            && Constants.BYGGR_HANDELSEUTFALL_ATOM_KVITTENS_HL_BYTE.equals(handelseutfall)) {
+                 && Constants.BYGGR_HANDELSESLAG_ATOM_KVITTENS.equals(handelseslag)
+                 && Constants.BYGGR_HANDELSEUTFALL_ATOM_KVITTENS_HL_BYTE.equals(handelseutfall)) {
             // Kv2
             return handelseutfall;
         } else if (Constants.BYGGR_HANDELSETYP_REMISS.equals(handelsetyp)
-            && Constants.BYGGR_HANDELSESLAG_UTSKICK_AV_REMISS.equals(handelseslag)) {
+                   && Constants.BYGGR_HANDELSESLAG_UTSKICK_AV_REMISS.equals(handelseslag)) {
             // UTSKICK
             return handelseslag;
         } else if (Constants.BYGGR_HANDELSETYP_UNDERRATTELSE.equals(handelsetyp)
-            && (Constants.BYGGR_HANDELSESLAG_MED_KRAV_PA_SVAR.equals(handelseslag) || Constants.BYGGR_HANDELSESLAG_UTAN_KRAV_PA_SVAR.equals(handelseslag))) {
+                   && (Constants.BYGGR_HANDELSESLAG_MED_KRAV_PA_SVAR.equals(handelseslag) || Constants.BYGGR_HANDELSESLAG_UTAN_KRAV_PA_SVAR.equals(handelseslag))) {
             // UNDER
             return handelsetyp;
         }
         
         // OEP-status = Väntar på komplettering
         else if (Constants.BYGGR_HANDELSETYP_KOMPLETTERINGSFORELAGGANDE.equals(handelsetyp)
-            || Constants.BYGGR_HANDELSETYP_KOMPLETTERINGSFORELAGGANDE_PAMINNELSE.equals(handelsetyp)) {
+                 || Constants.BYGGR_HANDELSETYP_KOMPLETTERINGSFORELAGGANDE_PAMINNELSE.equals(handelsetyp)) {
             // KOMP, KOMP1
             return handelsetyp;
         }

@@ -225,6 +225,7 @@ class CaseDataServiceTest {
         Long caseId = new Random().nextLong();
         ErrandDTO errandDTOMock = new ErrandDTO();
         errandDTOMock.setId(caseId);
+        errandDTOMock.setStatuses(List.of());
         doReturn(errandDTOMock).when(caseDataClientMock).getErrand(caseId);
 
         CaseMapping caseMapping = new CaseMapping();
