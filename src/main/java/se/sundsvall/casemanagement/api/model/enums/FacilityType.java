@@ -85,7 +85,7 @@ public enum FacilityType {
     RECONSTRUCTION("D", "ombyggnad av"),
     FACADE_CHANGE("F", "fasadändring av"),
     GLAZING_BALCONY("H", "inglasning av balkong"),
-    USAGE_CHANGE("G", "ändrat ianspråktagande från");
+    USAGE_CHANGE("ÄNDR", "ändrad användning");
     
     
     // ByggR

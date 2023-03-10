@@ -22,6 +22,7 @@ import se.sundsvall.casemanagement.service.util.Constants;
 @JsonSubTypes({
     @Type(value = PlanningPermissionCaseDTO.class, names = {
         CaseType.Constants.NYBYGGNAD_ANSOKAN_OM_BYGGLOV_VALUE,
+        CaseType.Constants.NYBYGGNAD_FORHANDSBESKED_VALUE,
         CaseType.Constants.ANMALAN_ATTEFALL_VALUE,
         CaseType.Constants.TILLBYGGNAD_ANSOKAN_OM_BYGGLOV_VALUE,
         CaseType.Constants.ANDRING_ANSOKAN_OM_BYGGLOV_VALUE,
