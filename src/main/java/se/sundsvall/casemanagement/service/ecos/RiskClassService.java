@@ -42,7 +42,7 @@ public class RiskClassService {
     private final static String IS_SEASONAL = "IsSeasonal";
     private final static String SEASONAL_NOTE = "seasonalNote";
     //Since there is too many activities for one extra parameter (on the openE side)
-    // we need to split it up indifferent extra parameters.
+    // we need to split it up in different extra parameters.
     private final static List<String> ACTIVITIES = List.of("activities", "activities2", "activities3", "activities4");
     private final static String PRODUCT_GROUPS = "productGroups";
     private final static String THIRD_PARTY_CERTS = "thirdPartyCertifications";
