@@ -63,6 +63,7 @@ public enum FacilityType {
     DEPARTMENT_STORE("AFF", "affärshus"),
     BUILDING("BYGG", "byggnad"),
     BRIDGE_PIER("BRY", "brygga/pir"),
+    SIGN("SKY","skylt"),
     // Parkering & Cykelparkering
     PARKING("PAR", "parkering"),
     DEPOT("UPP", "upplag"),
