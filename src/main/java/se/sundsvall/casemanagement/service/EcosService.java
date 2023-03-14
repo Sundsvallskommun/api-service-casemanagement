@@ -111,9 +111,6 @@ import minutmiljo.PartySvcDto;
 import minutmiljo.PersonSvcDto;
 import minutmiljo.PhosphorusTrapSvcDto;
 import minutmiljo.PurificationStepSvcDto;
-import minutmiljo.RegisterDocument;
-import minutmiljo.RegisterDocumentCaseResultSvcDto;
-import minutmiljo.RegisterDocumentCaseSvcDto;
 import minutmiljo.SandFilterSvcDto;
 import minutmiljo.SearchCase;
 import minutmiljo.SearchCaseSvcDto;
@@ -121,6 +118,9 @@ import minutmiljo.SearchParty;
 import minutmiljo.SearchPartySvcDto;
 import minutmiljo.SepticTankSvcDto;
 import minutmiljo.SinglePartyRoleFilterSvcDto;
+import minutmiljoV2.RegisterDocument;
+import minutmiljoV2.RegisterDocumentCaseResultSvcDto;
+import minutmiljoV2.RegisterDocumentCaseSvcDtoV2;
 
 @Service
 public class EcosService {
@@ -633,7 +633,7 @@ public class EcosService {
     }
     
     public RegisterDocumentCaseResultSvcDto registerDocument(EnvironmentalCaseDTO eCase) throws ApplicationException {
-        var registerDocumentCaseSvcDtoV2 = new RegisterDocumentCaseSvcDto();
+        var registerDocumentCaseSvcDtoV2 = new RegisterDocumentCaseSvcDtoV2();
         var registerDocument = new RegisterDocument();
         registerDocumentCaseSvcDtoV2.setOccurrenceTypeId(Constants.ECOS_OCCURENCE_TYPE_ID_ANMALAN);
         registerDocumentCaseSvcDtoV2.setHandlingOfficerGroupId(Constants.ECOS_HANDLING_OFFICER_GROUP_ID_EXPEDITIONEN);
@@ -713,11 +713,11 @@ public class EcosService {
         }
         return arrayOfDocumentSvcDto;
     }
-
-    private minutmiljo.ArrayOfDocumentSvcDto getArrayOfDocumentSvcDtoV2(List<AttachmentDTO> attachmentDTOList) {
-        minutmiljo.ArrayOfDocumentSvcDto arrayOfDocumentSvcDto = new minutmiljo.ArrayOfDocumentSvcDto();
+    
+    private minutmiljoV2.ArrayOfDocumentSvcDto getArrayOfDocumentSvcDtoV2(List<AttachmentDTO> attachmentDTOList) {
+        minutmiljoV2.ArrayOfDocumentSvcDto arrayOfDocumentSvcDto = new minutmiljoV2.ArrayOfDocumentSvcDto();
         for (AttachmentDTO a : attachmentDTOList) {
-            minutmiljo.DocumentSvcDto documentSvcDto = new minutmiljo.DocumentSvcDto();
+            minutmiljoV2.DocumentSvcDto documentSvcDto = new minutmiljoV2.DocumentSvcDto();
             documentSvcDto.setContentType(a.getMimeType() != null ? a.getMimeType().toLowerCase() : null);
             documentSvcDto.setData(Base64.getDecoder().decode(a.getFile().getBytes()));
             documentSvcDto.setDocumentTypeId(a.getCategory().getDescription());

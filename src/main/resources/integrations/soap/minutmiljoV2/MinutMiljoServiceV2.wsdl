@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions name="MinutMiljoServiceV2" targetNamespace="urn:Ecos.API.MinutMiljo.Service.V2"
+                  xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+                  xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata"
+                  xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex"
+                  xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy"
+                  xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract"
+                  xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+                  xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"
+                  xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/"
+                  xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+                  xmlns:tns="urn:Ecos.API.MinutMiljo.Service.V2" xmlns:wsa10="http://www.w3.org/2005/08/addressing"
+                  xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl"
+                  xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing">
+    <wsp:Policy wsu:Id="BasicHttpBinding_IMinutMiljoServiceV2_policy">
+        <wsp:ExactlyOne>
+            <wsp:All>
+                <http:NegotiateAuthentication xmlns:http="http://schemas.microsoft.com/ws/06/2004/policy/http"/>
+            </wsp:All>
+        </wsp:ExactlyOne>
+    </wsp:Policy>
+    <wsp:Policy wsu:Id="BasicHttpBinding_IMinutMiljoServiceV21_policy">
+        <wsp:ExactlyOne>
+            <wsp:All>
+                <http:NegotiateAuthentication xmlns:http="http://schemas.microsoft.com/ws/06/2004/policy/http"/>
+                <sp:TransportBinding xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                    <wsp:Policy>
+                        <sp:TransportToken>
+                            <wsp:Policy>
+                                <sp:HttpsToken RequireClientCertificate="false"/>
+                            </wsp:Policy>
+                        </sp:TransportToken>
+                        <sp:AlgorithmSuite>
+                            <wsp:Policy>
+                                <sp:Basic256/>
+                            </wsp:Policy>
+                        </sp:AlgorithmSuite>
+                        <sp:Layout>
+                            <wsp:Policy>
+                                <sp:Strict/>
+                            </wsp:Policy>
+                        </sp:Layout>
+                    </wsp:Policy>
+                </sp:TransportBinding>
+            </wsp:All>
+        </wsp:ExactlyOne>
+    </wsp:Policy>
+    <wsdl:types>
+        <xs:schema elementFormDefault="qualified" targetNamespace="urn:Ecos.API.MinutMiljo.Service.V2"
+                   xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:import namespace="urn:Ecos.API.MinutMiljo.DataContracts.V2"/>
+            <xs:import namespace="urn:Ecos.API.MinutMiljo.DataContracts.V1"/>
+            <xs:element name="RegisterDocument">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="registerDocumentCaseSvcDto" nillable="true"
+                                    type="q1:RegisterDocumentCaseSvcDtoV2"
+                                    xmlns:q1="urn:Ecos.API.MinutMiljo.DataContracts.V2"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="RegisterDocumentResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="RegisterDocumentResult" nillable="true"
+                                    type="q2:RegisterDocumentCaseResultSvcDto"
+                                    xmlns:q2="urn:Ecos.API.MinutMiljo.DataContracts.V1"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified"
+                   targetNamespace="http://schemas.microsoft.com/2003/10/Serialization/"
+                   xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                   xmlns:tns="http://schemas.microsoft.com/2003/10/Serialization/">
+            <xs:element name="anyType" nillable="true" type="xs:anyType"/>
+            <xs:element name="anyURI" nillable="true" type="xs:anyURI"/>
+            <xs:element name="base64Binary" nillable="true" type="xs:base64Binary"/>
+            <xs:element name="boolean" nillable="true" type="xs:boolean"/>
+            <xs:element name="byte" nillable="true" type="xs:byte"/>
+            <xs:element name="dateTime" nillable="true" type="xs:dateTime"/>
+            <xs:element name="decimal" nillable="true" type="xs:decimal"/>
+            <xs:element name="double" nillable="true" type="xs:double"/>
+            <xs:element name="float" nillable="true" type="xs:float"/>
+            <xs:element name="int" nillable="true" type="xs:int"/>
+            <xs:element name="long" nillable="true" type="xs:long"/>
+            <xs:element name="QName" nillable="true" type="xs:QName"/>
+            <xs:element name="short" nillable="true" type="xs:short"/>
+            <xs:element name="string" nillable="true" type="xs:string"/>
+            <xs:element name="unsignedByte" nillable="true" type="xs:unsignedByte"/>
+            <xs:element name="unsignedInt" nillable="true" type="xs:unsignedInt"/>
+            <xs:element name="unsignedLong" nillable="true" type="xs:unsignedLong"/>
+            <xs:element name="unsignedShort" nillable="true" type="xs:unsignedShort"/>
+            <xs:element name="char" nillable="true" type="tns:char"/>
+            <xs:simpleType name="char">
+                <xs:restriction base="xs:int"/>
+            </xs:simpleType>
+            <xs:element name="duration" nillable="true" type="tns:duration"/>
+            <xs:simpleType name="duration">
+                <xs:restriction base="xs:duration">
+                    <xs:pattern value="\-?P(\d*D)?(T(\d*H)?(\d*M)?(\d*(\.\d*)?S)?)?"/>
+                    <xs:minInclusive value="-P10675199DT2H48M5.4775808S"/>
+                    <xs:maxInclusive value="P10675199DT2H48M5.4775807S"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:element name="guid" nillable="true" type="tns:guid"/>
+            <xs:simpleType name="guid">
+                <xs:restriction base="xs:string">
+                    <xs:pattern value="[\da-fA-F]{8}-[\da-fA-F]{4}-[\da-fA-F]{4}-[\da-fA-F]{4}-[\da-fA-F]{12}"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:attribute name="FactoryType" type="xs:QName"/>
+            <xs:attribute name="Id" type="xs:ID"/>
+            <xs:attribute name="Ref" type="xs:IDREF"/>
+        </xs:schema>
+        <xs:schema elementFormDefault="qualified" targetNamespace="urn:Ecos.API.MinutMiljo.DataContracts.V2"
+                   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="urn:Ecos.API.MinutMiljo.DataContracts.V2"
+                   xmlns:ser="http://schemas.microsoft.com/2003/10/Serialization/">
+            <xs:import namespace="http://schemas.microsoft.com/2003/10/Serialization/"/>
+            <xs:import namespace="urn:Ecos.API.MinutMiljo.DataContracts.V1"/>
+            <xs:import namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+            <xs:complexType name="RegisterDocumentCaseSvcDtoV2">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="CaseInitiatorId" nillable="true" type="ser:guid"/>
+                    <xs:element minOccurs="0" name="CaseSubtitle" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="CaseSubtitleFree" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="DiaryPlanId" nillable="true" type="ser:guid"/>
+                    <xs:element name="Documents" nillable="true" type="q1:ArrayOfDocumentSvcDto"
+                                xmlns:q1="urn:Ecos.API.MinutMiljo.DataContracts.V1"/>
+                    <xs:element minOccurs="0" name="ExpirationDate" nillable="true" type="xs:dateTime"/>
+                    <xs:element minOccurs="0" name="ExternalCases" nillable="true" type="q2:ArrayOfExternalCaseSvcDto"
+                                xmlns:q2="urn:Ecos.API.MinutMiljo.DataContracts.V1"/>
+                    <xs:element minOccurs="0" name="HandlingOfficerGroupId" nillable="true" type="ser:guid"/>
+                    <xs:element minOccurs="0" name="HandlingOfficerId" nillable="true" type="ser:guid"/>
+                    <xs:element minOccurs="0" name="IsConfidential" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="MunicipalityCode" nillable="true" type="q3:ArrayOfstring"
+                                xmlns:q3="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+                    <xs:element minOccurs="0" name="OccurrenceNote" nillable="true" type="xs:string"/>
+                    <xs:element name="OccurrenceTypeId" type="ser:guid"/>
+                    <xs:element minOccurs="0" name="PartyRoles" nillable="true"
+                                type="q4:ArrayOfRegisterDocumentPartyRoleDto"
+                                xmlns:q4="urn:Ecos.API.MinutMiljo.DataContracts.V1"/>
+                    <xs:element name="ProcessTypeId" type="ser:guid"/>
+                    <xs:element minOccurs="0" name="StartDate" nillable="true" type="xs:dateTime"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="RegisterDocumentCaseSvcDtoV2" nillable="true" type="tns:RegisterDocumentCaseSvcDtoV2"/>
+        </xs:schema>
+        <xs:schema elementFormDefault="qualified" targetNamespace="urn:Ecos.API.MinutMiljo.DataContracts.V1"
+                   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="urn:Ecos.API.MinutMiljo.DataContracts.V1"
+                   xmlns:ser="http://schemas.microsoft.com/2003/10/Serialization/">
+            <xs:import namespace="http://schemas.microsoft.com/2003/10/Serialization/"/>
+            <xs:complexType name="ArrayOfDocumentSvcDto">
+                <xs:sequence>
+                    <xs:element minOccurs="0" maxOccurs="unbounded" name="DocumentSvcDto" nillable="true"
+                                type="tns:DocumentSvcDto"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="ArrayOfDocumentSvcDto" nillable="true" type="tns:ArrayOfDocumentSvcDto"/>
+            <xs:complexType name="DocumentSvcDto">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="ContentType" nillable="true" type="xs:string"/>
+                    <xs:element name="Data" nillable="true" type="xs:base64Binary"/>
+                    <xs:element minOccurs="0" name="DocumentTypeId" type="ser:guid"/>
+                    <xs:element name="Filename" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="Note" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="SortOrder" nillable="true" type="xs:int"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="DocumentSvcDto" nillable="true" type="tns:DocumentSvcDto"/>
+            <xs:complexType name="ArrayOfExternalCaseSvcDto">
+                <xs:sequence>
+                    <xs:element minOccurs="0" maxOccurs="unbounded" name="ExternalCaseSvcDto" nillable="true"
+                                type="tns:ExternalCaseSvcDto"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="ArrayOfExternalCaseSvcDto" nillable="true" type="tns:ArrayOfExternalCaseSvcDto"/>
+            <xs:complexType name="ExternalCaseSvcDto">
+                <xs:sequence>
+                    <xs:element name="ExternalCaseNumber" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="ExternalPartyName" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="ExternalCaseSvcDto" nillable="true" type="tns:ExternalCaseSvcDto"/>
+            <xs:complexType name="ArrayOfRegisterDocumentPartyRoleDto">
+                <xs:sequence>
+                    <xs:element minOccurs="0" maxOccurs="unbounded" name="RegisterDocumentPartyRoleDto" nillable="true"
+                                type="tns:RegisterDocumentPartyRoleDto"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="ArrayOfRegisterDocumentPartyRoleDto" nillable="true"
+                        type="tns:ArrayOfRegisterDocumentPartyRoleDto"/>
+            <xs:complexType name="RegisterDocumentPartyRoleDto">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="CaseRoleId" type="ser:guid"/>
+                    <xs:element minOccurs="0" name="DocumentRoleId" type="ser:guid"/>
+                    <xs:element minOccurs="0" name="PartyId" type="ser:guid"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="RegisterDocumentPartyRoleDto" nillable="true" type="tns:RegisterDocumentPartyRoleDto"/>
+            <xs:complexType name="RegisterDocumentCaseResultSvcDto">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="CaseId" nillable="true" type="ser:guid"/>
+                    <xs:element minOccurs="0" name="CaseNumber" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="RegisterDocumentCaseResultSvcDto" nillable="true"
+                        type="tns:RegisterDocumentCaseResultSvcDto"/>
+        </xs:schema>
+        <xs:schema elementFormDefault="qualified"
+                   targetNamespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays"
+                   xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                   xmlns:tns="http://schemas.microsoft.com/2003/10/Serialization/Arrays">
+            <xs:complexType name="ArrayOfstring">
+                <xs:sequence>
+                    <xs:element minOccurs="0" maxOccurs="unbounded" name="string" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="ArrayOfstring" nillable="true" type="tns:ArrayOfstring"/>
+        </xs:schema>
+    </wsdl:types>
+    <wsdl:message name="IMinutMiljoServiceV2_RegisterDocument_InputMessage">
+        <wsdl:part name="parameters" element="tns:RegisterDocument"/>
+    </wsdl:message>
+    <wsdl:message name="IMinutMiljoServiceV2_RegisterDocument_OutputMessage">
+        <wsdl:part name="parameters" element="tns:RegisterDocumentResponse"/>
+    </wsdl:message>
+    <wsdl:portType name="IMinutMiljoServiceV2">
+        <wsdl:operation name="RegisterDocument">
+            <wsdl:input wsaw:Action="urn:Ecos.API.MinutMiljo.Service.V2/IMinutMiljoServiceV2/RegisterDocument"
+                        message="tns:IMinutMiljoServiceV2_RegisterDocument_InputMessage"/>
+            <wsdl:output wsaw:Action="urn:Ecos.API.MinutMiljo.Service.V2/IMinutMiljoServiceV2/RegisterDocumentResponse"
+                         message="tns:IMinutMiljoServiceV2_RegisterDocument_OutputMessage"/>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="BasicHttpBinding_IMinutMiljoServiceV2" type="tns:IMinutMiljoServiceV2">
+        <wsp:PolicyReference URI="#BasicHttpBinding_IMinutMiljoServiceV2_policy"/>
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="RegisterDocument">
+            <soap:operation soapAction="urn:Ecos.API.MinutMiljo.Service.V2/IMinutMiljoServiceV2/RegisterDocument"
+                            style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="BasicHttpBinding_IMinutMiljoServiceV21" type="tns:IMinutMiljoServiceV2">
+        <wsp:PolicyReference URI="#BasicHttpBinding_IMinutMiljoServiceV21_policy"/>
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="RegisterDocument">
+            <soap:operation soapAction="urn:Ecos.API.MinutMiljo.Service.V2/IMinutMiljoServiceV2/RegisterDocument"
+                            style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+</wsdl:definitions>

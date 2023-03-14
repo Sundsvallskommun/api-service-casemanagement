@@ -97,17 +97,6 @@
             <artifactId>httpclient5</artifactId>
             <version>5.2.1</version>
         </dependency>
-        <!-- Generated Clients -->
-        <!--<dependency>
-            <groupId>se.sundsvall.generated-clients</groupId>
-            <artifactId>arendeexport</artifactId>
-            <version>1.2</version>
-        </dependency>
-        <dependency>
-            <groupId>se.sundsvall.generated-clients</groupId>
-            <artifactId>minutmiljoV2</artifactId>
-            <version>1.0</version>
-        </dependency>-->
     </dependencies>
 
     <build>
@@ -117,13 +106,16 @@
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <configuration>
                     <excludes>
-                        <exclude>**/se/sundsvall/casemanagement/util/DateAdapter*</exclude>
+                        <exclude>**/se/sundsvall/casemanagement/util/**Adapter*</exclude>
                         <exclude>**/se/sundsvall/casemanagement/Application*</exclude>
                         <exclude>**/NTLMEngineImpl*</exclude>
                         <exclude>**/*NTLMAuthenticator*</exclude>
                         <exclude>**/util/Constants*</exclude>
                         <exclude>**/enums/**</exclude>
                         <exclude>**/generated/**</exclude>
+                        <exclude>**/minutmiljo/**</exclude>
+                        <exclude>**/minutmiljoV2/**</exclude>
+                        <exclude>**/arendeexport/**</exclude>
                     </excludes>
                 </configuration>
             </plugin>
@@ -216,6 +208,32 @@
                             </arguments>
                             <sources>
                                 <source>${project.basedir}/src/main/resources/integrations/soap/minutmiljo/MinutMiljoService.wsdl</source>
+                            </sources>
+                            <xjbSources>
+                                <xjbSource>${project.basedir}/src/main/resources/integrations/soap/bindings.xjb</xjbSource>
+                            </xjbSources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>minutmiljoV2</id>
+                        <goals>
+                            <goal>xjc</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${generated-sources-path}/${generated-sources-java-path}</outputDirectory>
+                            <clearOutputDir>false</clearOutputDir>
+                            <packageName>minutmiljoV2</packageName>
+                            <encoding>UTF-8</encoding>
+                            <addGeneratedAnnotation>true</addGeneratedAnnotation>
+                            <noGeneratedHeaderComments>true</noGeneratedHeaderComments>
+                            <sourceType>wsdl</sourceType>
+
+                            <arguments>
+                                <argument>-Xfluent-api</argument>
+                                <argument>-XautoNameResolution</argument>
+                            </arguments>
+                            <sources>
+                                <source>${project.basedir}/src/main/resources/integrations/soap/minutmiljoV2/MinutMiljoServiceV2.wsdl</source>
                             </sources>
                             <xjbSources>
                                 <xjbSource>${project.basedir}/src/main/resources/integrations/soap/bindings.xjb</xjbSource>
