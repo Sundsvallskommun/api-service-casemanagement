@@ -39,7 +39,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import minutmiljo.GetRiskClass2024BaseDataResponse;
-import minutmiljoV2.RegisterDocumentCaseResultSvcDto;
+import minutmiljo.RegisterDocumentCaseResultSvcDto;
 
 @RestController
 @Validated

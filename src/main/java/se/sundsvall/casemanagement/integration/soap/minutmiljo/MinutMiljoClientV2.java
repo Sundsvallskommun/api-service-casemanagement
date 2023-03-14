@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import se.sundsvall.casemanagement.integration.soap.minutmiljo.configuration.MinutMiljoConfiguration;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-import minutmiljoV2.RegisterDocument;
-import minutmiljoV2.RegisterDocumentResponse;
+import minutmiljo.RegisterDocument;
+import minutmiljo.RegisterDocumentResponse;
 
 @FeignClient(name = "minutmiljoV2", url = "${integration.minutmiljoV2.url}", configuration = MinutMiljoConfiguration.class)
 @CircuitBreaker(name = "minutmiljoV2")

@@ -16,8 +16,7 @@
     <description>ms-casemanagementservice</description>
     <properties>
         <java.version>17</java.version>
-        <generated-sources-path>${project.build.directory}/generated-sources
-        </generated-sources-path>
+        <generated-sources-path>${project.build.directory}/generated-sources</generated-sources-path>
         <generated-sources-java-path>src/main/java</generated-sources-java-path>
 
         <!-- Dependencies -->
@@ -99,7 +98,7 @@
             <version>5.2.1</version>
         </dependency>
         <!-- Generated Clients -->
-        <dependency>
+        <!--<dependency>
             <groupId>se.sundsvall.generated-clients</groupId>
             <artifactId>arendeexport</artifactId>
             <version>1.2</version>
@@ -108,7 +107,7 @@
             <groupId>se.sundsvall.generated-clients</groupId>
             <artifactId>minutmiljoV2</artifactId>
             <version>1.0</version>
-        </dependency>
+        </dependency>-->
     </dependencies>
 
     <build>
@@ -198,26 +197,60 @@
                 </dependencies>
                 <executions>
                     <execution>
-                        <phase>generate-sources</phase>
+                        <id>minutmiljo</id>
                         <goals>
                             <goal>xjc</goal>
                         </goals>
+                        <configuration>
+                            <outputDirectory>${generated-sources-path}/${generated-sources-java-path}</outputDirectory>
+                            <clearOutputDir>false</clearOutputDir>
+                            <packageName>minutmiljo</packageName>
+                            <encoding>UTF-8</encoding>
+                            <addGeneratedAnnotation>true</addGeneratedAnnotation>
+                            <noGeneratedHeaderComments>true</noGeneratedHeaderComments>
+                            <sourceType>wsdl</sourceType>
+                            <!-- Enable fluent -->
+                            <arguments>
+                                <argument>-Xfluent-api</argument>
+                                <argument>-XautoNameResolution</argument>
+                            </arguments>
+                            <sources>
+                                <source>${project.basedir}/src/main/resources/integrations/soap/minutmiljo/MinutMiljoService.wsdl</source>
+                            </sources>
+                            <xjbSources>
+                                <xjbSource>${project.basedir}/src/main/resources/integrations/soap/bindings.xjb</xjbSource>
+                            </xjbSources>
+                        </configuration>
                     </execution>
+
+                    <execution>
+                        <id>arendeexport</id>
+                        <goals>
+                            <goal>xjc</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${generated-sources-path}/${generated-sources-java-path}</outputDirectory>
+                            <clearOutputDir>false</clearOutputDir>
+                            <packageName>arendeexport</packageName>
+                            <encoding>UTF-8</encoding>
+                            <addGeneratedAnnotation>true</addGeneratedAnnotation>
+                            <noGeneratedHeaderComments>true</noGeneratedHeaderComments>
+                            <sourceType>wsdl</sourceType>
+                            <!-- Enable fluent -->
+                            <arguments>
+                                <argument>-Xfluent-api</argument>
+                                <argument>-XautoNameResolution</argument>
+                            </arguments>
+                            <sources>
+                                <source>${project.basedir}/src/main/resources/integrations/soap/arendeexport/ArendeExportWS.wsdl</source>
+                            </sources>
+                            <xjbSources>
+                                <xjbSource>${project.basedir}/src/main/resources/integrations/soap/bindings.xjb</xjbSource>
+                            </xjbSources>
+                        </configuration>
+                    </execution>
+
                 </executions>
-                <configuration>
-                    <!-- Enable fluent -->
-                    <arguments>
-                        <argument>-Xfluent-api</argument>
-                    </arguments>
-                    <clearOutputDir>false</clearOutputDir>
-                    <outputDirectory>${generated-sources-path}</outputDirectory>
-                    <packageName>minutmiljo</packageName>
-                    <noGeneratedHeaderComments>true</noGeneratedHeaderComments>
-                    <sources>
-                        <source>${project.basedir}/src/main/resources/MinutMiljoService.wsdl</source>
-                    </sources>
-                    <sourceType>wsdl</sourceType>
-                </configuration>
             </plugin>
 
         </plugins>
