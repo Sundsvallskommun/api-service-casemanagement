@@ -22,13 +22,6 @@
         <!-- Dependencies -->
         <testcontainers.version>1.17.6</testcontainers.version>
         <openapi-generator-maven-plugin-version>6.2.1</openapi-generator-maven-plugin-version>
-        <org.mapstruct.version>1.5.3.Final</org.mapstruct.version>
-        <org.projectlombok.version>1.18.26</org.projectlombok.version>
-        <lombok-mapstruct.version>0.2.0</lombok-mapstruct.version>
-
-        <maven.compiler.parameters>true</maven.compiler.parameters>
-        <compiler-plugin.version>3.8.1</compiler-plugin.version>
-
         <!-- Jenkins pipeline -->
         <docker.image.name>ms-casemanagementservice</docker.image.name>
         <exposed.app.port>9090</exposed.app.port>
@@ -89,8 +82,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>${org.projectlombok.version}</version>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents.client5</groupId>
@@ -101,24 +93,6 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <configuration>
-                    <excludes>
-                        <exclude>**/se/sundsvall/casemanagement/util/**Adapter*</exclude>
-                        <exclude>**/se/sundsvall/casemanagement/Application*</exclude>
-                        <exclude>**/NTLMEngineImpl*</exclude>
-                        <exclude>**/*NTLMAuthenticator*</exclude>
-                        <exclude>**/util/Constants*</exclude>
-                        <exclude>**/enums/**</exclude>
-                        <exclude>**/generated/**</exclude>
-                        <exclude>**/minutmiljo/**</exclude>
-                        <exclude>**/minutmiljoV2/**</exclude>
-                        <exclude>**/arendeexport/**</exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
 
             <plugin>
                 <groupId>org.openapitools</groupId>
@@ -267,10 +241,26 @@
                             </xjbSources>
                         </configuration>
                     </execution>
-
                 </executions>
             </plugin>
-
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>**/se/sundsvall/casemanagement/util/**Adapter*</exclude>
+                        <exclude>**/se/sundsvall/casemanagement/Application*</exclude>
+                        <exclude>**/NTLMEngineImpl*</exclude>
+                        <exclude>**/*NTLMAuthenticator*</exclude>
+                        <exclude>**/util/Constants*</exclude>
+                        <exclude>**/enums/**</exclude>
+                        <exclude>**/generated/**</exclude>
+                        <exclude>**/minutmiljo/**</exclude>
+                        <exclude>**/minutmiljoV2/**</exclude>
+                        <exclude>**/arendeexport/**</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
