@@ -1,5 +1,6 @@
 package se.sundsvall.casemanagement.api.model.enums;
 
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import net.minidev.json.annotate.JsonIgnore;
@@ -11,7 +12,7 @@ public enum CaseType {
     NYBYGGNAD_ANSOKAN_OM_BYGGLOV(Constants.NYBYGGNAD_ANSOKAN_OM_BYGGLOV_VALUE, ArendeslagConstants.BYGGR_ARENDESLAG_NYBYGGNAD_AV),
     NYBYGGNAD_FORHANDSBESKED(Constants.NYBYGGNAD_FORHANDSBESKED_VALUE, ArendeslagConstants.BYGGR_ARENDESLAG_NYBYGGNAD_AV),
     TILLBYGGNAD_ANSOKAN_OM_BYGGLOV(Constants.TILLBYGGNAD_ANSOKAN_OM_BYGGLOV_VALUE, ArendeslagConstants.BYGGR_ARENDESLAG_TILLBYGGNAD_AV),
-    
+    UPPSATTANDE_SKYLT(Constants.UPPSATTANDE_SKYLT_VALUE, ArendeslagConstants.BYGGR_ARENDESLAG_UPPSATTANDE_SKYLT),
     ANDRING_ANSOKAN_OM_BYGGLOV(Constants.ANDRING_ANSOKAN_OM_BYGGLOV_VALUE),
     // BYGGR STRANDSKYDD
     STRANDSKYDD_NYBYGGNAD(Constants.STRANDSKYDD_NYBYGGNAD_VALUE, ArendeslagConstants.BYGGR_ARENDESLAG_NYBYGGNAD_STRANDSKYDD),
@@ -53,6 +54,7 @@ public enum CaseType {
     }
     
     public static class Constants {
+        public static final String UPPSATTANDE_SKYLT_VALUE="UPPSATTANDE_SKYLT";
         public static final String TILLBYGGNAD_ANSOKAN_OM_BYGGLOV_VALUE = "TILLBYGGNAD_ANSOKAN_OM_BYGGLOV";
         public static final String ANDRING_ANSOKAN_OM_BYGGLOV_VALUE = "ANDRING_ANSOKAN_OM_BYGGLOV";
         
@@ -92,5 +94,7 @@ public enum CaseType {
         public static final String BYGGR_ARENDESLAG_ANORDNARE_STRANDSKYDD = "AO";
         public static final String BYGGR_ARENDESLAG_ANLAGGANDE_STRANDSKYDD = "A1";
         public static final String BYGGR_ARENDESLAG_NYBYGGNAD_STRANDSKYDD = "NYB";
+        
+        public static final String BYGGR_ARENDESLAG_UPPSATTANDE_SKYLT ="L";
     }
 }

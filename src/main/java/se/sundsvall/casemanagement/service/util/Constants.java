@@ -1,6 +1,7 @@
 package se.sundsvall.casemanagement.service.util;
 
 public final class Constants {
+    
     private Constants() {
 
     }
@@ -10,6 +11,8 @@ public final class Constants {
     public static final String BYGGR_ARENDEMENING_BYGGLOV_FOR_NYBYGGNAD_AV = "Bygglov för nybyggnad av";
     public static final String BYGGR_ARENDEMENING_BYGGLOV_FOR_TILLBYGGNAD = "Bygglov för tillbyggnad av";
     public static final String BYGGR_ARENDEMENING_BYGGLOV_ANDRING_ANSOKAN_OM_ = "Bygglov för";
+    public static final String BYGGR_ARENDEMENING_BYGGLOV_FOR_UPPSSATTANDE = "Bygglov för uppsättande av ";
+    
     
     public static final String BYGGR_ARENDEMENING_STRANDSKYDD_FOR_NYBYGGNAD= "Strandskyddsdispens för nybyggnad av";
     public static final String BYGGR_ARENDEMENING_STRANDSKYDD_FOR_ANLAGGANDE= "Strandskyddsdispens för anläggande av";
