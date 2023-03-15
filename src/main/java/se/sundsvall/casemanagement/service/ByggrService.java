@@ -10,6 +10,7 @@ import static se.sundsvall.casemanagement.api.model.enums.CaseType.STRANDSKYDD_A
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.STRANDSKYDD_ANORDNANDE;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.STRANDSKYDD_NYBYGGNAD;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.TILLBYGGNAD_ANSOKAN_OM_BYGGLOV;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.UPPSATTANDE_SKYLT;
 import static se.sundsvall.casemanagement.api.model.enums.FacilityType.FIREPLACE;
 import static se.sundsvall.casemanagement.api.model.enums.FacilityType.FIREPLACE_SMOKECHANNEL;
 import static se.sundsvall.casemanagement.service.util.Constants.BYGGR_ARENDETYP_BYGGLOV_FOR;
@@ -207,6 +208,7 @@ public class ByggrService {
                 .withHandelsetyp(Constants.BYGGR_HANDELSETYP_ANSOKAN)
                 .withHandelseslag(Constants.BYGGR_HANDELSESLAG_FORHANDSBESKED);
             case NYBYGGNAD_ANSOKAN_OM_BYGGLOV,
+                UPPSATTANDE_SKYLT,
                 TILLBYGGNAD_ANSOKAN_OM_BYGGLOV,
                 ANDRING_ANSOKAN_OM_BYGGLOV -> handelse
                 .withRubrik(Constants.BYGGR_HANDELSE_RUBRIK_BYGGLOV)
@@ -326,6 +328,7 @@ public class ByggrService {
                 .withArendeklass(getArendeKlass(pCase.getFacilities()))
                 .withArendeslag(pCase.getCaseType().getArendeslag());
             case NYBYGGNAD_ANSOKAN_OM_BYGGLOV,
+                UPPSATTANDE_SKYLT,
                 TILLBYGGNAD_ANSOKAN_OM_BYGGLOV -> arende
                 .withArendetyp(BYGGR_ARENDETYP_BYGGLOV_FOR)
                 .withArendeklass(getArendeKlass(pCase.getFacilities()))
@@ -395,6 +398,7 @@ public class ByggrService {
         var caseTypes = Map.of(
             NYBYGGNAD_FORHANDSBESKED, Constants.BYGGR_ARENDEMENING_NYBYGGNAD_FORHANDSBESKED,
             NYBYGGNAD_ANSOKAN_OM_BYGGLOV, Constants.BYGGR_ARENDEMENING_BYGGLOV_FOR_NYBYGGNAD_AV,
+            UPPSATTANDE_SKYLT, Constants.BYGGR_ARENDEMENING_BYGGLOV_FOR_UPPSSATTANDE,
             TILLBYGGNAD_ANSOKAN_OM_BYGGLOV, Constants.BYGGR_ARENDEMENING_BYGGLOV_FOR_TILLBYGGNAD,
             ANDRING_ANSOKAN_OM_BYGGLOV, Constants.BYGGR_ARENDEMENING_BYGGLOV_ANDRING_ANSOKAN_OM_,
             STRANDSKYDD_NYBYGGNAD, Constants.BYGGR_ARENDEMENING_STRANDSKYDD_FOR_NYBYGGNAD,
