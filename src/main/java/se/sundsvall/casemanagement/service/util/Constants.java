@@ -48,7 +48,7 @@ public final class Constants {
     public static final String BYGGR_HANDELSETYP_KOMPLETTERINGSFORELAGGANDE_PAMINNELSE = "KOMP1";
 
     public static final String BYGGR_HANDELSESLAG_BYGGLOV = "Bygglov";
-    public static final String BYGGR_HANDELSESLAG_FORHANDSBESKED = "Förhandsbesked";
+    public static final String BYGGR_HANDELSESLAG_FORHANDSBESKED = "Förhand";
     public static final String BYGGR_HANDELSESLAG_SLUTBESKED = "SLU";
     public static final String BYGGR_HANDELSESLAG_AVSKRIVNING = "UAB";
     public static final String BYGGR_HANDELSESLAG_MANUELL_HANTERING_KRAVS = "MANHANT";
