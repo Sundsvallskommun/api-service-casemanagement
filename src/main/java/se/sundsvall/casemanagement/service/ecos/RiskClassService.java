@@ -53,7 +53,7 @@ public class RiskClassService {
     }
     
     public void updateRiskClass(EnvironmentalCaseDTO caseInput, String caseId) {
-        var facilityId = searchFacility(extractOrgNr(caseInput));
+        var facilityId = searchFacility(extractOrgNr(caseInput), caseInput.getFacilities().get(0).getFacilityCollectionName());
         addFacilityToCase(facilityId, caseId);
         var data = createSaveRiskClassObject(facilityId, caseId, caseInput);
         minutMiljoClient.updateRiskClass(data);
@@ -74,7 +74,7 @@ public class RiskClassService {
             .orElse(""));
     }
     
-    private String searchFacility(String orgNr) {
+    private String searchFacility(String orgNr, String facilityCollectionName) {
         
         
         var facilityTypeFilter = new FacilityFacilityTypeIdsFilterSvcDto()
@@ -106,7 +106,13 @@ public class RiskClassService {
                 .getSearchFacilityResultSvcDto())
             .orElseThrow(() -> Problem.valueOf(Status.NOT_FOUND, "Could not find facility "));
         
-        return result.get(0).getFacilityId();
+        return result.stream()
+            .filter(resultSvcDto -> resultSvcDto.getFacilityCollectionName().equals(facilityCollectionName))
+            .findFirst()
+            .orElseThrow(() -> Problem.valueOf(Status.BAD_REQUEST,
+                ("Could not match facilityCollectionName: %s to a facility belonging to organization with organizationNumber: %s")
+                    .formatted(facilityCollectionName, orgNr)))
+            .getFacilityId();
     }
     
     private void addFacilityToCase(String facilityId, String caseId) {
