@@ -17,6 +17,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import se.sundsvall.casemanagement.api.model.EnvironmentalCaseDTO;
+import se.sundsvall.casemanagement.api.model.EnvironmentalFacilityDTO;
+import se.sundsvall.casemanagement.api.model.FacilityDTO;
 import se.sundsvall.casemanagement.api.model.OrganizationDTO;
 import se.sundsvall.casemanagement.integration.soap.minutmiljo.MinutMiljoClient;
 
@@ -34,16 +36,21 @@ class RiskClassServiceTest {
     
     @Test
     void updateRiskClass() {
+    
+       var facility = new EnvironmentalFacilityDTO();
+       facility.setFacilityCollectionName("someFacilityName");
         
         when(minutMiljoClient.searchFacility(any()))
             .thenReturn(new SearchFacilityResponse()
                 .withSearchFacilityResult(new ArrayOfSearchFacilityResultSvcDto()
                     .withSearchFacilityResultSvcDto(new SearchFacilityResultSvcDto()
+                        .withFacilityCollectionName("someFacilityName")
                         .withFacilityId("someFacilityId"))));
         
         var dto = new EnvironmentalCaseDTO();
         var stakeholder = new OrganizationDTO();
         stakeholder.setOrganizationNumber("123456-7890");
+        dto.setFacilities(List.of(facility));
         dto.setStakeholders(List.of(stakeholder));
         dto.setExtraParameters(Map.of("activities", "1,1, 1","activities2", "2,2, 2",
             "activities3", "3,3, 3",
