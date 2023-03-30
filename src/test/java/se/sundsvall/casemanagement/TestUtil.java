@@ -122,17 +122,6 @@ public class TestUtil {
         agareInfoResponse.setData(agareInfoDataItemList);
         Mockito.doReturn(agareInfoResponse).when(fbClientMock).getPropertyOwnerInfoByUuid(any(), any(), any(), any());
     }
-    
-    @Test
-    void doshit() throws JsonProcessingException {
-       
-       var test = createEnvironmentalCase(CaseType.REGISTRERING_AV_LIVSMEDEL,
-            AttachmentCategory.ANMALAN_LIVSMEDELSANLAGGNING);
-        ObjectWriter ow =
-            new ObjectMapper().registerModule(new JavaTimeModule()).writer().withDefaultPrettyPrinter();
-        var result = ow.writeValueAsString(test);
-        System.out.println(result);
-    }
 
     public static EnvironmentalCaseDTO createEnvironmentalCase(CaseType caseType, AttachmentCategory attachmentCategory) {
         EnvironmentalCaseDTO eCase = new EnvironmentalCaseDTO();
