@@ -20,6 +20,7 @@ import static se.sundsvall.casemanagement.util.Constants.SERVICE_NAME;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collection;
