@@ -5,7 +5,7 @@ import lombok.Data;
 import se.sundsvall.casemanagement.api.model.enums.AddressCategory;
 import se.sundsvall.casemanagement.api.validators.EnvironmentalConstraints;
 import se.sundsvall.casemanagement.api.validators.PlanningConstraints;
-import se.sundsvall.casemanagement.service.util.Constants;
+import se.sundsvall.casemanagement.util.Constants;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;

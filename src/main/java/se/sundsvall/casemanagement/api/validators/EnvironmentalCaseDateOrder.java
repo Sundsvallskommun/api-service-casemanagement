@@ -1,6 +1,6 @@
 package se.sundsvall.casemanagement.api.validators;
 
-import se.sundsvall.casemanagement.service.util.Constants;
+import se.sundsvall.casemanagement.util.Constants;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;

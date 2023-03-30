@@ -18,10 +18,10 @@ import static se.sundsvall.casemanagement.api.model.enums.CaseType.STRANDSKYDD_A
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.STRANDSKYDD_ANORDNANDE;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.STRANDSKYDD_NYBYGGNAD;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.TILLBYGGNAD_ANSOKAN_OM_BYGGLOV;
-import static se.sundsvall.casemanagement.service.util.Constants.BYGGR_HANDELSESLAG_KOMPLETTERANDE_HANDLINGAR;
-import static se.sundsvall.casemanagement.service.util.Constants.BYGGR_HANDELSESLAG_SLUTBESKED;
-import static se.sundsvall.casemanagement.service.util.Constants.BYGGR_HANDELSETYP_BESLUT;
-import static se.sundsvall.casemanagement.service.util.Constants.BYGGR_HANDELSETYP_HANDLING;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSESLAG_KOMPLETTERANDE_HANDLINGAR;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSESLAG_SLUTBESKED;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSETYP_BESLUT;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSETYP_HANDLING;
 
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
@@ -58,11 +58,12 @@ import se.sundsvall.casemanagement.api.model.enums.FacilityType;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderType;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
+import se.sundsvall.casemanagement.integration.byggr.ArendeExportClient;
+import se.sundsvall.casemanagement.integration.byggr.ByggrService;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
-import se.sundsvall.casemanagement.integration.soap.arendeexport.ArendeExportClient;
 import se.sundsvall.casemanagement.service.exceptions.ApplicationException;
-import se.sundsvall.casemanagement.service.util.Constants;
 import se.sundsvall.casemanagement.testutils.TestConstants;
+import se.sundsvall.casemanagement.util.Constants;
 
 import arendeexport.AbstractArendeObjekt;
 import arendeexport.Arende;

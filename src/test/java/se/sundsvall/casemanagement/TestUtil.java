@@ -2,8 +2,11 @@ package se.sundsvall.casemanagement;
 
 import arendeexport.SaveNewArendeResponse;
 import arendeexport.SaveNewArendeResponse2;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import minutmiljo.CreateFoodFacilityResponse;
@@ -16,6 +19,7 @@ import minutmiljo.SearchPartyResponse;
 import minutmiljoV2.RegisterDocumentCaseResultSvcDto;
 import minutmiljoV2.RegisterDocumentResponse;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -36,18 +40,18 @@ import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.api.model.enums.FacilityType;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderType;
-import se.sundsvall.casemanagement.integration.soap.arendeexport.ArendeExportClient;
+import se.sundsvall.casemanagement.integration.byggr.ArendeExportClient;
 import se.sundsvall.casemanagement.integration.db.CaseMappingRepository;
 import se.sundsvall.casemanagement.integration.rest.fb.FbClient;
 import se.sundsvall.casemanagement.integration.rest.fb.model.DataItem;
 import se.sundsvall.casemanagement.integration.rest.fb.model.FbPropertyInfo;
 import se.sundsvall.casemanagement.integration.rest.fb.model.GruppItem;
 import se.sundsvall.casemanagement.integration.rest.fb.model.ResponseDto;
-import se.sundsvall.casemanagement.integration.soap.minutmiljo.MinutMiljoClient;
-import se.sundsvall.casemanagement.integration.soap.minutmiljo.MinutMiljoClientV2;
+import se.sundsvall.casemanagement.integration.ecos.MinutMiljoClient;
+import se.sundsvall.casemanagement.integration.ecos.MinutMiljoClientV2;
 import se.sundsvall.casemanagement.service.CitizenMappingService;
 import se.sundsvall.casemanagement.service.FbService;
-import se.sundsvall.casemanagement.service.util.Constants;
+import se.sundsvall.casemanagement.util.Constants;
 import se.sundsvall.casemanagement.testutils.TestConstants;
 
 import java.text.MessageFormat;
@@ -73,10 +77,7 @@ public class TestUtil {
             .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
             .configure(DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE, false)
             .registerModule(new JavaTimeModule());
-
-    @Autowired
-    private CaseMappingRepository caseMappingRepository;
-
+    
     public static void mockFbPropertyOwners(FbClient fbClientMock, List<StakeholderDTO> propertyOwners) {
         ResponseDto lagfarenAgareResponse = new ResponseDto();
         DataItem lagfarenAgareDataItem = new DataItem();
@@ -121,12 +122,24 @@ public class TestUtil {
         agareInfoResponse.setData(agareInfoDataItemList);
         Mockito.doReturn(agareInfoResponse).when(fbClientMock).getPropertyOwnerInfoByUuid(any(), any(), any(), any());
     }
+    
+    @Test
+    void doshit() throws JsonProcessingException {
+       
+       var test = createEnvironmentalCase(CaseType.REGISTRERING_AV_LIVSMEDEL,
+            AttachmentCategory.ANMALAN_LIVSMEDELSANLAGGNING);
+        ObjectWriter ow =
+            new ObjectMapper().registerModule(new JavaTimeModule()).writer().withDefaultPrettyPrinter();
+        var result = ow.writeValueAsString(test);
+        System.out.println(result);
+    }
 
     public static EnvironmentalCaseDTO createEnvironmentalCase(CaseType caseType, AttachmentCategory attachmentCategory) {
         EnvironmentalCaseDTO eCase = new EnvironmentalCaseDTO();
         List<AttachmentDTO> aList = new ArrayList<>();
         aList.add(createAttachmentDTO(attachmentCategory));
         eCase.setAttachments(aList);
+        eCase.setStartDate(LocalDate.now());
 
         List<StakeholderDTO> sList = new ArrayList<>();
         sList.add(createStakeholder(StakeholderType.ORGANIZATION, List.of(StakeholderRole.APPLICANT, StakeholderRole.OPERATOR)));
@@ -138,7 +151,7 @@ public class TestUtil {
         eCase.setFacilities(List.of(createEnvironmentalFacilityDTO(caseType)));
 
         eCase.setCaseType(caseType);
-        eCase.setCaseTitleAddition(RandomStringUtils.random(10, true, false));
+        eCase.setCaseTitleAddition("Some case title addition");
         eCase.setDescription(RandomStringUtils.random(10, true, false));
         eCase.setStartDate(LocalDate.now().plusDays(10));
         eCase.setEndDate(LocalDate.now().plusDays(365));
@@ -206,6 +219,19 @@ public class TestUtil {
         addressDTO.setPropertyDesignation(TestConstants.PROPERTY_DESIGNATION_BALDER);
         facility.setAddress(addressDTO);
         facility.setFacilityType(FacilityType.ONE_FAMILY_HOUSE);
+        facility.setDescription(RandomStringUtils.random(10, true, false));
+        facility.setExtraParameters(createExtraParameters());
+        facility.setMainFacility(mainFacility);
+        return facility;
+    }
+    
+    public static PlanningPermissionFacilityDTO createAttefallFacilityDTO(boolean mainFacility) {
+        PlanningPermissionFacilityDTO facility = new PlanningPermissionFacilityDTO();
+        AddressDTO addressDTO = new AddressDTO();
+        addressDTO.setAddressCategories(List.of(AddressCategory.VISITING_ADDRESS));
+        addressDTO.setPropertyDesignation(TestConstants.PROPERTY_DESIGNATION_BALDER);
+        facility.setAddress(addressDTO);
+        facility.setFacilityType(FacilityType.ANCILLARY_BUILDING);
         facility.setDescription(RandomStringUtils.random(10, true, false));
         facility.setExtraParameters(createExtraParameters());
         facility.setMainFacility(mainFacility);

@@ -3,8 +3,8 @@ package se.sundsvall.casemanagement.service;
 import org.springframework.stereotype.Service;
 import se.sundsvall.casemanagement.integration.rest.lantmateriet.RegisterbeteckningClient;
 import se.sundsvall.casemanagement.integration.rest.lantmateriet.model.Registerbeteckningsreferens;
-import se.sundsvall.casemanagement.service.util.CaseUtil;
-import se.sundsvall.casemanagement.service.util.Constants;
+import se.sundsvall.casemanagement.util.CaseUtil;
+import se.sundsvall.casemanagement.util.Constants;
 
 import java.util.List;
 

@@ -6,7 +6,7 @@ import org.zalando.problem.Status;
 import se.sundsvall.casemanagement.integration.db.CaseMappingRepository;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.service.exceptions.ApplicationException;
-import se.sundsvall.casemanagement.service.util.Constants;
+import se.sundsvall.casemanagement.util.Constants;
 
 import java.text.MessageFormat;
 import java.util.List;
