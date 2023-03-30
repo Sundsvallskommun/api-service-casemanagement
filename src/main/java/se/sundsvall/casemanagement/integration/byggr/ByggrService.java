@@ -266,7 +266,7 @@ public class ByggrService {
                 .withRubrik(Constants.BYGGR_HANDELSE_RUBRIK_KOMPLETTERING_TILL_ADMIN)
                 .withHandelsetyp(Constants.BYGGR_HANDELSETYP_HANDLING)
                 .withHandelseslag(Constants.BYGGR_HANDELSESLAG_KOMPLETTERING_TILL_ADMIN)
-                .withStartDatum(LocalDateTime.now())
+                .withStartDatum(LocalDateTime.now(ZoneId.systemDefault()))
                 .withAnteckning(Constants.BYGGR_HANDELSE_ANTECKNING));
         
         var saveNewHandelse = new SaveNewHandelse()
