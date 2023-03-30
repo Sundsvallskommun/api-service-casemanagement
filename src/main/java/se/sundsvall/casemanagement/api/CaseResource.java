@@ -5,12 +5,9 @@ import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
 
 import javax.validation.Valid;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -25,21 +22,17 @@ import se.sundsvall.casemanagement.api.model.CaseResourceResponseDTO;
 import se.sundsvall.casemanagement.api.model.EnvironmentalCaseDTO;
 import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
 import se.sundsvall.casemanagement.api.model.PlanningPermissionCaseDTO;
-import se.sundsvall.casemanagement.service.ByggrService;
-import se.sundsvall.casemanagement.service.CaseDataService;
+import se.sundsvall.casemanagement.integration.casedata.CaseDataService;
 import se.sundsvall.casemanagement.service.CaseMappingService;
-import se.sundsvall.casemanagement.service.EcosService;
+import se.sundsvall.casemanagement.service.CaseService;
 import se.sundsvall.casemanagement.service.exceptions.ApplicationException;
-import se.sundsvall.casemanagement.service.util.Constants;
+import se.sundsvall.casemanagement.util.Constants;
 
-import arendeexport.SaveNewArendeResponse2;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import minutmiljo.GetRiskClass2024BaseDataResponse;
-import minutmiljoV2.RegisterDocumentCaseResultSvcDto;
 
 @RestController
 @Validated
@@ -51,20 +44,15 @@ import minutmiljoV2.RegisterDocumentCaseResultSvcDto;
 @ApiResponse(responseCode = "502", description = "Bad Gateway", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 public class CaseResource {
     
-    private static final Logger log = LoggerFactory.getLogger(CaseResource.class);
-    
     private final CaseMappingService caseMappingService;
     
-    private final ByggrService byggrService;
-    
-    private final EcosService ecosService;
+    private final CaseService caseService;
     
     private final CaseDataService caseDataService;
     
-    public CaseResource(CaseMappingService caseMappingService, ByggrService byggrService, EcosService ecosService, CaseDataService caseDataService) {
+    public CaseResource(CaseMappingService caseMappingService, CaseService caseService, CaseDataService caseDataService) {
         this.caseMappingService = caseMappingService;
-        this.byggrService = byggrService;
-        this.ecosService = ecosService;
+        this.caseService = caseService;
         this.caseDataService = caseDataService;
     }
     
@@ -74,25 +62,14 @@ public class CaseResource {
     public ResponseEntity<CaseResourceResponseDTO> postCases(
         @Schema(oneOf = {PlanningPermissionCaseDTO.class, EnvironmentalCaseDTO.class, OtherCaseDTO.class}, example = Constants.POST_CASES_REQUEST_BODY_EXAMPLE)
         @RequestBody
-        @Valid CaseDTO caseDTOInput) throws ApplicationException {
+        @Valid CaseDTO caseDTOInput) {
         
         // Validates that it doesn't exist any case with the same oep-ID.
         caseMappingService.validateUniqueCase(caseDTOInput.getExternalCaseId());
+        caseService.handleCase(caseDTOInput);
         
-        if (caseDTOInput instanceof PlanningPermissionCaseDTO pCase) {
-            log.debug("instance of PlanningPermissionCase");
-            SaveNewArendeResponse2 response = byggrService.postCase(pCase);
-            return ResponseEntity.ok(new CaseResourceResponseDTO(response.getDnr()));
-        } else if (caseDTOInput instanceof EnvironmentalCaseDTO eCase) {
-            log.debug("instance of EnvironmentalCase");
-            RegisterDocumentCaseResultSvcDto registerDocumentResult = ecosService.postCase(eCase);
-            return ResponseEntity.ok(new CaseResourceResponseDTO(registerDocumentResult.getCaseNumber()));
-        } else if (caseDTOInput instanceof OtherCaseDTO otherCase) {
-            log.debug("instance of OtherCase");
-            String errandNumber = caseDataService.postErrand(otherCase);
-            return ResponseEntity.ok(new CaseResourceResponseDTO(errandNumber));
-        }
-        return ResponseEntity.internalServerError().build();
+        return ResponseEntity.ok(new CaseResourceResponseDTO("PLACEHOLDER"));
+    
     }
     
     @Operation(description = "Update a case. Only available for cases created in CaseData.")
@@ -110,11 +87,5 @@ public class CaseResource {
         } else {
             throw Problem.valueOf(Status.BAD_REQUEST, "Only cases created in CaseData can be updated.");
         }
-    }
-    
-    @Operation(description = "Get information about riskClassData.")
-    @GetMapping(path = "/riskklass", produces = {APPLICATION_PROBLEM_JSON_VALUE})
-    public ResponseEntity<GetRiskClass2024BaseDataResponse> getRiskklasses() {
-        return ResponseEntity.ok(ecosService.getRisklasses());
     }
 }

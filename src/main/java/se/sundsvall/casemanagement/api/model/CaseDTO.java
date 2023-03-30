@@ -16,7 +16,6 @@ import se.sundsvall.casemanagement.api.model.enums.CaseType;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import se.sundsvall.casemanagement.service.util.Constants;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "caseType", include = JsonTypeInfo.As.EXISTING_PROPERTY, visible = true)
 @JsonSubTypes({

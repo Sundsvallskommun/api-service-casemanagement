@@ -28,8 +28,10 @@ import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderType;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
-import se.sundsvall.casemanagement.integration.rest.casedata.CaseDataClient;
-import se.sundsvall.casemanagement.service.util.Constants;
+import se.sundsvall.casemanagement.integration.casedata.CaseDataClient;
+import se.sundsvall.casemanagement.integration.casedata.CaseDataService;
+import se.sundsvall.casemanagement.service.event.IncomingOtherCase;
+import se.sundsvall.casemanagement.util.Constants;
 import se.sundsvall.casemanagement.testutils.TestConstants;
 
 import java.net.URI;

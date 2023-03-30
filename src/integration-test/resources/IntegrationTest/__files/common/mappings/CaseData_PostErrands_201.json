@@ -1,7 +1,13 @@
 {
+  "name": "CaseData_PostErrands_201",
   "request": {
     "urlPathPattern": "/case-data/\\d.\\d/errands",
-    "method": "POST"
+    "method": "POST",
+    "bodyPatterns": [
+      {
+        "contains": "Some case title addition"
+      }
+    ]
   },
   "response": {
     "status": 201,
