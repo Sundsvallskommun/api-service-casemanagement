@@ -1,10 +1,11 @@
 {
+  "name": "CaseData_PostErrands_400",
   "request": {
     "urlPathPattern": "/case-data/\\d.\\d/errands",
     "method": "POST",
     "bodyPatterns": [
       {
-        "contains": "BAD_REQUEST"
+        "contains": "INTERNAL_SERVER_ERROR"
       }
     ]
   },
