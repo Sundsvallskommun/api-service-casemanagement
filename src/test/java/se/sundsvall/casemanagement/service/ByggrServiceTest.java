@@ -12,12 +12,30 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.ANDRING_ANSOKAN_OM_BYGGLOV;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.ArendeMenining.BYGGR_ARENDEMENING_BYGGLOV_ANDRING_ANSOKAN_OM;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.ArendeMenining.BYGGR_ARENDEMENING_BYGGLOV_FOR_NYBYGGNAD_AV;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.ArendeMenining.BYGGR_ARENDEMENING_BYGGLOV_FOR_TILLBYGGNAD;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.ArendeMenining.BYGGR_ARENDEMENING_STRANDSKYDD_FOR_ANDRAD_ANVANDNING;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.ArendeMenining.BYGGR_ARENDEMENING_STRANDSKYDD_FOR_ANLAGGANDE;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.ArendeMenining.BYGGR_ARENDEMENING_STRANDSKYDD_FOR_ANORDNANDE;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.ArendeMenining.BYGGR_ARENDEMENING_STRANDSKYDD_FOR_NYBYGGNAD;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.HandelseRubrik.RUBRIK_ANMALAN_ATTEFALL;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.HandelseRubrik.RUBRIK_BYGGLOV;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.HandelseRubrik.RUBRIK_STRANDSKYDD;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.HandelseSlag.HANDELSESLAG_ANMALAN_ATTEFALL;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.HandelseSlag.HANDELSESLAG_BYGGLOV;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.HandelseSlag.HANDELSESLAG_STRANDSKYDD;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.HandelseTyp.HANDELSETYP_ANMALAN;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.HandelseTyp.HANDELSETYP_ANSOKAN;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.STRANDSKYDD_ANDRAD_ANVANDNING;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.STRANDSKYDD_ANLAGGANDE;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.STRANDSKYDD_ANORDNANDE;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.STRANDSKYDD_NYBYGGNAD;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.TILLBYGGNAD_ANSOKAN_OM_BYGGLOV;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.TypConstants.ATTEFALL;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.TypConstants.BYGGLOV_FOR;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.TypConstants.STRANDSKYDD;
 import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSESLAG_KOMPLETTERANDE_HANDLINGAR;
 import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSESLAG_SLUTBESKED;
 import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSETYP_BESLUT;
@@ -199,10 +217,10 @@ class ByggrServiceTest {
         "STRANDSKYDD_ANDRAD_ANVANDNING"})
     void testStrandskyddCaseType(CaseType caseType) throws ApplicationException {
         var caseTypes = Map.of(
-            STRANDSKYDD_NYBYGGNAD, Constants.BYGGR_ARENDEMENING_STRANDSKYDD_FOR_NYBYGGNAD,
-            STRANDSKYDD_ANLAGGANDE, Constants.BYGGR_ARENDEMENING_STRANDSKYDD_FOR_ANLAGGANDE,
-            STRANDSKYDD_ANORDNANDE, Constants.BYGGR_ARENDEMENING_STRANDSKYDD_FOR_ANORDNANDE,
-            STRANDSKYDD_ANDRAD_ANVANDNING, Constants.BYGGR_ARENDEMENING_STRANDSKYDD_FOR_ANDRAD_ANVANDNING
+            STRANDSKYDD_NYBYGGNAD, BYGGR_ARENDEMENING_STRANDSKYDD_FOR_NYBYGGNAD,
+            STRANDSKYDD_ANLAGGANDE, BYGGR_ARENDEMENING_STRANDSKYDD_FOR_ANLAGGANDE,
+            STRANDSKYDD_ANORDNANDE, BYGGR_ARENDEMENING_STRANDSKYDD_FOR_ANORDNANDE,
+            STRANDSKYDD_ANDRAD_ANVANDNING, BYGGR_ARENDEMENING_STRANDSKYDD_FOR_ANDRAD_ANVANDNING
         );
         
         
@@ -225,7 +243,7 @@ class ByggrServiceTest {
         assertEquals(Constants.BYGGR_SYSTEM_HANDLAGGARE_SIGN, saveNewArendeMessage.getHandlaggarSign());
         
         // Arende
-        assertEquals(Constants.BYGGR_ARENDETYP_STRANDSKYDD, arende.getArendetyp());
+        assertEquals(STRANDSKYDD, arende.getArendetyp());
         assertEquals(caseType.getArendeslag(), arende.getArendeslag());
         assertEquals(inputFacility.getFacilityType().getValue(), arende.getArendeklass());
         assertEquals(Constants.BYGGR_ARENDEGRUPP_STRANDSKYDD, arende.getArendegrupp());
@@ -262,9 +280,9 @@ class ByggrServiceTest {
         // Handelser
         assertNotNull(handelse.getStartDatum());
         assertEquals(Constants.BYGGR_HANDELSE_RIKTNING_IN, handelse.getRiktning());
-        assertEquals(Constants.BYGGR_HANDELSE_RUBRIK_STRANDSKYDD, handelse.getRubrik());
-        assertEquals(Constants.BYGGR_HANDELSETYP_ANSOKAN, handelse.getHandelsetyp());
-        assertEquals(Constants.BYGGR_HANDELSESLAG_STRANDSKYDD, handelse.getHandelseslag());
+        assertEquals(RUBRIK_STRANDSKYDD, handelse.getRubrik());
+        assertEquals(HANDELSETYP_ANSOKAN, handelse.getHandelsetyp());
+        assertEquals(HANDELSESLAG_STRANDSKYDD, handelse.getHandelseslag());
     }
     
     //ANSOKAN_OM_BYGGLOV
@@ -273,9 +291,9 @@ class ByggrServiceTest {
         "ANDRING_ANSOKAN_OM_BYGGLOV", "TILLBYGGNAD_ANSOKAN_OM_BYGGLOV"})
     void testPostNybyggnad(CaseType caseType) throws ApplicationException {
         var caseTypes = Map.of(
-            NYBYGGNAD_ANSOKAN_OM_BYGGLOV, Constants.BYGGR_ARENDEMENING_BYGGLOV_FOR_NYBYGGNAD_AV,
-            TILLBYGGNAD_ANSOKAN_OM_BYGGLOV, Constants.BYGGR_ARENDEMENING_BYGGLOV_FOR_TILLBYGGNAD,
-            ANDRING_ANSOKAN_OM_BYGGLOV, Constants.BYGGR_ARENDEMENING_BYGGLOV_ANDRING_ANSOKAN_OM_
+            NYBYGGNAD_ANSOKAN_OM_BYGGLOV, BYGGR_ARENDEMENING_BYGGLOV_FOR_NYBYGGNAD_AV,
+            TILLBYGGNAD_ANSOKAN_OM_BYGGLOV, BYGGR_ARENDEMENING_BYGGLOV_FOR_TILLBYGGNAD,
+            ANDRING_ANSOKAN_OM_BYGGLOV, BYGGR_ARENDEMENING_BYGGLOV_ANDRING_ANSOKAN_OM
         );
         
         
@@ -298,7 +316,7 @@ class ByggrServiceTest {
         assertEquals(Constants.BYGGR_SYSTEM_HANDLAGGARE_SIGN, saveNewArendeMessage.getHandlaggarSign());
         
         // Arende
-        assertEquals(Constants.BYGGR_ARENDETYP_BYGGLOV_FOR, arende.getArendetyp());
+        assertEquals(BYGGLOV_FOR, arende.getArendetyp());
         if (!caseType.equals(ANDRING_ANSOKAN_OM_BYGGLOV)) {
             assertEquals(caseType.getArendeslag(), arende.getArendeslag());
             assertEquals(inputFacility.getFacilityType().getValue(), arende.getArendeklass());
@@ -339,9 +357,9 @@ class ByggrServiceTest {
         // Handelser
         assertNotNull(handelse.getStartDatum());
         assertEquals(Constants.BYGGR_HANDELSE_RIKTNING_IN, handelse.getRiktning());
-        assertEquals(Constants.BYGGR_HANDELSE_RUBRIK_BYGGLOV, handelse.getRubrik());
-        assertEquals(Constants.BYGGR_HANDELSETYP_ANSOKAN, handelse.getHandelsetyp());
-        assertEquals(Constants.BYGGR_HANDELSESLAG_BYGGLOV, handelse.getHandelseslag());
+        assertEquals(RUBRIK_BYGGLOV, handelse.getRubrik());
+        assertEquals(HANDELSETYP_ANSOKAN, handelse.getHandelsetyp());
+        assertEquals(HANDELSESLAG_BYGGLOV, handelse.getHandelseslag());
     }
     
     // ANMALAN_ATTEFALL
@@ -370,7 +388,7 @@ class ByggrServiceTest {
         assertEquals(Constants.BYGGR_SYSTEM_HANDLAGGARE_SIGN, saveNewArendeMessage.getHandlaggarSign());
         
         // Arende
-        assertEquals(Constants.BYGGR_ARENDETYP_ANMALAN_ATTEFALL, arende.getArendetyp());
+        assertEquals(ATTEFALL, arende.getArendetyp());
         assertEquals(inputFacility.getFacilityType().getValue(), arende.getArendeslag());
         assertNull(arende.getArendeklass());
         assertEquals(Constants.BYGGR_ARENDEGRUPP_LOV_ANMALNINGSARENDE, arende.getArendegrupp());
@@ -408,9 +426,9 @@ class ByggrServiceTest {
         // Handelser
         assertNotNull(handelse.getStartDatum());
         assertEquals(Constants.BYGGR_HANDELSE_RIKTNING_IN, handelse.getRiktning());
-        assertEquals(Constants.BYGGR_HANDELSE_RUBRIK_ANMALAN_ATTEFALL, handelse.getRubrik());
-        assertEquals(Constants.BYGGR_HANDELSETYP_ANMALAN, handelse.getHandelsetyp());
-        assertEquals(Constants.BYGGR_HANDELSESLAG_ANMALAN_ATTEFALL, handelse.getHandelseslag());
+        assertEquals(RUBRIK_ANMALAN_ATTEFALL, handelse.getRubrik());
+        assertEquals(HANDELSETYP_ANMALAN, handelse.getHandelsetyp());
+        assertEquals(HANDELSESLAG_ANMALAN_ATTEFALL, handelse.getHandelseslag());
     }
     
     // ANMALAN_ELDSTAD
@@ -440,7 +458,7 @@ class ByggrServiceTest {
         assertEquals(Constants.BYGGR_SYSTEM_HANDLAGGARE_SIGN, saveNewArendeMessage.getHandlaggarSign());
         
         // Arende
-        assertEquals(Constants.BYGGR_HANDELSETYP_ANMALAN, arende.getArendetyp());
+        assertEquals(HANDELSETYP_ANMALAN, arende.getArendetyp());
         assertEquals(inputFacility.getFacilityType().getValue(), arende.getArendeslag());
         assertNull(arende.getArendeklass());
         assertEquals(Constants.BYGGR_ARENDEGRUPP_LOV_ANMALNINGSARENDE, arende.getArendegrupp());
@@ -479,7 +497,7 @@ class ByggrServiceTest {
         assertNotNull(handelse.getStartDatum());
         assertEquals(Constants.BYGGR_HANDELSE_RIKTNING_IN, handelse.getRiktning());
         assertEquals(Constants.BYGGR_HANDELSE_RUBRIK_ELDSTAD, handelse.getRubrik());
-        assertEquals(Constants.BYGGR_HANDELSETYP_ANMALAN, handelse.getHandelsetyp());
+        assertEquals(HANDELSETYP_ANMALAN, handelse.getHandelsetyp());
         assertEquals(Constants.BYGGR_HANDELSESLAG_ELDSTAD, handelse.getHandelseslag());
     }
     
@@ -510,7 +528,7 @@ class ByggrServiceTest {
         assertEquals(Constants.BYGGR_SYSTEM_HANDLAGGARE_SIGN, saveNewArendeMessage.getHandlaggarSign());
         
         // Arende
-        assertEquals(Constants.BYGGR_HANDELSETYP_ANMALAN, arende.getArendetyp());
+        assertEquals(HANDELSETYP_ANMALAN, arende.getArendetyp());
         assertEquals(inputFacility.getFacilityType().getValue(), arende.getArendeslag());
         assertNull(arende.getArendeklass());
         assertEquals(Constants.BYGGR_ARENDEGRUPP_LOV_ANMALNINGSARENDE, arende.getArendegrupp());
@@ -549,7 +567,7 @@ class ByggrServiceTest {
         assertNotNull(handelse.getStartDatum());
         assertEquals(Constants.BYGGR_HANDELSE_RIKTNING_IN, handelse.getRiktning());
         assertEquals(Constants.BYGGR_HANDELSE_RUBRIK_ELDSTAD_ROKKANAL, handelse.getRubrik());
-        assertEquals(Constants.BYGGR_HANDELSETYP_ANMALAN, handelse.getHandelsetyp());
+        assertEquals(HANDELSETYP_ANMALAN, handelse.getHandelsetyp());
         assertEquals(Constants.BYGGR_HANDELSESLAG_ELDSTAD_ROKKANAL, handelse.getHandelseslag());
     }
     

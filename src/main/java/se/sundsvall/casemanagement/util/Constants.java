@@ -7,38 +7,24 @@ public final class Constants {
     }
 
     ////////////////// ByggR
-    public static final String BYGGR_ARENDEMENING_NYBYGGNAD_FORHANDSBESKED = "Förhandsbesked för nybyggnad av";
-    public static final String BYGGR_ARENDEMENING_BYGGLOV_FOR_NYBYGGNAD_AV = "Bygglov för nybyggnad av";
-    public static final String BYGGR_ARENDEMENING_BYGGLOV_FOR_TILLBYGGNAD = "Bygglov för tillbyggnad av";
-    public static final String BYGGR_ARENDEMENING_BYGGLOV_ANDRING_ANSOKAN_OM_ = "Bygglov för";
-    public static final String BYGGR_ARENDEMENING_BYGGLOV_FOR_UPPSSATTANDE = "Bygglov för uppsättande av ";
-    
-    
-    public static final String BYGGR_ARENDEMENING_STRANDSKYDD_FOR_NYBYGGNAD= "Strandskyddsdispens för nybyggnad av";
-    public static final String BYGGR_ARENDEMENING_STRANDSKYDD_FOR_ANLAGGANDE= "Strandskyddsdispens för anläggande av";
-    public static final String BYGGR_ARENDEMENING_STRANDSKYDD_FOR_ANORDNANDE= "Strandskyddsdispens för anordnare av";
-    public static final String BYGGR_ARENDEMENING_STRANDSKYDD_FOR_ANDRAD_ANVANDNING= "Strandskyddsdispens för ändrad användning av";
+
     
     
     public static final String BYGGR_HANDELSE_ANTECKNING = "Inkomna kompletteringar via e-tjänst.";
     public static final String BYGGR_HANDELSE_RUBRIK_MANUELL_HANTERING = "Manuell hantering";
     public static final String BYGGR_HANDELSE_RUBRIK_KOMPLETTERING_TILL_ADMIN = "Komplettering till Admin";
-    public static final String BYGGR_HANDELSE_RUBRIK_BYGGLOV = "Bygglov";
-    public static final String BYGGR_HANDELSE_RUBRIK_FORHANDSBESKED = "Förhandsbesked";
-    public static final String BYGGR_HANDELSE_RUBRIK_STRANDSKYDD ="Strandskyddsdispens";
-    public static final String BYGGR_HANDELSESLAG_STRANDSKYDD ="Strand";
-    public static final String BYGGR_HANDELSE_RUBRIK_ANMALAN_ATTEFALL = "Anmälan Attefall";
     
     
     public static final String BYGGR_HANDELSE_RUBRIK_ELDSTAD = "Eldstad";
-    public static final String BYGGR_HANDELSESLAG_ELDSTAD = "ELD1";
     public static final String BYGGR_HANDELSE_RUBRIK_ELDSTAD_ROKKANAL="Eldstad/Rökkanal";
+    
+    public static final String BYGGR_HANDELSESLAG_ELDSTAD = "ELD1";
     public static final String BYGGR_HANDELSESLAG_ELDSTAD_ROKKANAL = "ELD";
     
     public static final String BYGGR_HANDELSE_RIKTNING_IN = "In";
     public static final String BYGGR_HANDELSETYP_STATUS = "STATUS";
-    public static final String BYGGR_HANDELSETYP_ANSOKAN = "ANSÖKAN";
-    public static final String BYGGR_HANDELSETYP_ANMALAN = "ANM";
+
+
     public static final String BYGGR_HANDELSETYP_BESLUT = "BESLUT";
     public static final String BYGGR_HANDELSETYP_HANDLING = "HANDLING";
     public static final String BYGGR_HANDELSETYP_ATOMHANDELSE = "Atom";
@@ -47,8 +33,6 @@ public final class Constants {
     public static final String BYGGR_HANDELSETYP_KOMPLETTERINGSFORELAGGANDE = "KOMP";
     public static final String BYGGR_HANDELSETYP_KOMPLETTERINGSFORELAGGANDE_PAMINNELSE = "KOMP1";
 
-    public static final String BYGGR_HANDELSESLAG_BYGGLOV = "Bygglov";
-    public static final String BYGGR_HANDELSESLAG_FORHANDSBESKED = "Förhand";
     public static final String BYGGR_HANDELSESLAG_SLUTBESKED = "SLU";
     public static final String BYGGR_HANDELSESLAG_AVSKRIVNING = "UAB";
     public static final String BYGGR_HANDELSESLAG_MANUELL_HANTERING_KRAVS = "MANHANT";
@@ -62,7 +46,6 @@ public final class Constants {
     public static final String BYGGR_HANDELSESLAG_UTAN_KRAV_PA_SVAR = "Utan";
     public static final String BYGGR_HANDELSESLAG_KOMPLETTERING_TILL_ADMIN = "KOMPADM";
     
-    public static final String BYGGR_HANDELSESLAG_ANMALAN_ATTEFALL = "ANMATT";
 
     public static final String BYGGR_HANDELSEUTFALL_ATOM_KVITTENS_HL_BYTE = "Kv2";
 
@@ -75,10 +58,6 @@ public final class Constants {
     public static final String BYGGR_ENHETKOD_STADSBYGGNADSKONTORET = "SBK";
     public static final String BYGGR_ARENDEGRUPP_LOV_ANMALNINGSARENDE = "LOV";
     public static final String BYGGR_ARENDEGRUPP_STRANDSKYDD = "STRA";
-    public static final String BYGGR_ARENDETYP_BYGGLOV_FOR = "BL";
-    public static final String BYGGR_ARENDETYP_FORHANDSBESKED = "FÖRF";
-    public static final String BYGGR_ARENDETYP_ANMALAN_ATTEFALL = "ATTANM";
-    public static final String BYGGR_ARENDETYP_STRANDSKYDD="DI";
     
     public static final String BYGGR_HANDELSE_ANTECKNING_INTRESSENT_KUNDE_INTE_REGISTRERAS = "- Det finns flera intressenter med samma personnummer i den inkomna ansökan. Detta går inte att registrera maskinellt.";
     public static final String BYGGR_HANDELSE_ANTECKNING_KONTROLLANSVARIG = "- Det finns uppgifter om kontrollansvarig i den inkomna ansökan. Detta går inte att registrera maskinellt.";

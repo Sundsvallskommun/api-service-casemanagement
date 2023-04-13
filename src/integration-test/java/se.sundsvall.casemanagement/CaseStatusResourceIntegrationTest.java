@@ -40,6 +40,20 @@ import se.sundsvall.casemanagement.testutils.TestConstants;
 import se.sundsvall.casemanagement.util.Constants;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static se.sundsvall.casemanagement.TestUtil.OBJECT_MAPPER;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.HandelseTyp.HANDELSETYP_ANSOKAN;
+import static se.sundsvall.casemanagement.testutils.TestConstants.CASE_DATA_CASE_ID;
+import static se.sundsvall.casemanagement.testutils.TestConstants.CASE_DATA_ERRAND_NUMBER;
+import static se.sundsvall.casemanagement.testutils.TestConstants.ECOS_CASE_NUMBER;
+import static se.sundsvall.casemanagement.testutils.TestConstants.PROPERTY_DESIGNATION_BALDER;
+
 @WireMockAppTestSuite(files = "classpath:/IntegrationTest", classes = Application.class)
 class CaseStatusResourceIntegrationTest extends CustomAbstractAppTest {
     
@@ -117,7 +131,7 @@ class CaseStatusResourceIntegrationTest extends CustomAbstractAppTest {
         assertEquals(postCaseResponse.getCaseType(), getStatusResponse.getCaseType());
         assertEquals(postCaseResponse.getExternalCaseId(), getStatusResponse.getExternalCaseId());
         assertEquals(BYGG_CASE_NUMBER, getStatusResponse.getCaseId());
-        assertEquals(Constants.BYGGR_HANDELSETYP_ANSOKAN, getStatusResponse.getStatus());
+        assertEquals(HANDELSETYP_ANSOKAN, getStatusResponse.getStatus());
         assertEquals(postCaseResponse.getServiceName(), getStatusResponse.getServiceName());
     }
     
