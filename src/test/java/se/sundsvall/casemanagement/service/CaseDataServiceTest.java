@@ -50,9 +50,9 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Constants.LOST_PARKING_PERMIT_VALUE;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Constants.PARKING_PERMIT_RENEWAL_VALUE;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Constants.PARKING_PERMIT_VALUE;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.LOST_PARKING_PERMIT;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARKING_PERMIT_RENEWAL;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARKING_PERMIT;
 
 @ExtendWith(MockitoExtension.class)
 class CaseDataServiceTest {
@@ -77,7 +77,7 @@ class CaseDataServiceTest {
     private ArgumentCaptor<List<generated.client.casedata.AttachmentDTO>> attachmentDTOListArgumentCaptor;
 
     @ParameterizedTest
-    @EnumSource(value = CaseType.class, mode = EnumSource.Mode.INCLUDE, names = {PARKING_PERMIT_VALUE, LOST_PARKING_PERMIT_VALUE, PARKING_PERMIT_RENEWAL_VALUE})
+    @EnumSource(value = CaseType.class, mode = EnumSource.Mode.INCLUDE, names = {PARKING_PERMIT, LOST_PARKING_PERMIT, PARKING_PERMIT_RENEWAL})
     void testPostCases(CaseType caseType) throws URISyntaxException {
         long errandId = new Random().nextLong();
         ResponseEntity<Void> mockResponse = ResponseEntity.created(new URI("https://sundsvall-test.se/errands/" + errandId)).build();

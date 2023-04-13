@@ -5,9 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static se.sundsvall.casemanagement.TestUtil.OBJECT_MAPPER;
 import static se.sundsvall.casemanagement.TestUtil.getHeatPumpExtraParams;
 import static se.sundsvall.casemanagement.TestUtil.getSandfilterExtraParams;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Constants.LOST_PARKING_PERMIT_VALUE;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Constants.PARKING_PERMIT_RENEWAL_VALUE;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Constants.PARKING_PERMIT_VALUE;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.LOST_PARKING_PERMIT;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARKING_PERMIT;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARKING_PERMIT_RENEWAL;
 import static se.sundsvall.casemanagement.testutils.TestConstants.BYGG_CASE_ID;
 import static se.sundsvall.casemanagement.testutils.TestConstants.BYGG_CASE_NUMBER;
 import static se.sundsvall.casemanagement.testutils.TestConstants.CASE_DATA_CASE_ID;
@@ -16,7 +16,6 @@ import static se.sundsvall.casemanagement.testutils.TestConstants.ECOS_CASE_ID;
 import static se.sundsvall.casemanagement.testutils.TestConstants.ECOS_CASE_NUMBER;
 import static se.sundsvall.casemanagement.testutils.TestConstants.PROPERTY_DESIGNATION_BALDER;
 
-import java.text.MessageFormat;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -34,6 +33,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.jdbc.Sql;
 import org.zalando.problem.Problem;
 import org.zalando.problem.violations.ConstraintViolationProblem;
 
@@ -66,6 +66,7 @@ import se.sundsvall.casemanagement.util.Constants;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 
 @WireMockAppTestSuite(files = "classpath:/IntegrationTest", classes = Application.class)
+@Sql(scripts = "classpath:/sql/caseType.sql")
 class CaseResourceIntegrationTest extends CustomAbstractAppTest {
     private static final String PERSON_ID = "e19981ad-34b2-4e14-88f5-133f61ca85aa";
     private static final String ORG_NUMBER = "123456-1234";
@@ -350,7 +351,7 @@ class CaseResourceIntegrationTest extends CustomAbstractAppTest {
         TimeUnit.SECONDS.sleep(10);
         // Make sure that there exists a case entity with failed status
         var result = caseRepository.findById(eCase.getExternalCaseId()).orElseThrow(() -> new RuntimeException("Case not found"));
-    
+        
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo(eCase.getExternalCaseId());
         assertThat(result.getDeliveryStatus()).isEqualTo(DeliveryStatus.FAILED);
@@ -480,7 +481,7 @@ class CaseResourceIntegrationTest extends CustomAbstractAppTest {
         PlanningPermissionCaseDTO pCase = TestUtil.createPlanningPermissionCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.ANS);
         pCase.setFacilities(null);
         pCase.setFacilities(List.of(TestUtil.createAttefallFacilityDTO(true)));
-
+        
         setupCall()
             .withHttpMethod(HttpMethod.POST)
             .withServicePath("/cases")
@@ -490,7 +491,7 @@ class CaseResourceIntegrationTest extends CustomAbstractAppTest {
     }
     
     @ParameterizedTest
-    @EnumSource(value = CaseType.class, mode = EnumSource.Mode.INCLUDE, names = {PARKING_PERMIT_VALUE, LOST_PARKING_PERMIT_VALUE, PARKING_PERMIT_RENEWAL_VALUE})
+    @EnumSource(value = CaseType.class, mode = EnumSource.Mode.INCLUDE, names = {PARKING_PERMIT, LOST_PARKING_PERMIT, PARKING_PERMIT_RENEWAL})
     void testPostParkingPermitCase(CaseType caseType) throws JsonProcessingException, ClassNotFoundException {
         OtherCaseDTO otherCase = new OtherCaseDTO();
         otherCase.setCaseType(caseType);
@@ -506,7 +507,7 @@ class CaseResourceIntegrationTest extends CustomAbstractAppTest {
         otherCase.setExtraParameters(TestUtil.createExtraParameters());
         
         postCaseAndVerifyResponse(otherCase, CASE_DATA_ERRAND_NUMBER);
-    
+        
         assertThat(caseRepository.findById(otherCase.getExternalCaseId()).isPresent()).isFalse();
         // Make sure that there exists a case mapping
         assertThat(caseMappingRepository.findAllByExternalCaseId(otherCase.getExternalCaseId()))
@@ -519,9 +520,9 @@ class CaseResourceIntegrationTest extends CustomAbstractAppTest {
     }
     
     @ParameterizedTest
-    @EnumSource(value = CaseType.class, mode = EnumSource.Mode.INCLUDE, names = {PARKING_PERMIT_VALUE, LOST_PARKING_PERMIT_VALUE, PARKING_PERMIT_RENEWAL_VALUE})
+    @EnumSource(value = CaseType.class, mode = EnumSource.Mode.INCLUDE, names = {PARKING_PERMIT, LOST_PARKING_PERMIT, PARKING_PERMIT_RENEWAL})
     void testPostParkingPermitcaseError(CaseType caseType) throws JsonProcessingException, InterruptedException {
-    
+        
         OtherCaseDTO otherCase = new OtherCaseDTO();
         otherCase.setCaseType(caseType);
         otherCase.setExternalCaseId("INTERNAL_SERVER_ERROR");
@@ -534,20 +535,20 @@ class CaseResourceIntegrationTest extends CustomAbstractAppTest {
         AttachmentDTO attachmentDTO2 = TestUtil.createAttachment(AttachmentCategory.ANMALAN_VARMEPUMP);
         otherCase.setAttachments(List.of(attachmentDTO1, attachmentDTO2));
         otherCase.setExtraParameters(TestUtil.createExtraParameters());
-    
+        
         setupCall()
             .withHttpMethod(HttpMethod.POST)
             .withServicePath("/cases")
             .withRequest(OBJECT_MAPPER.writeValueAsString(otherCase))
             .withExpectedResponseStatus(HttpStatus.OK)
             .sendRequestAndVerifyResponse();
-    
+        
         // Make sure that there doesn't exist a case mapping
         assertThat(caseMappingRepository.findAllByExternalCaseId(otherCase.getExternalCaseId())).isEmpty();
         TimeUnit.SECONDS.sleep(10);
         // Make sure that there exists a case entity with failed status
         var result = caseRepository.findById(otherCase.getExternalCaseId()).orElseThrow(() -> new RuntimeException("Case not found"));
-    
+        
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo(otherCase.getExternalCaseId());
         assertThat(result.getDeliveryStatus()).isEqualTo(DeliveryStatus.FAILED);
@@ -590,20 +591,20 @@ class CaseResourceIntegrationTest extends CustomAbstractAppTest {
         EnvironmentalCaseDTO eCase = TestUtil.createEnvironmentalCase(CaseType.REGISTRERING_AV_LIVSMEDEL, AttachmentCategory.ANMALAN_LIVSMEDELSANLAGGNING);
         eCase.getFacilities().get(0).getAddress().setPropertyDesignation("RANDOM_PROPERTY_DESIGNATION");
         
-        Problem response = setupCall()
+        setupCall()
             .withHttpMethod(HttpMethod.POST)
             .withServicePath("/cases")
             .withRequest(OBJECT_MAPPER.writeValueAsString(eCase))
             .withExpectedResponseStatus(HttpStatus.OK)
             .sendRequestAndVerifyResponse()
             .andReturnBody(Problem.class);
-    
+        
         // Make sure that there doesn't exist a case mapping
         assertThat(caseMappingRepository.findAllByExternalCaseId(eCase.getExternalCaseId())).isEmpty();
         TimeUnit.SECONDS.sleep(10);
         // Make sure that there exists a case entity with failed status
         var result = caseRepository.findById(eCase.getExternalCaseId()).orElseThrow(() -> new RuntimeException("Case not found"));
-    
+        
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo(eCase.getExternalCaseId());
         assertThat(result.getDeliveryStatus()).isEqualTo(DeliveryStatus.FAILED);

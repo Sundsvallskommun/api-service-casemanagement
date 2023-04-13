@@ -20,7 +20,7 @@ import static com.google.code.beanmatchers.BeanMatchers.registerValueGenerator;
 import static org.hamcrest.CoreMatchers.allOf;
 import static se.sundsvall.casemanagement.TestUtil.getRandomOfEnum;
 
-class CaseDTOMappingTest {
+class CaseMappingTest {
 
     @BeforeAll
     static void setup() {

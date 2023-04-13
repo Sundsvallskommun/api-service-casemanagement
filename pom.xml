@@ -67,6 +67,15 @@
             <groupId>org.mariadb.jdbc</groupId>
             <artifactId>mariadb-java-client</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-mysql</artifactId>
+        </dependency>
         <!-- Test -->
         <dependency>
             <groupId>org.testcontainers</groupId>
@@ -234,7 +243,6 @@
                             <addGeneratedAnnotation>true</addGeneratedAnnotation>
                             <noGeneratedHeaderComments>true</noGeneratedHeaderComments>
                             <sourceType>wsdl</sourceType>
-
                             <arguments>
                                 <argument>-Xfluent-api</argument>
                                 <argument>-XautoNameResolution</argument>
