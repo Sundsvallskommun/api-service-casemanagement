@@ -65,6 +65,29 @@ import se.sundsvall.casemanagement.testutils.TestConstants;
 import se.sundsvall.casemanagement.util.Constants;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 
+import java.text.MessageFormat;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static se.sundsvall.casemanagement.TestUtil.OBJECT_MAPPER;
+import static se.sundsvall.casemanagement.TestUtil.getHeatPumpExtraParams;
+import static se.sundsvall.casemanagement.TestUtil.getSandfilterExtraParams;
+
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.LOST_PARKING_PERMIT;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARKING_PERMIT;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARKING_PERMIT_RENEWAL;
+import static se.sundsvall.casemanagement.testutils.TestConstants.BYGG_CASE_ID;
+import static se.sundsvall.casemanagement.testutils.TestConstants.CASE_DATA_CASE_ID;
+import static se.sundsvall.casemanagement.testutils.TestConstants.CASE_DATA_ERRAND_NUMBER;
+import static se.sundsvall.casemanagement.testutils.TestConstants.ECOS_CASE_ID;
+import static se.sundsvall.casemanagement.testutils.TestConstants.ECOS_CASE_NUMBER;
+import static se.sundsvall.casemanagement.testutils.TestConstants.PROPERTY_DESIGNATION_BALDER;
+
 @WireMockAppTestSuite(files = "classpath:/IntegrationTest", classes = Application.class)
 @Sql(scripts = "classpath:/sql/caseType.sql")
 class CaseResourceIntegrationTest extends CustomAbstractAppTest {
