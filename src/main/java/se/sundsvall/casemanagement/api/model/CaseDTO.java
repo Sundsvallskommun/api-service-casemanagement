@@ -1,5 +1,29 @@
 package se.sundsvall.casemanagement.api.model;
 
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANDRING_ANSOKAN_OM_BYGGLOV;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_ANDRING_AVLOPPSANLAGGNING;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_ANDRING_AVLOPPSANORDNING;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_ATTEFALL;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_ELDSTAD;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_HALSOSKYDDSVERKSAMHET;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_INSTALLATION_VARMEPUMP;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANSOKAN_TILLSTAND_VARMEPUMP;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.LOST_PARKING_PERMIT;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.NYBYGGNAD_ANSOKAN_OM_BYGGLOV;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.NYBYGGNAD_FORHANDSBESKED;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARKING_PERMIT;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARKING_PERMIT_RENEWAL;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.REGISTRERING_AV_LIVSMEDEL;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.STRANDSKYDD_ANDRAD_ANVANDNING;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.STRANDSKYDD_ANLAGGANDE;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.STRANDSKYDD_ANORDNANDE;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.STRANDSKYDD_NYBYGGNAD;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.TILLBYGGNAD_ANSOKAN_OM_BYGGLOV;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.UPPDATERING_RISKKLASSNING;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.UPPSATTANDE_SKYLT;
+
 import java.util.List;
 import java.util.Map;
 
@@ -20,31 +44,31 @@ import lombok.Data;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "caseType", include = JsonTypeInfo.As.EXISTING_PROPERTY, visible = true)
 @JsonSubTypes({
     @Type(value = PlanningPermissionCaseDTO.class, names = {
-        CaseType.Constants.NYBYGGNAD_ANSOKAN_OM_BYGGLOV_VALUE,
-        CaseType.Constants.NYBYGGNAD_FORHANDSBESKED_VALUE,
-        CaseType.Constants.ANMALAN_ATTEFALL_VALUE,
-        CaseType.Constants.UPPSATTANDE_SKYLT_VALUE,
-        CaseType.Constants.TILLBYGGNAD_ANSOKAN_OM_BYGGLOV_VALUE,
-        CaseType.Constants.ANDRING_ANSOKAN_OM_BYGGLOV_VALUE,
-        CaseType.Constants.STRANDSKYDD_NYBYGGNAD_VALUE,
-        CaseType.Constants.STRANDSKYDD_ANDRAD_ANVANDNING_VALUE,
-        CaseType.Constants.STRANDSKYDD_ANORDNANDE_VALUE,
-        CaseType.Constants.STRANDSKYDD_ANLAGGANDE_VALUE,
-        CaseType.Constants.ANMALAN_ELDSTAD_VALUE}),
+        NYBYGGNAD_ANSOKAN_OM_BYGGLOV,
+        NYBYGGNAD_FORHANDSBESKED,
+        ANMALAN_ATTEFALL,
+        UPPSATTANDE_SKYLT,
+        TILLBYGGNAD_ANSOKAN_OM_BYGGLOV,
+        ANDRING_ANSOKAN_OM_BYGGLOV,
+        STRANDSKYDD_NYBYGGNAD,
+        STRANDSKYDD_ANDRAD_ANVANDNING,
+        STRANDSKYDD_ANORDNANDE,
+        STRANDSKYDD_ANLAGGANDE,
+        ANMALAN_ELDSTAD}),
     @Type(value = EnvironmentalCaseDTO.class, names = {
-        CaseType.Constants.REGISTRERING_AV_LIVSMEDEL_VALUE,
-        CaseType.Constants.ANMALAN_INSTALLATION_VARMEPUMP_VALUE,
-        CaseType.Constants.ANSOKAN_TILLSTAND_VARMEPUMP_VALUE,
-        CaseType.Constants.ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC_VALUE,
-        CaseType.Constants.ANMALAN_ANDRING_AVLOPPSANLAGGNING_VALUE,
-        CaseType.Constants.ANMALAN_ANDRING_AVLOPPSANORDNING_VALUE,
-        CaseType.Constants.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP_VALUE,
-        CaseType.Constants.UPPDATERING_RISKKLASSNING_VALUE,
-        CaseType.Constants.ANMALAN_HALSOSKYDDSVERKSAMHET_VALUE}),
+        REGISTRERING_AV_LIVSMEDEL,
+        ANMALAN_INSTALLATION_VARMEPUMP,
+        ANSOKAN_TILLSTAND_VARMEPUMP,
+        ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC,
+        ANMALAN_ANDRING_AVLOPPSANLAGGNING,
+        ANMALAN_ANDRING_AVLOPPSANORDNING,
+        ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP,
+        UPPDATERING_RISKKLASSNING,
+        ANMALAN_HALSOSKYDDSVERKSAMHET}),
     @Type(value = OtherCaseDTO.class, names = {
-        CaseType.Constants.PARKING_PERMIT_VALUE,
-        CaseType.Constants.LOST_PARKING_PERMIT_VALUE,
-        CaseType.Constants.PARKING_PERMIT_RENEWAL_VALUE})})
+        PARKING_PERMIT,
+        LOST_PARKING_PERMIT,
+        PARKING_PERMIT_RENEWAL})})
 @Data
 public abstract class CaseDTO {
     

@@ -2,12 +2,12 @@ package se.sundsvall.casemanagement;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static se.sundsvall.casemanagement.TestUtil.OBJECT_MAPPER;
 import static se.sundsvall.casemanagement.testutils.TestConstants.BYGG_CASE_ID;
 import static se.sundsvall.casemanagement.testutils.TestConstants.BYGG_CASE_NUMBER;
 import static se.sundsvall.casemanagement.testutils.TestConstants.CASE_DATA_CASE_ID;
 import static se.sundsvall.casemanagement.testutils.TestConstants.ECOS_CASE_NUMBER;
 import static se.sundsvall.casemanagement.testutils.TestConstants.PROPERTY_DESIGNATION_BALDER;
+import static se.sundsvall.casemanagement.util.Constants.HANDELSETYP_ANSOKAN;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -23,12 +23,10 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 
 import se.sundsvall.casemanagement.api.model.AddressDTO;
-import se.sundsvall.casemanagement.api.model.CaseResourceResponseDTO;
 import se.sundsvall.casemanagement.api.model.CaseStatusDTO;
 import se.sundsvall.casemanagement.api.model.EnvironmentalCaseDTO;
 import se.sundsvall.casemanagement.api.model.EnvironmentalFacilityDTO;
 import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
-import se.sundsvall.casemanagement.api.model.PlanningPermissionCaseDTO;
 import se.sundsvall.casemanagement.api.model.enums.AddressCategory;
 import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
 import se.sundsvall.casemanagement.api.model.enums.CaseType;
@@ -36,7 +34,6 @@ import se.sundsvall.casemanagement.api.model.enums.SystemType;
 import se.sundsvall.casemanagement.integration.db.CaseMappingRepository;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.testutils.CustomAbstractAppTest;
-import se.sundsvall.casemanagement.testutils.TestConstants;
 import se.sundsvall.casemanagement.util.Constants;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 
@@ -50,12 +47,12 @@ class CaseStatusResourceIntegrationTest extends CustomAbstractAppTest {
     void setup() {
         caseMappingRepository.deleteAll();
     }
-
+    
     @Test
     void testGetEcosStatusByExternalCaseId() throws JsonProcessingException, ClassNotFoundException {
-
+        
         EnvironmentalCaseDTO eCase = TestUtil.createEnvironmentalCase(CaseType.REGISTRERING_AV_LIVSMEDEL, AttachmentCategory.ANMALAN_LIVSMEDELSANLAGGNING);
-
+        
         EnvironmentalFacilityDTO facility = new EnvironmentalFacilityDTO();
         // Sätter denna till "200_response" för att kunna styra vilket svar jag får i request mapping
         facility.setFacilityCollectionName("200_response");
@@ -65,7 +62,7 @@ class CaseStatusResourceIntegrationTest extends CustomAbstractAppTest {
         facility.setAddress(facilityAddressDTO);
         eCase.setFacilities(List.of(facility));
         eCase.setExtraParameters(Map.of(Constants.SERVICE_NAME, "Ansökan om livsmedel"));
-
+        
         var postCaseResponse = caseMappingRepository.save(CaseMapping.builder()
             .withExternalCaseId(eCase.getExternalCaseId())
             .withCaseType(CaseType.REGISTRERING_AV_LIVSMEDEL)
@@ -74,16 +71,16 @@ class CaseStatusResourceIntegrationTest extends CustomAbstractAppTest {
             .withServiceName("Ansökan om livsmedel")
             .withTimestamp(LocalDateTime.now())
             .build());
-
+        
         assertEquals(ECOS_CASE_NUMBER, postCaseResponse.getCaseId());
-
+        
         var getStatusResponse = setupCall()
-                .withHttpMethod(HttpMethod.GET)
-                .withServicePath("/cases/" + eCase.getExternalCaseId() + "/status")
-                .withExpectedResponseStatus(HttpStatus.OK)
-                .sendRequestAndVerifyResponse()
-                .andReturnBody(CaseStatusDTO.class);
-
+            .withHttpMethod(HttpMethod.GET)
+            .withServicePath("/cases/" + eCase.getExternalCaseId() + "/status")
+            .withExpectedResponseStatus(HttpStatus.OK)
+            .sendRequestAndVerifyResponse()
+            .andReturnBody(CaseStatusDTO.class);
+        
         assertEquals(SystemType.ECOS, getStatusResponse.getSystem());
         assertEquals(eCase.getCaseType(), getStatusResponse.getCaseType());
         assertEquals(eCase.getExternalCaseId(), getStatusResponse.getExternalCaseId());
@@ -91,7 +88,7 @@ class CaseStatusResourceIntegrationTest extends CustomAbstractAppTest {
         assertEquals("Begäran om anstånd", getStatusResponse.getStatus());
         assertEquals("Ansökan om livsmedel", getStatusResponse.getServiceName());
     }
-
+    
     @Test
     void testGetByggrStatusByExternalCaseId() throws JsonProcessingException, ClassNotFoundException {
         
@@ -103,21 +100,21 @@ class CaseStatusResourceIntegrationTest extends CustomAbstractAppTest {
             .withServiceName("serviceName")
             .withTimestamp(LocalDateTime.now())
             .build());
-
+        
         assertEquals(BYGG_CASE_ID, postCaseResponse.getCaseId());
-
+        
         var getStatusResponse = setupCall()
-                .withHttpMethod(HttpMethod.GET)
-                .withServicePath("/cases/" + postCaseResponse.getExternalCaseId() + "/status")
-                .withExpectedResponseStatus(HttpStatus.OK)
-                .sendRequestAndVerifyResponse()
-                .andReturnBody(CaseStatusDTO.class);
-
+            .withHttpMethod(HttpMethod.GET)
+            .withServicePath("/cases/" + postCaseResponse.getExternalCaseId() + "/status")
+            .withExpectedResponseStatus(HttpStatus.OK)
+            .sendRequestAndVerifyResponse()
+            .andReturnBody(CaseStatusDTO.class);
+        
         assertEquals(SystemType.BYGGR, getStatusResponse.getSystem());
         assertEquals(postCaseResponse.getCaseType(), getStatusResponse.getCaseType());
         assertEquals(postCaseResponse.getExternalCaseId(), getStatusResponse.getExternalCaseId());
         assertEquals(BYGG_CASE_NUMBER, getStatusResponse.getCaseId());
-        assertEquals(Constants.BYGGR_HANDELSETYP_ANSOKAN, getStatusResponse.getStatus());
+        assertEquals(HANDELSETYP_ANSOKAN, getStatusResponse.getStatus());
         assertEquals(postCaseResponse.getServiceName(), getStatusResponse.getServiceName());
     }
     

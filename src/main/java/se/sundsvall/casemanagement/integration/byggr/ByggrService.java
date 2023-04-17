@@ -1,23 +1,13 @@
 package se.sundsvall.casemanagement.integration.byggr;
 
 import static java.util.function.Predicate.not;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.ANDRING_ANSOKAN_OM_BYGGLOV;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.ANMALAN_ATTEFALL;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.NYBYGGNAD_FORHANDSBESKED;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.STRANDSKYDD_ANDRAD_ANVANDNING;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.STRANDSKYDD_ANLAGGANDE;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.STRANDSKYDD_ANORDNANDE;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.STRANDSKYDD_NYBYGGNAD;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.TILLBYGGNAD_ANSOKAN_OM_BYGGLOV;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.UPPSATTANDE_SKYLT;
+
 import static se.sundsvall.casemanagement.api.model.enums.FacilityType.FIREPLACE;
 import static se.sundsvall.casemanagement.api.model.enums.FacilityType.FIREPLACE_SMOKECHANNEL;
-import static se.sundsvall.casemanagement.util.Constants.BYGGR_ARENDETYP_BYGGLOV_FOR;
-import static se.sundsvall.casemanagement.util.Constants.BYGGR_ARENDETYP_FORHANDSBESKED;
+import static se.sundsvall.casemanagement.util.Constants.HANDELSETYP_ANMALAN;
+import static se.sundsvall.casemanagement.util.Constants.HANDELSETYP_ANSOKAN;
 import static se.sundsvall.casemanagement.util.Constants.SERVICE_NAME;
 
-import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -25,17 +15,13 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.validation.Validation;
-import javax.validation.Validator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,13 +41,12 @@ import se.sundsvall.casemanagement.api.model.enums.AddressCategory;
 import se.sundsvall.casemanagement.api.model.enums.FacilityType;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
-import se.sundsvall.casemanagement.api.validators.PersonConstraints;
-import se.sundsvall.casemanagement.api.validators.PlanningConstraints;
+import se.sundsvall.casemanagement.integration.db.CaseTypeRepository;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
+import se.sundsvall.casemanagement.integration.db.model.CaseTypeData;
 import se.sundsvall.casemanagement.service.CaseMappingService;
 import se.sundsvall.casemanagement.service.CitizenMappingService;
 import se.sundsvall.casemanagement.service.FbService;
-import se.sundsvall.casemanagement.service.exceptions.ApplicationException;
 import se.sundsvall.casemanagement.util.CaseUtil;
 import se.sundsvall.casemanagement.util.Constants;
 
@@ -101,15 +86,21 @@ public class ByggrService {
     private final CitizenMappingService citizenMappingService;
     private final CaseMappingService caseMappingService;
     private final ArendeExportClient arendeExportClient;
+    private final Map<String, CaseTypeData> caseTypeMap = new HashMap<>();
+    private final CaseTypeRepository caseTypeRepository;
     
-    public ByggrService(FbService fbService, CitizenMappingService citizenMappingService, CaseMappingService caseMappingService, ArendeExportClient arendeExportClient) {
+    public ByggrService(FbService fbService, CitizenMappingService citizenMappingService, CaseMappingService caseMappingService, ArendeExportClient arendeExportClient, CaseTypeRepository caseTypeRepository) {
         this.fbService = fbService;
         this.citizenMappingService = citizenMappingService;
         this.caseMappingService = caseMappingService;
         this.arendeExportClient = arendeExportClient;
+        this.caseTypeRepository = caseTypeRepository;
     }
     
-    public SaveNewArendeResponse2 postCase(PlanningPermissionCaseDTO caseInput) throws ApplicationException {
+    public SaveNewArendeResponse2 postCase(PlanningPermissionCaseDTO caseInput) {
+        
+        caseTypeRepository.findAll().forEach(caseTypeData -> caseTypeMap.put(caseTypeData.getValue(), caseTypeData));
+    
         // This StringBuilder is used to create a note on the case with information about potential manual actions that is needed.
         var byggrAdminMessageSb = new StringBuilder();
         
@@ -189,50 +180,27 @@ public class ByggrService {
         return false;
     }
     
-    private Handelse getByggrHandelse(PlanningPermissionCaseDTO dto) throws ApplicationException {
-        var caseType = dto.getCaseType();
+    private Handelse getByggrHandelse(PlanningPermissionCaseDTO dto) {
+        var caseType = caseTypeMap.get(dto.getCaseType().getValue());
         
         var handelse = new Handelse()
             .withStartDatum(LocalDateTime.now())
-            .withRiktning(Constants.BYGGR_HANDELSE_RIKTNING_IN);
+            .withRiktning(Constants.BYGGR_HANDELSE_RIKTNING_IN)
+            .withRubrik(caseType.getHandelseRubrik())
+            .withHandelsetyp(caseType.getHandelseTyp())
+            .withHandelseslag(caseType.getHandelseSlag());
         
-        switch (caseType) {
-            case STRANDSKYDD_NYBYGGNAD,
-                STRANDSKYDD_ANLAGGANDE,
-                STRANDSKYDD_ANORDNANDE,
-                STRANDSKYDD_ANDRAD_ANVANDNING -> handelse
-                .withRubrik(Constants.BYGGR_HANDELSE_RUBRIK_STRANDSKYDD)
-                .withHandelsetyp(Constants.BYGGR_HANDELSETYP_ANSOKAN)
-                .withHandelseslag(Constants.BYGGR_HANDELSESLAG_STRANDSKYDD);
-            case NYBYGGNAD_FORHANDSBESKED -> handelse
-                .withRubrik(Constants.BYGGR_HANDELSE_RUBRIK_FORHANDSBESKED)
-                .withHandelsetyp(Constants.BYGGR_HANDELSETYP_ANSOKAN)
-                .withHandelseslag(Constants.BYGGR_HANDELSESLAG_FORHANDSBESKED);
-            case NYBYGGNAD_ANSOKAN_OM_BYGGLOV,
-                UPPSATTANDE_SKYLT,
-                TILLBYGGNAD_ANSOKAN_OM_BYGGLOV,
-                ANDRING_ANSOKAN_OM_BYGGLOV -> handelse
-                .withRubrik(Constants.BYGGR_HANDELSE_RUBRIK_BYGGLOV)
-                .withHandelsetyp(Constants.BYGGR_HANDELSETYP_ANSOKAN)
-                .withHandelseslag(Constants.BYGGR_HANDELSESLAG_BYGGLOV);
-            case ANMALAN_ATTEFALL -> handelse
-                .withRubrik(Constants.BYGGR_HANDELSE_RUBRIK_ANMALAN_ATTEFALL)
-                .withHandelsetyp(Constants.BYGGR_HANDELSETYP_ANMALAN)
-                .withHandelseslag(Constants.BYGGR_HANDELSESLAG_ANMALAN_ATTEFALL);
-            case ANMALAN_ELDSTAD -> {
-                handelse.withHandelsetyp(Constants.BYGGR_HANDELSETYP_ANMALAN);
-                if (dto.getFacilities().get(0).getFacilityType().equals(FIREPLACE)) {
-                    handelse
-                        .withRubrik(Constants.BYGGR_HANDELSE_RUBRIK_ELDSTAD)
-                        .withHandelseslag(Constants.BYGGR_HANDELSESLAG_ELDSTAD);
-                } else if (dto.getFacilities().get(0).getFacilityType().equals(FIREPLACE_SMOKECHANNEL)) {
-                    handelse
-                        .withRubrik(Constants.BYGGR_HANDELSE_RUBRIK_ELDSTAD_ROKKANAL)
-                        .withHandelseslag(Constants.BYGGR_HANDELSESLAG_ELDSTAD_ROKKANAL);
-                }
-            }
-            default -> throw new ApplicationException("Unknown CaseType: " + caseType);
+        
+        if (dto.getFacilities().get(0).getFacilityType().equals(FIREPLACE)) {
+            handelse
+                .withRubrik(Constants.BYGGR_HANDELSE_RUBRIK_ELDSTAD)
+                .withHandelseslag(Constants.BYGGR_HANDELSESLAG_ELDSTAD);
+        } else if (dto.getFacilities().get(0).getFacilityType().equals(FIREPLACE_SMOKECHANNEL)) {
+            handelse
+                .withRubrik(Constants.BYGGR_HANDELSE_RUBRIK_ELDSTAD_ROKKANAL)
+                .withHandelseslag(Constants.BYGGR_HANDELSESLAG_ELDSTAD_ROKKANAL);
         }
+        
         return handelse;
     }
     
@@ -309,47 +277,28 @@ public class ByggrService {
         return handelseHandlingList;
     }
     
-    private Arende2 getByggrCase(PlanningPermissionCaseDTO pCase) throws ApplicationException {
-        var arende = new Arende2().withArendegrupp(Constants.BYGGR_ARENDEGRUPP_LOV_ANMALNINGSARENDE);
+    private Arende2 getByggrCase(PlanningPermissionCaseDTO pCase) {
         
-        switch (pCase.getCaseType()) {
-            case STRANDSKYDD_NYBYGGNAD,
-                STRANDSKYDD_ANLAGGANDE,
-                STRANDSKYDD_ANORDNANDE,
-                STRANDSKYDD_ANDRAD_ANVANDNING -> arende
-                .withArendegrupp(Constants.BYGGR_ARENDEGRUPP_STRANDSKYDD)
-                .withArendetyp(Constants.BYGGR_ARENDETYP_STRANDSKYDD)
-                .withArendeklass(getArendeKlass(pCase.getFacilities()))
-                .withArendeslag(pCase.getCaseType().getArendeslag());
-            case NYBYGGNAD_FORHANDSBESKED -> arende
-                .withArendetyp(BYGGR_ARENDETYP_FORHANDSBESKED)
-                .withArendeklass(getArendeKlass(pCase.getFacilities()))
-                .withArendeslag(pCase.getCaseType().getArendeslag());
-            case NYBYGGNAD_ANSOKAN_OM_BYGGLOV,
-                UPPSATTANDE_SKYLT,
-                TILLBYGGNAD_ANSOKAN_OM_BYGGLOV -> arende
-                .withArendetyp(BYGGR_ARENDETYP_BYGGLOV_FOR)
-                .withArendeklass(getArendeKlass(pCase.getFacilities()))
-                .withArendeslag(pCase.getCaseType().getArendeslag());
-            case ANDRING_ANSOKAN_OM_BYGGLOV -> arende
-                .withArendetyp(BYGGR_ARENDETYP_BYGGLOV_FOR)
-                .withArendeslag(getMainOrOnlyArendeslag(pCase.getFacilities()));
-            case ANMALAN_ATTEFALL -> arende
-                .withArendetyp(Constants.BYGGR_ARENDETYP_ANMALAN_ATTEFALL)
-                .withArendeslag(pCase.getFacilities().get(0).getFacilityType().getValue());
-            case ANMALAN_ELDSTAD -> arende
-                .withArendetyp(Constants.BYGGR_HANDELSETYP_ANMALAN)
-                .withArendeslag(pCase.getFacilities().get(0).getFacilityType().getValue());
-            default -> throw new ApplicationException("Unknown CaseType: " + pCase.getCaseType());
+        
+        var caseType = caseTypeMap.get(pCase.getCaseType().getValue());
+        var arende = new Arende2();
+        
+        if (caseType.getArendeSlag() != null) {
+            arende.withArendeslag(caseType.getArendeSlag())
+                .withArendeklass(getArendeKlass(pCase.getFacilities()));
+        } else {
+            arende.withArendeslag(getMainOrOnlyArendeslag(pCase.getFacilities()));
         }
         
         return arende
+            .withArendegrupp(caseType.getArendeGrupp())
+            .withArendetyp(caseType.getArendeTyp())
             .withNamndkod(Constants.BYGGR_NAMNDKOD_STADSBYGGNADSNAMNDEN)
             .withEnhetkod(Constants.BYGGR_ENHETKOD_STADSBYGGNADSKONTORET)
             .withKommun(Constants.BYGGR_KOMMUNKOD_SUNDSVALL_KOMMUN)
             .withHandlaggare(new HandlaggareBas().withSignatur(Constants.BYGGR_SYSTEM_HANDLAGGARE_SIGN))
             .withArInomplan(getInomPlan(pCase.getFacilities()))
-            .withBeskrivning(getArendeBeskrivning(pCase))
+            .withBeskrivning(getArendeBeskrivning(pCase, caseType.getArendeMening()))
             .withIntressentLista(getByggrIntressenter(pCase))
             .withObjektLista(getByggrArendeObjektLista(pCase))
             .withAnkomstDatum(LocalDate.now())
@@ -390,51 +339,28 @@ public class ByggrService {
      * @param pCase PlanningPermissionCase
      * @return ärendemening or null
      */
-    private String getArendeBeskrivning(PlanningPermissionCaseDTO pCase) {
+    private String getArendeBeskrivning(PlanningPermissionCaseDTO pCase, String arendeMening) {
         
-        
-        var caseTypes = Map.of(
-            NYBYGGNAD_FORHANDSBESKED, Constants.BYGGR_ARENDEMENING_NYBYGGNAD_FORHANDSBESKED,
-            NYBYGGNAD_ANSOKAN_OM_BYGGLOV, Constants.BYGGR_ARENDEMENING_BYGGLOV_FOR_NYBYGGNAD_AV,
-            UPPSATTANDE_SKYLT, Constants.BYGGR_ARENDEMENING_BYGGLOV_FOR_UPPSSATTANDE,
-            TILLBYGGNAD_ANSOKAN_OM_BYGGLOV, Constants.BYGGR_ARENDEMENING_BYGGLOV_FOR_TILLBYGGNAD,
-            ANDRING_ANSOKAN_OM_BYGGLOV, Constants.BYGGR_ARENDEMENING_BYGGLOV_ANDRING_ANSOKAN_OM_,
-            STRANDSKYDD_NYBYGGNAD, Constants.BYGGR_ARENDEMENING_STRANDSKYDD_FOR_NYBYGGNAD,
-            STRANDSKYDD_ANLAGGANDE, Constants.BYGGR_ARENDEMENING_STRANDSKYDD_FOR_ANLAGGANDE,
-            STRANDSKYDD_ANORDNANDE, Constants.BYGGR_ARENDEMENING_STRANDSKYDD_FOR_ANORDNANDE,
-            STRANDSKYDD_ANDRAD_ANVANDNING, Constants.BYGGR_ARENDEMENING_STRANDSKYDD_FOR_ANDRAD_ANVANDNING
-        );
-        
-        if (caseTypes.containsKey(pCase.getCaseType()) && !pCase.getFacilities().isEmpty()) {
-            StringBuilder arendeMening = new StringBuilder()
-                .append(caseTypes.get(pCase.getCaseType()));
-            
-            List<PlanningPermissionFacilityDTO> facilityList = pCase.getFacilities().stream()
-                .sorted(Comparator
-                    .comparing(PlanningPermissionFacilityDTO::isMainFacility, Comparator.reverseOrder()))
-                .toList();
-            
-            for (int i = 0; i < facilityList.size(); i++) {
-                if (facilityList.size() > 1) {
-                    if (i == facilityList.size() - 1) {
-                        arendeMening.append(" &");
-                    } else if (i != 0) {
-                        arendeMening.append(",");
-                    }
-                }
-                
-                arendeMening.append(" ").append(facilityList.get(i).getFacilityType().getDescription().trim().toLowerCase());
-            }
-            
-            if (pCase.getCaseTitleAddition() != null
-                && !pCase.getCaseTitleAddition().isBlank()) {
-                arendeMening.append(" samt ").append(pCase.getCaseTitleAddition().trim().toLowerCase());
-            }
-            
-            return arendeMening.toString();
-        } else {
+        if (arendeMening == null || pCase.getFacilities().isEmpty()) {
             return null;
         }
+        
+        var arendeMeningBuilder = new StringBuilder(arendeMening);
+        
+        var facilityList = pCase.getFacilities().stream()
+            .sorted(Comparator.comparing(PlanningPermissionFacilityDTO::isMainFacility, Comparator.reverseOrder()))
+            .toList();
+    
+        arendeMeningBuilder.append(facilityList.stream()
+            .map(facility -> facility.getFacilityType().getDescription().trim())
+            .collect(Collectors.joining(",", " ", facilityList.size() > 1 ? " &" : "")));
+        
+        if (pCase.getCaseTitleAddition() != null && !pCase.getCaseTitleAddition().isBlank()) {
+            arendeMeningBuilder.append(" samt ").append(pCase.getCaseTitleAddition().trim().toLowerCase());
+        }
+        
+        return arendeMeningBuilder.toString();
+        
     }
     
     private String getPropertyDesignation(List<PlanningPermissionFacilityDTO> facilityList) {
@@ -815,8 +741,8 @@ public class ByggrService {
     private String getHandelseStatus(String handelsetyp, String handelseslag, String handelseutfall) {
         
         // OEP-status = Inskickat
-        if (Constants.BYGGR_HANDELSETYP_ANMALAN.equals(handelsetyp)
-            || Constants.BYGGR_HANDELSETYP_ANSOKAN.equals(handelsetyp)) {
+        if (HANDELSETYP_ANMALAN.equals(handelsetyp)
+            || HANDELSETYP_ANSOKAN.equals(handelsetyp)) {
             // ANM, ANSÖKAN
             return handelsetyp;
         }
