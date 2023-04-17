@@ -1,6 +1,11 @@
 package se.sundsvall.casemanagement.api.model;
 
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANDRING_ANSOKAN_OM_BYGGLOV;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANDRING_BARANDE_KONSTRUKTION;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANDRING_BRANDSKYDD;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANDRING_PLANLOSNING;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANDRING_VA;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANDRING_VENTILATION;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_ANDRING_AVLOPPSANLAGGNING;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_ANDRING_AVLOPPSANORDNING;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_ATTEFALL;
@@ -10,7 +15,14 @@ import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANSOKAN_TILLSTAND_VARMEPUMP;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.INSTALLATION_VA;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.INSTALLATION_VENTILATION;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.INSTALLLATION_HISS;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.LOST_PARKING_PERMIT;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MARKLOV_FYLL;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MARKLOV_OVRIGT;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MARKLOV_SCHAKTNING;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MARKLOV_TRADFALLNING;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.NYBYGGNAD_ANSOKAN_OM_BYGGLOV;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.NYBYGGNAD_FORHANDSBESKED;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARKING_PERMIT;
@@ -20,6 +32,7 @@ import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.STRANDS
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.STRANDSKYDD_ANLAGGANDE;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.STRANDSKYDD_ANORDNANDE;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.STRANDSKYDD_NYBYGGNAD;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.STRANDSKYDD_OVRIGT;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.TILLBYGGNAD_ANSOKAN_OM_BYGGLOV;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.UPPDATERING_RISKKLASSNING;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.UPPSATTANDE_SKYLT;
@@ -54,7 +67,22 @@ import lombok.Data;
         STRANDSKYDD_ANDRAD_ANVANDNING,
         STRANDSKYDD_ANORDNANDE,
         STRANDSKYDD_ANLAGGANDE,
-        ANMALAN_ELDSTAD}),
+        ANMALAN_ELDSTAD,
+        ANDRING_VENTILATION,
+        INSTALLATION_VENTILATION,
+        ANDRING_VA,
+        INSTALLATION_VA,
+        ANDRING_PLANLOSNING,
+        ANDRING_BARANDE_KONSTRUKTION,
+        ANDRING_BRANDSKYDD,
+        INSTALLLATION_HISS,
+        MARKLOV_SCHAKTNING,
+        MARKLOV_FYLL,
+        MARKLOV_TRADFALLNING,
+        MARKLOV_OVRIGT,
+        STRANDSKYDD_OVRIGT
+        
+    }),
     @Type(value = EnvironmentalCaseDTO.class, names = {
         REGISTRERING_AV_LIVSMEDEL,
         ANMALAN_INSTALLATION_VARMEPUMP,
