@@ -14,6 +14,7 @@ import se.sundsvall.dept44.configuration.feign.FeignConfiguration;
 import se.sundsvall.dept44.configuration.feign.FeignMultiCustomizer;
 
 import feign.Logger;
+import feign.auth.BasicAuthRequestInterceptor;
 import feign.jaxb.JAXBContextFactory;
 import feign.soap.SOAPDecoder;
 import feign.soap.SOAPEncoder;
@@ -46,6 +47,7 @@ public class OpeneConfiguration {
             .withEncoder(ENCODER_BUILDER.build())
             .withDecoder(new SOAPDecoder(JAXB_FACTORY))
             .withErrorDecoder(new OpeneErrorDecoder())
+            .withRequestInterceptor(new BasicAuthRequestInterceptor(properties.username(), properties.password()))
             .withRequestTimeoutsInSeconds(properties.connectTimeout(), properties.readTimeout())
             .composeCustomizersToOne();
     }
