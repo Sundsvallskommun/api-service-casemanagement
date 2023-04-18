@@ -688,6 +688,7 @@ public class EcosService {
             case ANMALAN_HALSOSKYDDSVERKSAMHET ->
                 Constants.ECOS_PROCESS_TYPE_ID_ANMALAN_HALSOSKYDDSVERKSAMHET;
             case UPPDATERING_RISKKLASSNING -> Constants.ECOS_PROCESS_TYPE_ID_UPPDATERING_RISKKLASS;
+            case ANMALAN_KOMPOSTERING -> Constants.ECOS_PROCESS_TYPE_ID_ANMALAN_KOMPOSTERING;
             default -> throw new ApplicationException("CaseType: " + caseType + " is not valid...");
         };
     }
