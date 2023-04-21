@@ -29,7 +29,7 @@ public abstract class Processor {
     }
     
     @Transactional
-    protected void handleSuccessfulDelivery(final CaseEntity entity) {
+    protected void handleSuccessfulDelivery(final CaseEntity entity, final String system) {
         
         log.info("Successful created errand for externalCaseId {})", entity.getId());
         
@@ -39,7 +39,9 @@ public abstract class Processor {
         
         openeClient.confirmDelivery(new ConfirmDelivery()
             .withDelivered(true)
-            .withExternalID(new ExternalID().withID(caseMapping.getCaseId()))
+            .withExternalID(new ExternalID()
+                .withSystem(system)
+                .withID(caseMapping.getCaseId()))
             .withFlowInstanceID(Integer.parseInt(entity.getId())));
     }
     

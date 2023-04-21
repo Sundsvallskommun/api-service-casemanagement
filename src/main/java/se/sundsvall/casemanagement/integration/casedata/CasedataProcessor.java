@@ -62,7 +62,7 @@ class CasedataProcessor extends Processor {
         try {
             Failsafe
                 .with(retryPolicy)
-                .onSuccess(successEvent -> handleSuccessfulDelivery(caseEntity))
+                .onSuccess(successEvent -> handleSuccessfulDelivery(caseEntity, "CASEDATA"))
                 .onFailure(failureEvent -> handleMaximumDeliveryAttemptsExceeded(caseEntity))
                 .get(() -> service.postErrand(otherCaseDTO));
         } catch (Exception e) {

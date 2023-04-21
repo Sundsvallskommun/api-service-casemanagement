@@ -61,7 +61,7 @@ class ByggrProcessor extends Processor {
         try {
             Failsafe
                 .with(retryPolicy)
-                .onSuccess(successEvent -> handleSuccessfulDelivery(caseEntity))
+                .onSuccess(successEvent -> handleSuccessfulDelivery(caseEntity, "BYGGR"))
                 .onFailure(failureEvent -> handleMaximumDeliveryAttemptsExceeded(caseEntity))
                 .get(() -> service.postCase(planningPermissionCaseDTO));
         } catch (Exception e) {

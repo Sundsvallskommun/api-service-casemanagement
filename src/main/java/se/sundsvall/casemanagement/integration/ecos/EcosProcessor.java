@@ -64,7 +64,7 @@ class EcosProcessor extends Processor {
         try {
             Failsafe
                 .with(retryPolicy)
-                .onSuccess(successEvent -> handleSuccessfulDelivery(caseEntity))
+                .onSuccess(successEvent -> handleSuccessfulDelivery(caseEntity, "ECOS"))
                 .onFailure(failureEvent -> handleMaximumDeliveryAttemptsExceeded(caseEntity))
                 .get(() -> ecosService.postCase(environmentalCaseDTO));
         } catch (Exception e) {
