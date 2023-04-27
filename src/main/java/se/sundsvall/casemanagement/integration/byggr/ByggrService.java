@@ -1,7 +1,6 @@
 package se.sundsvall.casemanagement.integration.byggr;
 
 import static java.util.function.Predicate.not;
-
 import static se.sundsvall.casemanagement.api.model.enums.FacilityType.FIREPLACE;
 import static se.sundsvall.casemanagement.api.model.enums.FacilityType.FIREPLACE_SMOKECHANNEL;
 import static se.sundsvall.casemanagement.util.Constants.HANDELSETYP_ANMALAN;
@@ -100,7 +99,7 @@ public class ByggrService {
     public SaveNewArendeResponse2 postCase(PlanningPermissionCaseDTO caseInput) {
         
         caseTypeRepository.findAll().forEach(caseTypeData -> caseTypeMap.put(caseTypeData.getValue(), caseTypeData));
-    
+        
         // This StringBuilder is used to create a note on the case with information about potential manual actions that is needed.
         var byggrAdminMessageSb = new StringBuilder();
         
@@ -348,9 +347,10 @@ public class ByggrService {
         var arendeMeningBuilder = new StringBuilder(arendeMening);
         
         var facilityList = pCase.getFacilities().stream()
+            .filter(facility -> facility.getFacilityType() != null)
             .sorted(Comparator.comparing(PlanningPermissionFacilityDTO::isMainFacility, Comparator.reverseOrder()))
             .toList();
-    
+        
         arendeMeningBuilder.append(facilityList.stream()
             .map(facility -> facility.getFacilityType().getDescription().trim())
             .collect(Collectors.joining(",", " ", facilityList.size() > 1 ? " &" : "")));
