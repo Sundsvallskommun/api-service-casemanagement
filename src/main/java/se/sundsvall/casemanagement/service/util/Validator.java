@@ -29,7 +29,7 @@ import se.sundsvall.casemanagement.api.validators.PlanningConstraints;
 @Component
 public class Validator {
     
-   public void validateByggrErrand(PlanningPermissionCaseDTO pCase) {
+    public void validateByggrErrand(PlanningPermissionCaseDTO pCase) {
         try (var factory = Validation.buildDefaultValidatorFactory()) {
             javax.validation.Validator validator = factory.getValidator();
             
@@ -56,6 +56,7 @@ public class Validator {
             validateFacilityTypes(pCase);
         }
     }
+    
     /**
      * Validates that the FacilityTypes are compatible with the CaseType.
      */
@@ -67,8 +68,14 @@ public class Validator {
             
             facilityType = facility.getFacilityType();
             
+            if (facilityType == null && CaseType.caseTypesWithNullableFacilityType().contains(pCase.getCaseType())) {
+                return;
+            } else if (facilityType == null) {
+                throw Problem.valueOf(Status.BAD_REQUEST, MessageFormat.format("FacilityType is not allowed to be null for CaseType {0}", pCase.getCaseType()));
+            }
             anmmalanAttefallFacilityType = switch (facility.getFacilityType()) {
-                case FURNISHING_OF_ADDITIONAL_DWELLING, ANCILLARY_BUILDING, ANCILLARY_HOUSING_BUILDING, DORMER, EXTENSION -> true;
+                case FURNISHING_OF_ADDITIONAL_DWELLING, ANCILLARY_BUILDING, ANCILLARY_HOUSING_BUILDING, DORMER, EXTENSION ->
+                    true;
                 default -> false;
             };
         }

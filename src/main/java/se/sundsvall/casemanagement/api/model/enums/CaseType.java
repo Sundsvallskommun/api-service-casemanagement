@@ -3,6 +3,8 @@ package se.sundsvall.casemanagement.api.model.enums;
 
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.NYBYGGNAD_ANSOKAN_OM_BYGGLOV;
 
+import java.util.Set;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 
@@ -41,7 +43,7 @@ public enum CaseType {
     MARKLOV_FYLL(Value.MARKLOV_FYLL),
     MARKLOV_TRADFALLNING(Value.MARKLOV_TRADFALLNING),
     MARKLOV_OVRIGT(Value.MARKLOV_OVRIGT),
-
+    
     
     //BYGGR OTHER
     ANMALAN_ATTEFALL(Value.ANMALAN_ATTEFALL),
@@ -69,6 +71,16 @@ public enum CaseType {
     
     CaseType(String value) {
         this.value = value;
+    }
+    
+    public static Set<CaseType> caseTypesWithNullableFacilityType() {
+        return Set.of(
+            MARKLOV_SCHAKTNING,
+            MARKLOV_FYLL,
+            MARKLOV_TRADFALLNING,
+            MARKLOV_OVRIGT,
+            STRANDSKYDD_OVRIGT
+        );
     }
     
     public static class Value {

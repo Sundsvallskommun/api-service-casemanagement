@@ -1,9 +1,18 @@
 package se.sundsvall.casemanagement.service;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
@@ -11,16 +20,13 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
+import org.zalando.problem.ThrowableProblem;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
-import java.util.List;
-
+import se.sundsvall.casemanagement.api.model.AddressDTO;
 import se.sundsvall.casemanagement.api.model.EnvironmentalCaseDTO;
 import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
 import se.sundsvall.casemanagement.api.model.PlanningPermissionCaseDTO;
+import se.sundsvall.casemanagement.api.model.PlanningPermissionFacilityDTO;
 import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.integration.db.CaseRepository;
 import se.sundsvall.casemanagement.service.event.IncomingByggrCase;
@@ -66,6 +72,58 @@ public class CaseServiceTest {
         var incomingByggrCase = byggrCaseCaptor.getValue();
         assertSame(caseService, incomingByggrCase.getSource());
         assertSame(pCase, incomingByggrCase.getPayload());
+    }
+    
+    
+    @ParameterizedTest
+    @EnumSource(value = CaseType.class, names = {"MARKLOV_FYLL",
+        "MARKLOV_SCHAKTNING", "MARKLOV_TRADFALLNING", "MARKLOV_OVRIGT",
+        "STRANDSKYDD_OVRIGT"})
+    public void testHandleByggRCaseNoFacilityTypeAllowed(CaseType caseType) {
+        var pCase = new PlanningPermissionCaseDTO();
+        
+        var facility = new PlanningPermissionFacilityDTO();
+        var adress = new AddressDTO();
+        adress.setPropertyDesignation("propertyDesignation");
+        adress.setAddressCategories(List.of());
+        facility.setAddress(adress);
+        pCase.setStakeholders(List.of());
+        pCase.setFacilities(List.of(facility));
+        pCase.setCaseType(caseType);
+        caseService.handleCase(pCase);
+        
+        verify(validator, times(1)).validateByggrErrand(pCase);
+        verify(eventPublisher, times(1)).publishEvent(byggrCaseCaptor.capture());
+        verify(caseRepository, times(1)).save(any());
+        
+        var incomingByggrCase = byggrCaseCaptor.getValue();
+        assertSame(caseService, incomingByggrCase.getSource());
+        assertSame(pCase, incomingByggrCase.getPayload());
+    }
+    
+    @ParameterizedTest
+    @EnumSource(value = CaseType.class, names = {"NYBYGGNAD_ANSOKAN_OM_BYGGLOV",
+        "TILLBYGGNAD_ANSOKAN_OM_BYGGLOV", "STRANDSKYDD_ANDRAD_ANVANDNING"})
+    public void testHandleByggRCaseNoFacilityType_notAllowed(CaseType caseType) {
+        var pCase = new PlanningPermissionCaseDTO();
+        
+        var facility = new PlanningPermissionFacilityDTO();
+        var adress = new AddressDTO();
+        adress.setPropertyDesignation("propertyDesignation");
+        adress.setAddressCategories(List.of());
+        facility.setAddress(adress);
+        pCase.setStakeholders(List.of());
+        pCase.setFacilities(List.of(facility));
+        pCase.setCaseType(caseType);
+        
+        
+        assertThatExceptionOfType(ThrowableProblem.class)
+            .isThrownBy(() -> caseService.handleCase(pCase))
+            .withMessage("Bad Request: FacilityType is not allowed to be null for CaseType " + caseType);
+        
+        verify(validator, times(1)).validateByggrErrand(pCase);
+        verifyNoInteractions(eventPublisher);
+        verifyNoInteractions(caseRepository);
     }
     
     @Test
