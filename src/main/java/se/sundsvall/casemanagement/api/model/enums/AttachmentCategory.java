@@ -3,11 +3,11 @@ package se.sundsvall.casemanagement.api.model.enums;
 import lombok.Getter;
 
 public enum AttachmentCategory {
-
+    
     ///////////////////////////////////
     // ByggR
     ///////////////////////////////////
-
+    
     // archiveClassification "A"
     ARIT("A-ritningar", "A"),
     FAS("Fasad", "A"),
@@ -58,7 +58,7 @@ public enum AttachmentCategory {
     SKYL("Skyltritning", "A"),
     UPPM("Uppmätningsritning", "A"),
     ANV("Utställningshandling", "A"),
-
+    
     // archiveClassification "D"
     ANM("Anmälan", "D"),
     ANMÄ("Anmälan av kontrollansvarig", "D"),
@@ -216,10 +216,10 @@ public enum AttachmentCategory {
     BRAU("Utförandekontroll brandskydd", "D"),
     UKA("Utlåtande KA", "D"),
     ÅTG("Åtgärdsföreläggande", "D"),
-
+    
     // archiveClassification "GU"
     GEO("Geotekniska handling", "GU"),
-
+    
     // archiveClassification "K"
     GRUNDP("Grundplan", "K"),
     GRUNDR("Grundritning", "K"),
@@ -229,40 +229,40 @@ public enum AttachmentCategory {
     STOMR("Stomritningar", "K"),
     TAPL("Takplan", "K"),
     TSR("Takstolsritning", "K"),
-
+    
     // archiveClassification "S"
     KART("Karta", "S"),
     NYKA("Nybyggnadskarta", "S"),
     SITU("Situationsplan", "S"),
     TOMTPLBE("Tomtplatsbestämning", "S"),
-
+    
     // archiveClassification "VVS"
     VAH("VA-handling", "VVS"),
     VENT("Ventilationshandling", "VVS"),
     UVEN("Ventilationsritning", "VVS"),
     VS("VS-handling", "VVS"),
     VVSH("VVS-handling", "VVS"),
-
-
+    
+    
     ///////////////////////////////////
     // Ecos
     ///////////////////////////////////
     ANMALAN_LIVSMEDELSANLAGGNING("3AD42CEE-C09E-401B-ABE8-0CD5D03FE6B4", null),
-
+    
     ANMALAN_ENSKILT_AVLOPP("E9F85119-9E94-47AD-B531-BB91EF75368A", null),
     ANSOKAN_ENSKILT_AVLOPP("296B51FA-C77B-42E7-AFBE-F0A74CAE4FD2", null),
     ANMALAN_ANDRING_AVLOPPSANLAGGNING("3FBEECCA-099D-4E51-8FFA-D023AF79017D", null),
     ANMALAN_ANDRING_AVLOPPSANORDNING("52E2898B-D780-4EB5-B9CA-24842714E6DF", null),
-
+    
     ANMALAN_VARMEPUMP("ACCC629C-4D26-4466-9DFD-578DB746D119", null),
     ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW("3F6DBE03-DB41-47AA-A56A-ECD87C8133B1", null),
-
+    
     ANMALAN_HALSOSKYDDSVERKSAMHET("EA5D5EBE-DCBE-4EAA-A2B9-8662B128BD96", null),
-
+    
     SITUATIONSPLAN("9288F033-8E1A-48AE-858F-CB7345F81359", null),
-
+    
     SKRIVELSE("A06E65AD-E4B1-4B84-BCC6-7843CDE6B0A1", null),
-
+    
     ///////////////////////////////////
     // Parking permit
     ///////////////////////////////////
@@ -271,17 +271,17 @@ public enum AttachmentCategory {
     PASSPORT_PHOTO("Passfoto", null),
     SIGNATURE("Namnunderskrift", null),
     POWER_OF_ATTORNEY("Fullmakt", null);
-
+    
     @Getter
     private final String description;
     @Getter
     private final String archiveClassification;
-
+    
     AttachmentCategory(String description, String archiveClassification) {
         this.description = description;
         this.archiveClassification = archiveClassification;
     }
-
+    
     public static AttachmentCategory valueOfDescription(String description) {
         for (AttachmentCategory attachmentCategory : values()) {
             if (attachmentCategory.description.equals(description)) {

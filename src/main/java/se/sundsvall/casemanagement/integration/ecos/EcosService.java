@@ -13,12 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
-
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.validation.Validation;
-import javax.validation.Validator;
 
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -40,7 +34,6 @@ import se.sundsvall.casemanagement.api.model.enums.AddressCategory;
 import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
-import se.sundsvall.casemanagement.api.validators.EnvironmentalConstraints;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.integration.rest.fb.model.FbPropertyInfo;
 import se.sundsvall.casemanagement.service.CaseMappingService;
@@ -205,10 +198,17 @@ public class EcosService {
             }
             
         } else {
-            if (caseInput.getCaseType().equals(CaseType.UPPDATERING_RISKKLASSNING)) {
-                riskClassService.updateRiskClass(caseInput, registerDocumentResult.getCaseId());
-                return registerDocumentResult;
+            
+            try {
+                if (caseInput.getCaseType().equals(CaseType.UPPDATERING_RISKKLASSNING)) {
+                    riskClassService.updateRiskClass(caseInput, registerDocumentResult.getCaseId());
+                    return registerDocumentResult;
+                }
+                
+            } catch (Exception e) {
+                log.error("Error when updating risk class", e);
             }
+            
             // -----> CreateOccurrenceOnCase
             createOccurrenceOnCase(registerDocumentResult.getCaseId());
         }
