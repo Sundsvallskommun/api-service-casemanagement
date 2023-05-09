@@ -7,13 +7,10 @@ import javax.xml.soap.SOAPConstants;
 import org.springframework.cloud.openfeign.FeignBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Primary;
 
-import se.sundsvall.casemanagement.integration.CustomLogger;
 import se.sundsvall.dept44.configuration.feign.FeignConfiguration;
 import se.sundsvall.dept44.configuration.feign.FeignMultiCustomizer;
 
-import feign.Logger;
 import feign.auth.BasicAuthRequestInterceptor;
 import feign.jaxb.JAXBContextFactory;
 import feign.soap.SOAPDecoder;
@@ -34,12 +31,6 @@ public class OpeneConfiguration {
         .withJAXBContextFactory(JAXB_FACTORY)
         .withSOAPProtocol(SOAPConstants.SOAP_1_1_PROTOCOL)
         .withWriteXmlDeclaration(true);
-    
-    @Bean
-    @Primary
-    Logger feignLogger() {
-        return new CustomLogger(REGISTRATION_ID);
-    }
     
     @Bean
     FeignBuilderCustomizer feignBuilderCustomizer(OpeneProperties properties) {
