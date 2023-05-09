@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.slf4j.Logger;
@@ -351,9 +351,23 @@ public class ByggrService {
             .sorted(Comparator.comparing(PlanningPermissionFacilityDTO::isMainFacility, Comparator.reverseOrder()))
             .toList();
         
-        arendeMeningBuilder.append(facilityList.stream()
-            .map(facility -> facility.getFacilityType().getDescription().trim())
-            .collect(Collectors.joining(",", " ", facilityList.size() > 1 ? " &" : "")));
+        IntStream.range(0, facilityList.size())
+            .forEach(i -> {
+                if (facilityList.size() > 1) {
+                    if (i == facilityList.size() - 1) {
+                        arendeMeningBuilder.append(" &");
+                    } else if (i != 0) {
+                        arendeMeningBuilder.append(",");
+                    }
+                }
+                arendeMeningBuilder
+                    .append(" ")
+                    .append(facilityList.get(i)
+                        .getFacilityType()
+                        .getDescription()
+                        .trim()
+                        .toLowerCase());
+            });
         
         if (pCase.getCaseTitleAddition() != null && !pCase.getCaseTitleAddition().isBlank()) {
             arendeMeningBuilder.append(" samt ").append(pCase.getCaseTitleAddition().trim().toLowerCase());
