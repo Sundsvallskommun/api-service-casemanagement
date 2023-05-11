@@ -43,19 +43,19 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 @ApiResponse(responseCode = "502", description = "Bad Gateway", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 public class CaseResource {
-    
+
     private final CaseMappingService caseMappingService;
-    
+
     private final CaseService caseService;
-    
+
     private final CaseDataService caseDataService;
-    
+
     public CaseResource(CaseMappingService caseMappingService, CaseService caseService, CaseDataService caseDataService) {
         this.caseMappingService = caseMappingService;
         this.caseService = caseService;
         this.caseDataService = caseDataService;
     }
-    
+
     @Operation(description = "Creates a case in ByggR or Ecos2 based on caseType. Also persists a connection between externalCaseId and the created case.")
     @PostMapping(path = "cases", consumes = MediaType.APPLICATION_JSON_VALUE, produces = {APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE})
     @ApiResponse(responseCode = "200", description = "OK")
@@ -63,15 +63,15 @@ public class CaseResource {
         @Schema(oneOf = {PlanningPermissionCaseDTO.class, EnvironmentalCaseDTO.class, OtherCaseDTO.class}, example = Constants.POST_CASES_REQUEST_BODY_EXAMPLE)
         @RequestBody
         @Valid CaseDTO caseDTOInput) {
-        
+
         // Validates that it doesn't exist any case with the same oep-ID.
         caseMappingService.validateUniqueCase(caseDTOInput.getExternalCaseId());
         caseService.handleCase(caseDTOInput);
-        
-        return ResponseEntity.ok(new CaseResourceResponseDTO("PLACEHOLDER"));
-    
+
+        return ResponseEntity.ok(new CaseResourceResponseDTO("Inskickat"));
+
     }
-    
+
     @Operation(description = "Update a case. Only available for cases created in CaseData.")
     @PutMapping(path = "cases/{externalCaseId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = {APPLICATION_PROBLEM_JSON_VALUE})
     @ApiResponse(responseCode = "204", description = "No content")
@@ -80,7 +80,7 @@ public class CaseResource {
         @Schema(oneOf = {PlanningPermissionCaseDTO.class, EnvironmentalCaseDTO.class, OtherCaseDTO.class}, example = Constants.POST_CASES_REQUEST_BODY_EXAMPLE)
         @RequestBody
         @Valid CaseDTO caseDTOInput) throws ApplicationException {
-        
+
         if (caseDTOInput instanceof OtherCaseDTO otherCaseDTO) {
             caseDataService.putErrand(Long.valueOf(caseMappingService.getCaseMapping(externalCaseId).getCaseId()), otherCaseDTO);
             return ResponseEntity.noContent().build();

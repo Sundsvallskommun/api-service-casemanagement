@@ -25,16 +25,16 @@ import minutmiljoV2.RegisterDocumentCaseResultSvcDto;
 
 @Component
 class EcosProcessor extends Processor {
-    
+
     private final EcosService ecosService;
     private final RetryPolicy<RegisterDocumentCaseResultSvcDto> retryPolicy;
-    
+
     EcosProcessor(final OpeneClient openeClient, final CaseRepository caseRepository,
         final RetryProperties retryProperties, final EcosService ecosService,
         final CaseMappingRepository caseMappingRepository) {
         super(openeClient, caseRepository, caseMappingRepository);
         this.ecosService = ecosService;
-        
+
         retryPolicy = RetryPolicy.<RegisterDocumentCaseResultSvcDto>builder()
             .withMaxAttempts(retryProperties.getMaxAttempts())
             .withBackoff(retryProperties.getInitialDelay(), retryProperties.getMaxDelay())
@@ -44,32 +44,32 @@ class EcosProcessor extends Processor {
                 event.getAttemptCount(), retryProperties.getMaxAttempts(), event.getLastException().getMessage()))
             .build();
     }
-    
+
     @Transactional
     @EventListener(IncomingEcosCase.class)
     public void handleIncomingErrand(final IncomingEcosCase event) throws JsonProcessingException, SQLException {
-        
+
         var caseEntity = caseRepository.findById(event.getPayload().getExternalCaseId()).orElse(null);
-        
-        
+
+
         if (caseEntity == null) {
             log.warn("Unable to process ecos errand {}", event.getPayload());
             return;
         }
-        
+
         String json = new BufferedReader(caseEntity.getDto().getCharacterStream()).lines().collect(Collectors.joining());
         var objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
         var environmentalCaseDTO = objectMapper.readValue(json, EnvironmentalCaseDTO.class);
-        
+
         try {
             Failsafe
                 .with(retryPolicy)
                 .onSuccess(successEvent -> handleSuccessfulDelivery(caseEntity, "ECOS"))
-                .onFailure(failureEvent -> handleMaximumDeliveryAttemptsExceeded(caseEntity))
+                .onFailure(failureEvent -> handleMaximumDeliveryAttemptsExceeded(failureEvent.getException(), caseEntity))
                 .get(() -> ecosService.postCase(environmentalCaseDTO));
         } catch (Exception e) {
             log.warn("Unable to create ecos errand {}: {}", event.getPayload(), e.getMessage());
         }
-        
+
     }
 }

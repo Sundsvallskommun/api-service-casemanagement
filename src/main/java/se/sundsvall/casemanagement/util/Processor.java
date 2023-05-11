@@ -14,29 +14,29 @@ import callback.ConfirmDelivery;
 import callback.ExternalID;
 
 public abstract class Processor {
-    
+
     protected final Logger log = LoggerFactory.getLogger(getClass());
     protected final OpeneClient openeClient;
-    
+
     protected final CaseRepository caseRepository;
     protected final CaseMappingRepository caseMappingRepository;
-    
+
     protected Processor(final OpeneClient openeClient, final CaseRepository caseRepository,
         CaseMappingRepository caseMappingRepository) {
         this.openeClient = openeClient;
         this.caseRepository = caseRepository;
         this.caseMappingRepository = caseMappingRepository;
     }
-    
+
     @Transactional
-    protected void handleSuccessfulDelivery(final CaseEntity entity, final String system) {
-        
+    public void handleSuccessfulDelivery(final CaseEntity entity, final String system) {
+
         log.info("Successful created errand for externalCaseId {})", entity.getId());
-        
+
         caseRepository.deleteById(entity.getId());
-        
+
         var caseMapping = caseMappingRepository.findAllByExternalCaseId(entity.getId()).get(0);
-        
+
         openeClient.confirmDelivery(new ConfirmDelivery()
             .withDelivered(true)
             .withExternalID(new ExternalID()
@@ -44,11 +44,19 @@ public abstract class Processor {
                 .withID(caseMapping.getCaseId()))
             .withFlowInstanceID(Integer.parseInt(entity.getId())));
     }
-    
+
     @Transactional
-    protected void handleMaximumDeliveryAttemptsExceeded(final CaseEntity entity) {
+    public void handleMaximumDeliveryAttemptsExceeded(Throwable failureEvent, final CaseEntity entity) {
+
+        ;
+
+        openeClient.confirmDelivery(new ConfirmDelivery()
+            .withDelivered(false)
+            .withLogMessage("Maximum delivery attempts exceeded: " + failureEvent.getMessage())
+            .withFlowInstanceID(Integer.parseInt(entity.getId())));
+
         log.info("Exceeded max sending attempts case with externalCaseId {}", entity.getId());
         caseRepository.save(entity.withDeliveryStatus(DeliveryStatus.FAILED));
     }
-    
+
 }

@@ -1,6 +1,7 @@
 package se.sundsvall.casemanagement.integration.byggr;
 
 import static java.util.function.Predicate.not;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.WITH_NULLABLE_FACILITY_TYPE;
 import static se.sundsvall.casemanagement.api.model.enums.FacilityType.FIREPLACE;
 import static se.sundsvall.casemanagement.api.model.enums.FacilityType.FIREPLACE_SMOKECHANNEL;
 import static se.sundsvall.casemanagement.util.Constants.HANDELSETYP_ANMALAN;
@@ -287,9 +288,12 @@ public class ByggrService {
 
         if (pCase.getFacilities() == null || pCase.getFacilities().get(0) == null) {
             arende.withArendeslag(caseType.getArendeSlag());
+
         } else if (caseType.getArendeSlag() != null) {
-            arende.withArendeslag(caseType.getArendeSlag())
-                .withArendeklass(getArendeKlass(pCase.getFacilities()));
+            arende.withArendeslag(caseType.getArendeSlag());
+            if (!WITH_NULLABLE_FACILITY_TYPE.contains(pCase.getCaseType())) {
+                arende.withArendeklass(getArendeKlass(pCase.getFacilities()));
+            }
         } else {
             arende.withArendeslag(getMainOrOnlyArendeslag(pCase.getFacilities()));
         }
