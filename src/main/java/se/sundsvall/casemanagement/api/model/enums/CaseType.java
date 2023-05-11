@@ -3,31 +3,31 @@ package se.sundsvall.casemanagement.api.model.enums;
 
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.NYBYGGNAD_ANSOKAN_OM_BYGGLOV;
 
-import java.util.Set;
+import java.util.EnumSet;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 
 @Schema(example = NYBYGGNAD_ANSOKAN_OM_BYGGLOV)
 public enum CaseType {
-    
+
     // ===================  Byggr  ===================
-    
+
     // BYGGR BYGGLOV
     NYBYGGNAD_ANSOKAN_OM_BYGGLOV(Value.NYBYGGNAD_ANSOKAN_OM_BYGGLOV),
     TILLBYGGNAD_ANSOKAN_OM_BYGGLOV(Value.TILLBYGGNAD_ANSOKAN_OM_BYGGLOV),
     UPPSATTANDE_SKYLT(Value.UPPSATTANDE_SKYLT),
     ANDRING_ANSOKAN_OM_BYGGLOV(Value.ANDRING_ANSOKAN_OM_BYGGLOV),
-    
+
     NYBYGGNAD_FORHANDSBESKED(Value.NYBYGGNAD_FORHANDSBESKED),
-    
+
     // BYGGR STRANDSKYDD
     STRANDSKYDD_NYBYGGNAD(Value.STRANDSKYDD_NYBYGGNAD),
     STRANDSKYDD_ANLAGGANDE(Value.STRANDSKYDD_ANLAGGANDE),
     STRANDSKYDD_ANORDNANDE(Value.STRANDSKYDD_ANORDNANDE),
     STRANDSKYDD_ANDRAD_ANVANDNING(Value.STRANDSKYDD_ANDRAD_ANVANDNING),
     STRANDSKYDD_OVRIGT(Value.STRANDSKYDD_OVRIGT),
-    
+
     //ANMALAN
     ANDRING_VENTILATION(Value.ANDRING_VENTILATION),
     INSTALLATION_VENTILATION(Value.INSTALLATION_VENTILATION),
@@ -37,18 +37,18 @@ public enum CaseType {
     ANDRING_BARANDE_KONSTRUKTION(Value.ANDRING_BARANDE_KONSTRUKTION),
     ANDRING_BRANDSKYDD(Value.ANDRING_BRANDSKYDD),
     INSTALLLATION_HISS(Value.INSTALLLATION_HISS),
-    
+
     //MARKLOV
     MARKLOV_SCHAKTNING(Value.MARKLOV_SCHAKTNING),
     MARKLOV_FYLL(Value.MARKLOV_FYLL),
     MARKLOV_TRADFALLNING(Value.MARKLOV_TRADFALLNING),
     MARKLOV_OVRIGT(Value.MARKLOV_OVRIGT),
-    
-    
+
+
     //BYGGR OTHER
     ANMALAN_ATTEFALL(Value.ANMALAN_ATTEFALL),
     ANMALAN_ELDSTAD(Value.ANMALAN_ELDSTAD),
-    
+
     // ===================  ECOS  ===================
     REGISTRERING_AV_LIVSMEDEL(Value.REGISTRERING_AV_LIVSMEDEL),
     ANMALAN_INSTALLATION_VARMEPUMP(Value.ANMALAN_INSTALLATION_VARMEPUMP),
@@ -60,29 +60,26 @@ public enum CaseType {
     ANMALAN_HALSOSKYDDSVERKSAMHET(Value.ANMALAN_HALSOSKYDDSVERKSAMHET),
     UPPDATERING_RISKKLASSNING(Value.UPPDATERING_RISKKLASSNING),
     ANMALAN_KOMPOSTERING(Value.ANMALAN_KOMPOSTERING),
-    
+
     // ===================  Other  ===================
     PARKING_PERMIT(Value.PARKING_PERMIT),
     PARKING_PERMIT_RENEWAL(Value.PARKING_PERMIT_RENEWAL),
     LOST_PARKING_PERMIT(Value.LOST_PARKING_PERMIT);
-    
+
+    public static final EnumSet<CaseType> WITH_NULLABLE_FACILITY_TYPE = EnumSet.of(
+        MARKLOV_SCHAKTNING,
+        MARKLOV_FYLL,
+        MARKLOV_TRADFALLNING,
+        MARKLOV_OVRIGT,
+        STRANDSKYDD_OVRIGT);
+
     @Getter
     private final String value;
-    
+
     CaseType(String value) {
         this.value = value;
     }
-    
-    public static Set<CaseType> caseTypesWithNullableFacilityType() {
-        return Set.of(
-            MARKLOV_SCHAKTNING,
-            MARKLOV_FYLL,
-            MARKLOV_TRADFALLNING,
-            MARKLOV_OVRIGT,
-            STRANDSKYDD_OVRIGT
-        );
-    }
-    
+
     public static class Value {
         public static final String UPPSATTANDE_SKYLT = "UPPSATTANDE_SKYLT";
         public static final String TILLBYGGNAD_ANSOKAN_OM_BYGGLOV = "TILLBYGGNAD_ANSOKAN_OM_BYGGLOV";
