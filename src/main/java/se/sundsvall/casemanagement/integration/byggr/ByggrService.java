@@ -37,6 +37,7 @@ import se.sundsvall.casemanagement.api.model.PlanningPermissionCaseDTO;
 import se.sundsvall.casemanagement.api.model.PlanningPermissionFacilityDTO;
 import se.sundsvall.casemanagement.api.model.StakeholderDTO;
 import se.sundsvall.casemanagement.api.model.enums.AddressCategory;
+import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.api.model.enums.FacilityType;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
@@ -287,9 +288,12 @@ public class ByggrService {
 
         if (pCase.getFacilities() == null || pCase.getFacilities().get(0) == null) {
             arende.withArendeslag(caseType.getArendeSlag());
+
         } else if (caseType.getArendeSlag() != null) {
-            arende.withArendeslag(caseType.getArendeSlag())
-                .withArendeklass(getArendeKlass(pCase.getFacilities()));
+            arende.withArendeslag(caseType.getArendeSlag());
+            if (!CaseType.caseTypesWithNullableFacilityType().contains(pCase.getCaseType())) {
+                arende.withArendeklass(getArendeKlass(pCase.getFacilities()));
+            }
         } else {
             arende.withArendeslag(getMainOrOnlyArendeslag(pCase.getFacilities()));
         }

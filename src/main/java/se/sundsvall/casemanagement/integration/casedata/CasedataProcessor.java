@@ -24,10 +24,10 @@ import dev.failsafe.RetryPolicy;
 
 @Component
 class CasedataProcessor extends Processor {
-    
+
     private final CaseDataService service;
     private final RetryPolicy<String> retryPolicy;
-    
+
     CasedataProcessor(final OpeneClient openeClient,
         final CaseRepository caseRepository,
         final CaseDataService service,
@@ -44,13 +44,13 @@ class CasedataProcessor extends Processor {
                 event.getAttemptCount(), retryProperties.getMaxAttempts(), event.getLastException().getMessage()))
             .build();
     }
-    
+
     @Transactional
     @EventListener(IncomingOtherCase.class)
     public void handleIncomingErrand(final IncomingOtherCase event) throws SQLException, JsonProcessingException {
-        
+
         var caseEntity = caseRepository.findById(event.getPayload().getExternalCaseId()).orElse(null);
-        
+
         if (caseEntity == null) {
             log.warn("Unable to process CaseData errand {}", event.getPayload());
             return;
@@ -58,16 +58,16 @@ class CasedataProcessor extends Processor {
         String json = new BufferedReader(caseEntity.getDto().getCharacterStream()).lines().collect(Collectors.joining());
         var objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
         var otherCaseDTO = objectMapper.readValue(json, OtherCaseDTO.class);
-        
+
         try {
             Failsafe
                 .with(retryPolicy)
                 .onSuccess(successEvent -> handleSuccessfulDelivery(caseEntity, "CASEDATA"))
-                .onFailure(failureEvent -> handleMaximumDeliveryAttemptsExceeded(caseEntity))
+                .onFailure(failureEvent -> handleMaximumDeliveryAttemptsExceeded(failureEvent.getException(), caseEntity))
                 .get(() -> service.postErrand(otherCaseDTO));
         } catch (Exception e) {
             log.warn("Unable to create CaseData errand {}: {}", event.getPayload(), e.getMessage());
         }
-        
+
     }
 }

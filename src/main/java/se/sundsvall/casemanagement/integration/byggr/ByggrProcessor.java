@@ -25,15 +25,15 @@ import dev.failsafe.RetryPolicy;
 
 @Component
 class ByggrProcessor extends Processor {
-    
+
     private final ByggrService service;
     private final RetryPolicy<SaveNewArendeResponse2> retryPolicy;
-    
+
     ByggrProcessor(final OpeneClient openeClient, final CaseRepository caseRepository,
         final RetryProperties retryProperties, final ByggrService service, final CaseMappingRepository caseMappingRepository) {
         super(openeClient, caseRepository, caseMappingRepository);
         this.service = service;
-        
+
         retryPolicy = RetryPolicy.<SaveNewArendeResponse2>builder()
             .withMaxAttempts(retryProperties.getMaxAttempts())
             .withBackoff(retryProperties.getInitialDelay(), retryProperties.getMaxDelay())
@@ -43,13 +43,13 @@ class ByggrProcessor extends Processor {
             .onFailedAttempt(event -> log.debug("Unable to create byggR errand ({}/{}): {}", event.getAttemptCount(), retryProperties.getMaxAttempts(), event.getLastException().getMessage()))
             .build();
     }
-    
+
     @Transactional
     @EventListener(IncomingByggrCase.class)
     public void handleIncomingErrand(IncomingByggrCase event) throws JsonProcessingException, SQLException {
-        
+
         var caseEntity = caseRepository.findById(event.getPayload().getExternalCaseId()).orElse(null);
-        
+
         if (caseEntity == null) {
             log.warn("Unable to process byggR errand {}", event.getPayload());
             return;
@@ -57,16 +57,16 @@ class ByggrProcessor extends Processor {
         String json = new BufferedReader(caseEntity.getDto().getCharacterStream()).lines().collect(Collectors.joining());
         var objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
         var planningPermissionCaseDTO = objectMapper.readValue(json, PlanningPermissionCaseDTO.class);
-        
+
         try {
             Failsafe
                 .with(retryPolicy)
                 .onSuccess(successEvent -> handleSuccessfulDelivery(caseEntity, "BYGGR"))
-                .onFailure(failureEvent -> handleMaximumDeliveryAttemptsExceeded(caseEntity))
+                .onFailure(failureEvent -> handleMaximumDeliveryAttemptsExceeded(failureEvent.getException(), caseEntity))
                 .get(() -> service.postCase(planningPermissionCaseDTO));
         } catch (Exception e) {
             log.warn("Unable to create byggR errand {}: {}", event.getPayload(), e.getMessage());
         }
-        
+
     }
 }
