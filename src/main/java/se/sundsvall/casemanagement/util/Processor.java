@@ -36,27 +36,31 @@ public abstract class Processor {
         caseRepository.deleteById(entity.getId());
 
         var caseMapping = caseMappingRepository.findAllByExternalCaseId(entity.getId()).get(0);
-
-        openeClient.confirmDelivery(new ConfirmDelivery()
-            .withDelivered(true)
-            .withExternalID(new ExternalID()
-                .withSystem(system)
-                .withID(caseMapping.getCaseId()))
-            .withFlowInstanceID(Integer.parseInt(entity.getId())));
+        try {
+            openeClient.confirmDelivery(new ConfirmDelivery()
+                .withDelivered(true)
+                .withExternalID(new ExternalID()
+                    .withSystem(system)
+                    .withID(caseMapping.getCaseId()))
+                .withFlowInstanceID(Integer.parseInt(entity.getId())));
+        } catch (Exception e) {
+            log.error("Error while confirming delivery", e);
+        }
     }
 
     @Transactional
     public void handleMaximumDeliveryAttemptsExceeded(Throwable failureEvent, final CaseEntity entity) {
 
-        ;
+        log.info("Exceeded max sending attempts case with externalCaseId {}", entity.getId());
+        
+        caseRepository.save(entity.withDeliveryStatus(DeliveryStatus.FAILED));
 
         openeClient.confirmDelivery(new ConfirmDelivery()
             .withDelivered(false)
             .withLogMessage("Maximum delivery attempts exceeded: " + failureEvent.getMessage())
             .withFlowInstanceID(Integer.parseInt(entity.getId())));
 
-        log.info("Exceeded max sending attempts case with externalCaseId {}", entity.getId());
-        caseRepository.save(entity.withDeliveryStatus(DeliveryStatus.FAILED));
+
     }
 
 }

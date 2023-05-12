@@ -68,85 +68,85 @@ import minutmiljoV2.RegisterDocumentResponse;
 
 @Component
 public class TestUtil {
-    
+
     public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
         .enable(SerializationFeature.INDENT_OUTPUT)
         .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
         .configure(DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE, false)
         .registerModule(new JavaTimeModule());
-    
+
     public static void mockFbPropertyOwners(FbClient fbClientMock, List<StakeholderDTO> propertyOwners) {
         ResponseDto lagfarenAgareResponse = new ResponseDto();
         DataItem lagfarenAgareDataItem = new DataItem();
         List<GruppItem> lagfarenAgareGruppItemList = new ArrayList<>();
-        
+
         ResponseDto agareInfoResponse = new ResponseDto();
         List<DataItem> agareInfoDataItemList = new ArrayList<>();
-        
+
         propertyOwners.forEach(propertyOwner -> {
-            
+
             GruppItem gruppItem = new GruppItem();
             DataItem dataItem = new DataItem();
-            
+
             if (propertyOwner instanceof PersonDTO personDTO) {
-                
+
                 gruppItem.setIdentitetsnummer(personDTO.getPersonalNumber());
                 gruppItem.setUuid(UUID.randomUUID().toString());
-                
+
                 dataItem.setGallandeFornamn(personDTO.getFirstName());
                 dataItem.setGallandeEfternamn(personDTO.getLastName());
                 dataItem.setIdentitetsnummer(personDTO.getPersonalNumber());
                 dataItem.setJuridiskForm(Constants.FB_JURIDISK_FORM_PRIVATPERSON);
-                
+
             } else if (propertyOwner instanceof OrganizationDTO organizationDTO) {
-                
+
                 gruppItem.setIdentitetsnummer(organizationDTO.getOrganizationNumber());
                 gruppItem.setUuid(UUID.randomUUID().toString());
-                
+
                 dataItem.setGallandeOrganisationsnamn(organizationDTO.getOrganizationName());
                 dataItem.setIdentitetsnummer(organizationDTO.getOrganizationNumber());
                 dataItem.setJuridiskForm("16");
             }
-            
+
             lagfarenAgareGruppItemList.add(gruppItem);
             agareInfoDataItemList.add(dataItem);
         });
-        
+
         lagfarenAgareDataItem.setGrupp(lagfarenAgareGruppItemList);
         lagfarenAgareResponse.setData(List.of(lagfarenAgareDataItem));
         Mockito.doReturn(lagfarenAgareResponse).when(fbClientMock).getPropertyOwnerByFnr(any(), any(), any(), any());
-        
+
         agareInfoResponse.setData(agareInfoDataItemList);
         Mockito.doReturn(agareInfoResponse).when(fbClientMock).getPropertyOwnerInfoByUuid(any(), any(), any(), any());
     }
-    
+
     public static EnvironmentalCaseDTO createEnvironmentalCase(CaseType caseType, AttachmentCategory attachmentCategory) {
         EnvironmentalCaseDTO eCase = new EnvironmentalCaseDTO();
         List<AttachmentDTO> aList = new ArrayList<>();
         aList.add(createAttachmentDTO(attachmentCategory));
         eCase.setAttachments(aList);
         eCase.setStartDate(LocalDate.now());
-        
+
         List<StakeholderDTO> sList = new ArrayList<>();
         sList.add(createStakeholder(StakeholderType.ORGANIZATION, List.of(StakeholderRole.APPLICANT, StakeholderRole.OPERATOR)));
         sList.add(createStakeholder(StakeholderType.PERSON, List.of(StakeholderRole.CONTACT_PERSON)));
         sList.add(createStakeholder(StakeholderType.PERSON, List.of(StakeholderRole.CONTACT_PERSON)));
-        
+
         eCase.setStakeholders(sList);
-        
+
         eCase.setFacilities(List.of(createEnvironmentalFacilityDTO(caseType)));
-        
+
         eCase.setCaseType(caseType);
         eCase.setCaseTitleAddition("Some case title addition");
         eCase.setDescription(RandomStringUtils.random(10, true, false));
         eCase.setStartDate(LocalDate.now().plusDays(10));
         eCase.setEndDate(LocalDate.now().plusDays(365));
-        eCase.setExternalCaseId(String.valueOf(new Random().nextLong()));
+        eCase.setExternalCaseId(String.valueOf(new Random().nextInt()));
         eCase.setExtraParameters(createExtraParameters());
-        
+
         return eCase;
     }
-    
+
     public static AttachmentDTO createAttachmentDTO(AttachmentCategory attachmentCategory) {
         AttachmentDTO attachmentDTO = new AttachmentDTO();
         attachmentDTO.setCategory(attachmentCategory);
@@ -157,7 +157,7 @@ public class TestUtil {
         attachmentDTO.setFile(TestConstants.BASE64_STRING);
         return attachmentDTO;
     }
-    
+
     public static EnvironmentalFacilityDTO createEnvironmentalFacilityDTO(CaseType caseType) {
         EnvironmentalFacilityDTO facility = new EnvironmentalFacilityDTO();
         facility.setFacilityCollectionName(RandomStringUtils.random(10, true, false));
@@ -173,32 +173,32 @@ public class TestUtil {
         });
         return facility;
     }
-    
+
     public static PlanningPermissionCaseDTO createPlanningPermissionCaseDTO(CaseType caseType, AttachmentCategory attachmentCategory) {
         PlanningPermissionCaseDTO pCase = new PlanningPermissionCaseDTO();
         List<AttachmentDTO> aList = new ArrayList<>();
         aList.add(createAttachmentDTO(attachmentCategory));
         pCase.setAttachments(aList);
-        
+
         List<StakeholderDTO> sList = new ArrayList<>();
         sList.add(createStakeholder(StakeholderType.ORGANIZATION, List.of(StakeholderRole.APPLICANT, StakeholderRole.PAYMENT_PERSON)));
         sList.add(createStakeholder(StakeholderType.PERSON, List.of(StakeholderRole.CONTACT_PERSON)));
         sList.add(createStakeholder(StakeholderType.PERSON, List.of(StakeholderRole.CONTACT_PERSON)));
-        
+
         pCase.setStakeholders(sList);
-        
+
         pCase.setFacilities(List.of(createPlanningPermissionFacilityDTO(false)));
-        
+
         pCase.setCaseType(caseType);
         pCase.setCaseTitleAddition(RandomStringUtils.random(10, true, false));
         pCase.setDescription(RandomStringUtils.random(10, true, false));
         pCase.setExternalCaseId(String.valueOf(new Random().nextLong()));
         pCase.setDiaryNumber(RandomStringUtils.random(5));
         pCase.setExtraParameters(createExtraParameters());
-        
+
         return pCase;
     }
-    
+
     public static PlanningPermissionFacilityDTO createPlanningPermissionFacilityDTO(boolean mainFacility) {
         PlanningPermissionFacilityDTO facility = new PlanningPermissionFacilityDTO();
         AddressDTO addressDTO = new AddressDTO();
@@ -211,7 +211,7 @@ public class TestUtil {
         facility.setMainFacility(mainFacility);
         return facility;
     }
-    
+
     public static PlanningPermissionFacilityDTO createAttefallFacilityDTO(boolean mainFacility) {
         PlanningPermissionFacilityDTO facility = new PlanningPermissionFacilityDTO();
         AddressDTO addressDTO = new AddressDTO();
@@ -224,29 +224,29 @@ public class TestUtil {
         facility.setMainFacility(mainFacility);
         return facility;
     }
-    
+
     public static OtherCaseDTO createOtherCase(CaseType caseType, AttachmentCategory attachmentCategory) {
         OtherCaseDTO oCase = new OtherCaseDTO();
         List<AttachmentDTO> aList = new ArrayList<>();
         aList.add(createAttachmentDTO(attachmentCategory));
         oCase.setAttachments(aList);
-        
+
         List<StakeholderDTO> sList = new ArrayList<>();
         sList.add(createStakeholder(StakeholderType.ORGANIZATION, List.of(StakeholderRole.APPLICANT, StakeholderRole.OPERATOR)));
         sList.add(createStakeholder(StakeholderType.PERSON, List.of(StakeholderRole.CONTACT_PERSON)));
         sList.add(createStakeholder(StakeholderType.PERSON, List.of(StakeholderRole.CONTACT_PERSON)));
-        
+
         oCase.setStakeholders(sList);
-        
+
         oCase.setCaseType(caseType);
         oCase.setCaseTitleAddition(RandomStringUtils.random(10, true, false));
         oCase.setDescription(RandomStringUtils.random(10, true, false));
         oCase.setExternalCaseId(String.valueOf(new Random().nextLong()));
         oCase.setExtraParameters(createExtraParameters());
-        
+
         return oCase;
     }
-    
+
     public static StakeholderDTO createStakeholder(StakeholderType stakeholderType, List<StakeholderRole> stakeholderRoles) {
         if (stakeholderType.equals(StakeholderType.PERSON)) {
             PersonDTO personDTO = new PersonDTO();
@@ -261,7 +261,7 @@ public class TestUtil {
             personDTO.setPhoneNumber(RandomStringUtils.random(10, true, false));
             personDTO.setAddresses(List.of(createAddressDTO(List.of(AddressCategory.VISITING_ADDRESS, AddressCategory.POSTAL_ADDRESS))));
             personDTO.setExtraParameters(createExtraParameters());
-            
+
             return personDTO;
         } else {
             OrganizationDTO organizationDTO = new OrganizationDTO();
@@ -275,11 +275,11 @@ public class TestUtil {
             organizationDTO.setAddresses(List.of(createAddressDTO(List.of(AddressCategory.VISITING_ADDRESS, AddressCategory.INVOICE_ADDRESS, AddressCategory.POSTAL_ADDRESS))));
             organizationDTO.setAuthorizedSignatory(RandomStringUtils.random(10, true, false));
             organizationDTO.setExtraParameters(createExtraParameters());
-            
+
             return organizationDTO;
         }
     }
-    
+
     public static AddressDTO createAddressDTO(List<AddressCategory> addressCategories) {
         AddressDTO addressDTO = new AddressDTO();
         addressDTO.setAddressCategories(addressCategories);
@@ -299,75 +299,75 @@ public class TestUtil {
         coordinatesDTO.setLongitude(new Random().nextDouble());
         addressDTO.setLocation(coordinatesDTO);
         addressDTO.setExtraParameters(createExtraParameters());
-        
+
         return addressDTO;
     }
-    
+
     public static String generateRandomOrganizationNumber() {
         return (new Random().nextInt(999999 - 111111) + 111111) + "-" + (new Random().nextInt(9999 - 1111) + 1111);
     }
-    
+
     public static String generateRandomPersonalNumber() {
         return "199901" + new Random().nextInt(3) + (new Random().nextInt(9) + 1) + (new Random().nextInt(9999 - 1111) + 1111);
     }
-    
-    
+
+
     public static void standardMockMinutMiljo(MinutMiljoClient mock, MinutMiljoClientV2 mockV2) {
         lenient().doReturn(new SearchPartyResponse()).when(mock).searchParty(any());
-        
+
         CreatePersonPartyResponse createPersonPartyResponse = new CreatePersonPartyResponse();
         createPersonPartyResponse.setCreatePersonPartyResult(UUID.randomUUID().toString());
         lenient().doReturn(createPersonPartyResponse).when(mock).createPersonParty(any());
-        
+
         CreateOrganizationPartyResponse createOrganizationPartyResponse = new CreateOrganizationPartyResponse();
         createOrganizationPartyResponse.setCreateOrganizationPartyResult(UUID.randomUUID().toString());
         lenient().doReturn(createOrganizationPartyResponse).when(mock).createOrganizationParty(any());
-        
+
         RegisterDocumentResponse registerDocumentResponse = new RegisterDocumentResponse();
         RegisterDocumentCaseResultSvcDto registerDocumentCaseResultSvcDto = new RegisterDocumentCaseResultSvcDto();
         registerDocumentCaseResultSvcDto.setCaseId(TestConstants.ECOS_CASE_ID);
         registerDocumentCaseResultSvcDto.setCaseNumber(TestConstants.ECOS_CASE_NUMBER);
         registerDocumentResponse.setRegisterDocumentResult(registerDocumentCaseResultSvcDto);
         lenient().doReturn(registerDocumentResponse).when(mockV2).registerDocumentV2(any());
-        
+
         CreateFoodFacilityResponse createFoodFacilityResponse = new CreateFoodFacilityResponse();
         createFoodFacilityResponse.setCreateFoodFacilityResult(UUID.randomUUID().toString());
         lenient().doReturn(createFoodFacilityResponse).when(mock).createFoodFacility(any());
-        
+
         CreateHeatPumpFacilityResponse createHeatPumpFacilityResponse = new CreateHeatPumpFacilityResponse();
         createHeatPumpFacilityResponse.setCreateHeatPumpFacilityResult(UUID.randomUUID().toString());
         lenient().doReturn(createHeatPumpFacilityResponse).when(mock).createHeatPumpFacility(any());
-        
+
         CreateIndividualSewageFacilityResponse createIndividualSewageFacilityResponse = new CreateIndividualSewageFacilityResponse();
         createIndividualSewageFacilityResponse.setCreateIndividualSewageFacilityResult(UUID.randomUUID().toString());
         lenient().doReturn(createIndividualSewageFacilityResponse).when(mock).createIndividualSewageFacility(any());
-        
+
         CreateHealthProtectionFacilityResponse createHealthProtectionFacilityResponse = new CreateHealthProtectionFacilityResponse();
         createHealthProtectionFacilityResponse.setCreateHealthProtectionFacilityResult(UUID.randomUUID().toString());
         lenient().doReturn(createHealthProtectionFacilityResponse).when(mock).createHealthProtectionFacility(any());
     }
-    
+
     public static void standardMockArendeExport(ArendeExportClient mock) {
         SaveNewArendeResponse saveNewArendeResponse = new SaveNewArendeResponse();
         SaveNewArendeResponse2 saveNewArendeResult = new SaveNewArendeResponse2();
         saveNewArendeResult.setDnr(TestConstants.BYGG_CASE_ID);
         saveNewArendeResponse.setSaveNewArendeResult(saveNewArendeResult);
-        
+
         lenient().doReturn(saveNewArendeResponse).when(mock).saveNewArende(any());
     }
-    
+
     public static void standardMockFb(FbService fbMock) {
         FbPropertyInfo fbPropertyInfo = new FbPropertyInfo();
         fbPropertyInfo.setFnr(TestConstants.FNR);
         fbPropertyInfo.setAdressplatsId(TestConstants.ADRESSPLATS_ID);
-        
+
         lenient().doReturn(fbPropertyInfo).when(fbMock).getPropertyInfoByPropertyDesignation(anyString());
     }
-    
+
     public static void standardMockCitizenMapping(CitizenMappingService mock) {
         lenient().doReturn(generateRandomPersonalNumber()).when(mock).getPersonalNumber(anyString());
     }
-    
+
     public static void setSewageStandardExtraParams(Map<String, String> extraParameters, String prefix) {
         extraParameters.put("OnGrantLand", String.valueOf(new Random().nextBoolean()));
         extraParameters.put("ProtectionLevelApprovedEnvironmentId", UUID.randomUUID().toString());
@@ -380,34 +380,34 @@ public class TestUtil {
         extraParameters.put(prefix + "InstallationDate", LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
         extraParameters.put(prefix + "PersonCapacity", String.valueOf(new Random().nextInt()));
     }
-    
+
     public static Map<String, String> getSandfilterExtraParams() {
         Map<String, String> extraParameters = new HashMap<>();
         String prefix = "SandFilterSvcDto_";
         TestUtil.setSewageStandardExtraParams(extraParameters, prefix);
-        
+
         extraParameters.put(prefix + "Area", String.valueOf(new Random().nextInt()));
         extraParameters.put(prefix + "Elevated", String.valueOf(new Random().nextBoolean()));
         extraParameters.put(prefix + "WaterTight", String.valueOf(new Random().nextBoolean()));
-        
+
         return extraParameters;
     }
-    
+
     public static Map<String, String> getHeatPumpExtraParams() {
         Map<String, String> extraParameters = new HashMap<>();
         String prefix = "CreateSoilHeatingFacilitySvcDto_";
         TestUtil.setSewageStandardExtraParams(extraParameters, prefix);
-        
+
         extraParameters.put(prefix + "Manufacturer", RandomStringUtils.random(10, true, false));
         extraParameters.put(prefix + "Model", RandomStringUtils.random(10, true, false));
         extraParameters.put(prefix + "PowerConsumption", String.valueOf(new Random().nextDouble()));
         extraParameters.put(prefix + "PowerOutput", String.valueOf(new Random().nextDouble()));
         extraParameters.put(prefix + "Capacity", String.valueOf(new Random().nextDouble()));
         extraParameters.put(prefix + "HeatTransferFluidId", UUID.randomUUID().toString());
-        
+
         return extraParameters;
     }
-    
+
     public static AttachmentDTO createAttachment(AttachmentCategory attachmentCategory) {
         AttachmentDTO attachmentDTO = new AttachmentDTO();
         attachmentDTO.setCategory(attachmentCategory);
@@ -417,24 +417,24 @@ public class TestUtil {
         attachmentDTO.setMimeType("application/pdf");
         attachmentDTO.setFile(TestConstants.BASE64_STRING);
         attachmentDTO.setExtraParameters(createExtraParameters());
-        
+
         return attachmentDTO;
     }
-    
+
     public static Map<String, String> createExtraParameters() {
         Map<String, String> extraParams = new HashMap<>();
         extraParams.put(RandomStringUtils.random(10, true, false), RandomStringUtils.random(20, true, false));
         extraParams.put(RandomStringUtils.random(10, true, false), RandomStringUtils.random(20, true, false));
         extraParams.put(RandomStringUtils.random(10, true, false), RandomStringUtils.random(20, true, false));
-        
+
         return extraParams;
     }
-    
+
     public static <E extends Enum<E>> Enum<?> getRandomOfEnum(Class<E> enumClass) {
         return Arrays.stream(enumClass.getEnumConstants()).toList().get(new Random().nextInt(enumClass.getEnumConstants().length));
     }
-    
-    
+
+
     public static List<CaseTypeData> setUpCaseTypes() {
         var caseTypeDataList = new ArrayList<CaseTypeData>();
         caseTypeDataList.add(CaseTypeData.builder()

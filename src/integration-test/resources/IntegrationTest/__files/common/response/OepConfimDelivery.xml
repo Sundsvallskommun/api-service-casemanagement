@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/">
+    <S:Body>
+        <confirmDeliveryResponse
+                xmlns="http://www.oeplatform.org/version/1.0/schemas/integration/callback">
+        </confirmDeliveryResponse>
+    </S:Body>
+</S:Envelope>
+
