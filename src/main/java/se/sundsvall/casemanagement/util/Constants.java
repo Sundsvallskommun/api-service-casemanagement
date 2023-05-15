@@ -1,9 +1,9 @@
 package se.sundsvall.casemanagement.util;
 
 public final class Constants {
-    
+
     public static final String HANDELSETYP_ANSOKAN = "ANSÖKAN";
-    
+
     ////////////////// ByggR
     public static final String HANDELSETYP_ANMALAN = "ANM";
     public static final String RUBRIK_STRANDSKYDD = "Strandskyddsdispens";
@@ -92,7 +92,7 @@ public final class Constants {
     public static final String ECOS_PROCESS_TYPE_ID_UPPDATERING_RISKKLASS = "E8E389D4-FE45-4195-A790-C58AE4DC96BF";
     // Anmälan kompostering
     public static final String ECOS_PROCESS_TYPE_ID_ANMALAN_KOMPOSTERING = "87C496A2-6877-4ED8-9CB0-4937F09F4DB9";
-    
+
     public static final String ECOS_DOCUMENT_STATUS_INKOMMEN = "F6F4B956-36D7-4CBF-8BCA-713219BFD5F2";
     public static final String ECOS_FACILITY_STATUS_ID_ANMALD_ANSOKT = "88E11CAA-DF35-4C5E-94A8-3C7B0369D8F2";
     public static final String ECOS_ROLE_ID_FAKTURAMOTTAGARE = "480E2731-1F2F-4F35-8A37-FDDE957E9CD0";
@@ -111,9 +111,9 @@ public final class Constants {
     public static final String ECOS_OCCURRENCE_TYPE_ID_INFO_FRAN_ETJANST = "BF28124A-7C51-452C-8F72-16412364F8C2";
     public static final String ECOS_OCCURRENCE_TYPE_ID_KOMPLETTERING = "AE3F6E26-6B4F-4231-8BCA-C81A98547727";
     public static final String ECOS_OCCURENCE_TEXT_MOBIL_ANLAGGNING = """
-        Anläggningen kunde inte registreras automatiskt då anläggningen var av typen "mobil".
-        Denna anläggning och tillhörande part/-er måste registreras manuellt.
-        Informationen finns i handlingen "Anmälan livsmedelsanläggning".""";
+            Anläggningen kunde inte registreras automatiskt då anläggningen var av typen "mobil".
+            Denna anläggning och tillhörande part/-er måste registreras manuellt.
+            Informationen finns i handlingen "Anmälan livsmedelsanläggning".""";
     ////////////////// Error messages
     public static final String ERR_MSG_ONLY_ONE_MAIN_FACILITY = "Number of mainFacilities must be <= 1";
     public static final String ERR_MSG_CASES_NOT_FOUND = "Case not found";
@@ -131,51 +131,52 @@ public final class Constants {
     public static final String FB_JURIDISK_FORM_PRIVATPERSON = "00";
     public static final String SWEDEN = "Sverige";
     public static final String POST_CASES_REQUEST_BODY_EXAMPLE = """
-        {
-            "externalCaseId": "e19981ad-34b2-4e14-88f5-133f61ca85aa",
-            "caseType": "NYBYGGNAD_ANSOKAN_OM_BYGGLOV",
-            "facilities": [
-                {
-                    "facilityType": "STOREHOUSE",
-                    "address": {
-                        "addressCategories": [
-                            "VISITING_ADDRESS"
-                        ],
-                        "propertyDesignation": "SUNDSVALL BALDER 2"
+            {
+                "externalCaseId": "e19981ad-34b2-4e14-88f5-133f61ca85aa",
+                "caseType": "NYBYGGNAD_ANSOKAN_OM_BYGGLOV",
+                "facilities": [
+                    {
+                        "facilityType": "STOREHOUSE",
+                        "address": {
+                            "addressCategories": [
+                                "VISITING_ADDRESS"
+                            ],
+                            "propertyDesignation": "SUNDSVALL BALDER 2"
+                        }
                     }
-                }
-            ],
-            "stakeholders": [
-                {
-                    "type": "ORGANIZATION",
-                    "roles": [
-                        "APPLICANT",
-                        "PAYMENT_PERSON"
-                    ],
-                    "organizationName": "Testorganisationen",
-                    "organizationNumber": "123456-1234"
-                },
-                {
-                    "type": "PERSON",
-                    "roles": [
-                        "CONTACT_PERSON"
-                    ],
-                    "firstName": "Test",
-                    "lastName": "Testsson",
-                    "personId": "e19981ad-34b2-4e14-88f5-133f61ca85aa"
-                }
-            ],
-            "attachments": [
-                {
-                    "category": "ANS",
-                    "name": "Some_name_2022-03-07",
-                    "extension": ".pdf",
-                    "file": "dGVzdA=="
-                }
-            ]
-        }""";
+                ],
+                "stakeholders": [
+                    {
+                        "type": "ORGANIZATION",
+                        "roles": [
+                            "APPLICANT",
+                            "PAYMENT_PERSON"
+                        ],
+                        "organizationName": "Testorganisationen",
+                        "organizationNumber": "123456-1234"
+                    },
+                    {
+                        "type": "PERSON",
+                        "roles": [
+                            "CONTACT_PERSON"
+                        ],
+                        "firstName": "Test",
+                        "lastName": "Testsson",
+                        "personId": "e19981ad-34b2-4e14-88f5-133f61ca85aa"
+                    }
+                ],
+                "attachments": [
+                    {
+                        "category": "ANS",
+                        "name": "Some_name_2022-03-07",
+                        "extension": ".pdf",
+                        "file": "dGVzdA=="
+                    }
+                ]
+            }""";
+
     private Constants() {
-    
+
     }
 
     public static String ERR_MSG_PERSONAL_NUMBER_NOT_FOUND_WITH_PERSON_ID(String personId) {
@@ -185,6 +186,6 @@ public final class Constants {
     public static String ERR_MSG_PROPERTY_DESIGNATION_NOT_FOUND(String propertyDesignation) {
         return "The specified propertyDesignation(" + propertyDesignation + ") could not be found";
     }
-    
+
 }
 
