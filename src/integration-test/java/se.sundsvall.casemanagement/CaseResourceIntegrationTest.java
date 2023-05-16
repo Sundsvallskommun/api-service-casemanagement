@@ -12,6 +12,7 @@ import static se.sundsvall.casemanagement.testutils.TestConstants.BYGG_CASE_ID;
 import static se.sundsvall.casemanagement.testutils.TestConstants.BYGG_CASE_NUMBER;
 import static se.sundsvall.casemanagement.testutils.TestConstants.CASE_DATA_CASE_ID;
 import static se.sundsvall.casemanagement.testutils.TestConstants.CASE_DATA_ERRAND_NUMBER;
+import static se.sundsvall.casemanagement.testutils.TestConstants.CASE_DATA_ID;
 import static se.sundsvall.casemanagement.testutils.TestConstants.ECOS_CASE_ID;
 import static se.sundsvall.casemanagement.testutils.TestConstants.ECOS_CASE_NUMBER;
 import static se.sundsvall.casemanagement.testutils.TestConstants.PROPERTY_DESIGNATION_BALDER;
@@ -617,7 +618,7 @@ class CaseResourceIntegrationTest extends CustomAbstractAppTest {
 
         caseMappingRepository.save(CaseMapping.builder()
             .withCaseType(CaseType.PARKING_PERMIT_RENEWAL)
-            .withCaseId(CASE_DATA_CASE_ID)
+            .withCaseId(CASE_DATA_ID)
             .withSystem(SystemType.CASE_DATA)
             .withServiceName("serviceName")
             .withTimestamp(LocalDateTime.now())

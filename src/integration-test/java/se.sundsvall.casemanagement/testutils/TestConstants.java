@@ -13,6 +13,9 @@ public class TestConstants {
     public static final String ORG_NUMBER = "123456-1234";
     public static final Integer ADRESSPLATS_ID = 90022392;
     public static final Integer FNR = 22045604;
-    public static final String CASE_DATA_CASE_ID = "24";
+    public static final String CASE_DATA_CASE_ID = "PRH-2022-000001";
+
+    public static final String CASE_DATA_ID = "24";
+
     public static final String CASE_DATA_ERRAND_NUMBER = "Inskickat";
 }
