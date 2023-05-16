@@ -243,7 +243,8 @@ public enum AttachmentCategory {
     VS("VS-handling", "VVS"),
     VVSH("VVS-handling", "VVS"),
 
-
+    // archiveClassification UNKNOWN
+    MASE("Marksektionsritning", null),
     ///////////////////////////////////
     // Ecos
     ///////////////////////////////////
