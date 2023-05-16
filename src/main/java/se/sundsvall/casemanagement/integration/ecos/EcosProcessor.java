@@ -53,6 +53,7 @@ class EcosProcessor extends Processor {
 
 
         if (caseEntity == null) {
+            cleanAttachmentBase64(event);
             log.warn("Unable to process ecos errand {}", event.getPayload());
             return;
         }
@@ -68,6 +69,7 @@ class EcosProcessor extends Processor {
                 .onFailure(failureEvent -> handleMaximumDeliveryAttemptsExceeded(failureEvent.getException(), caseEntity))
                 .get(() -> ecosService.postCase(environmentalCaseDTO));
         } catch (Exception e) {
+            cleanAttachmentBase64(event);
             log.warn("Unable to create ecos errand {}: {}", event.getPayload(), e.getMessage());
         }
 

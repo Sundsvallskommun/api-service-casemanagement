@@ -52,6 +52,7 @@ class CasedataProcessor extends Processor {
         var caseEntity = caseRepository.findById(event.getPayload().getExternalCaseId()).orElse(null);
 
         if (caseEntity == null) {
+            cleanAttachmentBase64(event);
             log.warn("Unable to process CaseData errand {}", event.getPayload());
             return;
         }
@@ -66,6 +67,7 @@ class CasedataProcessor extends Processor {
                 .onFailure(failureEvent -> handleMaximumDeliveryAttemptsExceeded(failureEvent.getException(), caseEntity))
                 .get(() -> service.postErrand(otherCaseDTO));
         } catch (Exception e) {
+            cleanAttachmentBase64(event);
             log.warn("Unable to create CaseData errand {}: {}", event.getPayload(), e.getMessage());
         }
 

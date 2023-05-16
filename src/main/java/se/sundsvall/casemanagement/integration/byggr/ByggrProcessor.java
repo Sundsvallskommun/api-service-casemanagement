@@ -51,6 +51,7 @@ class ByggrProcessor extends Processor {
         var caseEntity = caseRepository.findById(event.getPayload().getExternalCaseId()).orElse(null);
 
         if (caseEntity == null) {
+            cleanAttachmentBase64(event);
             log.warn("Unable to process byggR errand {}", event.getPayload());
             return;
         }
@@ -65,6 +66,7 @@ class ByggrProcessor extends Processor {
                 .onFailure(failureEvent -> handleMaximumDeliveryAttemptsExceeded(failureEvent.getException(), caseEntity))
                 .get(() -> service.postCase(planningPermissionCaseDTO));
         } catch (Exception e) {
+            cleanAttachmentBase64(event);
             log.warn("Unable to create byggR errand {}: {}", event.getPayload(), e.getMessage());
         }
 

@@ -1,15 +1,23 @@
 package se.sundsvall.casemanagement.util;
 
-import callback.ConfirmDelivery;
-import callback.ExternalID;
+import java.util.List;
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
+
+import se.sundsvall.casemanagement.api.model.AttachmentDTO;
+import se.sundsvall.casemanagement.api.model.CaseDTO;
 import se.sundsvall.casemanagement.integration.db.CaseMappingRepository;
 import se.sundsvall.casemanagement.integration.db.CaseRepository;
 import se.sundsvall.casemanagement.integration.db.model.CaseEntity;
 import se.sundsvall.casemanagement.integration.db.model.DeliveryStatus;
 import se.sundsvall.casemanagement.integration.opene.OpeneClient;
+import se.sundsvall.casemanagement.service.event.Event;
+
+import callback.ConfirmDelivery;
+import callback.ExternalID;
 
 public abstract class Processor {
 
@@ -20,10 +28,18 @@ public abstract class Processor {
     protected final CaseMappingRepository caseMappingRepository;
 
     protected Processor(final OpeneClient openeClient, final CaseRepository caseRepository,
-                        CaseMappingRepository caseMappingRepository) {
+        CaseMappingRepository caseMappingRepository) {
         this.openeClient = openeClient;
         this.caseRepository = caseRepository;
         this.caseMappingRepository = caseMappingRepository;
+    }
+
+    public void cleanAttachmentBase64(Event<?> event) {
+
+        var payload = (CaseDTO) event.getPayload();
+
+        Optional.ofNullable(payload.getAttachments()).orElse(List.of(new AttachmentDTO()))
+            .forEach(attachment -> attachment.setFile("<BASE64 ENCODED FILE CONTENT>"));
     }
 
     @Transactional
@@ -36,11 +52,11 @@ public abstract class Processor {
         var caseMapping = caseMappingRepository.findAllByExternalCaseId(entity.getId()).get(0);
         try {
             openeClient.confirmDelivery(new ConfirmDelivery()
-                    .withDelivered(true)
-                    .withExternalID(new ExternalID()
-                            .withSystem(system)
-                            .withID(caseMapping.getCaseId()))
-                    .withFlowInstanceID(Integer.parseInt(entity.getId())));
+                .withDelivered(true)
+                .withExternalID(new ExternalID()
+                    .withSystem(system)
+                    .withID(caseMapping.getCaseId()))
+                .withFlowInstanceID(Integer.parseInt(entity.getId())));
         } catch (Exception e) {
             log.error("Error while confirming delivery", e);
         }
@@ -54,9 +70,9 @@ public abstract class Processor {
         caseRepository.save(entity.withDeliveryStatus(DeliveryStatus.FAILED));
         try {
             openeClient.confirmDelivery(new ConfirmDelivery()
-                    .withDelivered(false)
-                    .withLogMessage("Maximum delivery attempts exceeded: " + failureEvent.getMessage())
-                    .withFlowInstanceID(Integer.parseInt(entity.getId())));
+                .withDelivered(false)
+                .withLogMessage("Maximum delivery attempts exceeded: " + failureEvent.getMessage())
+                .withFlowInstanceID(Integer.parseInt(entity.getId())));
         } catch (Exception e) {
             log.error("Error while confirming delivery", e);
         }
