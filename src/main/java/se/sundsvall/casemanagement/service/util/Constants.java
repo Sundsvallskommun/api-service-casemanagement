@@ -1,10 +1,6 @@
 package se.sundsvall.casemanagement.service.util;
 
 public final class Constants {
-    
-    private Constants() {
-
-    }
 
     ////////////////// ByggR
     public static final String BYGGR_ARENDEMENING_NYBYGGNAD_FORHANDSBESKED = "Förhandsbesked för nybyggnad av";
@@ -12,29 +8,22 @@ public final class Constants {
     public static final String BYGGR_ARENDEMENING_BYGGLOV_FOR_TILLBYGGNAD = "Bygglov för tillbyggnad av";
     public static final String BYGGR_ARENDEMENING_BYGGLOV_ANDRING_ANSOKAN_OM_ = "Bygglov för";
     public static final String BYGGR_ARENDEMENING_BYGGLOV_FOR_UPPSSATTANDE = "Bygglov för uppsättande av ";
-    
-    
-    public static final String BYGGR_ARENDEMENING_STRANDSKYDD_FOR_NYBYGGNAD= "Strandskyddsdispens för nybyggnad av";
-    public static final String BYGGR_ARENDEMENING_STRANDSKYDD_FOR_ANLAGGANDE= "Strandskyddsdispens för anläggande av";
-    public static final String BYGGR_ARENDEMENING_STRANDSKYDD_FOR_ANORDNANDE= "Strandskyddsdispens för anordnare av";
-    public static final String BYGGR_ARENDEMENING_STRANDSKYDD_FOR_ANDRAD_ANVANDNING= "Strandskyddsdispens för ändrad användning av";
-    
-    
+    public static final String BYGGR_ARENDEMENING_STRANDSKYDD_FOR_NYBYGGNAD = "Strandskyddsdispens för nybyggnad av";
+    public static final String BYGGR_ARENDEMENING_STRANDSKYDD_FOR_ANLAGGANDE = "Strandskyddsdispens för anläggande av";
+    public static final String BYGGR_ARENDEMENING_STRANDSKYDD_FOR_ANORDNANDE = "Strandskyddsdispens för anordnare av";
+    public static final String BYGGR_ARENDEMENING_STRANDSKYDD_FOR_ANDRAD_ANVANDNING = "Strandskyddsdispens för ändrad användning av";
     public static final String BYGGR_HANDELSE_ANTECKNING = "Inkomna kompletteringar via e-tjänst.";
     public static final String BYGGR_HANDELSE_RUBRIK_MANUELL_HANTERING = "Manuell hantering";
     public static final String BYGGR_HANDELSE_RUBRIK_KOMPLETTERING_TILL_ADMIN = "Komplettering till Admin";
     public static final String BYGGR_HANDELSE_RUBRIK_BYGGLOV = "Bygglov";
     public static final String BYGGR_HANDELSE_RUBRIK_FORHANDSBESKED = "Förhandsbesked";
-    public static final String BYGGR_HANDELSE_RUBRIK_STRANDSKYDD ="Strandskyddsdispens";
-    public static final String BYGGR_HANDELSESLAG_STRANDSKYDD ="Strand";
+    public static final String BYGGR_HANDELSE_RUBRIK_STRANDSKYDD = "Strandskyddsdispens";
+    public static final String BYGGR_HANDELSESLAG_STRANDSKYDD = "Strand";
     public static final String BYGGR_HANDELSE_RUBRIK_ANMALAN_ATTEFALL = "Anmälan Attefall";
-    
-    
     public static final String BYGGR_HANDELSE_RUBRIK_ELDSTAD = "Eldstad";
     public static final String BYGGR_HANDELSESLAG_ELDSTAD = "ELD1";
-    public static final String BYGGR_HANDELSE_RUBRIK_ELDSTAD_ROKKANAL="Eldstad/Rökkanal";
+    public static final String BYGGR_HANDELSE_RUBRIK_ELDSTAD_ROKKANAL = "Eldstad/Rökkanal";
     public static final String BYGGR_HANDELSESLAG_ELDSTAD_ROKKANAL = "ELD";
-    
     public static final String BYGGR_HANDELSE_RIKTNING_IN = "In";
     public static final String BYGGR_HANDELSETYP_STATUS = "STATUS";
     public static final String BYGGR_HANDELSETYP_ANSOKAN = "ANSÖKAN";
@@ -46,7 +35,6 @@ public final class Constants {
     public static final String BYGGR_HANDELSETYP_UNDERRATTELSE = "UNDER";
     public static final String BYGGR_HANDELSETYP_KOMPLETTERINGSFORELAGGANDE = "KOMP";
     public static final String BYGGR_HANDELSETYP_KOMPLETTERINGSFORELAGGANDE_PAMINNELSE = "KOMP1";
-
     public static final String BYGGR_HANDELSESLAG_BYGGLOV = "Bygglov";
     public static final String BYGGR_HANDELSESLAG_FORHANDSBESKED = "Förhand";
     public static final String BYGGR_HANDELSESLAG_SLUTBESKED = "SLU";
@@ -61,13 +49,9 @@ public final class Constants {
     public static final String BYGGR_HANDELSESLAG_MED_KRAV_PA_SVAR = "Med";
     public static final String BYGGR_HANDELSESLAG_UTAN_KRAV_PA_SVAR = "Utan";
     public static final String BYGGR_HANDELSESLAG_KOMPLETTERING_TILL_ADMIN = "KOMPADM";
-    
     public static final String BYGGR_HANDELSESLAG_ANMALAN_ATTEFALL = "ANMATT";
-
     public static final String BYGGR_HANDELSEUTFALL_ATOM_KVITTENS_HL_BYTE = "Kv2";
-
     public static final String BYGGR_STATUS_AVSLUTAT = "Avslutat";
-
     public static final String BYGGR_HANDLING_STATUS_INKOMMEN = "Inkommen";
     public static final String BYGGR_SYSTEM_HANDLAGGARE_SIGN = "SYSTEM";
     public static final String BYGGR_NAMNDKOD_STADSBYGGNADSNAMNDEN = "SBN";
@@ -78,8 +62,7 @@ public final class Constants {
     public static final String BYGGR_ARENDETYP_BYGGLOV_FOR = "BL";
     public static final String BYGGR_ARENDETYP_FORHANDSBESKED = "FÖRF";
     public static final String BYGGR_ARENDETYP_ANMALAN_ATTEFALL = "ATTANM";
-    public static final String BYGGR_ARENDETYP_STRANDSKYDD="DI";
-    
+    public static final String BYGGR_ARENDETYP_STRANDSKYDD = "DI";
     public static final String BYGGR_HANDELSE_ANTECKNING_INTRESSENT_KUNDE_INTE_REGISTRERAS = "- Det finns flera intressenter med samma personnummer i den inkomna ansökan. Detta går inte att registrera maskinellt.";
     public static final String BYGGR_HANDELSE_ANTECKNING_KONTROLLANSVARIG = "- Det finns uppgifter om kontrollansvarig i den inkomna ansökan. Detta går inte att registrera maskinellt.";
     public static final String BYGGR_HANDELSE_ANTECKNING_FASTIGHETSAGARE = "- Fastighetsägare kunde inte registreras maskinellt.";
@@ -87,15 +70,12 @@ public final class Constants {
     public static final String BYGGR_KOMTYP_MOBIL = "MOB";
     public static final String BYGGR_KOMTYP_HEMTELEFON = "HEM";
     public static final String BYGGR_KOMTYP_EPOST = "Epost";
-
     ////////////////// Ecos
     public static final String ECOS_DIARY_PLAN_LIVSMEDEL = "73B90981-D7AE-49E3-8AB7-3AED778ABDB4";
     public static final String ECOS_DIARY_PLAN_AVLOPP = "91470D60-FCDE-418D-A2B9-601FC1850B63";
     public static final String ECOS_DIARY_PLAN_HALSOSKYDD = "86100879-6451-4310-AAB2-9C1F9F663F69";
-
     public static final String ECOS_OCCURENCE_TYPE_ID_ANMALAN = "34BA125B-E9EE-4389-AEAE-9F66288C1B63";
     public static final String ECOS_HANDLING_OFFICER_GROUP_ID_EXPEDITIONEN = "58E6A5CE-C6EE-42B4-A96A-BD25D693420E";
-
     // Registrering av livsmedelsanläggning
     public static final String ECOS_PROCESS_TYPE_ID_REGISTRERING_AV_LIVSMEDEL = "A764A86B-7327-445B-98C5-C26543D6F705";
     // Anmälan av installation av värmepump
@@ -114,7 +94,6 @@ public final class Constants {
     public static final String ECOS_PROCESS_TYPE_ID_ANMALAN_HALSOSKYDDSVERKSAMHET = "AF6D94EC-94FB-4C0A-AF39-CC5E4C732D4B";
     // Uppdatering av riskklass
     public static final String ECOS_PROCESS_TYPE_ID_UPPDATERING_RISKKLASS = "E8E389D4-FE45-4195-A790-C58AE4DC96BF";
-
     public static final String ECOS_DOCUMENT_STATUS_INKOMMEN = "F6F4B956-36D7-4CBF-8BCA-713219BFD5F2";
     public static final String ECOS_FACILITY_STATUS_ID_ANMALD_ANSOKT = "88E11CAA-DF35-4C5E-94A8-3C7B0369D8F2";
     public static final String ECOS_ROLE_ID_FAKTURAMOTTAGARE = "480E2731-1F2F-4F35-8A37-FDDE957E9CD0";
@@ -133,11 +112,9 @@ public final class Constants {
     public static final String ECOS_OCCURRENCE_TYPE_ID_INFO_FRAN_ETJANST = "BF28124A-7C51-452C-8F72-16412364F8C2";
     public static final String ECOS_OCCURRENCE_TYPE_ID_KOMPLETTERING = "AE3F6E26-6B4F-4231-8BCA-C81A98547727";
     public static final String ECOS_OCCURENCE_TEXT_MOBIL_ANLAGGNING = """
-            Anläggningen kunde inte registreras automatiskt då anläggningen var av typen "mobil".
-            Denna anläggning och tillhörande part/-er måste registreras manuellt.
-            Informationen finns i handlingen "Anmälan livsmedelsanläggning".""";
-
-
+        Anläggningen kunde inte registreras automatiskt då anläggningen var av typen "mobil".
+        Denna anläggning och tillhörande part/-er måste registreras manuellt.
+        Informationen finns i handlingen "Anmälan livsmedelsanläggning".""";
     ////////////////// Error messages
     public static final String ERR_MSG_ONLY_ONE_MAIN_FACILITY = "Number of mainFacilities must be <= 1";
     public static final String ERR_MSG_CASEMAPPINGS_NOT_FOUND = "CaseMappings not found";
@@ -150,6 +127,59 @@ public final class Constants {
     public static final String ORGNR_PATTERN_MESSAGE = "organizationNumber must consist of 10 or 12 digits. 10 digit orgnr must follow this format: \"XXXXXX-XXXX\". 12 digit orgnr must follow this format: \"(18|19|20)XXXXXX-XXXX\".";
     public static final String ORGNR_PATTERN_REGEX = "^((18|19|20|21)\\d{6}|\\d{6})-(\\d{4})$";
     public static final String REQUEST_BODY_MUST_NOT_BE_NULL = "Request body must not be null";
+    ////////////////// Other
+    public static final String SERVICE_NAME = "serviceName";
+    public static final String LANTMATERIET_REFERENS_STATUS_LEVANDE = "levande";
+    public static final String FB_JURIDISK_FORM_PRIVATPERSON = "00";
+    public static final String SWEDEN = "Sverige";
+    public static final String POST_CASES_REQUEST_BODY_EXAMPLE = """
+        {
+            "externalCaseId": "e19981ad-34b2-4e14-88f5-133f61ca85aa",
+            "caseType": "NYBYGGNAD_ANSOKAN_OM_BYGGLOV",
+            "facilities": [
+                {
+                    "facilityType": "STOREHOUSE",
+                    "address": {
+                        "addressCategories": [
+                            "VISITING_ADDRESS"
+                        ],
+                        "propertyDesignation": "SUNDSVALL BALDER 2"
+                    }
+                }
+            ],
+            "stakeholders": [
+                {
+                    "type": "ORGANIZATION",
+                    "roles": [
+                        "APPLICANT",
+                        "PAYMENT_PERSON"
+                    ],
+                    "organizationName": "Testorganisationen",
+                    "organizationNumber": "123456-1234"
+                },
+                {
+                    "type": "PERSON",
+                    "roles": [
+                        "CONTACT_PERSON"
+                    ],
+                    "firstName": "Test",
+                    "lastName": "Testsson",
+                    "personId": "e19981ad-34b2-4e14-88f5-133f61ca85aa"
+                }
+            ],
+            "attachments": [
+                {
+                    "category": "ANS",
+                    "name": "Some_name_2022-03-07",
+                    "extension": ".pdf",
+                    "file": "dGVzdA=="
+                }
+            ]
+        }""";
+
+    private Constants() {
+
+    }
 
     public static String ERR_MSG_PERSONAL_NUMBER_NOT_FOUND_WITH_PERSON_ID(String personId) {
         return "No personalNumber was found in CitizenMapping with personId: " + personId;
@@ -158,56 +188,6 @@ public final class Constants {
     public static String ERR_MSG_PROPERTY_DESIGNATION_NOT_FOUND(String propertyDesignation) {
         return "The specified propertyDesignation(" + propertyDesignation + ") could not be found";
     }
-
-    ////////////////// Other
-    public static final String SERVICE_NAME = "serviceName";
-    public static final String LANTMATERIET_REFERENS_STATUS_GALLANDE = "Gällande";
-    public static final String FB_JURIDISK_FORM_PRIVATPERSON = "00";
-    public static final String SWEDEN = "Sverige";
-    public static final String POST_CASES_REQUEST_BODY_EXAMPLE = """
-            {
-                "externalCaseId": "e19981ad-34b2-4e14-88f5-133f61ca85aa",
-                "caseType": "NYBYGGNAD_ANSOKAN_OM_BYGGLOV",
-                "facilities": [
-                    {
-                        "facilityType": "STOREHOUSE",
-                        "address": {
-                            "addressCategories": [
-                                "VISITING_ADDRESS"
-                            ],
-                            "propertyDesignation": "SUNDSVALL BALDER 2"
-                        }
-                    }
-                ],
-                "stakeholders": [
-                    {
-                        "type": "ORGANIZATION",
-                        "roles": [
-                            "APPLICANT",
-                            "PAYMENT_PERSON"
-                        ],
-                        "organizationName": "Testorganisationen",
-                        "organizationNumber": "123456-1234"
-                    },
-                    {
-                        "type": "PERSON",
-                        "roles": [
-                            "CONTACT_PERSON"
-                        ],
-                        "firstName": "Test",
-                        "lastName": "Testsson",
-                        "personId": "e19981ad-34b2-4e14-88f5-133f61ca85aa"
-                    }
-                ],
-                "attachments": [
-                    {
-                        "category": "ANS",
-                        "name": "Some_name_2022-03-07",
-                        "extension": ".pdf",
-                        "file": "dGVzdA=="
-                    }
-                ]
-            }""";
 
 }
 
