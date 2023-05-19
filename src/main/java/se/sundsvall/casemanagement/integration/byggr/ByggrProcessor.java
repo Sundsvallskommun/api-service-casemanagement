@@ -15,6 +15,7 @@ import se.sundsvall.casemanagement.api.model.PlanningPermissionCaseDTO;
 import se.sundsvall.casemanagement.configuration.RetryProperties;
 import se.sundsvall.casemanagement.integration.db.CaseMappingRepository;
 import se.sundsvall.casemanagement.integration.db.CaseRepository;
+import se.sundsvall.casemanagement.integration.messaging.MessagingIntegration;
 import se.sundsvall.casemanagement.integration.opene.OpeneClient;
 import se.sundsvall.casemanagement.service.event.IncomingByggrCase;
 import se.sundsvall.casemanagement.util.Processor;
@@ -30,8 +31,8 @@ class ByggrProcessor extends Processor {
     private final RetryPolicy<SaveNewArendeResponse2> retryPolicy;
 
     ByggrProcessor(final OpeneClient openeClient, final CaseRepository caseRepository,
-        final RetryProperties retryProperties, final ByggrService service, final CaseMappingRepository caseMappingRepository) {
-        super(openeClient, caseRepository, caseMappingRepository);
+        final RetryProperties retryProperties, final ByggrService service, final CaseMappingRepository caseMappingRepository, final MessagingIntegration messagingIntegration) {
+        super(openeClient, caseRepository, caseMappingRepository, messagingIntegration);
         this.service = service;
 
         retryPolicy = RetryPolicy.<SaveNewArendeResponse2>builder()
@@ -63,7 +64,7 @@ class ByggrProcessor extends Processor {
             Failsafe
                 .with(retryPolicy)
                 .onSuccess(successEvent -> handleSuccessfulDelivery(caseEntity, "BYGGR"))
-                .onFailure(failureEvent -> handleMaximumDeliveryAttemptsExceeded(failureEvent.getException(), caseEntity))
+                .onFailure(failureEvent -> handleMaximumDeliveryAttemptsExceeded(failureEvent.getException(), caseEntity, "BYGGR"))
                 .get(() -> service.postCase(planningPermissionCaseDTO));
         } catch (Exception e) {
             cleanAttachmentBase64(event);

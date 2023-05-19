@@ -13,6 +13,7 @@ import se.sundsvall.casemanagement.integration.db.CaseMappingRepository;
 import se.sundsvall.casemanagement.integration.db.CaseRepository;
 import se.sundsvall.casemanagement.integration.db.model.CaseEntity;
 import se.sundsvall.casemanagement.integration.db.model.DeliveryStatus;
+import se.sundsvall.casemanagement.integration.messaging.MessagingIntegration;
 import se.sundsvall.casemanagement.integration.opene.OpeneClient;
 import se.sundsvall.casemanagement.service.event.Event;
 
@@ -26,12 +27,14 @@ public abstract class Processor {
 
     protected final CaseRepository caseRepository;
     protected final CaseMappingRepository caseMappingRepository;
+    private final MessagingIntegration messagingIntegration;
 
     protected Processor(final OpeneClient openeClient, final CaseRepository caseRepository,
-        CaseMappingRepository caseMappingRepository) {
+        CaseMappingRepository caseMappingRepository, final MessagingIntegration messagingIntegration) {
         this.openeClient = openeClient;
         this.caseRepository = caseRepository;
         this.caseMappingRepository = caseMappingRepository;
+        this.messagingIntegration = messagingIntegration;
     }
 
     public void cleanAttachmentBase64(Event<?> event) {
@@ -63,19 +66,11 @@ public abstract class Processor {
     }
 
     @Transactional
-    public void handleMaximumDeliveryAttemptsExceeded(Throwable failureEvent, final CaseEntity entity) {
+    public void handleMaximumDeliveryAttemptsExceeded(Throwable failureEvent, final CaseEntity entity, String system) {
 
         log.info("Exceeded max sending attempts case with externalCaseId {}", entity.getId());
-
         caseRepository.save(entity.withDeliveryStatus(DeliveryStatus.FAILED));
-        try {
-            openeClient.confirmDelivery(new ConfirmDelivery()
-                .withDelivered(false)
-                .withLogMessage("Maximum delivery attempts exceeded: " + failureEvent.getMessage())
-                .withFlowInstanceID(Integer.parseInt(entity.getId())));
-        } catch (Exception e) {
-            log.error("Error while confirming delivery", e);
-        }
+        messagingIntegration.sendSlack("[" + system + "]" + "Exceeded max sending attempts case with externalCaseId " + entity.getId() + " Exception: " + failureEvent.getMessage());
 
     }
 
