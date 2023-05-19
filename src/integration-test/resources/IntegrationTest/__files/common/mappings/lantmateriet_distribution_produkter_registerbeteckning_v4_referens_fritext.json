@@ -5,8 +5,8 @@
     "urlPathPattern": "/distribution/produkter/registerbeteckning/v4/referens/fritext/(.+)",
     "method": "GET",
     "queryParameters": {
-      "statusFastighet": {
-        "equalTo": "Gällande"
+      "objektstatus": {
+        "equalTo": "levande"
       },
       "maxHits": {
         "equalTo": "1"
