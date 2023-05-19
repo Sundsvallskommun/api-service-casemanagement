@@ -15,6 +15,7 @@ import se.sundsvall.casemanagement.api.model.EnvironmentalCaseDTO;
 import se.sundsvall.casemanagement.configuration.RetryProperties;
 import se.sundsvall.casemanagement.integration.db.CaseMappingRepository;
 import se.sundsvall.casemanagement.integration.db.CaseRepository;
+import se.sundsvall.casemanagement.integration.messaging.MessagingIntegration;
 import se.sundsvall.casemanagement.integration.opene.OpeneClient;
 import se.sundsvall.casemanagement.service.event.IncomingEcosCase;
 import se.sundsvall.casemanagement.util.Processor;
@@ -30,9 +31,9 @@ class EcosProcessor extends Processor {
     private final RetryPolicy<RegisterDocumentCaseResultSvcDto> retryPolicy;
 
     EcosProcessor(final OpeneClient openeClient, final CaseRepository caseRepository,
-        final RetryProperties retryProperties, final EcosService ecosService,
+        final RetryProperties retryProperties, final EcosService ecosService, final MessagingIntegration messagingIntegration,
         final CaseMappingRepository caseMappingRepository) {
-        super(openeClient, caseRepository, caseMappingRepository);
+        super(openeClient, caseRepository, caseMappingRepository, messagingIntegration);
         this.ecosService = ecosService;
 
         retryPolicy = RetryPolicy.<RegisterDocumentCaseResultSvcDto>builder()
@@ -66,7 +67,7 @@ class EcosProcessor extends Processor {
             Failsafe
                 .with(retryPolicy)
                 .onSuccess(successEvent -> handleSuccessfulDelivery(caseEntity, "ECOS"))
-                .onFailure(failureEvent -> handleMaximumDeliveryAttemptsExceeded(failureEvent.getException(), caseEntity))
+                .onFailure(failureEvent -> handleMaximumDeliveryAttemptsExceeded(failureEvent.getException(), caseEntity, "ECOS"))
                 .get(() -> ecosService.postCase(environmentalCaseDTO));
         } catch (Exception e) {
             cleanAttachmentBase64(event);

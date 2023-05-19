@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
@@ -16,7 +16,8 @@
     <description>ms-casemanagementservice</description>
     <properties>
         <java.version>17</java.version>
-        <generated-sources-path>${project.build.directory}/generated-sources</generated-sources-path>
+        <generated-sources-path>${project.build.directory}/generated-sources
+        </generated-sources-path>
         <generated-sources-java-path>src/main/java</generated-sources-java-path>
 
         <!-- Dependencies -->
@@ -114,29 +115,54 @@
                 <groupId>org.openapitools</groupId>
                 <artifactId>openapi-generator-maven-plugin</artifactId>
                 <version>${openapi-generator-maven-plugin-version}</version>
+                <configuration>
+                    <output>${generated-sources-path}</output>
+                    <generatorName>spring</generatorName>
+                    <generateApis>false</generateApis>
+                    <configOptions>
+                        <sourceFolder>${generated-sources-java-path}</sourceFolder>
+                        <generateSupportingFiles>false</generateSupportingFiles>
+                        <generatedConstructorWithRequiredArgs>false
+                        </generatedConstructorWithRequiredArgs>
+                        <generatePom>false</generatePom>
+                        <library>spring-boot</library>
+                        <dateLibrary>java8</dateLibrary>
+                        <apiPackage>generated</apiPackage>
+                        <openApiNullable>false</openApiNullable>
+                        <useSwaggerUi>false</useSwaggerUi>
+                        <useBeanValidation>true</useBeanValidation>
+                        <useSwaggerAnnotations>true</useSwaggerAnnotations>
+                        <hideGenerationTimestamp>true</hideGenerationTimestamp>
+                        <interfaceOnly>true</interfaceOnly>
+                    </configOptions>
+                </configuration>
                 <executions>
                     <execution>
+                        <id>casedata</id>
                         <goals>
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>${project.basedir}/src/main/resources/integrations/rest/casedata-openapi.json
+                            <inputSpec>
+                                ${project.basedir}/src/main/resources/integrations/rest/casedata-openapi.json
                             </inputSpec>
-                            <generateSupportingFiles>false</generateSupportingFiles>
-                            <output>${generated-sources-path}</output>
-                            <generatorName>jaxrs-spec</generatorName>
-                            <generateApis>false</generateApis>
-                            <output>${generated-sources-path}</output>
                             <configOptions>
-                                <sourceFolder>${generated-sources-java-path}</sourceFolder>
-                                <generateSupportingFiles>false</generateSupportingFiles>
-                                <dateLibrary>java8</dateLibrary>
                                 <modelPackage>generated.client.casedata</modelPackage>
-                                <openApiNullable>false</openApiNullable>
-                                <generatePom>false</generatePom>
-                                <useBeanValidation>false</useBeanValidation>
-                                <useSwaggerAnnotations>false</useSwaggerAnnotations>
-                                <interfaceOnly>true</interfaceOnly>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>messaging</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>
+                                ${project.basedir}/src/main/resources/integrations/rest/messaging.yml
+                            </inputSpec>
+                            <configOptions>
+                                <modelPackage>generated.client.messaging</modelPackage>
                             </configOptions>
                         </configuration>
                     </execution>
@@ -184,7 +210,9 @@
                             <goal>xjc</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${generated-sources-path}/${generated-sources-java-path}</outputDirectory>
+                            <outputDirectory>
+                                ${generated-sources-path}/${generated-sources-java-path}
+                            </outputDirectory>
                             <clearOutputDir>false</clearOutputDir>
                             <packageName>minutmiljo</packageName>
                             <encoding>UTF-8</encoding>
@@ -197,10 +225,14 @@
                                 <argument>-XautoNameResolution</argument>
                             </arguments>
                             <sources>
-                                <source>${project.basedir}/src/main/resources/integrations/soap/minutmiljo/MinutMiljoService.wsdl</source>
+                                <source>
+                                    ${project.basedir}/src/main/resources/integrations/soap/minutmiljo/MinutMiljoService.wsdl
+                                </source>
                             </sources>
                             <xjbSources>
-                                <xjbSource>${project.basedir}/src/main/resources/integrations/soap/bindings.xjb</xjbSource>
+                                <xjbSource>
+                                    ${project.basedir}/src/main/resources/integrations/soap/bindings.xjb
+                                </xjbSource>
                             </xjbSources>
                         </configuration>
                     </execution>
@@ -210,7 +242,9 @@
                             <goal>xjc</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${generated-sources-path}/${generated-sources-java-path}</outputDirectory>
+                            <outputDirectory>
+                                ${generated-sources-path}/${generated-sources-java-path}
+                            </outputDirectory>
                             <clearOutputDir>false</clearOutputDir>
                             <packageName>callback</packageName>
                             <encoding>UTF-8</encoding>
@@ -223,10 +257,14 @@
                                 <argument>-XautoNameResolution</argument>
                             </arguments>
                             <sources>
-                                <source>${project.basedir}/src/main/resources/integrations/soap/callback/oep.wsdl</source>
+                                <source>
+                                    ${project.basedir}/src/main/resources/integrations/soap/callback/oep.wsdl
+                                </source>
                             </sources>
                             <xjbSources>
-                                <xjbSource>${project.basedir}/src/main/resources/integrations/soap/bindings.xjb</xjbSource>
+                                <xjbSource>
+                                    ${project.basedir}/src/main/resources/integrations/soap/bindings.xjb
+                                </xjbSource>
                             </xjbSources>
                         </configuration>
                     </execution>
@@ -236,7 +274,9 @@
                             <goal>xjc</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${generated-sources-path}/${generated-sources-java-path}</outputDirectory>
+                            <outputDirectory>
+                                ${generated-sources-path}/${generated-sources-java-path}
+                            </outputDirectory>
                             <clearOutputDir>false</clearOutputDir>
                             <packageName>minutmiljoV2</packageName>
                             <encoding>UTF-8</encoding>
@@ -248,10 +288,14 @@
                                 <argument>-XautoNameResolution</argument>
                             </arguments>
                             <sources>
-                                <source>${project.basedir}/src/main/resources/integrations/soap/minutmiljoV2/MinutMiljoServiceV2.wsdl</source>
+                                <source>
+                                    ${project.basedir}/src/main/resources/integrations/soap/minutmiljoV2/MinutMiljoServiceV2.wsdl
+                                </source>
                             </sources>
                             <xjbSources>
-                                <xjbSource>${project.basedir}/src/main/resources/integrations/soap/bindings.xjb</xjbSource>
+                                <xjbSource>
+                                    ${project.basedir}/src/main/resources/integrations/soap/bindings.xjb
+                                </xjbSource>
                             </xjbSources>
                         </configuration>
                     </execution>
@@ -262,7 +306,9 @@
                             <goal>xjc</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${generated-sources-path}/${generated-sources-java-path}</outputDirectory>
+                            <outputDirectory>
+                                ${generated-sources-path}/${generated-sources-java-path}
+                            </outputDirectory>
                             <clearOutputDir>false</clearOutputDir>
                             <packageName>arendeexport</packageName>
                             <encoding>UTF-8</encoding>
@@ -275,10 +321,14 @@
                                 <argument>-XautoNameResolution</argument>
                             </arguments>
                             <sources>
-                                <source>${project.basedir}/src/main/resources/integrations/soap/arendeexport/ArendeExportWS.wsdl</source>
+                                <source>
+                                    ${project.basedir}/src/main/resources/integrations/soap/arendeexport/ArendeExportWS.wsdl
+                                </source>
                             </sources>
                             <xjbSources>
-                                <xjbSource>${project.basedir}/src/main/resources/integrations/soap/bindings.xjb</xjbSource>
+                                <xjbSource>
+                                    ${project.basedir}/src/main/resources/integrations/soap/bindings.xjb
+                                </xjbSource>
                             </xjbSources>
                         </configuration>
                     </execution>
