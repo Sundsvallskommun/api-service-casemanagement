@@ -13,6 +13,7 @@ import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_HALSOSKYDDSVERKSAMHET;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_INSTALLATION_VARMEPUMP;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_KOMPOSTERING;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANSOKAN_TILLSTAND_VARMEPUMP;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.INSTALLATION_VA;
@@ -81,7 +82,7 @@ import lombok.Data;
         MARKLOV_TRADFALLNING,
         MARKLOV_OVRIGT,
         STRANDSKYDD_OVRIGT
-        
+
     }),
     @Type(value = EnvironmentalCaseDTO.class, names = {
         REGISTRERING_AV_LIVSMEDEL,
@@ -92,34 +93,35 @@ import lombok.Data;
         ANMALAN_ANDRING_AVLOPPSANORDNING,
         ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP,
         UPPDATERING_RISKKLASSNING,
-        ANMALAN_HALSOSKYDDSVERKSAMHET}),
+        ANMALAN_HALSOSKYDDSVERKSAMHET,
+        ANMALAN_KOMPOSTERING}),
     @Type(value = OtherCaseDTO.class, names = {
         PARKING_PERMIT,
         LOST_PARKING_PERMIT,
         PARKING_PERMIT_RENEWAL})})
 @Data
 public abstract class CaseDTO {
-    
+
     @NotBlank
     @Schema(description = "Case ID from the client.", example = "caa230c6-abb4-4592-ad9a-34e263c2787b")
     private String externalCaseId;
-    
+
     @NotNull
     private CaseType caseType;
-    
+
     @Schema(example = "Some description of the case.")
     private String description;
-    
+
     @Schema(description = "Additions to the case title. Right now only applicable to cases of CaseType: NYBYGGNAD_ANSOKAN_OM_BYGGLOV.", example = "Eldstad/rökkanal, Skylt")
     private String caseTitleAddition;
-    
+
     @NotEmpty
     @Valid
     private List<StakeholderDTO> stakeholders;
-    
+
     @NotEmpty
     @Valid
     private List<AttachmentDTO> attachments;
-    
+
     private Map<String, String> extraParameters;
 }
