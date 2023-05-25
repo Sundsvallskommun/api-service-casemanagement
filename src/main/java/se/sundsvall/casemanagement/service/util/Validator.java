@@ -16,6 +16,7 @@ import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
 
 import se.sundsvall.casemanagement.api.model.EnvironmentalCaseDTO;
+import se.sundsvall.casemanagement.api.model.EnvironmentalFacilityDTO;
 import se.sundsvall.casemanagement.api.model.PersonDTO;
 import se.sundsvall.casemanagement.api.model.PlanningPermissionCaseDTO;
 import se.sundsvall.casemanagement.api.model.PlanningPermissionFacilityDTO;
@@ -94,10 +95,17 @@ public class Validator {
             if (eCase.getCaseType().equals(CaseType.UPPDATERING_RISKKLASSNING)) {
                 return;
             }
+
             Set<ConstraintViolation<EnvironmentalCaseDTO>> violations = validator.validate(eCase, EnvironmentalConstraints.class);
 
             if (!violations.isEmpty()) {
                 throw new ConstraintViolationException(violations);
+            }
+
+            for (EnvironmentalFacilityDTO facilityDTO : eCase.getFacilities()) {
+                if (facilityDTO.getFacilityCollectionName() == null && !WITH_NULLABLE_FACILITY_TYPE.contains(eCase.getCaseType())) {
+                    throw Problem.valueOf(Status.BAD_REQUEST, MessageFormat.format("FacilityType is not allowed to be null for CaseType {0}", eCase.getCaseType()));
+                }
             }
         }
     }

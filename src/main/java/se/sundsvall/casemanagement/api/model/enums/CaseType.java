@@ -43,7 +43,7 @@ public enum CaseType {
     MARKLOV_FYLL(Value.MARKLOV_FYLL),
     MARKLOV_TRADFALLNING(Value.MARKLOV_TRADFALLNING),
     MARKLOV_OVRIGT(Value.MARKLOV_OVRIGT),
-    
+
     //BYGGR OTHER
     ANMALAN_ATTEFALL(Value.ANMALAN_ATTEFALL),
     ANMALAN_ELDSTAD(Value.ANMALAN_ELDSTAD),
@@ -70,7 +70,8 @@ public enum CaseType {
         MARKLOV_FYLL,
         MARKLOV_TRADFALLNING,
         MARKLOV_OVRIGT,
-        STRANDSKYDD_OVRIGT);
+        STRANDSKYDD_OVRIGT,
+        ANMALAN_KOMPOSTERING);
 
     @Getter
     private final String value;
