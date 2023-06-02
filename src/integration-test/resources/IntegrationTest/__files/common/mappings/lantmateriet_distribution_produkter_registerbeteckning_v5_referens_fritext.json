@@ -6,7 +6,7 @@
     "method": "GET",
     "queryParameters": {
       "objektstatus": {
-        "equalTo": "levande"
+        "equalTo": "Gällande"
       },
       "maxHits": {
         "equalTo": "1"
