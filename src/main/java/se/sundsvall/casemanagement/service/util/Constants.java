@@ -129,7 +129,7 @@ public final class Constants {
     public static final String REQUEST_BODY_MUST_NOT_BE_NULL = "Request body must not be null";
     ////////////////// Other
     public static final String SERVICE_NAME = "serviceName";
-    public static final String LANTMATERIET_REFERENS_STATUS_LEVANDE = "levande";
+    public static final String LANTMATERIET_REFERENS_STATUS_GALLANDE = "Gällande";
     public static final String FB_JURIDISK_FORM_PRIVATPERSON = "00";
     public static final String SWEDEN = "Sverige";
     public static final String POST_CASES_REQUEST_BODY_EXAMPLE = """
