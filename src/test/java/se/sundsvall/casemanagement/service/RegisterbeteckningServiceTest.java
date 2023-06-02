@@ -38,7 +38,7 @@ class RegisterbeteckningServiceTest {
         registerbeteckningsreferens.setBeteckning(propertyDesignation);
         registerbeteckningsreferens.setRegisterenhet(RandomStringUtils.random(10, true, false));
         registerbeteckningsreferenser.add(registerbeteckningsreferens);
-        doReturn(registerbeteckningsreferenser).when(registerbeteckningClient).getRegisterbeteckningsreferenser(propertyDesignation, Constants.LANTMATERIET_REFERENS_STATUS_LEVANDE, 1);
+        doReturn(registerbeteckningsreferenser).when(registerbeteckningClient).getRegisterbeteckningsreferenser(propertyDesignation, Constants.LANTMATERIET_REFERENS_STATUS_GALLANDE, 1);
 
         var result = registerbeteckningService.getRegisterbeteckningsreferens(propertyDesignation);
         assertEquals(registerbeteckningsreferens, result);
@@ -48,7 +48,7 @@ class RegisterbeteckningServiceTest {
     void testGetRegisterbeteckningsreferensEmptyList() {
         String propertyDesignation = "TEST 1:1";
 
-        doReturn(new ArrayList<>()).when(registerbeteckningClient).getRegisterbeteckningsreferenser(propertyDesignation, Constants.LANTMATERIET_REFERENS_STATUS_LEVANDE, 1);
+        doReturn(new ArrayList<>()).when(registerbeteckningClient).getRegisterbeteckningsreferenser(propertyDesignation, Constants.LANTMATERIET_REFERENS_STATUS_GALLANDE, 1);
 
         var result = registerbeteckningService.getRegisterbeteckningsreferens(propertyDesignation);
         assertNull(result);
@@ -65,7 +65,7 @@ class RegisterbeteckningServiceTest {
         registerbeteckningsreferens.setBeteckning("SOME RANDOM PROPERTY DESIGNATION");
         registerbeteckningsreferens.setRegisterenhet(RandomStringUtils.random(10, true, false));
         registerbeteckningsreferenser.add(registerbeteckningsreferens);
-        doReturn(registerbeteckningsreferenser).when(registerbeteckningClient).getRegisterbeteckningsreferenser(propertyDesignation, Constants.LANTMATERIET_REFERENS_STATUS_LEVANDE, 1);
+        doReturn(registerbeteckningsreferenser).when(registerbeteckningClient).getRegisterbeteckningsreferenser(propertyDesignation, Constants.LANTMATERIET_REFERENS_STATUS_GALLANDE, 1);
 
         var result = registerbeteckningService.getRegisterbeteckningsreferens(propertyDesignation);
         assertNull(result);

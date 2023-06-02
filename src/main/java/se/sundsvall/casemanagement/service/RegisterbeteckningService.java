@@ -21,7 +21,7 @@ public class RegisterbeteckningService {
 
     public Registerbeteckningsreferens getRegisterbeteckningsreferens(String propertyDesignation) {
 
-        List<Registerbeteckningsreferens> registerbeteckningsreferenser = registerbeteckningClient.getRegisterbeteckningsreferenser(propertyDesignation, Constants.LANTMATERIET_REFERENS_STATUS_LEVANDE, 1);
+        List<Registerbeteckningsreferens> registerbeteckningsreferenser = registerbeteckningClient.getRegisterbeteckningsreferenser(propertyDesignation, Constants.LANTMATERIET_REFERENS_STATUS_GALLANDE, 1);
 
         if (CaseUtil.notNullOrEmpty(registerbeteckningsreferenser)
             && registerbeteckningsreferenser.get(0).getBeteckning().equalsIgnoreCase(propertyDesignation)) {
