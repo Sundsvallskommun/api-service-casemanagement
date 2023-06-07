@@ -31,7 +31,7 @@ public class CaseUtil {
 
             } else if (cleanNumber.length() == 10) {
                 // Add "16" at the beginning and insert the hyphen at the correct position
-                return "16" + cleanNumber.substring(0, 2) + "-" + cleanNumber.substring(2);
+                return "16" + cleanNumber.substring(0, 6) + "-" + cleanNumber.substring(6);
             }
         }
 
