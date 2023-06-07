@@ -1,50 +1,64 @@
 package se.sundsvall.casemanagement.util;
 
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.IntStream;
 
 import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
 
 public class CaseUtil {
-    
+
     private CaseUtil() {
         throw new IllegalStateException("Utility class");
     }
-    
+
     public static String getSokigoFormattedOrganizationNumber(String organizationNumber) {
-        // The length is 1 more than the number of numbers because the text contains a hyphen
-        if (organizationNumber.length() == 13) {
-            return organizationNumber;
-        } else if (organizationNumber.length() == 11) {
-            return "16" + organizationNumber;
-        } else {
-            throw Problem.valueOf(Status.BAD_REQUEST, "organizationNumber must consist of 10 or 12 digits");
+
+
+        // Control that the organizationNumber is not null and that it is a valid length
+        if (IntStream.of(13, 12, 11, 10).anyMatch(i -> organizationNumber.length() == i)) {
+            // Remove all non-digit characters
+            String cleanNumber = organizationNumber.replaceAll("[^0-9]", "");
+
+            if (cleanNumber.length() == 12) {
+                // Insert the hyphen at the correct position
+                return cleanNumber.substring(0, 8) + "-" + cleanNumber.substring(8);
+
+            } else if (cleanNumber.length() == 10) {
+                // Add "16" at the beginning and insert the hyphen at the correct position
+                return "16" + cleanNumber.substring(0, 6) + "-" + cleanNumber.substring(6);
+            }
         }
+
+        throw Problem.valueOf(Status.BAD_REQUEST, MessageFormat.format("Invalid organizationNumber format: {0}", organizationNumber));
+
     }
-    
+
     public static String getSokigoFormattedPersonalNumber(String personalNumber) {
-        
-        if(personalNumber == null){
+
+        if (personalNumber == null) {
             throw Problem.valueOf(Status.BAD_REQUEST, "personalNumber must not be null");
         }
-    
+
         // Validates that the personalNumber is correct example: 20220622-2396
         String properlyFormattedRegex = "^(19|20)\\d{2}(0[1-9]|1[012])(0[1-9]|1[0-9]|2[0-9]|3[0-1])-\\d{4}$";
         // Validates that the personalNumber is correct but missing - example: 202206222396
         String missingHypen = "^(19|20)\\d{2}(0[1-9]|1[012])(0[1-9]|1[0-9]|2[0-9]|3[0-1])\\d{4}$";
-        
+
         if (personalNumber.matches(properlyFormattedRegex)) {
             return personalNumber;
         } else if (personalNumber.matches(missingHypen)) {
             return new StringBuilder(personalNumber).insert(8, "-").toString();
-        }else {
+        } else {
             throw Problem.valueOf(Status.BAD_REQUEST, "personalNumber must be 12 digits");
         }
     }
+
     /**
      * Returns boolean, true or false.
      */
@@ -52,7 +66,7 @@ public class CaseUtil {
         String stringValue = parseString(value);
         return Boolean.parseBoolean(stringValue);
     }
-    
+
     /**
      * Returns Integer or null.
      */
@@ -60,7 +74,7 @@ public class CaseUtil {
         String stringValue = parseString(value);
         return (stringValue != null) ? Integer.parseInt(stringValue) : null;
     }
-    
+
     /**
      * Returns LocalDateTime or null.
      * Parses a date without an offset, such as '2011-12-03'.
@@ -69,7 +83,7 @@ public class CaseUtil {
         String stringValue = parseString(value);
         return (stringValue != null) ? LocalDate.parse(stringValue, DateTimeFormatter.ISO_LOCAL_DATE).atStartOfDay() : null;
     }
-    
+
     /**
      * Returns Double or null.
      */
@@ -77,14 +91,14 @@ public class CaseUtil {
         String stringValue = parseString(value);
         return (stringValue != null) ? Double.parseDouble(stringValue) : null;
     }
-    
+
     /**
      * Returns String or null.
      */
     public static String parseString(Object value) {
         return Objects.toString(value, null);
     }
-    
+
     public static boolean notNullOrEmpty(List<?> list) {
         return (list != null && !list.isEmpty());
     }
