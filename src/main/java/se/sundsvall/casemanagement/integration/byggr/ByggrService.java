@@ -660,10 +660,7 @@ public class ByggrService {
 
     ArrayOfString2 getByggrRoles(StakeholderDTO s) {
         ArrayOfString2 roles = new ArrayOfString2();
-        for (StakeholderRole r : s.getRoles()) {
-
-            roles.getRoll().add(r.getText());
-        }
+        s.getRoles().stream().distinct().toList().forEach(r -> roles.getRoll().add(r.getText()));
         return roles;
     }
 
