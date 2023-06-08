@@ -20,6 +20,6 @@ public interface RegisterbeteckningClient {
 
     @GetMapping(path = "/referens/fritext", produces = MediaType.APPLICATION_JSON_VALUE)
     List<Registerbeteckningsreferens> getRegisterbeteckningsreferenser(@RequestParam(name = "beteckning") String beteckning,
-        @RequestParam(name = "objektstatus") String status, @RequestParam(name = "maxHits") int maxHits);
+        @RequestParam(name = "status") String status, @RequestParam(name = "maxHits") int maxHits);
 
 }

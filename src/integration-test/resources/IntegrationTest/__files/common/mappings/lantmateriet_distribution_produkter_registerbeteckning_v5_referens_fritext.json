@@ -5,8 +5,8 @@
     "urlPathPattern": "/distribution/produkter/registerbeteckning/v5/referens/fritext?(.+)",
     "method": "GET",
     "queryParameters": {
-      "objektstatus": {
-        "equalTo": "Gällande"
+      "status": {
+        "equalTo": "gällande"
       },
       "maxHits": {
         "equalTo": "1"
