@@ -111,9 +111,9 @@ public final class Constants {
     public static final String ECOS_OCCURRENCE_TYPE_ID_INFO_FRAN_ETJANST = "BF28124A-7C51-452C-8F72-16412364F8C2";
     public static final String ECOS_OCCURRENCE_TYPE_ID_KOMPLETTERING = "AE3F6E26-6B4F-4231-8BCA-C81A98547727";
     public static final String ECOS_OCCURENCE_TEXT_MOBIL_ANLAGGNING = """
-            Anläggningen kunde inte registreras automatiskt då anläggningen var av typen "mobil".
-            Denna anläggning och tillhörande part/-er måste registreras manuellt.
-            Informationen finns i handlingen "Anmälan livsmedelsanläggning".""";
+        Anläggningen kunde inte registreras automatiskt då anläggningen var av typen "mobil".
+        Denna anläggning och tillhörande part/-er måste registreras manuellt.
+        Informationen finns i handlingen "Anmälan livsmedelsanläggning".""";
     ////////////////// Error messages
     public static final String ERR_MSG_ONLY_ONE_MAIN_FACILITY = "Number of mainFacilities must be <= 1";
     public static final String ERR_MSG_CASES_NOT_FOUND = "Case not found";
@@ -127,53 +127,53 @@ public final class Constants {
     public static final String REQUEST_BODY_MUST_NOT_BE_NULL = "Request body must not be null";
     ////////////////// Other
     public static final String SERVICE_NAME = "serviceName";
-    public static final String LANTMATERIET_REFERENS_STATUS_GALLANDE = "Gällande";
+    public static final String LANTMATERIET_REFERENS_STATUS_GALLANDE = "gällande";
     public static final String FB_JURIDISK_FORM_PRIVATPERSON = "00";
     public static final String SWEDEN = "Sverige";
     public static final String POST_CASES_REQUEST_BODY_EXAMPLE = """
-            {
-                "externalCaseId": "e19981ad-34b2-4e14-88f5-133f61ca85aa",
-                "caseType": "NYBYGGNAD_ANSOKAN_OM_BYGGLOV",
-                "facilities": [
-                    {
-                        "facilityType": "STOREHOUSE",
-                        "address": {
-                            "addressCategories": [
-                                "VISITING_ADDRESS"
-                            ],
-                            "propertyDesignation": "SUNDSVALL BALDER 2"
-                        }
-                    }
-                ],
-                "stakeholders": [
-                    {
-                        "type": "ORGANIZATION",
-                        "roles": [
-                            "APPLICANT",
-                            "PAYMENT_PERSON"
+        {
+            "externalCaseId": "e19981ad-34b2-4e14-88f5-133f61ca85aa",
+            "caseType": "NYBYGGNAD_ANSOKAN_OM_BYGGLOV",
+            "facilities": [
+                {
+                    "facilityType": "STOREHOUSE",
+                    "address": {
+                        "addressCategories": [
+                            "VISITING_ADDRESS"
                         ],
-                        "organizationName": "Testorganisationen",
-                        "organizationNumber": "123456-1234"
-                    },
-                    {
-                        "type": "PERSON",
-                        "roles": [
-                            "CONTACT_PERSON"
-                        ],
-                        "firstName": "Test",
-                        "lastName": "Testsson",
-                        "personId": "e19981ad-34b2-4e14-88f5-133f61ca85aa"
+                        "propertyDesignation": "SUNDSVALL BALDER 2"
                     }
-                ],
-                "attachments": [
-                    {
-                        "category": "ANS",
-                        "name": "Some_name_2022-03-07",
-                        "extension": ".pdf",
-                        "file": "dGVzdA=="
-                    }
-                ]
-            }""";
+                }
+            ],
+            "stakeholders": [
+                {
+                    "type": "ORGANIZATION",
+                    "roles": [
+                        "APPLICANT",
+                        "PAYMENT_PERSON"
+                    ],
+                    "organizationName": "Testorganisationen",
+                    "organizationNumber": "123456-1234"
+                },
+                {
+                    "type": "PERSON",
+                    "roles": [
+                        "CONTACT_PERSON"
+                    ],
+                    "firstName": "Test",
+                    "lastName": "Testsson",
+                    "personId": "e19981ad-34b2-4e14-88f5-133f61ca85aa"
+                }
+            ],
+            "attachments": [
+                {
+                    "category": "ANS",
+                    "name": "Some_name_2022-03-07",
+                    "extension": ".pdf",
+                    "file": "dGVzdA=="
+                }
+            ]
+        }""";
 
     private Constants() {
 
