@@ -22,29 +22,29 @@ import se.sundsvall.dept44.exception.ClientProblem;
 import feign.Response;
 
 class MinutMiljoErrorDecoderTest {
-    
+
     private MinutMiljoErrorDecoder errorDecoder;
-    
+
     @BeforeEach
     void setUp() {
         errorDecoder = new MinutMiljoErrorDecoder();
     }
-    
+
     @Test
     void shouldDecodeEmptyResponse() {
         // given
         Response response = mock(Response.class);
         when(response.body()).thenReturn(null);
         when(response.reason()).thenReturn("Bad Request");
-        
+
         // when
         Exception decodedError = errorDecoder.decode("someMethodKey", response);
-        
+
         // then
         assertThat(decodedError).isInstanceOf(ClientProblem.class);
-        assertThat(decodedError.getMessage()).isEqualTo("Bad Request: Bad request exception from MinutMiljo (Ecos): Bad Request");
+        assertThat(decodedError.getMessage()).isEqualTo("Bad Gateway: Bad request exception from MinutMiljo (Ecos): Bad Request");
     }
-    
+
     @Test
     void shouldHandleIOException() throws IOException {
         // given
@@ -52,15 +52,15 @@ class MinutMiljoErrorDecoderTest {
         Response.Body body = mock(Response.Body.class);
         when(response.body()).thenReturn(body);
         when(body.asInputStream()).thenThrow(new IOException("Failed to read response body"));
-        
+
         // when
         Exception decodedError = errorDecoder.decode("someMethodKey", response);
-        
+
         // then
         assertThat(decodedError).isInstanceOf(ClientProblem.class);
-        assertThat(decodedError.getMessage()).isEqualTo("Bad Request: Bad request exception from MinutMiljo (Ecos): Failed to read response body");
+        assertThat(decodedError.getMessage()).isEqualTo("Bad Gateway: Bad request exception from MinutMiljo (Ecos): Failed to read response body");
     }
-    
+
     @Test
     void shouldDecodeSOAPFault() throws Exception {
         // given
@@ -69,7 +69,7 @@ class MinutMiljoErrorDecoderTest {
         Response.Body body = mock(Response.Body.class);
         when(response.body()).thenReturn(body);
         when(body.asInputStream()).thenReturn(inputStream);
-        
+
         OpeneErrorDecoder decoder = new OpeneErrorDecoder() {
             @Override
             protected SOAPMessage createSOAPMessage(InputStream inputStream) throws SOAPException, IOException {
@@ -83,13 +83,13 @@ class MinutMiljoErrorDecoderTest {
                 return message;
             }
         };
-        
+
         // when
         Exception decodedError = decoder.decode("someMethodKey", response);
-        
+
         // then
         assertThat(decodedError).isInstanceOf(ClientProblem.class);
         assertThat(decodedError.getMessage()).isEqualTo("Bad Request: Bad request exception from OpenE Internal Server Error");
     }
-    
+
 }
