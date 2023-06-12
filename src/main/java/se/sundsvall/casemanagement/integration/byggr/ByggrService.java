@@ -86,7 +86,7 @@ public class ByggrService {
     private final CitizenMappingService citizenMappingService;
     private final CaseMappingService caseMappingService;
     private final ArendeExportClient arendeExportClient;
-    private final Map<String, CaseTypeData> caseTypeMap = new HashMap<>();
+private final Map<String, CaseTypeData> caseTypeMap = new HashMap<>();
     private final CaseTypeRepository caseTypeRepository;
 
     public ByggrService(FbService fbService, CitizenMappingService citizenMappingService, CaseMappingService caseMappingService, ArendeExportClient arendeExportClient, CaseTypeRepository caseTypeRepository) {
@@ -100,10 +100,8 @@ public class ByggrService {
     public SaveNewArendeResponse2 postCase(PlanningPermissionCaseDTO caseInput) {
 
         caseTypeRepository.findAll().forEach(caseTypeData -> caseTypeMap.put(caseTypeData.getValue(), caseTypeData));
-
         // This StringBuilder is used to create a note on the case with information about potential manual actions that is needed.
         var byggrAdminMessageSb = new StringBuilder();
-
         var saveNewArende = new SaveNewArende()
             .withMessage(new SaveNewArendeMessage()
                 .withAnkomststamplaHandlingar(true)
@@ -182,7 +180,6 @@ public class ByggrService {
 
     private Handelse getByggrHandelse(PlanningPermissionCaseDTO dto) {
         var caseType = caseTypeMap.get(dto.getCaseType().getValue());
-
         var handelse = new Handelse()
             .withStartDatum(LocalDateTime.now())
             .withRiktning(Constants.BYGGR_HANDELSE_RIKTNING_IN)
@@ -242,10 +239,8 @@ public class ByggrService {
 
         var saveNewHandelse = new SaveNewHandelse()
             .withMessage(saveNewHandelseMessage);
-
         arendeExportClient.saveNewHandelse(saveNewHandelse);
     }
-
 
     private ArrayOfHandling getArrayOfHandling(List<AttachmentDTO> attachmentDTOList) {
         ArrayOfHandling arrayOfHandling = new ArrayOfHandling();
@@ -369,7 +364,7 @@ public class ByggrService {
                         arendeMeningBuilder.append(",");
                     }
                 }
-                arendeMeningBuilder
+arendeMeningBuilder
                     .append(" ")
                     .append(facilityList.get(i)
                         .getFacilityType()
@@ -383,7 +378,6 @@ public class ByggrService {
         }
 
         return arendeMeningBuilder.toString();
-
     }
 
     private String getPropertyDesignation(List<PlanningPermissionFacilityDTO> facilityList) {
@@ -398,7 +392,6 @@ public class ByggrService {
             .map(AddressDTO::getIsZoningPlanArea)
             .orElse(null);
     }
-
 
     private String getArendeKlass(List<PlanningPermissionFacilityDTO> facilityList) {
         return facilityList.stream()
@@ -660,7 +653,9 @@ public class ByggrService {
 
     ArrayOfString2 getByggrRoles(StakeholderDTO s) {
         ArrayOfString2 roles = new ArrayOfString2();
-        s.getRoles().stream().distinct().toList().forEach(r -> roles.getRoll().add(r.getText()));
+        s.getRoles().stream()
+            .distinct()
+            .forEach(r -> roles.getRoll().add(r.getText()));
         return roles;
     }
 
@@ -708,7 +703,6 @@ public class ByggrService {
     private boolean notNullOrBlank(String string) {
         return string != null && !string.isBlank();
     }
-
     public CaseStatusDTO getByggrStatus(String caseId, String externalCaseId) {
         return getByggrStatus(getArende(caseId), externalCaseId);
     }
