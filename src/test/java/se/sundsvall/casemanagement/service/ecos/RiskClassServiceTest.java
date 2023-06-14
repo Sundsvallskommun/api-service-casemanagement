@@ -18,9 +18,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import se.sundsvall.casemanagement.api.model.EnvironmentalCaseDTO;
 import se.sundsvall.casemanagement.api.model.EnvironmentalFacilityDTO;
-import se.sundsvall.casemanagement.api.model.FacilityDTO;
 import se.sundsvall.casemanagement.api.model.OrganizationDTO;
-import se.sundsvall.casemanagement.integration.soap.minutmiljo.MinutMiljoClient;
+import se.sundsvall.casemanagement.integration.ecos.RiskClassService;
+import se.sundsvall.casemanagement.integration.ecos.MinutMiljoClient;
 
 import minutmiljo.ArrayOfSearchFacilityResultSvcDto;
 import minutmiljo.SearchFacilityResponse;

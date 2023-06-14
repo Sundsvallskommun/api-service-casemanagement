@@ -1,9 +1,13 @@
 package se.sundsvall.casemanagement.testutils;
 
-import com.github.tomakehurst.wiremock.verification.LoggedRequest;
-import se.sundsvall.dept44.test.AbstractAppTest;
-
+import java.time.Duration;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+
+import com.github.tomakehurst.wiremock.verification.LoggedRequest;
+
+import se.sundsvall.dept44.test.AbstractAppTest;
 
 /**
  * Created this custom implementation so that we could reuse the old integration test files from the Quarkus project.
@@ -12,8 +16,21 @@ import java.util.List;
  */
 public class CustomAbstractAppTest extends AbstractAppTest {
 
+    protected Optional<Duration> getVerificationDelay() {
+        return Optional.empty();
+    }
+
     @Override
     public void verifyAllStubs() {
+
+        getVerificationDelay().ifPresent(verificationDelay -> {
+            try {
+                TimeUnit.SECONDS.sleep(verificationDelay.getSeconds());
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
         List<LoggedRequest> unmatchedRequests = this.wiremock.findAllUnmatchedRequests();
         if (!unmatchedRequests.isEmpty()) {
             List<String> unmatchedUrls = unmatchedRequests.stream().map(LoggedRequest::getUrl).toList();

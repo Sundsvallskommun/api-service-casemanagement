@@ -1,5 +1,32 @@
 package se.sundsvall.casemanagement;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static se.sundsvall.casemanagement.TestUtil.OBJECT_MAPPER;
+import static se.sundsvall.casemanagement.TestUtil.getHeatPumpExtraParams;
+import static se.sundsvall.casemanagement.TestUtil.getSandfilterExtraParams;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.LOST_PARKING_PERMIT;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARKING_PERMIT;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARKING_PERMIT_RENEWAL;
+import static se.sundsvall.casemanagement.testutils.TestConstants.BYGG_CASE_ID;
+import static se.sundsvall.casemanagement.testutils.TestConstants.BYGG_CASE_NUMBER;
+import static se.sundsvall.casemanagement.testutils.TestConstants.CASE_DATA_CASE_ID;
+import static se.sundsvall.casemanagement.testutils.TestConstants.CASE_DATA_ERRAND_NUMBER;
+import static se.sundsvall.casemanagement.testutils.TestConstants.CASE_DATA_ID;
+import static se.sundsvall.casemanagement.testutils.TestConstants.ECOS_CASE_ID;
+import static se.sundsvall.casemanagement.testutils.TestConstants.ECOS_CASE_NUMBER;
+import static se.sundsvall.casemanagement.testutils.TestConstants.PROPERTY_DESIGNATION_BALDER;
+
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -7,8 +34,10 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.jdbc.Sql;
 import org.zalando.problem.Problem;
 import org.zalando.problem.violations.ConstraintViolationProblem;
+
 import se.sundsvall.casemanagement.api.model.AddressDTO;
 import se.sundsvall.casemanagement.api.model.AttachmentDTO;
 import se.sundsvall.casemanagement.api.model.CaseDTO;
@@ -29,35 +58,16 @@ import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderType;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
 import se.sundsvall.casemanagement.integration.db.CaseMappingRepository;
+import se.sundsvall.casemanagement.integration.db.CaseRepository;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
-import se.sundsvall.casemanagement.service.util.Constants;
+import se.sundsvall.casemanagement.integration.db.model.DeliveryStatus;
 import se.sundsvall.casemanagement.testutils.CustomAbstractAppTest;
 import se.sundsvall.casemanagement.testutils.TestConstants;
+import se.sundsvall.casemanagement.util.Constants;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 
-import java.text.MessageFormat;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static se.sundsvall.casemanagement.TestUtil.OBJECT_MAPPER;
-import static se.sundsvall.casemanagement.TestUtil.getHeatPumpExtraParams;
-import static se.sundsvall.casemanagement.TestUtil.getSandfilterExtraParams;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Constants.LOST_PARKING_PERMIT_VALUE;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Constants.PARKING_PERMIT_RENEWAL_VALUE;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Constants.PARKING_PERMIT_VALUE;
-import static se.sundsvall.casemanagement.testutils.TestConstants.BYGG_CASE_ID;
-import static se.sundsvall.casemanagement.testutils.TestConstants.CASE_DATA_CASE_ID;
-import static se.sundsvall.casemanagement.testutils.TestConstants.CASE_DATA_ERRAND_NUMBER;
-import static se.sundsvall.casemanagement.testutils.TestConstants.ECOS_CASE_ID;
-import static se.sundsvall.casemanagement.testutils.TestConstants.ECOS_CASE_NUMBER;
-import static se.sundsvall.casemanagement.testutils.TestConstants.PROPERTY_DESIGNATION_BALDER;
-
 @WireMockAppTestSuite(files = "classpath:/IntegrationTest", classes = Application.class)
+@Sql(scripts = "classpath:/sql/caseType.sql")
 class CaseResourceIntegrationTest extends CustomAbstractAppTest {
     private static final String PERSON_ID = "e19981ad-34b2-4e14-88f5-133f61ca85aa";
     private static final String ORG_NUMBER = "123456-1234";
@@ -65,11 +75,29 @@ class CaseResourceIntegrationTest extends CustomAbstractAppTest {
     @Autowired
     private CaseMappingRepository caseMappingRepository;
 
+    @Autowired
+    private CaseRepository caseRepository;
+
+    @Override
+    protected Optional<Duration> getVerificationDelay() {
+        return Optional.of(Duration.ofSeconds(3));
+    }
+
     @Test
     void testMinutMiljoAnmalanVarmepump() throws JsonProcessingException, ClassNotFoundException {
         EnvironmentalCaseDTO environmentalCase = TestUtil.createEnvironmentalCase(CaseType.ANMALAN_INSTALLATION_VARMEPUMP, AttachmentCategory.ANMALAN_VARMEPUMP);
         environmentalCase.getFacilities().get(0).setExtraParameters(getHeatPumpExtraParams());
         postCaseAndVerifyResponse(environmentalCase, ECOS_CASE_NUMBER);
+        // Make sure that there doesn't exist a case entity
+        assertThat(caseRepository.findById(environmentalCase.getExternalCaseId()).isPresent()).isFalse();
+        // Make sure that there exists a case mapping
+        assertThat(caseMappingRepository.findAllByExternalCaseId(environmentalCase.getExternalCaseId()))
+            .isNotNull()
+            .allSatisfy(caseMapping -> {
+                assertThat(caseMapping.getExternalCaseId()).isEqualTo(environmentalCase.getExternalCaseId());
+                assertThat(caseMapping.getCaseId()).isEqualTo(ECOS_CASE_ID);
+                assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
+            });
     }
 
     @Test
@@ -77,6 +105,16 @@ class CaseResourceIntegrationTest extends CustomAbstractAppTest {
         EnvironmentalCaseDTO environmentalCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP, AttachmentCategory.ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
         environmentalCase.getFacilities().get(0).setExtraParameters(getHeatPumpExtraParams());
         postCaseAndVerifyResponse(environmentalCase, ECOS_CASE_NUMBER);
+        // Make sure that there doesn't exist a case entity
+        assertThat(caseRepository.findById(environmentalCase.getExternalCaseId()).isPresent()).isFalse();
+        // Make sure that there exists a case mapping
+        assertThat(caseMappingRepository.findAllByExternalCaseId(environmentalCase.getExternalCaseId()))
+            .isNotNull()
+            .allSatisfy(caseMapping -> {
+                assertThat(caseMapping.getExternalCaseId()).isEqualTo(environmentalCase.getExternalCaseId());
+                assertThat(caseMapping.getCaseId()).isEqualTo(ECOS_CASE_ID);
+                assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
+            });
     }
 
     @Test
@@ -84,6 +122,16 @@ class CaseResourceIntegrationTest extends CustomAbstractAppTest {
         EnvironmentalCaseDTO environmentalCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, AttachmentCategory.ANSOKAN_ENSKILT_AVLOPP);
         environmentalCase.getFacilities().get(0).setExtraParameters(getSandfilterExtraParams());
         postCaseAndVerifyResponse(environmentalCase, ECOS_CASE_NUMBER);
+        // Make sure that there doesn't exist a case entity
+        assertThat(caseRepository.findById(environmentalCase.getExternalCaseId()).isPresent()).isFalse();
+        // Make sure that there exists a case mapping
+        assertThat(caseMappingRepository.findAllByExternalCaseId(environmentalCase.getExternalCaseId()))
+            .isNotNull()
+            .allSatisfy(caseMapping -> {
+                assertThat(caseMapping.getExternalCaseId()).isEqualTo(environmentalCase.getExternalCaseId());
+                assertThat(caseMapping.getCaseId()).isEqualTo(ECOS_CASE_ID);
+                assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
+            });
     }
 
     @Test
@@ -91,6 +139,16 @@ class CaseResourceIntegrationTest extends CustomAbstractAppTest {
         EnvironmentalCaseDTO environmentalCase = TestUtil.createEnvironmentalCase(CaseType.ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC, AttachmentCategory.ANMALAN_ENSKILT_AVLOPP);
         environmentalCase.getFacilities().get(0).setExtraParameters(getSandfilterExtraParams());
         postCaseAndVerifyResponse(environmentalCase, ECOS_CASE_NUMBER);
+        // Make sure that there doesn't exist a case entity
+        assertThat(caseRepository.findById(environmentalCase.getExternalCaseId()).isPresent()).isFalse();
+        // Make sure that there exists a case mapping
+        assertThat(caseMappingRepository.findAllByExternalCaseId(environmentalCase.getExternalCaseId()))
+            .isNotNull()
+            .allSatisfy(caseMapping -> {
+                assertThat(caseMapping.getExternalCaseId()).isEqualTo(environmentalCase.getExternalCaseId());
+                assertThat(caseMapping.getCaseId()).isEqualTo(ECOS_CASE_ID);
+                assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
+            });
     }
 
     @Test
@@ -98,6 +156,16 @@ class CaseResourceIntegrationTest extends CustomAbstractAppTest {
         EnvironmentalCaseDTO environmentalCase = TestUtil.createEnvironmentalCase(CaseType.ANMALAN_ANDRING_AVLOPPSANLAGGNING, AttachmentCategory.ANMALAN_ANDRING_AVLOPPSANLAGGNING);
         environmentalCase.getFacilities().get(0).setExtraParameters(getSandfilterExtraParams());
         postCaseAndVerifyResponse(environmentalCase, ECOS_CASE_NUMBER);
+        // Make sure that there doesn't exist a case entity
+        assertThat(caseRepository.findById(environmentalCase.getExternalCaseId()).isPresent()).isFalse();
+        // Make sure that there exists a case mapping
+        assertThat(caseMappingRepository.findAllByExternalCaseId(environmentalCase.getExternalCaseId()))
+            .isNotNull()
+            .allSatisfy(caseMapping -> {
+                assertThat(caseMapping.getExternalCaseId()).isEqualTo(environmentalCase.getExternalCaseId());
+                assertThat(caseMapping.getCaseId()).isEqualTo(ECOS_CASE_ID);
+                assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
+            });
     }
 
     @Test
@@ -105,12 +173,32 @@ class CaseResourceIntegrationTest extends CustomAbstractAppTest {
         EnvironmentalCaseDTO environmentalCase = TestUtil.createEnvironmentalCase(CaseType.ANMALAN_ANDRING_AVLOPPSANORDNING, AttachmentCategory.ANMALAN_ANDRING_AVLOPPSANORDNING);
         environmentalCase.getFacilities().get(0).setExtraParameters(getSandfilterExtraParams());
         postCaseAndVerifyResponse(environmentalCase, ECOS_CASE_NUMBER);
+        // Make sure that there doesn't exist a case entity
+        assertThat(caseRepository.findById(environmentalCase.getExternalCaseId()).isPresent()).isFalse();
+        // Make sure that there exists a case mapping
+        assertThat(caseMappingRepository.findAllByExternalCaseId(environmentalCase.getExternalCaseId()))
+            .isNotNull()
+            .allSatisfy(caseMapping -> {
+                assertThat(caseMapping.getExternalCaseId()).isEqualTo(environmentalCase.getExternalCaseId());
+                assertThat(caseMapping.getCaseId()).isEqualTo(ECOS_CASE_ID);
+                assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
+            });
     }
 
     @Test
     void testMinutMiljoHalsoskyddsverksamhet() throws JsonProcessingException, ClassNotFoundException {
         EnvironmentalCaseDTO environmentalCase = TestUtil.createEnvironmentalCase(CaseType.ANMALAN_HALSOSKYDDSVERKSAMHET, AttachmentCategory.ANMALAN_HALSOSKYDDSVERKSAMHET);
         postCaseAndVerifyResponse(environmentalCase, ECOS_CASE_NUMBER);
+        // Make sure that there doesn't exist a case entity
+        assertThat(caseRepository.findById(environmentalCase.getExternalCaseId()).isPresent()).isFalse();
+        // Make sure that there exists a case mapping
+        assertThat(caseMappingRepository.findAllByExternalCaseId(environmentalCase.getExternalCaseId()))
+            .isNotNull()
+            .allSatisfy(caseMapping -> {
+                assertThat(caseMapping.getExternalCaseId()).isEqualTo(environmentalCase.getExternalCaseId());
+                assertThat(caseMapping.getCaseId()).isEqualTo(ECOS_CASE_ID);
+                assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
+            });
     }
 
     @Test
@@ -118,6 +206,16 @@ class CaseResourceIntegrationTest extends CustomAbstractAppTest {
         EnvironmentalCaseDTO environmentalCase = TestUtil.createEnvironmentalCase(CaseType.REGISTRERING_AV_LIVSMEDEL, AttachmentCategory.ANMALAN_LIVSMEDELSANLAGGNING);
         environmentalCase.setEndDate(null);
         postCaseAndVerifyResponse(environmentalCase, ECOS_CASE_NUMBER);
+        // Make sure that there doesn't exist a case entity
+        assertThat(caseRepository.findById(environmentalCase.getExternalCaseId()).isPresent()).isFalse();
+        // Make sure that there exists a case mapping
+        assertThat(caseMappingRepository.findAllByExternalCaseId(environmentalCase.getExternalCaseId()))
+            .isNotNull()
+            .allSatisfy(caseMapping -> {
+                assertThat(caseMapping.getExternalCaseId()).isEqualTo(environmentalCase.getExternalCaseId());
+                assertThat(caseMapping.getCaseId()).isEqualTo(ECOS_CASE_ID);
+                assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
+            });
     }
 
     @Test
@@ -125,8 +223,17 @@ class CaseResourceIntegrationTest extends CustomAbstractAppTest {
         EnvironmentalCaseDTO environmentalCase = TestUtil.createEnvironmentalCase(CaseType.REGISTRERING_AV_LIVSMEDEL, AttachmentCategory.ANMALAN_LIVSMEDELSANLAGGNING);
         postCaseAndVerifyResponse(environmentalCase, ECOS_CASE_NUMBER);
 
-        List<CaseMapping> caseMappingList = caseMappingRepository.findAllByExternalCaseId(environmentalCase.getExternalCaseId());
-        assertTrue(caseMappingList.stream().anyMatch(c -> c.getExternalCaseId().equals(environmentalCase.getExternalCaseId()) && c.getCaseId().equals(ECOS_CASE_ID) && c.getSystem().equals(SystemType.ECOS)));
+
+        // Make sure that there doesn't exist a case entity
+        assertThat(caseRepository.findById(environmentalCase.getExternalCaseId()).isPresent()).isFalse();
+        // Make sure that there exists a case mapping
+        assertThat(caseMappingRepository.findAllByExternalCaseId(environmentalCase.getExternalCaseId()))
+            .isNotNull()
+            .allSatisfy(caseMapping -> {
+                assertThat(caseMapping.getExternalCaseId()).isEqualTo(environmentalCase.getExternalCaseId());
+                assertThat(caseMapping.getCaseId()).isEqualTo(ECOS_CASE_ID);
+                assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
+            });
     }
 
     @Test
@@ -134,18 +241,35 @@ class CaseResourceIntegrationTest extends CustomAbstractAppTest {
         PlanningPermissionCaseDTO pCase = TestUtil.createPlanningPermissionCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.ANS);
         postCaseAndVerifyResponse(pCase, BYGG_CASE_ID);
 
-        List<CaseMapping> caseMappingList = caseMappingRepository.findAllByExternalCaseId(pCase.getExternalCaseId());
-        assertTrue(caseMappingList.stream().anyMatch(c -> c.getExternalCaseId().equals(pCase.getExternalCaseId()) && c.getCaseId().equals(BYGG_CASE_ID) && c.getSystem().equals(SystemType.BYGGR)));
+        // Make sure that there doesn't exist a case entity
+        assertThat(caseRepository.findById(pCase.getExternalCaseId()).isPresent()).isFalse();
+        // Make sure that there exists a case mapping
+        assertThat(caseMappingRepository.findAllByExternalCaseId(pCase.getExternalCaseId()))
+            .isNotNull()
+            .allSatisfy(caseMapping -> {
+                assertThat(caseMapping.getExternalCaseId()).isEqualTo(pCase.getExternalCaseId());
+                assertThat(caseMapping.getCaseId()).isEqualTo(BYGG_CASE_NUMBER);
+                assertThat(caseMapping.getSystem()).isEqualTo(SystemType.BYGGR);
+            });
     }
 
     @Test
     void testPostCaseDataCaseAndVerifyPersistance() throws JsonProcessingException, ClassNotFoundException {
         OtherCaseDTO oCase = TestUtil.createOtherCase(CaseType.PARKING_PERMIT, AttachmentCategory.SIGNATURE);
+        oCase.setCaseTitleAddition("Some case title addition");
         postCaseAndVerifyResponse(oCase, CASE_DATA_ERRAND_NUMBER);
-
-        List<CaseMapping> caseMappingList = caseMappingRepository.findAllByExternalCaseId(oCase.getExternalCaseId());
-        assertTrue(caseMappingList.stream().anyMatch(c -> c.getExternalCaseId().equals(oCase.getExternalCaseId()) && c.getCaseId().equals(CASE_DATA_CASE_ID) && c.getSystem().equals(SystemType.CASE_DATA)));
+        // Make sure that there doesn't exist a case entity
+        assertThat(caseRepository.findById(oCase.getExternalCaseId()).isPresent()).isFalse();
+        // Make sure that there exists a case mapping
+        assertThat(caseMappingRepository.findAllByExternalCaseId(oCase.getExternalCaseId()))
+            .isNotNull()
+            .allSatisfy(caseMapping -> {
+                assertThat(caseMapping.getExternalCaseId()).isEqualTo(oCase.getExternalCaseId());
+                assertThat(caseMapping.getCaseId()).isEqualTo(CASE_DATA_CASE_ID);
+                assertThat(caseMapping.getSystem()).isEqualTo(SystemType.CASE_DATA);
+            });
     }
+
 
     @Test
     void testMinutMiljoLivsmedelMovingFacility() throws JsonProcessingException, ClassNotFoundException {
@@ -157,6 +281,16 @@ class CaseResourceIntegrationTest extends CustomAbstractAppTest {
         eCase.setFacilities(List.of(facility));
 
         postCaseAndVerifyResponse(eCase, ECOS_CASE_NUMBER);
+        // Make sure that there doesn't exist a case entity
+        assertThat(caseRepository.findById(eCase.getExternalCaseId()).isPresent()).isFalse();
+        // Make sure that there exists a case mapping
+        assertThat(caseMappingRepository.findAllByExternalCaseId(eCase.getExternalCaseId()))
+            .isNotNull()
+            .allSatisfy(caseMapping -> {
+                assertThat(caseMapping.getExternalCaseId()).isEqualTo(eCase.getExternalCaseId());
+                assertThat(caseMapping.getCaseId()).isEqualTo(ECOS_CASE_ID);
+                assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
+            });
     }
 
     @Test
@@ -168,6 +302,17 @@ class CaseResourceIntegrationTest extends CustomAbstractAppTest {
         eCase.getStakeholders().add(contactPerson);
 
         postCaseAndVerifyResponse(eCase, ECOS_CASE_NUMBER);
+        // Make sure that there doesn't exist a case entity
+        assertThat(caseRepository.findById(eCase.getExternalCaseId()).isPresent()).isFalse();
+        // Make sure that there exists a case mapping
+        assertThat(caseMappingRepository.findAllByExternalCaseId(eCase.getExternalCaseId()))
+            .isNotNull()
+            .allSatisfy(caseMapping -> {
+                assertThat(caseMapping.getExternalCaseId()).isEqualTo(eCase.getExternalCaseId());
+                assertThat(caseMapping.getCaseId()).isEqualTo(ECOS_CASE_ID);
+                assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
+            });
+
     }
 
     @Test
@@ -182,7 +327,7 @@ class CaseResourceIntegrationTest extends CustomAbstractAppTest {
     }
 
     @Test
-    void testMinutMiljoLivsmedel500Response() throws JsonProcessingException {
+    void testMinutMiljoLivsmedel500Response() throws JsonProcessingException, InterruptedException {
 
         EnvironmentalCaseDTO eCase = TestUtil.createEnvironmentalCase(CaseType.REGISTRERING_AV_LIVSMEDEL, AttachmentCategory.ANMALAN_LIVSMEDELSANLAGGNING);
 
@@ -196,25 +341,23 @@ class CaseResourceIntegrationTest extends CustomAbstractAppTest {
         eCase.setFacilities(List.of(facility));
 
         setupCall()
-                .withHttpMethod(HttpMethod.POST)
-                .withServicePath("/cases")
-                .withRequest(OBJECT_MAPPER.writeValueAsString(eCase))
-                .withExpectedResponseStatus(HttpStatus.BAD_REQUEST)
-                .sendRequestAndVerifyResponse();
+            .withHttpMethod(HttpMethod.POST)
+            .withServicePath("/cases")
+            .withRequest(OBJECT_MAPPER.writeValueAsString(eCase))
+            .withExpectedResponseStatus(HttpStatus.OK)
+            .sendRequestAndVerifyResponse();
+
+        // Make sure that there doesn't exist a case mapping
+        assertThat(caseMappingRepository.findAllByExternalCaseId(eCase.getExternalCaseId())).isEmpty();
+        TimeUnit.SECONDS.sleep(10);
+        // Make sure that there exists a case entity with failed status
+        var result = caseRepository.findById(eCase.getExternalCaseId()).orElseThrow(() -> new RuntimeException("Case not found"));
+
+        assertThat(result).isNotNull();
+        assertThat(result.getId()).isEqualTo(eCase.getExternalCaseId());
+        assertThat(result.getDeliveryStatus()).isEqualTo(DeliveryStatus.FAILED);
     }
 
-    @Test
-    void testCaseDataBadRequest() throws JsonProcessingException {
-        OtherCaseDTO oCase = TestUtil.createOtherCase(CaseType.PARKING_PERMIT, AttachmentCategory.SIGNATURE);
-        oCase.setDescription("BAD_REQUEST");
-
-        setupCall()
-                .withHttpMethod(HttpMethod.POST)
-                .withServicePath("/cases")
-                .withRequest(OBJECT_MAPPER.writeValueAsString(oCase))
-                .withExpectedResponseStatus(HttpStatus.BAD_GATEWAY)
-                .sendRequestAndVerifyResponse();
-    }
 
     @Test
     void testMinutMiljoLivsmedelEndBeforeStart() throws JsonProcessingException, ClassNotFoundException {
@@ -233,12 +376,12 @@ class CaseResourceIntegrationTest extends CustomAbstractAppTest {
         eCase.setFacilities(List.of(facility));
 
         var problem = setupCall()
-                .withHttpMethod(HttpMethod.POST)
-                .withServicePath("/cases")
-                .withRequest(OBJECT_MAPPER.writeValueAsString(eCase))
-                .withExpectedResponseStatus(HttpStatus.BAD_REQUEST)
-                .sendRequestAndVerifyResponse()
-                .andReturnBody(ConstraintViolationProblem.class);
+            .withHttpMethod(HttpMethod.POST)
+            .withServicePath("/cases")
+            .withRequest(OBJECT_MAPPER.writeValueAsString(eCase))
+            .withExpectedResponseStatus(HttpStatus.BAD_REQUEST)
+            .sendRequestAndVerifyResponse()
+            .andReturnBody(ConstraintViolationProblem.class);
 
         assertEquals(Constants.ERR_START_MUST_BE_BEFORE_END, problem.getViolations().get(0).getMessage());
 
@@ -297,7 +440,7 @@ class CaseResourceIntegrationTest extends CustomAbstractAppTest {
         orgAddressDTO.setCity("Sundsvall");
         orgAddressDTO.setCountry("Sweden");
         orgAddressDTO.setAddressCategories(List.of(AddressCategory.POSTAL_ADDRESS,
-                AddressCategory.VISITING_ADDRESS, AddressCategory.INVOICE_ADDRESS));
+            AddressCategory.VISITING_ADDRESS, AddressCategory.INVOICE_ADDRESS));
         addressDTOS.add(orgAddressDTO);
         organizationDTO.setAddresses(addressDTOS);
 
@@ -312,12 +455,12 @@ class CaseResourceIntegrationTest extends CustomAbstractAppTest {
         PlanningPermissionCaseDTO pCase = TestUtil.createPlanningPermissionCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.ANS);
         pCase.setFacilities(List.of(TestUtil.createPlanningPermissionFacilityDTO(true), TestUtil.createPlanningPermissionFacilityDTO(true)));
         ConstraintViolationProblem problem = setupCall()
-                .withHttpMethod(HttpMethod.POST)
-                .withServicePath("/cases")
-                .withRequest(OBJECT_MAPPER.writeValueAsString(pCase))
-                .withExpectedResponseStatus(HttpStatus.BAD_REQUEST)
-                .sendRequestAndVerifyResponse()
-                .andReturnBody(ConstraintViolationProblem.class);
+            .withHttpMethod(HttpMethod.POST)
+            .withServicePath("/cases")
+            .withRequest(OBJECT_MAPPER.writeValueAsString(pCase))
+            .withExpectedResponseStatus(HttpStatus.BAD_REQUEST)
+            .sendRequestAndVerifyResponse()
+            .andReturnBody(ConstraintViolationProblem.class);
 
         assertEquals(Constants.ERR_MSG_ONLY_ONE_MAIN_FACILITY, problem.getViolations().get(0).getMessage());
     }
@@ -327,15 +470,29 @@ class CaseResourceIntegrationTest extends CustomAbstractAppTest {
         PlanningPermissionCaseDTO pCase = TestUtil.createPlanningPermissionCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.ANS);
         pCase.setFacilities(null);
         setupCall()
-                .withHttpMethod(HttpMethod.POST)
-                .withServicePath("/cases")
-                .withRequest(OBJECT_MAPPER.writeValueAsString(pCase))
-                .withExpectedResponseStatus(HttpStatus.BAD_REQUEST)
-                .sendRequestAndVerifyResponse();
+            .withHttpMethod(HttpMethod.POST)
+            .withServicePath("/cases")
+            .withRequest(OBJECT_MAPPER.writeValueAsString(pCase))
+            .withExpectedResponseStatus(HttpStatus.BAD_REQUEST)
+            .sendRequestAndVerifyResponse();
+    }
+
+    @Test
+    void testPostByggrCaseAttefallFacility() throws JsonProcessingException {
+        PlanningPermissionCaseDTO pCase = TestUtil.createPlanningPermissionCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.ANS);
+        pCase.setFacilities(null);
+        pCase.setFacilities(List.of(TestUtil.createAttefallFacilityDTO(true)));
+
+        setupCall()
+            .withHttpMethod(HttpMethod.POST)
+            .withServicePath("/cases")
+            .withRequest(OBJECT_MAPPER.writeValueAsString(pCase))
+            .withExpectedResponseStatus(HttpStatus.BAD_REQUEST)
+            .sendRequestAndVerifyResponse();
     }
 
     @ParameterizedTest
-    @EnumSource(value = CaseType.class, mode = EnumSource.Mode.INCLUDE, names = {PARKING_PERMIT_VALUE, LOST_PARKING_PERMIT_VALUE, PARKING_PERMIT_RENEWAL_VALUE})
+    @EnumSource(value = CaseType.class, mode = EnumSource.Mode.INCLUDE, names = {PARKING_PERMIT, LOST_PARKING_PERMIT, PARKING_PERMIT_RENEWAL})
     void testPostParkingPermitCase(CaseType caseType) throws JsonProcessingException, ClassNotFoundException {
         OtherCaseDTO otherCase = new OtherCaseDTO();
         otherCase.setCaseType(caseType);
@@ -351,6 +508,51 @@ class CaseResourceIntegrationTest extends CustomAbstractAppTest {
         otherCase.setExtraParameters(TestUtil.createExtraParameters());
 
         postCaseAndVerifyResponse(otherCase, CASE_DATA_ERRAND_NUMBER);
+
+        assertThat(caseRepository.findById(otherCase.getExternalCaseId()).isPresent()).isFalse();
+        // Make sure that there exists a case mapping
+        assertThat(caseMappingRepository.findAllByExternalCaseId(otherCase.getExternalCaseId()))
+            .isNotNull()
+            .allSatisfy(caseMapping -> {
+                assertThat(caseMapping.getExternalCaseId()).isEqualTo(otherCase.getExternalCaseId());
+                assertThat(caseMapping.getCaseId()).isEqualTo(CASE_DATA_CASE_ID);
+                assertThat(caseMapping.getSystem()).isEqualTo(SystemType.CASE_DATA);
+            });
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = CaseType.class, mode = EnumSource.Mode.INCLUDE, names = {PARKING_PERMIT, LOST_PARKING_PERMIT, PARKING_PERMIT_RENEWAL})
+    void testPostParkingPermitcaseError(CaseType caseType) throws JsonProcessingException, InterruptedException {
+
+        OtherCaseDTO otherCase = new OtherCaseDTO();
+        otherCase.setCaseType(caseType);
+        otherCase.setExternalCaseId("INTERNAL_SERVER_ERROR");
+        otherCase.setCaseTitleAddition("INTERNAL_SERVER_ERROR");
+        otherCase.setDescription("INTERNAL_SERVER_ERROR");
+        StakeholderDTO stakeholderDTO1 = TestUtil.createStakeholder(StakeholderType.ORGANIZATION, List.of(StakeholderRole.APPLICANT, StakeholderRole.CONTACT_PERSON));
+        StakeholderDTO stakeholderDTO2 = TestUtil.createStakeholder(StakeholderType.PERSON, List.of(StakeholderRole.PAYMENT_PERSON, StakeholderRole.INVOICE_RECIPENT));
+        otherCase.setStakeholders(List.of(stakeholderDTO1, stakeholderDTO2));
+        AttachmentDTO attachmentDTO1 = TestUtil.createAttachment(AttachmentCategory.ANS);
+        AttachmentDTO attachmentDTO2 = TestUtil.createAttachment(AttachmentCategory.ANMALAN_VARMEPUMP);
+        otherCase.setAttachments(List.of(attachmentDTO1, attachmentDTO2));
+        otherCase.setExtraParameters(TestUtil.createExtraParameters());
+
+        setupCall()
+            .withHttpMethod(HttpMethod.POST)
+            .withServicePath("/cases")
+            .withRequest(OBJECT_MAPPER.writeValueAsString(otherCase))
+            .withExpectedResponseStatus(HttpStatus.OK)
+            .sendRequestAndVerifyResponse();
+
+        // Make sure that there doesn't exist a case mapping
+        assertThat(caseMappingRepository.findAllByExternalCaseId(otherCase.getExternalCaseId())).isEmpty();
+        TimeUnit.SECONDS.sleep(10);
+        // Make sure that there exists a case entity with failed status
+        var result = caseRepository.findById(otherCase.getExternalCaseId()).orElseThrow(() -> new RuntimeException("Case not found"));
+
+        assertThat(result).isNotNull();
+        assertThat(result.getId()).isEqualTo(otherCase.getExternalCaseId());
+        assertThat(result.getDeliveryStatus()).isEqualTo(DeliveryStatus.FAILED);
     }
 
     @Test
@@ -362,61 +564,85 @@ class CaseResourceIntegrationTest extends CustomAbstractAppTest {
         PlanningPermissionCaseDTO pCase_2 = TestUtil.createPlanningPermissionCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.ANS);
         pCase_2.setExternalCaseId(externalCaseId);
 
-        // Try to post the first one - should succeed
-        postCaseAndVerifyResponse(pCase_1, BYGG_CASE_ID);
+        caseMappingRepository.save(CaseMapping.builder()
+            .withCaseType(CaseType.PARKING_PERMIT)
+            .withCaseId(BYGG_CASE_ID)
+            .withSystem(SystemType.BYGGR)
+            .withServiceName("serviceName")
+            .withTimestamp(LocalDateTime.now())
+            .withExternalCaseId(externalCaseId)
+            .build());
 
         // Try to post the second one - should fail
         Problem response = setupCall()
-                .withHttpMethod(HttpMethod.POST)
-                .withServicePath("/cases")
-                .withRequest(OBJECT_MAPPER.writeValueAsString(pCase_2))
-                .withExpectedResponseStatus(HttpStatus.BAD_REQUEST)
-                .sendRequestAndVerifyResponse()
-                .andReturnBody(Problem.class);
+            .withHttpMethod(HttpMethod.POST)
+            .withServicePath("/cases")
+            .withRequest(OBJECT_MAPPER.writeValueAsString(pCase_2))
+            .withExpectedResponseStatus(HttpStatus.BAD_REQUEST)
+            .sendRequestAndVerifyResponse()
+            .andReturnBody(Problem.class);
 
         assertEquals("A resources already exists with the same externalCaseId: " + externalCaseId, response.getDetail());
     }
 
 
     @Test
-    void testEcosPropertyDesignationNotFound() throws JsonProcessingException, ClassNotFoundException {
+    void testEcosPropertyDesignationNotFound() throws JsonProcessingException, ClassNotFoundException, InterruptedException {
 
         EnvironmentalCaseDTO eCase = TestUtil.createEnvironmentalCase(CaseType.REGISTRERING_AV_LIVSMEDEL, AttachmentCategory.ANMALAN_LIVSMEDELSANLAGGNING);
         eCase.getFacilities().get(0).getAddress().setPropertyDesignation("RANDOM_PROPERTY_DESIGNATION");
 
-        Problem response = setupCall()
-                .withHttpMethod(HttpMethod.POST)
-                .withServicePath("/cases")
-                .withRequest(OBJECT_MAPPER.writeValueAsString(eCase))
-                .withExpectedResponseStatus(HttpStatus.BAD_REQUEST)
-                .sendRequestAndVerifyResponse()
-                .andReturnBody(Problem.class);
+        setupCall()
+            .withHttpMethod(HttpMethod.POST)
+            .withServicePath("/cases")
+            .withRequest(OBJECT_MAPPER.writeValueAsString(eCase))
+            .withExpectedResponseStatus(HttpStatus.OK)
+            .sendRequestAndVerifyResponse()
+            .andReturnBody(Problem.class);
 
-        assertEquals(MessageFormat.format("The specified propertyDesignation({0}) could not be found", eCase.getFacilities().get(0).getAddress().getPropertyDesignation()), response.getDetail());
+        // Make sure that there doesn't exist a case mapping
+        assertThat(caseMappingRepository.findAllByExternalCaseId(eCase.getExternalCaseId())).isEmpty();
+        TimeUnit.SECONDS.sleep(15);
+        // Make sure that there exists a case entity with failed status
+        var result = caseRepository.findById(eCase.getExternalCaseId()).orElseThrow(() -> new RuntimeException("Case not found"));
+
+        assertThat(result).isNotNull();
+        assertThat(result.getId()).isEqualTo(eCase.getExternalCaseId());
+        assertThat(result.getDeliveryStatus()).isEqualTo(DeliveryStatus.FAILED);
+
     }
 
     @Test
-    void testPutCase() throws JsonProcessingException, ClassNotFoundException {
-        OtherCaseDTO oCase = TestUtil.createOtherCase(CaseType.PARKING_PERMIT, AttachmentCategory.SIGNATURE);
-        postCaseAndVerifyResponse(oCase, CASE_DATA_ERRAND_NUMBER);
+    void testPutCase() throws JsonProcessingException {
+        var externalCaseId = UUID.randomUUID().toString();
+
+        caseMappingRepository.save(CaseMapping.builder()
+            .withCaseType(CaseType.PARKING_PERMIT_RENEWAL)
+            .withCaseId(CASE_DATA_ID)
+            .withSystem(SystemType.CASE_DATA)
+            .withServiceName("serviceName")
+            .withTimestamp(LocalDateTime.now())
+            .withExternalCaseId(externalCaseId)
+            .build());
+
 
         OtherCaseDTO oCasePut = TestUtil.createOtherCase(CaseType.PARKING_PERMIT_RENEWAL, AttachmentCategory.PASSPORT_PHOTO);
         setupCall()
-                .withHttpMethod(HttpMethod.PUT)
-                .withServicePath("/cases/" + oCase.getExternalCaseId())
-                .withRequest(OBJECT_MAPPER.writeValueAsString(oCasePut))
-                .withExpectedResponseStatus(HttpStatus.NO_CONTENT)
-                .sendRequestAndVerifyResponse();
+            .withHttpMethod(HttpMethod.PUT)
+            .withServicePath("/cases/" + externalCaseId)
+            .withRequest(OBJECT_MAPPER.writeValueAsString(oCasePut))
+            .withExpectedResponseStatus(HttpStatus.NO_CONTENT)
+            .sendRequestAndVerifyResponse();
     }
 
     private void postCaseAndVerifyResponse(CaseDTO inputCaseDTO, String caseId) throws JsonProcessingException, ClassNotFoundException {
         CaseResourceResponseDTO response = setupCall()
-                .withHttpMethod(HttpMethod.POST)
-                .withServicePath("/cases")
-                .withRequest(OBJECT_MAPPER.writeValueAsString(inputCaseDTO))
-                .withExpectedResponseStatus(HttpStatus.OK)
-                .sendRequestAndVerifyResponse()
-                .andReturnBody(CaseResourceResponseDTO.class);
+            .withHttpMethod(HttpMethod.POST)
+            .withServicePath("/cases")
+            .withRequest(OBJECT_MAPPER.writeValueAsString(inputCaseDTO))
+            .withExpectedResponseStatus(HttpStatus.OK)
+            .sendRequestAndVerifyResponse()
+            .andReturnBody(CaseResourceResponseDTO.class);
 
         assertEquals(caseId, response.getCaseId());
     }

@@ -17,7 +17,7 @@ import se.sundsvall.casemanagement.integration.rest.fb.model.DataItem;
 import se.sundsvall.casemanagement.integration.rest.fb.model.GruppItem;
 import se.sundsvall.casemanagement.integration.rest.fb.model.ResponseDto;
 import se.sundsvall.casemanagement.integration.rest.lantmateriet.model.Registerbeteckningsreferens;
-import se.sundsvall.casemanagement.service.util.Constants;
+import se.sundsvall.casemanagement.util.Constants;
 import se.sundsvall.casemanagement.testutils.TestConstants;
 
 import java.util.ArrayList;

@@ -9,8 +9,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static se.sundsvall.casemanagement.TestUtil.setUpCaseTypes;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.ANDRING_ANSOKAN_OM_BYGGLOV;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.STRANDSKYDD_ANDRAD_ANVANDNING;
@@ -18,10 +20,28 @@ import static se.sundsvall.casemanagement.api.model.enums.CaseType.STRANDSKYDD_A
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.STRANDSKYDD_ANORDNANDE;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.STRANDSKYDD_NYBYGGNAD;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.TILLBYGGNAD_ANSOKAN_OM_BYGGLOV;
-import static se.sundsvall.casemanagement.service.util.Constants.BYGGR_HANDELSESLAG_KOMPLETTERANDE_HANDLINGAR;
-import static se.sundsvall.casemanagement.service.util.Constants.BYGGR_HANDELSESLAG_SLUTBESKED;
-import static se.sundsvall.casemanagement.service.util.Constants.BYGGR_HANDELSETYP_BESLUT;
-import static se.sundsvall.casemanagement.service.util.Constants.BYGGR_HANDELSETYP_HANDLING;
+import static se.sundsvall.casemanagement.util.Constants.ATTEFALL;
+import static se.sundsvall.casemanagement.util.Constants.BYGGLOV_FOR;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR_ARENDEMENING_BYGGLOV_ANDRING_ANSOKAN_OM;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR_ARENDEMENING_BYGGLOV_FOR_NYBYGGNAD_AV;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR_ARENDEMENING_BYGGLOV_FOR_TILLBYGGNAD;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR_ARENDEMENING_STRANDSKYDD_FOR_ANDRAD_ANVANDNING;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR_ARENDEMENING_STRANDSKYDD_FOR_ANLAGGANDE;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR_ARENDEMENING_STRANDSKYDD_FOR_ANORDNANDE;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR_ARENDEMENING_STRANDSKYDD_FOR_NYBYGGNAD;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSESLAG_KOMPLETTERANDE_HANDLINGAR;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSESLAG_SLUTBESKED;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSETYP_BESLUT;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSETYP_HANDLING;
+import static se.sundsvall.casemanagement.util.Constants.HANDELSESLAG_ANMALAN_ATTEFALL;
+import static se.sundsvall.casemanagement.util.Constants.HANDELSESLAG_BYGGLOV;
+import static se.sundsvall.casemanagement.util.Constants.HANDELSESLAG_STRANDSKYDD;
+import static se.sundsvall.casemanagement.util.Constants.HANDELSETYP_ANMALAN;
+import static se.sundsvall.casemanagement.util.Constants.HANDELSETYP_ANSOKAN;
+import static se.sundsvall.casemanagement.util.Constants.RUBRIK_ANMALAN_ATTEFALL;
+import static se.sundsvall.casemanagement.util.Constants.RUBRIK_BYGGLOV;
+import static se.sundsvall.casemanagement.util.Constants.RUBRIK_STRANDSKYDD;
+import static se.sundsvall.casemanagement.util.Constants.STRANDSKYDD;
 
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
@@ -58,11 +78,12 @@ import se.sundsvall.casemanagement.api.model.enums.FacilityType;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderType;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
+import se.sundsvall.casemanagement.integration.byggr.ArendeExportClient;
+import se.sundsvall.casemanagement.integration.byggr.ByggrService;
+import se.sundsvall.casemanagement.integration.db.CaseTypeRepository;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
-import se.sundsvall.casemanagement.integration.soap.arendeexport.ArendeExportClient;
-import se.sundsvall.casemanagement.service.exceptions.ApplicationException;
-import se.sundsvall.casemanagement.service.util.Constants;
 import se.sundsvall.casemanagement.testutils.TestConstants;
+import se.sundsvall.casemanagement.util.Constants;
 
 import arendeexport.AbstractArendeObjekt;
 import arendeexport.Arende;
@@ -87,6 +108,8 @@ import arendeexport.SaveNewHandelseMessage;
 @ExtendWith(MockitoExtension.class)
 class ByggrServiceTest {
     
+    @Mock
+    private CaseTypeRepository caseTypeRepository;
     @InjectMocks
     private ByggrService byggrService;
     
@@ -186,6 +209,7 @@ class ByggrServiceTest {
     
     @BeforeEach
     public void setup() {
+        lenient().when(caseTypeRepository.findAll()).thenReturn(setUpCaseTypes());
         TestUtil.standardMockFb(fbServiceMock);
         TestUtil.standardMockArendeExport(arendeExportClientMock);
         TestUtil.standardMockCitizenMapping(citizenMappingServiceMock);
@@ -196,14 +220,13 @@ class ByggrServiceTest {
     @EnumSource(value = CaseType.class, names = {"STRANDSKYDD_NYBYGGNAD",
         "STRANDSKYDD_ANLAGGANDE", "STRANDSKYDD_ANORDNANDE",
         "STRANDSKYDD_ANDRAD_ANVANDNING"})
-    void testStrandskyddCaseType(CaseType caseType) throws ApplicationException {
+    void testStrandskyddCaseType(CaseType caseType) {
         var caseTypes = Map.of(
-            STRANDSKYDD_NYBYGGNAD, Constants.BYGGR_ARENDEMENING_STRANDSKYDD_FOR_NYBYGGNAD,
-            STRANDSKYDD_ANLAGGANDE, Constants.BYGGR_ARENDEMENING_STRANDSKYDD_FOR_ANLAGGANDE,
-            STRANDSKYDD_ANORDNANDE, Constants.BYGGR_ARENDEMENING_STRANDSKYDD_FOR_ANORDNANDE,
-            STRANDSKYDD_ANDRAD_ANVANDNING, Constants.BYGGR_ARENDEMENING_STRANDSKYDD_FOR_ANDRAD_ANVANDNING
+            STRANDSKYDD_NYBYGGNAD, BYGGR_ARENDEMENING_STRANDSKYDD_FOR_NYBYGGNAD,
+            STRANDSKYDD_ANLAGGANDE, BYGGR_ARENDEMENING_STRANDSKYDD_FOR_ANLAGGANDE,
+            STRANDSKYDD_ANORDNANDE, BYGGR_ARENDEMENING_STRANDSKYDD_FOR_ANORDNANDE,
+            STRANDSKYDD_ANDRAD_ANVANDNING, BYGGR_ARENDEMENING_STRANDSKYDD_FOR_ANDRAD_ANVANDNING
         );
-        
         
         var input = TestUtil.createPlanningPermissionCaseDTO(caseType, AttachmentCategory.ANS);
         var inputFacility = input.getFacilities().get(0);
@@ -224,8 +247,7 @@ class ByggrServiceTest {
         assertEquals(Constants.BYGGR_SYSTEM_HANDLAGGARE_SIGN, saveNewArendeMessage.getHandlaggarSign());
         
         // Arende
-        assertEquals(Constants.BYGGR_ARENDETYP_STRANDSKYDD, arende.getArendetyp());
-        assertEquals(caseType.getArendeslag(), arende.getArendeslag());
+        assertEquals(STRANDSKYDD, arende.getArendetyp());
         assertEquals(inputFacility.getFacilityType().getValue(), arende.getArendeklass());
         assertEquals(Constants.BYGGR_ARENDEGRUPP_STRANDSKYDD, arende.getArendegrupp());
         assertEquals(Constants.BYGGR_NAMNDKOD_STADSBYGGNADSNAMNDEN, arende.getNamndkod());
@@ -261,20 +283,20 @@ class ByggrServiceTest {
         // Handelser
         assertNotNull(handelse.getStartDatum());
         assertEquals(Constants.BYGGR_HANDELSE_RIKTNING_IN, handelse.getRiktning());
-        assertEquals(Constants.BYGGR_HANDELSE_RUBRIK_STRANDSKYDD, handelse.getRubrik());
-        assertEquals(Constants.BYGGR_HANDELSETYP_ANSOKAN, handelse.getHandelsetyp());
-        assertEquals(Constants.BYGGR_HANDELSESLAG_STRANDSKYDD, handelse.getHandelseslag());
+        assertEquals(RUBRIK_STRANDSKYDD, handelse.getRubrik());
+        assertEquals(HANDELSETYP_ANSOKAN, handelse.getHandelsetyp());
+        assertEquals(HANDELSESLAG_STRANDSKYDD, handelse.getHandelseslag());
     }
     
     //ANSOKAN_OM_BYGGLOV
     @ParameterizedTest
     @EnumSource(value = CaseType.class, names = {"NYBYGGNAD_ANSOKAN_OM_BYGGLOV",
         "ANDRING_ANSOKAN_OM_BYGGLOV", "TILLBYGGNAD_ANSOKAN_OM_BYGGLOV"})
-    void testPostNybyggnad(CaseType caseType) throws ApplicationException {
+    void testPostNybyggnad(CaseType caseType) {
         var caseTypes = Map.of(
-            NYBYGGNAD_ANSOKAN_OM_BYGGLOV, Constants.BYGGR_ARENDEMENING_BYGGLOV_FOR_NYBYGGNAD_AV,
-            TILLBYGGNAD_ANSOKAN_OM_BYGGLOV, Constants.BYGGR_ARENDEMENING_BYGGLOV_FOR_TILLBYGGNAD,
-            ANDRING_ANSOKAN_OM_BYGGLOV, Constants.BYGGR_ARENDEMENING_BYGGLOV_ANDRING_ANSOKAN_OM_
+            NYBYGGNAD_ANSOKAN_OM_BYGGLOV, BYGGR_ARENDEMENING_BYGGLOV_FOR_NYBYGGNAD_AV,
+            TILLBYGGNAD_ANSOKAN_OM_BYGGLOV, BYGGR_ARENDEMENING_BYGGLOV_FOR_TILLBYGGNAD,
+            ANDRING_ANSOKAN_OM_BYGGLOV, BYGGR_ARENDEMENING_BYGGLOV_ANDRING_ANSOKAN_OM
         );
         
         
@@ -297,9 +319,8 @@ class ByggrServiceTest {
         assertEquals(Constants.BYGGR_SYSTEM_HANDLAGGARE_SIGN, saveNewArendeMessage.getHandlaggarSign());
         
         // Arende
-        assertEquals(Constants.BYGGR_ARENDETYP_BYGGLOV_FOR, arende.getArendetyp());
+        assertEquals(BYGGLOV_FOR, arende.getArendetyp());
         if (!caseType.equals(ANDRING_ANSOKAN_OM_BYGGLOV)) {
-            assertEquals(caseType.getArendeslag(), arende.getArendeslag());
             assertEquals(inputFacility.getFacilityType().getValue(), arende.getArendeklass());
         } else {
             assertEquals(inputFacility.getFacilityType().getValue(), arende.getArendeslag());
@@ -338,14 +359,14 @@ class ByggrServiceTest {
         // Handelser
         assertNotNull(handelse.getStartDatum());
         assertEquals(Constants.BYGGR_HANDELSE_RIKTNING_IN, handelse.getRiktning());
-        assertEquals(Constants.BYGGR_HANDELSE_RUBRIK_BYGGLOV, handelse.getRubrik());
-        assertEquals(Constants.BYGGR_HANDELSETYP_ANSOKAN, handelse.getHandelsetyp());
-        assertEquals(Constants.BYGGR_HANDELSESLAG_BYGGLOV, handelse.getHandelseslag());
+        assertEquals(RUBRIK_BYGGLOV, handelse.getRubrik());
+        assertEquals(HANDELSETYP_ANSOKAN, handelse.getHandelsetyp());
+        assertEquals(HANDELSESLAG_BYGGLOV, handelse.getHandelseslag());
     }
     
     // ANMALAN_ATTEFALL
     @Test
-    void testPostAttefall() throws ApplicationException {
+    void testPostAttefall() {
         
         PlanningPermissionCaseDTO input = TestUtil.createPlanningPermissionCaseDTO(CaseType.ANMALAN_ATTEFALL, AttachmentCategory.ANS);
         // Set facilityType to a compatible value
@@ -369,7 +390,7 @@ class ByggrServiceTest {
         assertEquals(Constants.BYGGR_SYSTEM_HANDLAGGARE_SIGN, saveNewArendeMessage.getHandlaggarSign());
         
         // Arende
-        assertEquals(Constants.BYGGR_ARENDETYP_ANMALAN_ATTEFALL, arende.getArendetyp());
+        assertEquals(ATTEFALL, arende.getArendetyp());
         assertEquals(inputFacility.getFacilityType().getValue(), arende.getArendeslag());
         assertNull(arende.getArendeklass());
         assertEquals(Constants.BYGGR_ARENDEGRUPP_LOV_ANMALNINGSARENDE, arende.getArendegrupp());
@@ -407,14 +428,14 @@ class ByggrServiceTest {
         // Handelser
         assertNotNull(handelse.getStartDatum());
         assertEquals(Constants.BYGGR_HANDELSE_RIKTNING_IN, handelse.getRiktning());
-        assertEquals(Constants.BYGGR_HANDELSE_RUBRIK_ANMALAN_ATTEFALL, handelse.getRubrik());
-        assertEquals(Constants.BYGGR_HANDELSETYP_ANMALAN, handelse.getHandelsetyp());
-        assertEquals(Constants.BYGGR_HANDELSESLAG_ANMALAN_ATTEFALL, handelse.getHandelseslag());
+        assertEquals(RUBRIK_ANMALAN_ATTEFALL, handelse.getRubrik());
+        assertEquals(HANDELSETYP_ANMALAN, handelse.getHandelsetyp());
+        assertEquals(HANDELSESLAG_ANMALAN_ATTEFALL, handelse.getHandelseslag());
     }
     
     // ANMALAN_ELDSTAD
     @Test
-    void testPostEldstad() throws ApplicationException {
+    void testPostEldstad() {
         
         PlanningPermissionCaseDTO input = TestUtil.createPlanningPermissionCaseDTO(CaseType.ANMALAN_ELDSTAD,
             AttachmentCategory.ANS);
@@ -439,7 +460,7 @@ class ByggrServiceTest {
         assertEquals(Constants.BYGGR_SYSTEM_HANDLAGGARE_SIGN, saveNewArendeMessage.getHandlaggarSign());
         
         // Arende
-        assertEquals(Constants.BYGGR_HANDELSETYP_ANMALAN, arende.getArendetyp());
+        assertEquals(HANDELSETYP_ANMALAN, arende.getArendetyp());
         assertEquals(inputFacility.getFacilityType().getValue(), arende.getArendeslag());
         assertNull(arende.getArendeklass());
         assertEquals(Constants.BYGGR_ARENDEGRUPP_LOV_ANMALNINGSARENDE, arende.getArendegrupp());
@@ -478,13 +499,13 @@ class ByggrServiceTest {
         assertNotNull(handelse.getStartDatum());
         assertEquals(Constants.BYGGR_HANDELSE_RIKTNING_IN, handelse.getRiktning());
         assertEquals(Constants.BYGGR_HANDELSE_RUBRIK_ELDSTAD, handelse.getRubrik());
-        assertEquals(Constants.BYGGR_HANDELSETYP_ANMALAN, handelse.getHandelsetyp());
+        assertEquals(HANDELSETYP_ANMALAN, handelse.getHandelsetyp());
         assertEquals(Constants.BYGGR_HANDELSESLAG_ELDSTAD, handelse.getHandelseslag());
     }
     
     // ANMALAN_ELDSTAD_SMOKE
     @Test
-    void testPostEldstadRokkanal() throws ApplicationException {
+    void testPostEldstadRokkanal() {
         
         PlanningPermissionCaseDTO input = TestUtil.createPlanningPermissionCaseDTO(CaseType.ANMALAN_ELDSTAD,
             AttachmentCategory.ANS);
@@ -509,7 +530,7 @@ class ByggrServiceTest {
         assertEquals(Constants.BYGGR_SYSTEM_HANDLAGGARE_SIGN, saveNewArendeMessage.getHandlaggarSign());
         
         // Arende
-        assertEquals(Constants.BYGGR_HANDELSETYP_ANMALAN, arende.getArendetyp());
+        assertEquals(HANDELSETYP_ANMALAN, arende.getArendetyp());
         assertEquals(inputFacility.getFacilityType().getValue(), arende.getArendeslag());
         assertNull(arende.getArendeklass());
         assertEquals(Constants.BYGGR_ARENDEGRUPP_LOV_ANMALNINGSARENDE, arende.getArendegrupp());
@@ -548,12 +569,12 @@ class ByggrServiceTest {
         assertNotNull(handelse.getStartDatum());
         assertEquals(Constants.BYGGR_HANDELSE_RIKTNING_IN, handelse.getRiktning());
         assertEquals(Constants.BYGGR_HANDELSE_RUBRIK_ELDSTAD_ROKKANAL, handelse.getRubrik());
-        assertEquals(Constants.BYGGR_HANDELSETYP_ANMALAN, handelse.getHandelsetyp());
+        assertEquals(HANDELSETYP_ANMALAN, handelse.getHandelsetyp());
         assertEquals(Constants.BYGGR_HANDELSESLAG_ELDSTAD_ROKKANAL, handelse.getHandelseslag());
     }
     
     @Test
-    void testCallToCaseMapping() throws ApplicationException {
+    void testCallToCaseMapping() {
         PlanningPermissionCaseDTO input = TestUtil.createPlanningPermissionCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.ANS);
         input.getExtraParameters().put(Constants.SERVICE_NAME, "Test service name");
         PersonDTO applicant = (PersonDTO) TestUtil.createStakeholder(StakeholderType.PERSON, List.of(StakeholderRole.APPLICANT));
@@ -572,7 +593,7 @@ class ByggrServiceTest {
     
     // Test no duplicates of arendefastighet
     @Test
-    void testNoDuplicateFacilities() throws ApplicationException {
+    void testNoDuplicateFacilities() {
         PlanningPermissionCaseDTO input = TestUtil.createPlanningPermissionCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.ANS);
         
         String propertyDesignation = "Sundsvall test 123:123";
@@ -598,7 +619,7 @@ class ByggrServiceTest {
     
     // Test getMainOrTheOnlyFacility
     @Test
-    void testGetMainOrTheOnlyFacility() throws ApplicationException {
+    void testGetMainOrTheOnlyFacility() {
         PlanningPermissionCaseDTO input = TestUtil.createPlanningPermissionCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.ANS);
         // Set addressCategory to not be INVOICE_ADDRESS, so we can test projektnr to be propertyDesignation
         input.getStakeholders().get(0).getAddresses().get(0).setAddressCategories(List.of(AddressCategory.POSTAL_ADDRESS));
@@ -644,7 +665,7 @@ class ByggrServiceTest {
     }
     
     @Test
-    void testSetPersonFields() throws ApplicationException {
+    void testSetPersonFields() {
         PlanningPermissionCaseDTO input = TestUtil.createPlanningPermissionCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.ANS);
         PersonDTO applicant = (PersonDTO) TestUtil.createStakeholder(StakeholderType.PERSON, List.of(StakeholderRole.APPLICANT));
         input.setStakeholders(List.of(applicant));
@@ -664,7 +685,7 @@ class ByggrServiceTest {
     }
     
     @Test
-    void testSetOrganisationFields() throws ApplicationException {
+    void testSetOrganisationFields() {
         PlanningPermissionCaseDTO input = TestUtil.createPlanningPermissionCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.ANS);
         OrganizationDTO applicant = (OrganizationDTO) TestUtil.createStakeholder(StakeholderType.ORGANIZATION, List.of(StakeholderRole.APPLICANT));
         input.setStakeholders(List.of(applicant));
@@ -685,7 +706,7 @@ class ByggrServiceTest {
     
     // 1 applicant and 1 propertyOwner
     @Test
-    void testPopulateStakeholderListWithPropertyOwners_1() throws ApplicationException {
+    void testPopulateStakeholderListWithPropertyOwners_1() {
         PlanningPermissionCaseDTO input = TestUtil.createPlanningPermissionCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.ANS);
         PersonDTO applicant = (PersonDTO) TestUtil.createStakeholder(StakeholderType.PERSON, List.of(StakeholderRole.APPLICANT));
         PersonDTO propertyOwner = (PersonDTO) TestUtil.createStakeholder(StakeholderType.PERSON, List.of(StakeholderRole.PROPERTY_OWNER));
@@ -716,7 +737,7 @@ class ByggrServiceTest {
     
     // same as testPopulateStakeholderListWithPropertyOwners_1 but for organization
     @Test
-    void testPopulateStakeholderListWithPropertyOwners_1_1() throws ApplicationException {
+    void testPopulateStakeholderListWithPropertyOwners_1_1() {
         PlanningPermissionCaseDTO input = TestUtil.createPlanningPermissionCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.ANS);
         OrganizationDTO applicant = (OrganizationDTO) TestUtil.createStakeholder(StakeholderType.ORGANIZATION, List.of(StakeholderRole.APPLICANT));
         OrganizationDTO propertyOwner = (OrganizationDTO) TestUtil.createStakeholder(StakeholderType.ORGANIZATION, List.of(StakeholderRole.PROPERTY_OWNER));
@@ -747,7 +768,7 @@ class ByggrServiceTest {
     
     // 1 applicant that is also propertyOwner + 1 more propertyOwner
     @Test
-    void testPopulateStakeholderListWithPropertyOwners_2() throws ApplicationException {
+    void testPopulateStakeholderListWithPropertyOwners_2() {
         PlanningPermissionCaseDTO input = TestUtil.createPlanningPermissionCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.ANS);
         PersonDTO applicant = (PersonDTO) TestUtil.createStakeholder(StakeholderType.PERSON, List.of(StakeholderRole.APPLICANT));
         input.setStakeholders(List.of(applicant));
@@ -775,7 +796,7 @@ class ByggrServiceTest {
     
     // Case does not contain PropertyOwner
     @Test
-    void testContainsPropertyOwner() throws ApplicationException {
+    void testContainsPropertyOwner() {
         PlanningPermissionCaseDTO input = TestUtil.createPlanningPermissionCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.ANS);
         PersonDTO applicant = (PersonDTO) TestUtil.createStakeholder(StakeholderType.PERSON, List.of(StakeholderRole.APPLICANT));
         input.setStakeholders(List.of(applicant));
@@ -806,7 +827,7 @@ class ByggrServiceTest {
     }
     
     @Test
-    void testControlOfficial() throws ApplicationException {
+    void testControlOfficial() {
         PlanningPermissionCaseDTO input = TestUtil.createPlanningPermissionCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.ANS);
         PersonDTO controlOfficial = (PersonDTO) TestUtil.createStakeholder(StakeholderType.PERSON, List.of(StakeholderRole.CONTROL_OFFICIAL));
         PersonDTO applicant = (PersonDTO) TestUtil.createStakeholder(StakeholderType.PERSON, List.of(StakeholderRole.APPLICANT));
@@ -838,7 +859,7 @@ class ByggrServiceTest {
     
     // Test two persons with same personId - should generate handelse
     @Test
-    void testDoublePersonId() throws ApplicationException {
+    void testDoublePersonId() {
         String personId = UUID.randomUUID().toString();
         PlanningPermissionCaseDTO input = TestUtil.createPlanningPermissionCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.ANS);
         PersonDTO paymentPerson = (PersonDTO) TestUtil.createStakeholder(StakeholderType.PERSON, List.of(StakeholderRole.PAYMENT_PERSON));

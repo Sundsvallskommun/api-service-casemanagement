@@ -1,24 +1,28 @@
 package se.sundsvall.casemanagement;
 
-import arendeexport.SaveNewArendeResponse;
-import arendeexport.SaveNewArendeResponse2;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.lenient;
+
+import java.text.MessageFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
+
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import minutmiljo.CreateFoodFacilityResponse;
-import minutmiljo.CreateHealthProtectionFacilityResponse;
-import minutmiljo.CreateHeatPumpFacilityResponse;
-import minutmiljo.CreateIndividualSewageFacilityResponse;
-import minutmiljo.CreateOrganizationPartyResponse;
-import minutmiljo.CreatePersonPartyResponse;
-import minutmiljo.SearchPartyResponse;
-import minutmiljoV2.RegisterDocumentCaseResultSvcDto;
-import minutmiljoV2.RegisterDocumentResponse;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 import se.sundsvall.casemanagement.api.model.AddressDTO;
 import se.sundsvall.casemanagement.api.model.AttachmentDTO;
 import se.sundsvall.casemanagement.api.model.CoordinatesDTO;
@@ -36,46 +40,40 @@ import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.api.model.enums.FacilityType;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderType;
-import se.sundsvall.casemanagement.integration.soap.arendeexport.ArendeExportClient;
-import se.sundsvall.casemanagement.integration.db.CaseMappingRepository;
+import se.sundsvall.casemanagement.integration.byggr.ArendeExportClient;
+import se.sundsvall.casemanagement.integration.db.model.CaseTypeData;
+import se.sundsvall.casemanagement.integration.ecos.MinutMiljoClient;
+import se.sundsvall.casemanagement.integration.ecos.MinutMiljoClientV2;
 import se.sundsvall.casemanagement.integration.rest.fb.FbClient;
 import se.sundsvall.casemanagement.integration.rest.fb.model.DataItem;
 import se.sundsvall.casemanagement.integration.rest.fb.model.FbPropertyInfo;
 import se.sundsvall.casemanagement.integration.rest.fb.model.GruppItem;
 import se.sundsvall.casemanagement.integration.rest.fb.model.ResponseDto;
-import se.sundsvall.casemanagement.integration.soap.minutmiljo.MinutMiljoClient;
-import se.sundsvall.casemanagement.integration.soap.minutmiljo.MinutMiljoClientV2;
 import se.sundsvall.casemanagement.service.CitizenMappingService;
 import se.sundsvall.casemanagement.service.FbService;
-import se.sundsvall.casemanagement.service.util.Constants;
 import se.sundsvall.casemanagement.testutils.TestConstants;
+import se.sundsvall.casemanagement.util.Constants;
 
-import java.text.MessageFormat;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.lenient;
+import arendeexport.SaveNewArendeResponse;
+import arendeexport.SaveNewArendeResponse2;
+import minutmiljo.CreateFoodFacilityResponse;
+import minutmiljo.CreateHealthProtectionFacilityResponse;
+import minutmiljo.CreateHeatPumpFacilityResponse;
+import minutmiljo.CreateIndividualSewageFacilityResponse;
+import minutmiljo.CreateOrganizationPartyResponse;
+import minutmiljo.CreatePersonPartyResponse;
+import minutmiljo.SearchPartyResponse;
+import minutmiljoV2.RegisterDocumentCaseResultSvcDto;
+import minutmiljoV2.RegisterDocumentResponse;
 
 @Component
 public class TestUtil {
 
     public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
-            .enable(SerializationFeature.INDENT_OUTPUT)
-            .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-            .configure(DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE, false)
-            .registerModule(new JavaTimeModule());
-
-    @Autowired
-    private CaseMappingRepository caseMappingRepository;
+        .enable(SerializationFeature.INDENT_OUTPUT)
+        .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+        .configure(DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE, false)
+        .registerModule(new JavaTimeModule());
 
     public static void mockFbPropertyOwners(FbClient fbClientMock, List<StakeholderDTO> propertyOwners) {
         ResponseDto lagfarenAgareResponse = new ResponseDto();
@@ -127,6 +125,7 @@ public class TestUtil {
         List<AttachmentDTO> aList = new ArrayList<>();
         aList.add(createAttachmentDTO(attachmentCategory));
         eCase.setAttachments(aList);
+        eCase.setStartDate(LocalDate.now());
 
         List<StakeholderDTO> sList = new ArrayList<>();
         sList.add(createStakeholder(StakeholderType.ORGANIZATION, List.of(StakeholderRole.APPLICANT, StakeholderRole.OPERATOR)));
@@ -138,11 +137,11 @@ public class TestUtil {
         eCase.setFacilities(List.of(createEnvironmentalFacilityDTO(caseType)));
 
         eCase.setCaseType(caseType);
-        eCase.setCaseTitleAddition(RandomStringUtils.random(10, true, false));
+        eCase.setCaseTitleAddition("Some case title addition");
         eCase.setDescription(RandomStringUtils.random(10, true, false));
         eCase.setStartDate(LocalDate.now().plusDays(10));
         eCase.setEndDate(LocalDate.now().plusDays(365));
-        eCase.setExternalCaseId(String.valueOf(new Random().nextLong()));
+        eCase.setExternalCaseId(String.valueOf(new Random().nextInt()));
         eCase.setExtraParameters(createExtraParameters());
 
         return eCase;
@@ -168,7 +167,8 @@ public class TestUtil {
         facility.setAddress(addressDTO);
         facility.setDescription(RandomStringUtils.random(10, true, false));
         facility.setExtraParameters(switch (caseType) {
-            case ANSOKAN_TILLSTAND_VARMEPUMP, ANMALAN_INSTALLATION_VARMEPUMP -> getHeatPumpExtraParams();
+            case ANSOKAN_TILLSTAND_VARMEPUMP, ANMALAN_INSTALLATION_VARMEPUMP ->
+                getHeatPumpExtraParams();
             default -> createExtraParameters();
         });
         return facility;
@@ -206,6 +206,19 @@ public class TestUtil {
         addressDTO.setPropertyDesignation(TestConstants.PROPERTY_DESIGNATION_BALDER);
         facility.setAddress(addressDTO);
         facility.setFacilityType(FacilityType.ONE_FAMILY_HOUSE);
+        facility.setDescription(RandomStringUtils.random(10, true, false));
+        facility.setExtraParameters(createExtraParameters());
+        facility.setMainFacility(mainFacility);
+        return facility;
+    }
+
+    public static PlanningPermissionFacilityDTO createAttefallFacilityDTO(boolean mainFacility) {
+        PlanningPermissionFacilityDTO facility = new PlanningPermissionFacilityDTO();
+        AddressDTO addressDTO = new AddressDTO();
+        addressDTO.setAddressCategories(List.of(AddressCategory.VISITING_ADDRESS));
+        addressDTO.setPropertyDesignation(TestConstants.PROPERTY_DESIGNATION_BALDER);
+        facility.setAddress(addressDTO);
+        facility.setFacilityType(FacilityType.ANCILLARY_BUILDING);
         facility.setDescription(RandomStringUtils.random(10, true, false));
         facility.setExtraParameters(createExtraParameters());
         facility.setMainFacility(mainFacility);
@@ -297,8 +310,6 @@ public class TestUtil {
     public static String generateRandomPersonalNumber() {
         return "199901" + new Random().nextInt(3) + (new Random().nextInt(9) + 1) + (new Random().nextInt(9999 - 1111) + 1111);
     }
-
-
 
 
     public static void standardMockMinutMiljo(MinutMiljoClient mock, MinutMiljoClientV2 mockV2) {
@@ -421,5 +432,121 @@ public class TestUtil {
 
     public static <E extends Enum<E>> Enum<?> getRandomOfEnum(Class<E> enumClass) {
         return Arrays.stream(enumClass.getEnumConstants()).toList().get(new Random().nextInt(enumClass.getEnumConstants().length));
+    }
+
+
+    public static List<CaseTypeData> setUpCaseTypes() {
+        var caseTypeDataList = new ArrayList<CaseTypeData>();
+        caseTypeDataList.add(CaseTypeData.builder()
+            .withValue("ANDRING_ANSOKAN_OM_BYGGLOV")
+            .withArendeTyp("BL")
+            .withArendeSlag(null)
+            .withHandelseTyp("ANSÖKAN")
+            .withArendeMening("Bygglov för")
+            .withHandelseRubrik("Bygglov")
+            .withHandelseSlag("Bygglov")
+            .withArendeGrupp("LOV")
+            .build());
+        caseTypeDataList.add(CaseTypeData.builder()
+            .withValue("ANMALAN_ATTEFALL")
+            .withArendeTyp("ATTANM")
+            .withArendeSlag(null)
+            .withHandelseTyp("ANM")
+            .withArendeMening(null)
+            .withHandelseRubrik("Anmälan Attefall")
+            .withHandelseSlag("ANMATT")
+            .withArendeGrupp("LOV")
+            .build());
+        caseTypeDataList.add(CaseTypeData.builder()
+            .withValue("ANMALAN_ELDSTAD")
+            .withArendeTyp("ANM")
+            .withArendeSlag(null)
+            .withHandelseTyp("ANM")
+            .withArendeMening(null)
+            .withHandelseRubrik(null)
+            .withHandelseSlag(null)
+            .withArendeGrupp("LOV")
+            .build());
+        caseTypeDataList.add(CaseTypeData.builder()
+            .withValue("NYBYGGNAD_ANSOKAN_OM_BYGGLOV")
+            .withArendeTyp("BL")
+            .withArendeSlag("A")
+            .withHandelseTyp("ANSÖKAN")
+            .withArendeMening("Bygglov för nybyggnad av")
+            .withHandelseRubrik("Bygglov")
+            .withHandelseSlag("Bygglov")
+            .withArendeGrupp("LOV")
+            .build());
+        caseTypeDataList.add(CaseTypeData.builder()
+            .withValue("NYBYGGNAD_FORHANDSBESKED")
+            .withArendeTyp("FÖRF")
+            .withArendeSlag("A")
+            .withHandelseTyp("ANSÖKAN")
+            .withArendeMening("Förhandsbesked för nybyggnad av")
+            .withHandelseRubrik("Förhandsbesked")
+            .withHandelseSlag("Förhand")
+            .withArendeGrupp("LOV")
+            .build());
+        caseTypeDataList.add(CaseTypeData.builder()
+            .withValue("STRANDSKYDD_ANDRAD_ANVANDNING")
+            .withArendeTyp("DI")
+            .withArendeSlag("ÄNDR")
+            .withHandelseTyp("ANSÖKAN")
+            .withArendeMening("Strandskyddsdispens för ändrad användning av")
+            .withHandelseRubrik("Strandskyddsdispens")
+            .withHandelseSlag("Strand")
+            .withArendeGrupp("STRA")
+            .build());
+        caseTypeDataList.add(CaseTypeData.builder()
+            .withValue("STRANDSKYDD_ANLAGGANDE")
+            .withArendeTyp("DI")
+            .withArendeSlag("A1")
+            .withHandelseTyp("ANSÖKAN")
+            .withArendeMening("Strandskyddsdispens för anläggande av")
+            .withHandelseRubrik("Strandskyddsdispens")
+            .withHandelseSlag("Strand")
+            .withArendeGrupp("STRA")
+            .build());
+        caseTypeDataList.add(CaseTypeData.builder()
+            .withValue("STRANDSKYDD_ANORDNANDE")
+            .withArendeTyp("DI")
+            .withArendeSlag("AO")
+            .withHandelseTyp("ANSÖKAN")
+            .withArendeMening("Strandskyddsdispens för anordnare av")
+            .withHandelseRubrik("Strandskyddsdispens")
+            .withHandelseSlag("Strand")
+            .withArendeGrupp("STRA")
+            .build());
+        caseTypeDataList.add(CaseTypeData.builder()
+            .withValue("STRANDSKYDD_NYBYGGNAD")
+            .withArendeTyp("DI")
+            .withArendeSlag("NYB")
+            .withHandelseTyp("ANSÖKAN")
+            .withArendeMening("Strandskyddsdispens för nybyggnad av")
+            .withHandelseRubrik("Strandskyddsdispens")
+            .withHandelseSlag("Strand")
+            .withArendeGrupp("STRA")
+            .build());
+        caseTypeDataList.add(CaseTypeData.builder()
+            .withValue("TILLBYGGNAD_ANSOKAN_OM_BYGGLOV")
+            .withArendeTyp("BL")
+            .withArendeSlag("B")
+            .withHandelseTyp("ANSÖKAN")
+            .withArendeMening("Bygglov för tillbyggnad av")
+            .withHandelseRubrik("Bygglov")
+            .withHandelseSlag("Bygglov")
+            .withArendeGrupp("LOV")
+            .build());
+        caseTypeDataList.add(CaseTypeData.builder()
+            .withValue("UPPSATTANDE_SKYLT")
+            .withArendeTyp("BL")
+            .withArendeSlag("L")
+            .withHandelseTyp("ANSÖKAN")
+            .withArendeMening("Bygglov för uppsättande av ")
+            .withHandelseRubrik("Bygglov")
+            .withHandelseSlag("Bygglov")
+            .withArendeGrupp("LOV")
+            .build());
+        return caseTypeDataList;
     }
 }

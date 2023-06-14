@@ -7,18 +7,26 @@
       "name": "MIT License",
       "url": "https://opensource.org/licenses/MIT"
     },
-    "version": "1.0"
+    "version": "1.3"
   },
   "servers": [
     {
-      "url": "http://localhost:8080",
+      "url": "https://microservices-test.sundsvall.se/case-data",
       "description": "Generated server url"
     }
   ],
   "tags": [
     {
+      "name": "MessageAttachments",
+      "description": "MessageAttachment operations"
+    },
+    {
       "name": "Notes",
       "description": "Note operations"
+    },
+    {
+      "name": "Messages",
+      "description": "Message operations"
     },
     {
       "name": "History",
@@ -78,6 +86,16 @@
           "204": {
             "description": "No content - Successful operation"
           },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Bad request",
             "content": {
@@ -91,16 +109,6 @@
                       "$ref": "#/components/schemas/ConstraintViolationProblem"
                     }
                   ]
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
                 }
               }
             }
@@ -148,6 +156,16 @@
           "204": {
             "description": "No content - Successful operation"
           },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Bad request",
             "content": {
@@ -161,16 +179,6 @@
                       "$ref": "#/components/schemas/ConstraintViolationProblem"
                     }
                   ]
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
                 }
               }
             }
@@ -223,6 +231,16 @@
           "204": {
             "description": "No content - Successful operation"
           },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Bad request",
             "content": {
@@ -236,16 +254,6 @@
                       "$ref": "#/components/schemas/ConstraintViolationProblem"
                     }
                   ]
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
                 }
               }
             }
@@ -293,6 +301,16 @@
           "204": {
             "description": "No content - Successful operation"
           },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Bad request",
             "content": {
@@ -306,16 +324,6 @@
                       "$ref": "#/components/schemas/ConstraintViolationProblem"
                     }
                   ]
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
                 }
               }
             }
@@ -368,6 +376,16 @@
           "204": {
             "description": "No content - Successful operation"
           },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Bad request",
             "content": {
@@ -381,16 +399,6 @@
                       "$ref": "#/components/schemas/ConstraintViolationProblem"
                     }
                   ]
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
                 }
               }
             }
@@ -444,6 +452,16 @@
               }
             }
           },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Bad request",
             "content": {
@@ -457,16 +475,6 @@
                       "$ref": "#/components/schemas/ConstraintViolationProblem"
                     }
                   ]
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
                 }
               }
             }
@@ -519,6 +527,16 @@
           "204": {
             "description": "No content - Successful operation"
           },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Bad request",
             "content": {
@@ -532,16 +550,6 @@
                       "$ref": "#/components/schemas/ConstraintViolationProblem"
                     }
                   ]
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
                 }
               }
             }
@@ -595,6 +603,16 @@
               }
             }
           },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Bad request",
             "content": {
@@ -608,16 +626,6 @@
                       "$ref": "#/components/schemas/ConstraintViolationProblem"
                     }
                   ]
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
                 }
               }
             }
@@ -667,6 +675,16 @@
           "204": {
             "description": "No content - Successful operation"
           },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Bad request",
             "content": {
@@ -680,16 +698,6 @@
                       "$ref": "#/components/schemas/ConstraintViolationProblem"
                     }
                   ]
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
                 }
               }
             }
@@ -737,6 +745,16 @@
           "204": {
             "description": "No content - Successful operation"
           },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Bad request",
             "content": {
@@ -750,16 +768,6 @@
                       "$ref": "#/components/schemas/ConstraintViolationProblem"
                     }
                   ]
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
                 }
               }
             }
@@ -809,6 +817,16 @@
           "204": {
             "description": "No content - Successful operation"
           },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Bad request",
             "content": {
@@ -822,16 +840,6 @@
                       "$ref": "#/components/schemas/ConstraintViolationProblem"
                     }
                   ]
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
                 }
               }
             }
@@ -878,6 +886,16 @@
           "204": {
             "description": "No content - Successful operation"
           },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Bad request",
             "content": {
@@ -895,12 +913,53 @@
               }
             }
           },
-          "404": {
-            "description": "Not found",
+          "500": {
+            "description": "Internal Server error",
             "content": {
               "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/messages": {
+      "post": {
+        "tags": [
+          "Messages"
+        ],
+        "description": "Save a message.",
+        "operationId": "patchErrandWithMessage",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MessageRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "No content - Successful operation"
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/Problem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ConstraintViolationProblem"
+                    }
+                  ]
                 }
               }
             }
@@ -981,17 +1040,12 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK - Successful operation",
+          "404": {
+            "description": "Not found",
             "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PageErrandDTO"
-                }
-              },
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PageErrandDTO"
+                  "$ref": "#/components/schemas/Problem"
                 }
               }
             }
@@ -1013,12 +1067,17 @@
               }
             }
           },
-          "404": {
-            "description": "Not found",
+          "200": {
+            "description": "OK - Successful operation",
             "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageErrandDTO"
+                }
+              },
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Problem"
+                  "$ref": "#/components/schemas/PageErrandDTO"
                 }
               }
             }
@@ -1061,6 +1120,16 @@
               }
             }
           },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Bad request",
             "content": {
@@ -1074,16 +1143,6 @@
                       "$ref": "#/components/schemas/ConstraintViolationProblem"
                     }
                   ]
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
                 }
               }
             }
@@ -1133,6 +1192,16 @@
           "204": {
             "description": "No content - Successful operation"
           },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Bad request",
             "content": {
@@ -1146,16 +1215,6 @@
                       "$ref": "#/components/schemas/ConstraintViolationProblem"
                     }
                   ]
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
                 }
               }
             }
@@ -1192,17 +1251,12 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK - Successful operation",
+          "404": {
+            "description": "Not found",
             "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrandDTO"
-                }
-              },
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrandDTO"
+                  "$ref": "#/components/schemas/Problem"
                 }
               }
             }
@@ -1224,12 +1278,17 @@
               }
             }
           },
-          "404": {
-            "description": "Not found",
+          "200": {
+            "description": "OK - Successful operation",
             "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrandDTO"
+                }
+              },
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Problem"
+                  "$ref": "#/components/schemas/ErrandDTO"
                 }
               }
             }
@@ -1277,6 +1336,16 @@
           "204": {
             "description": "No content - Successful operation"
           },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Bad request",
             "content": {
@@ -1290,16 +1359,6 @@
                       "$ref": "#/components/schemas/ConstraintViolationProblem"
                     }
                   ]
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
                 }
               }
             }
@@ -1355,82 +1414,12 @@
               }
             }
           },
-          "400": {
-            "description": "Bad request",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/Problem"
-                    },
-                    {
-                      "$ref": "#/components/schemas/ConstraintViolationProblem"
-                    }
-                  ]
-                }
-              }
-            }
-          },
           "404": {
             "description": "Not found",
             "content": {
               "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/Problem"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server error",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/errands/{id}/message-ids": {
-      "get": {
-        "tags": [
-          "Errands"
-        ],
-        "description": "Get all messages on an errand.",
-        "operationId": "getMessagesOnErrand",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK - Successful operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MessageDTO"
-                  }
-                }
-              },
-              "application/problem+json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MessageDTO"
-                  }
                 }
               }
             }
@@ -1448,97 +1437,6 @@
                       "$ref": "#/components/schemas/ConstraintViolationProblem"
                     }
                   ]
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server error",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            }
-          }
-        }
-      },
-      "patch": {
-        "tags": [
-          "Errands"
-        ],
-        "description": "Add messageIds to errand.",
-        "operationId": "patchErrandWithMessage",
-        "parameters": [
-          {
-            "name": "sentbyuser",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "204": {
-            "description": "No content - Successful operation"
-          },
-          "400": {
-            "description": "Bad request",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/Problem"
-                    },
-                    {
-                      "$ref": "#/components/schemas/ConstraintViolationProblem"
-                    }
-                  ]
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
                 }
               }
             }
@@ -1575,23 +1473,12 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK - Successful operation",
+          "404": {
+            "description": "Not found",
             "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/DecisionDTO"
-                  }
-                }
-              },
               "application/problem+json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/DecisionDTO"
-                  }
+                  "$ref": "#/components/schemas/Problem"
                 }
               }
             }
@@ -1613,12 +1500,23 @@
               }
             }
           },
-          "404": {
-            "description": "Not found",
+          "200": {
+            "description": "OK - Successful operation",
             "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DecisionDTO"
+                  }
+                }
+              },
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Problem"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DecisionDTO"
+                  }
                 }
               }
             }
@@ -1672,6 +1570,16 @@
               }
             }
           },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Bad request",
             "content": {
@@ -1685,16 +1593,6 @@
                       "$ref": "#/components/schemas/ConstraintViolationProblem"
                     }
                   ]
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
                 }
               }
             }
@@ -1764,6 +1662,16 @@
               }
             }
           },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Bad request",
             "content": {
@@ -1777,16 +1685,6 @@
                       "$ref": "#/components/schemas/ConstraintViolationProblem"
                     }
                   ]
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
                 }
               }
             }
@@ -1823,17 +1721,12 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK - Successful operation",
+          "404": {
+            "description": "Not found",
             "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/StakeholderDTO"
-                }
-              },
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/StakeholderDTO"
+                  "$ref": "#/components/schemas/Problem"
                 }
               }
             }
@@ -1855,12 +1748,17 @@
               }
             }
           },
-          "404": {
-            "description": "Not found",
+          "200": {
+            "description": "OK - Successful operation",
             "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StakeholderDTO"
+                }
+              },
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Problem"
+                  "$ref": "#/components/schemas/StakeholderDTO"
                 }
               }
             }
@@ -1910,6 +1808,16 @@
               }
             }
           },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Bad request",
             "content": {
@@ -1923,16 +1831,6 @@
                       "$ref": "#/components/schemas/ConstraintViolationProblem"
                     }
                   ]
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
                 }
               }
             }
@@ -1969,23 +1867,12 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK - Successful operation",
+          "404": {
+            "description": "Not found",
             "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/GetParkingPermitDTO"
-                  }
-                }
-              },
               "application/problem+json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/GetParkingPermitDTO"
-                  }
+                  "$ref": "#/components/schemas/Problem"
                 }
               }
             }
@@ -2007,12 +1894,23 @@
               }
             }
           },
-          "404": {
-            "description": "Not found",
+          "200": {
+            "description": "OK - Successful operation",
             "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GetParkingPermitDTO"
+                  }
+                }
+              },
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Problem"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GetParkingPermitDTO"
+                  }
                 }
               }
             }
@@ -2049,17 +1947,12 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK - Successful operation",
+          "404": {
+            "description": "Not found",
             "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/NoteDTO"
-                }
-              },
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/NoteDTO"
+                  "$ref": "#/components/schemas/Problem"
                 }
               }
             }
@@ -2081,12 +1974,17 @@
               }
             }
           },
-          "404": {
-            "description": "Not found",
+          "200": {
+            "description": "OK - Successful operation",
             "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NoteDTO"
+                }
+              },
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Problem"
+                  "$ref": "#/components/schemas/NoteDTO"
                 }
               }
             }
@@ -2136,6 +2034,16 @@
               }
             }
           },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Bad request",
             "content": {
@@ -2153,12 +2061,134 @@
               }
             }
           },
-          "404": {
-            "description": "Not found",
+          "500": {
+            "description": "Internal Server error",
             "content": {
               "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/messages/{errandNumber}": {
+      "get": {
+        "tags": [
+          "Messages"
+        ],
+        "description": "Get all messages for an errand.",
+        "operationId": "getMessagesOnErrand",
+        "parameters": [
+          {
+            "name": "errandNumber",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/Problem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ConstraintViolationProblem"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK - Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MessageResponse"
+                  }
+                }
+              },
+              "application/problem+json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MessageResponse"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/messageattachments/{attachmentID}": {
+      "get": {
+        "tags": [
+          "MessageAttachments"
+        ],
+        "description": "Get a messageAttachment.",
+        "operationId": "getMessagesOnErrand_1",
+        "parameters": [
+          {
+            "name": "attachmentID",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/Problem"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ConstraintViolationProblem"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK - Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageAttachmentDTO"
+                }
+              },
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageAttachmentDTO"
                 }
               }
             }
@@ -2208,6 +2238,16 @@
               }
             }
           },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Bad request",
             "content": {
@@ -2221,16 +2261,6 @@
                       "$ref": "#/components/schemas/ConstraintViolationProblem"
                     }
                   ]
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
                 }
               }
             }
@@ -2280,6 +2310,16 @@
               }
             }
           },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Bad request",
             "content": {
@@ -2293,16 +2333,6 @@
                       "$ref": "#/components/schemas/ConstraintViolationProblem"
                     }
                   ]
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
                 }
               }
             }
@@ -2339,17 +2369,12 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK - Successful operation",
+          "404": {
+            "description": "Not found",
             "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DecisionDTO"
-                }
-              },
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DecisionDTO"
+                  "$ref": "#/components/schemas/Problem"
                 }
               }
             }
@@ -2371,12 +2396,17 @@
               }
             }
           },
-          "404": {
-            "description": "Not found",
+          "200": {
+            "description": "OK - Successful operation",
             "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DecisionDTO"
+                }
+              },
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Problem"
+                  "$ref": "#/components/schemas/DecisionDTO"
                 }
               }
             }
@@ -2426,6 +2456,16 @@
               }
             }
           },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Bad request",
             "content": {
@@ -2439,16 +2479,6 @@
                       "$ref": "#/components/schemas/ConstraintViolationProblem"
                     }
                   ]
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
                 }
               }
             }
@@ -2485,17 +2515,12 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK - Successful operation",
+          "404": {
+            "description": "Not found",
             "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AttachmentDTO"
-                }
-              },
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AttachmentDTO"
+                  "$ref": "#/components/schemas/Problem"
                 }
               }
             }
@@ -2517,12 +2542,17 @@
               }
             }
           },
-          "404": {
-            "description": "Not found",
+          "200": {
+            "description": "OK - Successful operation",
             "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttachmentDTO"
+                }
+              },
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Problem"
+                  "$ref": "#/components/schemas/AttachmentDTO"
                 }
               }
             }
@@ -2572,6 +2602,16 @@
               }
             }
           },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Bad request",
             "content": {
@@ -2585,16 +2625,6 @@
                       "$ref": "#/components/schemas/ConstraintViolationProblem"
                     }
                   ]
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
                 }
               }
             }
@@ -2667,6 +2697,16 @@
           "204": {
             "description": "No content - Successful operation"
           },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Bad request",
             "content": {
@@ -2680,16 +2720,6 @@
                       "$ref": "#/components/schemas/ConstraintViolationProblem"
                     }
                   ]
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
                 }
               }
             }
@@ -2738,6 +2768,16 @@
           "204": {
             "description": "No content - Successful operation"
           },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Bad request",
             "content": {
@@ -2751,16 +2791,6 @@
                       "$ref": "#/components/schemas/ConstraintViolationProblem"
                     }
                   ]
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
                 }
               }
             }
@@ -2809,6 +2839,16 @@
           "204": {
             "description": "No content - Successful operation"
           },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Bad request",
             "content": {
@@ -2822,16 +2862,6 @@
                       "$ref": "#/components/schemas/ConstraintViolationProblem"
                     }
                   ]
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
                 }
               }
             }
@@ -2880,6 +2910,16 @@
           "204": {
             "description": "No content - Successful operation"
           },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Bad request",
             "content": {
@@ -2893,16 +2933,6 @@
                       "$ref": "#/components/schemas/ConstraintViolationProblem"
                     }
                   ]
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
                 }
               }
             }
@@ -3228,11 +3258,11 @@
                   "type": "integer",
                   "format": "int32"
                 },
-                "nativeMethod": {
-                  "type": "boolean"
-                },
                 "className": {
                   "type": "string"
+                },
+                "nativeMethod": {
+                  "type": "boolean"
                 }
               }
             }
@@ -3301,11 +3331,11 @@
                             "type": "integer",
                             "format": "int32"
                           },
-                          "nativeMethod": {
-                            "type": "boolean"
-                          },
                           "className": {
                             "type": "string"
+                          },
+                          "nativeMethod": {
+                            "type": "boolean"
                           }
                         }
                       }
@@ -3342,11 +3372,11 @@
                         "type": "integer",
                         "format": "int32"
                       },
-                      "nativeMethod": {
-                        "type": "boolean"
-                      },
                       "className": {
                         "type": "string"
+                      },
+                      "nativeMethod": {
+                        "type": "boolean"
                       }
                     }
                   }
@@ -3395,11 +3425,11 @@
                   "type": "integer",
                   "format": "int32"
                 },
-                "nativeMethod": {
-                  "type": "boolean"
-                },
                 "className": {
                   "type": "string"
+                },
+                "nativeMethod": {
+                  "type": "boolean"
                 }
               }
             }
@@ -3462,11 +3492,11 @@
                             "type": "integer",
                             "format": "int32"
                           },
-                          "nativeMethod": {
-                            "type": "boolean"
-                          },
                           "className": {
                             "type": "string"
+                          },
+                          "nativeMethod": {
+                            "type": "boolean"
                           }
                         }
                       }
@@ -3503,11 +3533,11 @@
                         "type": "integer",
                         "format": "int32"
                       },
-                      "nativeMethod": {
-                        "type": "boolean"
-                      },
                       "className": {
                         "type": "string"
+                      },
+                      "nativeMethod": {
+                        "type": "boolean"
                       }
                     }
                   }
@@ -4010,6 +4040,112 @@
           }
         }
       },
+      "MessageAttachment": {
+        "required": [
+          "content",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "description": "The attachment (file) content as a BASE64-encoded string",
+            "example": "aGVsbG8gd29ybGQK"
+          },
+          "name": {
+            "type": "string",
+            "description": "The attachment filename",
+            "example": "test.txt"
+          },
+          "contentType": {
+            "type": "string",
+            "description": "The attachment content type",
+            "example": "text/plain"
+          }
+        },
+        "description": "MessageResponse"
+      },
+      "MessageRequest": {
+        "type": "object",
+        "properties": {
+          "messageID": {
+            "type": "string",
+            "description": "The message ID",
+            "example": "12"
+          },
+          "errandNumber": {
+            "type": "string",
+            "description": "The errand number",
+            "example": "PRH-2022-000001"
+          },
+          "direction": {
+            "type": "string",
+            "description": "If the message is inbound or outbound from the perspective of case-data/e-service.",
+            "example": "INBOUND",
+            "enum": [
+              "INBOUND",
+              "OUTBOUND"
+            ]
+          },
+          "familyID": {
+            "type": "string",
+            "description": "The E-service ID that the message was created in",
+            "example": "12"
+          },
+          "externalCaseID": {
+            "type": "string",
+            "description": "OpenE caseID",
+            "example": "12"
+          },
+          "message": {
+            "type": "string",
+            "description": "The message",
+            "example": "Hello world"
+          },
+          "sent": {
+            "type": "string",
+            "description": "The time the message was sent",
+            "example": "2020-01-01 12:00:00"
+          },
+          "subject": {
+            "type": "string",
+            "description": "The email-subject of the message",
+            "example": "Hello world"
+          },
+          "username": {
+            "type": "string",
+            "description": "The username of the user that sent the message",
+            "example": "username"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "The first name of the user that sent the message",
+            "example": "Kalle"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "The last name of the user that sent the message",
+            "example": "Anka"
+          },
+          "email": {
+            "type": "string",
+            "description": "The email of the user that sent the message",
+            "example": "kalle.anka@ankeborg.se"
+          },
+          "userID": {
+            "type": "string",
+            "description": "The user ID of the user that sent the message",
+            "example": "12"
+          },
+          "attachmentRequests": {
+            "type": "array",
+            "description": "List of attachmentRequests on the message",
+            "items": {
+              "$ref": "#/components/schemas/MessageAttachment"
+            }
+          }
+        }
+      },
       "ErrandDTO": {
         "required": [
           "caseType"
@@ -4170,7 +4306,9 @@
             "description": "Messages connected to this errand. Get message information from Message-API.",
             "readOnly": true,
             "items": {
-              "$ref": "#/components/schemas/MessageDTO"
+              "type": "string",
+              "description": "Messages connected to this errand. Get message information from Message-API.",
+              "readOnly": true
             }
           },
           "createdByClient": {
@@ -4282,19 +4420,6 @@
             }
           }
         }
-      },
-      "MessageDTO": {
-        "type": "object",
-        "properties": {
-          "messageId": {
-            "type": "string"
-          },
-          "adAccount": {
-            "type": "string"
-          }
-        },
-        "description": "Messages connected to this errand. Get message information from Message-API.",
-        "readOnly": true
       },
       "NoteDTO": {
         "type": "object",
@@ -4655,6 +4780,137 @@
           }
         }
       },
+      "AttachmentResponse": {
+        "required": [
+          "attachmentID",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "attachmentID": {
+            "type": "string",
+            "description": "The attachment ID",
+            "example": "aGVsbG8gd29ybGQK"
+          },
+          "name": {
+            "type": "string",
+            "description": "The attachment filename",
+            "example": "test.txt"
+          }
+        },
+        "description": "List of attachments on the message"
+      },
+      "MessageResponse": {
+        "type": "object",
+        "properties": {
+          "messageID": {
+            "type": "string",
+            "description": "The message ID",
+            "example": "12"
+          },
+          "errandNumber": {
+            "type": "string",
+            "description": "The errand number",
+            "example": "PRH-2022-000001"
+          },
+          "direction": {
+            "type": "string",
+            "description": "If the message is inbound or outbound from the perspective of case-data/e-service.",
+            "example": "INBOUND",
+            "enum": [
+              "INBOUND",
+              "OUTBOUND"
+            ]
+          },
+          "familyID": {
+            "type": "string",
+            "description": "The E-service ID that the message was created in",
+            "example": "12"
+          },
+          "externalCaseID": {
+            "type": "string",
+            "description": "OpenE caseID",
+            "example": "12"
+          },
+          "message": {
+            "type": "string",
+            "description": "The message",
+            "example": "Hello world"
+          },
+          "sent": {
+            "type": "string",
+            "description": "The time the message was sent",
+            "example": "2020-01-01 12:00:00"
+          },
+          "subject": {
+            "type": "string",
+            "description": "The email-subject of the message",
+            "example": "Hello world"
+          },
+          "username": {
+            "type": "string",
+            "description": "The username of the user that sent the message",
+            "example": "username"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "The first name of the user that sent the message",
+            "example": "Kalle"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "The last name of the user that sent the message",
+            "example": "Anka"
+          },
+          "email": {
+            "type": "string",
+            "description": "The email of the user that sent the message",
+            "example": "kalle.anka@ankeborg.se"
+          },
+          "userID": {
+            "type": "string",
+            "description": "The user ID of the user that sent the message",
+            "example": "12"
+          },
+          "attachments": {
+            "type": "array",
+            "description": "List of attachments on the message",
+            "items": {
+              "$ref": "#/components/schemas/AttachmentResponse"
+            }
+          }
+        }
+      },
+      "MessageAttachmentDTO": {
+        "required": [
+          "attachmentID",
+          "content",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "attachmentID": {
+            "type": "string",
+            "description": "The attachment ID",
+            "example": "12345678-1234-1234-1234-123456789012"
+          },
+          "name": {
+            "type": "string",
+            "description": "The attachment filename",
+            "example": "test.txt"
+          },
+          "contentType": {
+            "type": "string",
+            "description": "The attachment content type",
+            "example": "text/plain"
+          },
+          "content": {
+            "type": "string",
+            "description": "The attachment (file) content as a BASE64-encoded string",
+            "example": "aGVsbG8gd29ybGQK"
+          }
+        }
+      },
       "ExtraParameterDTO": {
         "type": "object",
         "properties": {
@@ -4669,19 +4925,13 @@
       "PageErrandDTO": {
         "type": "object",
         "properties": {
-          "totalPages": {
-            "type": "integer",
-            "format": "int32"
-          },
           "totalElements": {
             "type": "integer",
             "format": "int64"
           },
-          "first": {
-            "type": "boolean"
-          },
-          "last": {
-            "type": "boolean"
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
           },
           "size": {
             "type": "integer",
@@ -4700,12 +4950,18 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
-          "pageable": {
-            "$ref": "#/components/schemas/PageableObject"
-          },
           "numberOfElements": {
             "type": "integer",
             "format": "int32"
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
           },
           "empty": {
             "type": "boolean"
@@ -4722,6 +4978,12 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
+          "paged": {
+            "type": "boolean"
+          },
+          "unpaged": {
+            "type": "boolean"
+          },
           "pageNumber": {
             "type": "integer",
             "format": "int32"
@@ -4729,12 +4991,6 @@
           "pageSize": {
             "type": "integer",
             "format": "int32"
-          },
-          "paged": {
-            "type": "boolean"
-          },
-          "unpaged": {
-            "type": "boolean"
           }
         }
       },
@@ -4744,10 +5000,10 @@
           "empty": {
             "type": "boolean"
           },
-          "unsorted": {
+          "sorted": {
             "type": "boolean"
           },
-          "sorted": {
+          "unsorted": {
             "type": "boolean"
           }
         }

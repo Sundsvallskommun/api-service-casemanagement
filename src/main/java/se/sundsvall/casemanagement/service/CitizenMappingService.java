@@ -5,7 +5,7 @@ import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
 import org.zalando.problem.ThrowableProblem;
 import se.sundsvall.casemanagement.integration.rest.citizenmapping.CitizenMappingClient;
-import se.sundsvall.casemanagement.service.util.Constants;
+import se.sundsvall.casemanagement.util.Constants;
 
 import java.util.Objects;
 

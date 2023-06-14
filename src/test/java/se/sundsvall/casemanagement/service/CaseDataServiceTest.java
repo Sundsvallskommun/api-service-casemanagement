@@ -1,9 +1,25 @@
 package se.sundsvall.casemanagement.service;
 
-import generated.client.casedata.ErrandDTO;
-import generated.client.casedata.PatchErrandDTO;
-import generated.client.casedata.StakeholderDTO;
-import generated.client.casedata.StatusDTO;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.LOST_PARKING_PERMIT;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARKING_PERMIT;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARKING_PERMIT_RENEWAL;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,6 +35,7 @@ import org.testcontainers.shaded.org.apache.commons.lang3.RandomStringUtils;
 import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
 import org.zalando.problem.ThrowableProblem;
+
 import se.sundsvall.casemanagement.TestUtil;
 import se.sundsvall.casemanagement.api.model.AttachmentDTO;
 import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
@@ -27,30 +44,16 @@ import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderType;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
+import se.sundsvall.casemanagement.integration.casedata.CaseDataClient;
+import se.sundsvall.casemanagement.integration.casedata.CaseDataService;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
-import se.sundsvall.casemanagement.integration.rest.casedata.CaseDataClient;
-import se.sundsvall.casemanagement.service.util.Constants;
 import se.sundsvall.casemanagement.testutils.TestConstants;
+import se.sundsvall.casemanagement.util.Constants;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Constants.LOST_PARKING_PERMIT_VALUE;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Constants.PARKING_PERMIT_RENEWAL_VALUE;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Constants.PARKING_PERMIT_VALUE;
+import generated.client.casedata.ErrandDTO;
+import generated.client.casedata.PatchErrandDTO;
+import generated.client.casedata.StakeholderDTO;
+import generated.client.casedata.StatusDTO;
 
 @ExtendWith(MockitoExtension.class)
 class CaseDataServiceTest {
@@ -75,7 +78,7 @@ class CaseDataServiceTest {
     private ArgumentCaptor<List<generated.client.casedata.AttachmentDTO>> attachmentDTOListArgumentCaptor;
 
     @ParameterizedTest
-    @EnumSource(value = CaseType.class, mode = EnumSource.Mode.INCLUDE, names = {PARKING_PERMIT_VALUE, LOST_PARKING_PERMIT_VALUE, PARKING_PERMIT_RENEWAL_VALUE})
+    @EnumSource(value = CaseType.class, mode = EnumSource.Mode.INCLUDE, names = {PARKING_PERMIT, LOST_PARKING_PERMIT, PARKING_PERMIT_RENEWAL})
     void testPostCases(CaseType caseType) throws URISyntaxException {
         long errandId = new Random().nextLong();
         ResponseEntity<Void> mockResponse = ResponseEntity.created(new URI("https://sundsvall-test.se/errands/" + errandId)).build();
@@ -120,7 +123,7 @@ class CaseDataServiceTest {
         verify(caseMappingServiceMock, times(1)).postCaseMapping(caseMappingArgumentCaptor.capture());
         CaseMapping caseMapping = caseMappingArgumentCaptor.getValue();
         assertEquals(inputCase.getExternalCaseId(), caseMapping.getExternalCaseId());
-        assertEquals(String.valueOf(errandId), caseMapping.getCaseId());
+        assertEquals("Inskickat", caseMapping.getCaseId());
         assertEquals(SystemType.CASE_DATA, caseMapping.getSystem());
         assertEquals(inputCase.getCaseType(), caseMapping.getCaseType());
         assertNull(caseMapping.getServiceName());
@@ -248,13 +251,13 @@ class CaseDataServiceTest {
         otherCase.setDescription("Some random description");
 
         otherCase.setStakeholders(List.of(
-                TestUtil.createStakeholder(StakeholderType.ORGANIZATION, List.of(StakeholderRole.APPLICANT, StakeholderRole.CONTACT_PERSON)),
-                TestUtil.createStakeholder(StakeholderType.PERSON, List.of(StakeholderRole.PAYMENT_PERSON, StakeholderRole.INVOICE_RECIPENT))));
+            TestUtil.createStakeholder(StakeholderType.ORGANIZATION, List.of(StakeholderRole.APPLICANT, StakeholderRole.CONTACT_PERSON)),
+            TestUtil.createStakeholder(StakeholderType.PERSON, List.of(StakeholderRole.PAYMENT_PERSON, StakeholderRole.INVOICE_RECIPENT))));
 
         otherCase.setAttachments(List.of(
-                TestUtil.createAttachment(AttachmentCategory.ANS),
-                TestUtil.createAttachment(AttachmentCategory.ANMALAN_VARMEPUMP),
-                TestUtil.createAttachment(AttachmentCategory.ANMALAN_VARMEPUMP)));
+            TestUtil.createAttachment(AttachmentCategory.ANS),
+            TestUtil.createAttachment(AttachmentCategory.ANMALAN_VARMEPUMP),
+            TestUtil.createAttachment(AttachmentCategory.ANMALAN_VARMEPUMP)));
 
         otherCase.setExtraParameters(TestUtil.createExtraParameters());
         otherCase.getExtraParameters().put("application.priority", "HIGH");

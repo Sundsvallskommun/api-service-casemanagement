@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static se.sundsvall.casemanagement.service.util.Constants.ERR_MSG_CASES_NOT_FOUND;
+import static se.sundsvall.casemanagement.util.Constants.ERR_MSG_CASES_NOT_FOUND;
 
 @ExtendWith(MockitoExtension.class)
 class CaseMappingServiceTest {
