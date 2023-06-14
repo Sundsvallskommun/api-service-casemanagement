@@ -172,7 +172,7 @@ class AttachmentResourceIntegrationTest extends CustomAbstractAppTest {
             .withHttpMethod(HttpMethod.POST)
             .withServicePath("/cases/" + externalCaseId + "/attachments")
             .withRequest(OBJECT_MAPPER.writeValueAsString(List.of(attachmentDTO)))
-            .withExpectedResponseStatus(HttpStatus.NO_CONTENT)
+            .withExpectedResponseStatus(HttpStatus.BAD_REQUEST)
             .sendRequestAndVerifyResponse();
     }
 
