@@ -6,7 +6,6 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
-import se.sundsvall.dept44.common.validators.annotation.ValidBase64;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -32,7 +31,6 @@ public class AttachmentDTO {
     private String mimeType;
 
     @NotBlank
-    @ValidBase64(message = "file must be a valid Base64 string. Plain text - only the Base64 value.")
     @Schema(type = "string", format = "byte", description = "Base64-encoded file (plain text)", example = "dGVzdA==")
     private String file;
 
