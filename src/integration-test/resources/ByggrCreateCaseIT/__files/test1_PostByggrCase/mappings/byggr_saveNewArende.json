@@ -1,0 +1,27 @@
+{
+  "id": "e19981ad-34b2-4e14-88f5-133f61ca85aa",
+  "name": "tekisarende_arendeexportwssvc",
+  "request": {
+    "url": "/TekisArende/ArendeExportWS.svc",
+    "method": "POST",
+    "bodyPatterns": [
+      {
+        "contains": "SaveNewArende"
+      }
+    ]
+  },
+  "response": {
+    "status": 200,
+    "body": "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\"><s:Body><SaveNewArendeResponse xmlns=\"www.tekis.se/ServiceContract\"><SaveNewArendeResult><Dnr>BYGG 2021-000200</Dnr></SaveNewArendeResult></SaveNewArendeResponse></s:Body></s:Envelope>",
+    "headers": {
+      "Content-Type": "text/xml; charset=utf-8",
+      "Vary": "Accept-Encoding",
+      "Server": "Microsoft-IIS/10.0",
+      "X-Powered-By": "ASP.NET",
+      "Date": "Wed, 28 Jul 2021 06:31:46 GMT"
+    }
+  },
+  "uuid": "e19981ad-34b2-4e14-88f5-133f61ca85aa",
+  "persistent": true,
+  "insertionIndex": 10
+}

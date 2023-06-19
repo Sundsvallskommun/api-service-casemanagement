@@ -1,5 +1,0 @@
-<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
-    <s:Body>
-        <AddDocumentsToCaseResponse xmlns="urn:Ecos.API.MinutMiljo.Service.V1"/>
-    </s:Body>
-</s:Envelope>

@@ -1,27 +1,32 @@
 package se.sundsvall.casemanagement.service;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.zalando.problem.Status;
-import org.zalando.problem.ThrowableProblem;
-import se.sundsvall.casemanagement.integration.db.CaseMappingRepository;
-import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
-import se.sundsvall.casemanagement.service.exceptions.ApplicationException;
-
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static se.sundsvall.casemanagement.util.Constants.ERR_MSG_CASES_NOT_FOUND;
+
+import java.text.MessageFormat;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.zalando.problem.DefaultProblem;
+import org.zalando.problem.Status;
+import org.zalando.problem.ThrowableProblem;
+
+import se.sundsvall.casemanagement.api.model.enums.CaseType;
+import se.sundsvall.casemanagement.integration.db.CaseMappingRepository;
+import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 
 @ExtendWith(MockitoExtension.class)
 class CaseMappingServiceTest {
@@ -59,7 +64,7 @@ class CaseMappingServiceTest {
     }
 
     @Test
-    void testGetCaseMappingWithExternalCaseId() throws ApplicationException {
+    void testGetCaseMappingWithExternalCaseId() {
         CaseMapping caseMappingInput = new CaseMapping();
         caseMappingInput.setExternalCaseId(UUID.randomUUID().toString());
 
@@ -67,6 +72,43 @@ class CaseMappingServiceTest {
 
         var result = caseMappingService.getCaseMapping(caseMappingInput.getExternalCaseId());
         assertEquals(caseMappingInput.getExternalCaseId(), result.getExternalCaseId());
+    }
+
+
+    @Test
+    void getAllCaseMappings() {
+        when(caseMappingRepository.findAll()).thenReturn(List.of(CaseMapping.builder()
+                .withCaseId("caseId")
+                .withExternalCaseId("externalCaseId")
+                .withCaseType(CaseType.REGISTRERING_AV_LIVSMEDEL)
+                .withServiceName("serviceName")
+                .withTimestamp(LocalDateTime.now())
+                .build(),
+            CaseMapping.builder()
+                .withCaseId("caseId2")
+                .withExternalCaseId("externalCaseId2")
+                .withCaseType(CaseType.LOST_PARKING_PERMIT)
+                .withServiceName("serviceName2")
+                .withTimestamp(LocalDateTime.now())
+                .build()));
+
+        var result = caseMappingService.getAllCaseMappings();
+
+        verify(caseMappingRepository, times(1)).findAll();
+
+        assertThat(result).hasSize(2);
+        assertThat(result.get(0).getCaseId()).isEqualTo("caseId");
+        assertThat(result.get(0).getExternalCaseId()).isEqualTo("externalCaseId");
+        assertThat(result.get(0).getCaseType()).isEqualTo(CaseType.REGISTRERING_AV_LIVSMEDEL);
+        assertThat(result.get(0).getServiceName()).isEqualTo("serviceName");
+        assertThat(result.get(0).getTimestamp()).isNotNull();
+
+        assertThat(result.get(1).getCaseId()).isEqualTo("caseId2");
+        assertThat(result.get(1).getExternalCaseId()).isEqualTo("externalCaseId2");
+        assertThat(result.get(1).getCaseType()).isEqualTo(CaseType.LOST_PARKING_PERMIT);
+        assertThat(result.get(1).getServiceName()).isEqualTo("serviceName2");
+        assertThat(result.get(1).getTimestamp()).isNotNull();
+
     }
 
     @Test
@@ -89,8 +131,8 @@ class CaseMappingServiceTest {
 
         doReturn(List.of(caseMappingInput, caseMappingInput)).when(caseMappingRepository).findAllByExternalCaseIdOrCaseId(caseMappingInput.getExternalCaseId(), null);
 
-        var exception = assertThrows(ApplicationException.class, () -> caseMappingService.getCaseMapping(caseMappingInput.getExternalCaseId()));
-        assertEquals(MessageFormat.format("More than one case was found with the same externalCaseId: \"{0}\". This should not be possible.", caseMappingInput.getExternalCaseId()), exception.getMessage());
+        var exception = assertThrows(DefaultProblem.class, () -> caseMappingService.getCaseMapping(caseMappingInput.getExternalCaseId()));
+        assertEquals(MessageFormat.format("Not Found: More than one case was found with the same externalCaseId: \"{0}\". This should not be possible.", caseMappingInput.getExternalCaseId()), exception.getMessage());
     }
 
     @Test

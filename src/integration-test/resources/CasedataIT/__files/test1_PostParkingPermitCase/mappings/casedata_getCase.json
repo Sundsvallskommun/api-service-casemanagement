@@ -1,0 +1,15 @@
+{
+  "request": {
+    "urlPathPattern": "/case-data/\\d.\\d/errands/24",
+    "method": "GET"
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "test1_PostParkingPermitCase/response/casedata_getCase.json",
+    "headers": {
+      "Content-Type": [
+        "application/json"
+      ]
+    }
+  }
+}

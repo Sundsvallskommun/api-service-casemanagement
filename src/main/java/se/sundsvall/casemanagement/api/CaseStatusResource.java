@@ -1,10 +1,14 @@
 package se.sundsvall.casemanagement.api;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
+import static org.zalando.problem.Status.NOT_FOUND;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.validation.constraints.Pattern;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,21 +18,18 @@ import org.springframework.web.bind.annotation.RestController;
 import org.zalando.problem.Problem;
 
 import se.sundsvall.casemanagement.api.model.CaseStatusDTO;
-import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.integration.byggr.ByggrService;
 import se.sundsvall.casemanagement.integration.casedata.CaseDataService;
-import se.sundsvall.casemanagement.service.CaseMappingService;
+import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.integration.ecos.EcosService;
-import se.sundsvall.casemanagement.service.exceptions.ApplicationException;
+import se.sundsvall.casemanagement.service.CaseMappingService;
 import se.sundsvall.casemanagement.util.Constants;
 
-import javax.validation.constraints.Pattern;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
-import static org.zalando.problem.Status.NOT_FOUND;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @Validated
@@ -59,8 +60,8 @@ public class CaseStatusResource {
     @Operation(description = "Returns the latest status for each of the cases where the specified organization has the role \"applicant\".")
     @ApiResponse(responseCode = "200", description = "OK - Successful operation")
     public ResponseEntity<List<CaseStatusDTO>> getStatusByOrgNr(@Pattern(regexp = Constants.ORGNR_PATTERN_REGEX, message = Constants.ORGNR_PATTERN_MESSAGE)
-                                                             @Schema(description = "Organization number with 10 or 12 digits.", example = "20220622-2396")
-                                                             @PathVariable String organizationNumber) {
+    @Schema(description = "Organization number with 10 or 12 digits.", example = "20220622-2396")
+    @PathVariable String organizationNumber) {
 
         List<CaseStatusDTO> caseStatusDTOList = new ArrayList<>();
 
@@ -77,13 +78,15 @@ public class CaseStatusResource {
     @GetMapping(path = "cases/{externalCaseId}/status", produces = {APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE})
     @Operation(description = "Returns the latest status for the case in the underlying system connected to the specified externalCaseId.")
     @ApiResponse(responseCode = "200", description = "OK - Successful operation")
-    public ResponseEntity<CaseStatusDTO> getStatusByExternalCaseId(@PathVariable String externalCaseId) throws ApplicationException {
+    public ResponseEntity<CaseStatusDTO> getStatusByExternalCaseId(@PathVariable String externalCaseId) {
 
         CaseMapping caseMapping = caseMappingService.getCaseMapping(externalCaseId);
 
         CaseStatusDTO caseStatusDTO = switch (caseMapping.getSystem()) {
-            case BYGGR -> byggrService.getByggrStatus(caseMapping.getCaseId(), caseMapping.getExternalCaseId());
-            case ECOS -> ecosService.getStatus(caseMapping.getCaseId(), caseMapping.getExternalCaseId());
+            case BYGGR ->
+                byggrService.getByggrStatus(caseMapping.getCaseId(), caseMapping.getExternalCaseId());
+            case ECOS ->
+                ecosService.getStatus(caseMapping.getCaseId(), caseMapping.getExternalCaseId());
             case CASE_DATA -> caseDataService.getStatus(caseMapping);
         };
 

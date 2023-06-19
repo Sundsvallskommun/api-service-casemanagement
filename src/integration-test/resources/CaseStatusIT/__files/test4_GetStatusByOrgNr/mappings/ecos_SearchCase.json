@@ -1,0 +1,27 @@
+{
+  "name": "ecos2publicservices_minutmiljoservicesvc_SearchCase",
+  "request": {
+    "url": "/Ecos2PublicServices/MinutMiljoService.svc",
+    "method": "POST",
+    "bodyPatterns": [
+      {
+        "contains": "SearchCase"
+      }
+    ]
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "test4_GetStatusByOrgNr/response/ecos_SearchCase.xml",
+    "headers": {
+      "Server": "Microsoft-IIS/10.0",
+      "Persistent-Auth": "true",
+      "Date": "Wed, 28 Jul 2021 09:32:38 GMT",
+      "Cache-Control": "private",
+      "X-AspNet-Version": "4.0.30319",
+      "Vary": "Accept-Encoding",
+      "Set-Cookie": "ASP.NET_SessionId=2ih1nqy0igdxjlzxular3k4t; path=/; HttpOnly; SameSite=Lax",
+      "Content-Type": "text/xml; charset=utf-8",
+      "X-Powered-By": "ASP.NET"
+    }
+  }
+}

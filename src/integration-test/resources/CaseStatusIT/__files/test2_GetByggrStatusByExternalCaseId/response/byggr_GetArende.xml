@@ -1,0 +1,113 @@
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+    <s:Body xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    >
+        <GetArendeResponse xmlns="www.tekis.se/ServiceContract">
+            <GetArendeResult arendeId="55189" dnr="BYGG 2021-000200" diarieprefix="BYGG"
+                             kommun="Sundsvall" enhet="SBK"
+                             enhetkod="" arendegrupp="LOV" arendetyp="BL" arendeslag="A"
+                             arendeklass="GÄST"
+                             namndkod="SBN" kalla="3">
+                <status xmlns="www.tekis.se/arende">Pågående</status>
+                <beskrivning xmlns="www.tekis.se/arende">Bygglov för nybyggnad av gäststuga
+                </beskrivning>
+                <ankomstDatum xmlns="www.tekis.se/arende">2021-10-12</ankomstDatum>
+                <uppdateradDatum xmlns="www.tekis.se/arende">2021-10-12</uppdateradDatum>
+                <registreradDatum xmlns="www.tekis.se/arende">2021-10-12</registreradDatum>
+                <handlaggare handlaggareId="-1" signatur="" xmlns="www.tekis.se/arende">
+                    <fornamn/>
+                    <efternamn/>
+                </handlaggare>
+                <intressentLista xmlns="www.tekis.se/arende">
+                    <intressent intressentId="36541" persOrgNr="20220622-2396" arForetag="false"
+                                intressentVersionId="56277" kundnr="36541"
+                                checksum="-555652638|1175284796">
+                        <namn>Test Testsson</namn>
+                        <adress>Testargatan</adress>
+                        <postNr>12345</postNr>
+                        <ort>Sundsvall</ort>
+                        <fornamn>Test</fornamn>
+                        <efternamn>Testsson</efternamn>
+                        <intressentKommunikationLista>
+                            <intressentKommunikation arAktiv="true" checksum="-223389749">
+                                <beskrivning>060123456</beskrivning>
+                                <komtyp>MOB</komtyp>
+                            </intressentKommunikation>
+                        </intressentKommunikationLista>
+                        <rollLista>
+                            <roll>SOK</roll>
+                        </rollLista>
+                    </intressent>
+                </intressentLista>
+                <handelseLista xmlns="www.tekis.se/arende">
+                    <handelse handelseId="362527" checksum="41">
+                        <riktning>In</riktning>
+                        <rubrik>Bygglov</rubrik>
+                        <startDatum>2021-10-12T00:00:00+02:00</startDatum>
+                        <anteckning/>
+                        <handelseslag>Bygglov</handelseslag>
+                        <handelsetyp>ANSÖKAN</handelsetyp>
+                        <sekretess>false</sekretess>
+                        <makulerad>false</makulerad>
+                        <handlingLista>
+                            <handling handlingId="434236" checksum="41">
+                                <typ>ANS</typ>
+                                <status>Inkommen</status>
+                                <handlingDatum>2021-10-12</handlingDatum>
+                                <anteckning>8714.pdf</anteckning>
+                                <makulerad>false</makulerad>
+                                <dokument dokId="585790" checksum="-760987960">
+                                    <namn>8714.pdf</namn>
+                                </dokument>
+                            </handling>
+                            <handling handlingId="434237" checksum="41">
+                                <typ>TEBY</typ>
+                                <status>Inkommen</status>
+                                <handlingDatum>2021-10-12</handlingDatum>
+                                <anteckning>tekniskbeskrivning teknisk beskrivning.pdf</anteckning>
+                                <makulerad>false</makulerad>
+                                <dokument dokId="585791" checksum="1878728998">
+                                    <namn>tekniskbeskrivning teknisk beskrivning.pdf</namn>
+                                </dokument>
+                            </handling>
+                            <handling handlingId="434238" checksum="42">
+                                <typ>SITU</typ>
+                                <status>Inkommen</status>
+                                <handlingDatum>2021-10-12</handlingDatum>
+                                <anteckning>situationsplan situationsplan_allsta.pdf</anteckning>
+                                <makulerad>false</makulerad>
+                                <dokument dokId="585792" checksum="-1047906646">
+                                    <namn>situationsplan situationsplan_allsta.pdf</namn>
+                                </dokument>
+                            </handling>
+                            <handling handlingId="434239" checksum="42">
+                                <typ>PLA</typ>
+                                <status>Inkommen</status>
+                                <handlingDatum>2021-10-12</handlingDatum>
+                                <anteckning>planritning planritningen.pdf</anteckning>
+                                <makulerad>false</makulerad>
+                                <dokument dokId="585793" checksum="44784881">
+                                    <namn>planritning planritningen.pdf</namn>
+                                </dokument>
+                            </handling>
+                        </handlingLista>
+                        <intressentLista/>
+                        <arbetsmaterial>false</arbetsmaterial>
+                        <handlaggare signatur="SSA"/>
+                    </handelse>
+                </handelseLista>
+                <projektnr xmlns="www.tekis.se/arende">BALDER 2</projektnr>
+                <bevakningLista xmlns="www.tekis.se/arende"/>
+                <objektLista xmlns="www.tekis.se/arende">
+                    <abstractArendeObjekt xsi:type="arendeFastighet" arendeObjektId="55976"
+                                          arHuvudObjekt="true"
+                                          checksum="1|">
+                        <fastighet checksum="-917182185|" fnr="22041225">
+                            <trakt>BALDER</trakt>
+                            <fbetNr>2</fbetNr>
+                        </fastighet>
+                    </abstractArendeObjekt>
+                </objektLista>
+            </GetArendeResult>
+        </GetArendeResponse>
+    </s:Body>
+</s:Envelope>

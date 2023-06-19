@@ -10,14 +10,12 @@ import javax.persistence.Lob;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import lombok.With;
 
 @Entity
-@Getter
-@ToString
+@Data
 @Builder(setterPrefix = "with")
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 @AllArgsConstructor

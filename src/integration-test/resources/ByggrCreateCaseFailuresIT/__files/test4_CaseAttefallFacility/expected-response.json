@@ -1,0 +1,5 @@
+{
+  "title": "Bad Request",
+  "status": 400,
+  "detail": "FacilityType ANCILLARY_BUILDING is not compatible with CaseType NYBYGGNAD_ANSOKAN_OM_BYGGLOV"
+}

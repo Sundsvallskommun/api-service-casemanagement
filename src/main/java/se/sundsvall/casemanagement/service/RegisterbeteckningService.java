@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import se.sundsvall.casemanagement.integration.rest.lantmateriet.RegisterbeteckningClient;
-import se.sundsvall.casemanagement.integration.rest.lantmateriet.model.Registerbeteckningsreferens;
+import se.sundsvall.casemanagement.integration.lantmateriet.RegisterbeteckningClient;
+import se.sundsvall.casemanagement.integration.lantmateriet.model.Registerbeteckningsreferens;
 import se.sundsvall.casemanagement.util.CaseUtil;
 import se.sundsvall.casemanagement.util.Constants;
 
