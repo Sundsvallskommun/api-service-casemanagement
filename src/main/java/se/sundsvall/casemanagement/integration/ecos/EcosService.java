@@ -203,7 +203,7 @@ public class EcosService {
                     riskClassService.updateRiskClass(caseInput, registerDocumentResult.getCaseId());
                 }
             } catch (Exception e) {
-                log.error("Error when updating risk class", e);
+                log.warn("Error when updating risk class for case with OpenE-ID: "+caseInput.getExternalCaseId(), e);
             }
             // -----> CreateOccurrenceOnCase
             createOccurrenceOnCase(registerDocumentResult.getCaseId());
