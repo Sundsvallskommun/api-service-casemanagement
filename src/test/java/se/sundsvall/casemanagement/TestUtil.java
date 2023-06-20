@@ -15,13 +15,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.mockito.Mockito;
-import org.springframework.stereotype.Component;
 
 import se.sundsvall.casemanagement.api.model.AddressDTO;
 import se.sundsvall.casemanagement.api.model.AttachmentDTO;
@@ -65,19 +60,10 @@ import minutmiljo.SearchPartyResponse;
 import minutmiljoV2.RegisterDocumentCaseResultSvcDto;
 import minutmiljoV2.RegisterDocumentResponse;
 
-@Component
 public class TestUtil {
 
     public static final Integer FNR = 22045604;
     public static final Integer ADRESSPLATS_ID = 90022392;
-
-
-    public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
-        .enable(SerializationFeature.INDENT_OUTPUT)
-        .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-        .configure(DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE, false)
-        .registerModule(new JavaTimeModule());
-
 
     public static void mockFbPropertyOwners(FbClient fbClientMock, List<StakeholderDTO> propertyOwners) {
         ResponseDto lagfarenAgareResponse = new ResponseDto();
