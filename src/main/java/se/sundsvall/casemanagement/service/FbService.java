@@ -10,12 +10,12 @@ import se.sundsvall.casemanagement.api.model.PersonDTO;
 import se.sundsvall.casemanagement.api.model.StakeholderDTO;
 import se.sundsvall.casemanagement.api.model.enums.AddressCategory;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
-import se.sundsvall.casemanagement.integration.rest.fb.FbClient;
-import se.sundsvall.casemanagement.integration.rest.fb.model.DataItem;
-import se.sundsvall.casemanagement.integration.rest.fb.model.FbPropertyInfo;
-import se.sundsvall.casemanagement.integration.rest.fb.model.GruppItem;
-import se.sundsvall.casemanagement.integration.rest.fb.model.ResponseDto;
-import se.sundsvall.casemanagement.integration.rest.lantmateriet.model.Registerbeteckningsreferens;
+import se.sundsvall.casemanagement.integration.fb.FbClient;
+import se.sundsvall.casemanagement.integration.fb.model.DataItem;
+import se.sundsvall.casemanagement.integration.fb.model.FbPropertyInfo;
+import se.sundsvall.casemanagement.integration.fb.model.GruppItem;
+import se.sundsvall.casemanagement.integration.fb.model.ResponseDto;
+import se.sundsvall.casemanagement.integration.lantmateriet.model.Registerbeteckningsreferens;
 import se.sundsvall.casemanagement.util.CaseUtil;
 import se.sundsvall.casemanagement.util.Constants;
 

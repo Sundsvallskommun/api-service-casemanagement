@@ -38,12 +38,12 @@ class CasedataProcessor extends Processor {
         super(openeClient, caseRepository, caseMappingRepository, messagingIntegration);
         this.service = service;
         this.retryPolicy = RetryPolicy.<String>builder()
-            .withMaxAttempts(retryProperties.getMaxAttempts())
-            .withBackoff(retryProperties.getInitialDelay(), retryProperties.getMaxDelay())
+            .withMaxAttempts(retryProperties.maxAttempts())
+            .withBackoff(retryProperties.initialDelay(), retryProperties.maxDelay())
             .handle(Exception.class)
             .handleResultIf(String::isEmpty)
             .onFailedAttempt(event -> log.debug("Unable to create CaseData errand ({}/{}): {}",
-                event.getAttemptCount(), retryProperties.getMaxAttempts(), event.getLastException().getMessage()))
+                event.getAttemptCount(), retryProperties.maxAttempts(), event.getLastException().getMessage()))
             .build();
     }
 

@@ -1,9 +1,0 @@
-<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
-    <s:Body>
-        <SaveNewArendeResponse xmlns="www.tekis.se/ServiceContract">
-            <SaveNewArendeResult>
-                <Dnr>BYGG 2021-000200</Dnr>
-            </SaveNewArendeResult>
-        </SaveNewArendeResponse>
-    </s:Body>
-</s:Envelope>

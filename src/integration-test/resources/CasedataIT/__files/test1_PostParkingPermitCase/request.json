@@ -1,0 +1,135 @@
+{
+  "externalCaseId": "40621444",
+  "caseType": "PARKING_PERMIT",
+  "description": "Some random description",
+  "caseTitleAddition": "Some case title addition",
+  "stakeholders": [
+    {
+      "type": "ORGANIZATION",
+      "roles": [
+        "APPLICANT",
+        "CONTACT_PERSON"
+      ],
+      "organizationName": "jNTYkyqBoe",
+      "organizationNumber": "138093-2898",
+      "phoneNumber": "meSyRffXkb",
+      "emailAddress": "FhYvUNokgR@EmxMj.com",
+      "cellphoneNumber": "HCinjwcJUG",
+      "addresses": [
+        {
+          "addressCategories": [
+            "VISITING_ADDRESS",
+            "INVOICE_ADDRESS",
+            "POSTAL_ADDRESS"
+          ],
+          "street": "vsXJPLIBzL",
+          "houseNumber": "QDD7SOb46K",
+          "postalCode": "1372232840",
+          "city": "IhNzWDUTUW",
+          "country": "Sverige",
+          "careOf": "CevcbGpoka",
+          "attention": "swfFRLrDLp",
+          "propertyDesignation": "SUNDSVALL FILLA 8:185",
+          "appartmentNumber": "eGpiM1f1GZ",
+          "location": {
+            "latitude": 0.6969103809797621,
+            "longitude": 0.2827769235667891
+          },
+          "isZoningPlanArea": false,
+          "invoiceMarking": "FuJQ69beqr",
+          "extraParameters": {
+            "izAXyudmqe": "UnBnhqporYgmlYrtyAJA",
+            "mgDlbYGizw": "JzEteidrAMevVphRZvRf",
+            "uRfqnswQqu": "UJQhzlSjcClUnvZEGqjO"
+          }
+        }
+      ],
+      "extraParameters": {
+        "MxYBzFJRAV": "chyRhtwikUtuOZoLQasi",
+        "LjVjfBkXPn": "vDFaDITmkgZKrijMGtZM",
+        "kKyNoMcLQy": "RyObmjCTrvNNjmOsemfJ"
+      },
+      "authorizedSignatory": "VphEzGJsWJ"
+    },
+    {
+      "type": "PERSON",
+      "roles": [
+        "PAYMENT_PERSON",
+        "INVOICE_RECIPENT"
+      ],
+      "firstName": "PeRRnaLRro",
+      "lastName": "ACerBugnuP",
+      "personId": "c9faf8e0-e7c1-4d94-b7fa-ce37b260f281",
+      "phoneNumber": "aQbByowCoq",
+      "emailAddress": "OJHpCfXcDw@bCLHt.com",
+      "cellphoneNumber": "fXWMfeWqCx",
+      "addresses": [
+        {
+          "addressCategories": [
+            "VISITING_ADDRESS",
+            "POSTAL_ADDRESS"
+          ],
+          "street": "iHDmgxHSzx",
+          "houseNumber": "vwRO5wCpZT",
+          "postalCode": "0703115748",
+          "city": "cPrktcqcph",
+          "country": "Sverige",
+          "careOf": "TVWtgwoHnH",
+          "attention": "hUWhaoMUFV",
+          "propertyDesignation": "SUNDSVALL FILLA 8:185",
+          "appartmentNumber": "cFerdl7yy7",
+          "location": {
+            "latitude": 0.4025673014476795,
+            "longitude": 0.6908240209365898
+          },
+          "isZoningPlanArea": false,
+          "invoiceMarking": "cphZ9oZu8S",
+          "extraParameters": {
+            "LyQfdhabpu": "EAJExGybOwvtnyynmJap",
+            "unCbhYaaSp": "MwCWPnogvBPQFtuXDPht",
+            "ZaHqjsLztb": "PmSJaJNyEGjIIxiJrQmI"
+          }
+        }
+      ],
+      "extraParameters": {
+        "KGNKjpITYh": "zAnHbHzRpMenxpRVChiv",
+        "mYNojuJNeF": "CTmHuqJDJseFisBRxgvH",
+        "lUVcbOtnMF": "uMnxaIhjxVeFICUupckY"
+      },
+      "personalNumber": "199901189203"
+    }
+  ],
+  "attachments": [
+    {
+      "category": "ANS",
+      "name": "Some attachment name.pdf",
+      "note": "Some attachment note",
+      "extension": ".pdf",
+      "mimeType": "application/pdf",
+      "file": "dGVzdA==",
+      "extraParameters": {
+        "kreEGkanzo": "BPQjVCepCGxynIqskCeZ",
+        "mNXkbBCjmF": "xVtjXtNrXLddWKNbbMbR",
+        "xeeNxLQwNL": "gMyDQhBjUqzGSIdVpdmg"
+      }
+    },
+    {
+      "category": "ANMALAN_VARMEPUMP",
+      "name": "Some attachment name.pdf",
+      "note": "Some attachment note",
+      "extension": ".pdf",
+      "mimeType": "application/pdf",
+      "file": "dGVzdA==",
+      "extraParameters": {
+        "ZbUfWoXOCa": "EkQrjyEVrJWZgmyawnDt",
+        "eRfJRSgKtS": "BqDzJDqKtbOnPgqEjkdz",
+        "rOBXLHekXx": "VxiWTEwnlGpSgMCYAAxR"
+      }
+    }
+  ],
+  "extraParameters": {
+    "LhUaLSfVLl": "qugLdBiGNLoJCiSSEwRk",
+    "EiBDnjwIGQ": "YHHXclnbOMnviIuqzsyL",
+    "NxWjNUnpnI": "jQPMKOXLGQxeoIVXgeEt"
+  }
+}

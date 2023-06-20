@@ -8,6 +8,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static se.sundsvall.casemanagement.TestUtil.ADRESSPLATS_ID;
+import static se.sundsvall.casemanagement.TestUtil.FNR;
 
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
@@ -48,8 +50,6 @@ import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.integration.ecos.EcosService;
 import se.sundsvall.casemanagement.integration.ecos.MinutMiljoClient;
 import se.sundsvall.casemanagement.integration.ecos.MinutMiljoClientV2;
-import se.sundsvall.casemanagement.service.exceptions.ApplicationException;
-import se.sundsvall.casemanagement.testutils.TestConstants;
 import se.sundsvall.casemanagement.util.CaseUtil;
 import se.sundsvall.casemanagement.util.Constants;
 
@@ -99,7 +99,8 @@ import minutmiljoV2.RegisterDocumentCaseSvcDtoV2;
 
 @ExtendWith(MockitoExtension.class)
 class EcosServiceTest {
-    
+    private static final String ECOS_CASE_NUMBER = "Inskickat";
+
     private static final String CYTONOL = "e19981ad-34b2-4e14-88f5-133f61ca85aa";
     @InjectMocks
     private EcosService ecosService;
@@ -113,7 +114,7 @@ class EcosServiceTest {
     private MinutMiljoClientV2 minutMiljoClientV2Mock;
     @Mock
     private FbService fbServiceMock;
-    
+
     @BeforeEach
     void beforeEach() {
         TestUtil.standardMockFb(fbServiceMock);
@@ -122,21 +123,22 @@ class EcosServiceTest {
         TestUtil.standardMockFb(fbServiceMock);
         TestUtil.standardMockCitizenMapping(citizenMappingServiceMock);
     }
-    
+
     @Test
-    void testFoodFacilityCase() throws ApplicationException {
-        
+    void testFoodFacilityCase() {
+
         EnvironmentalCaseDTO eCase = TestUtil.createEnvironmentalCase(CaseType.REGISTRERING_AV_LIVSMEDEL, AttachmentCategory.ANMALAN_LIVSMEDELSANLAGGNING);
         OrganizationDTO organization = (OrganizationDTO) TestUtil.createStakeholder(StakeholderType.ORGANIZATION, List.of(StakeholderRole.APPLICANT, StakeholderRole.OPERATOR));
         PersonDTO person = (PersonDTO) TestUtil.createStakeholder(StakeholderType.PERSON, List.of(StakeholderRole.CONTACT_PERSON));
         eCase.setStakeholders(List.of(organization, person));
-        
+
         // Mock citizenMappingService.getPersonalNumber
         doReturn(person.getPersonalNumber()).when(citizenMappingServiceMock).getPersonalNumber(person.getPersonId());
-        
+
         var result = ecosService.postCase(eCase);
-        assertEquals(TestConstants.ECOS_CASE_NUMBER, result.getCaseNumber());
-        
+        assertEquals(ECOS_CASE_NUMBER, result.getCaseNumber());
+
+
         ArgumentCaptor<SearchParty> searchPartyArgumentCaptor = ArgumentCaptor.forClass(SearchParty.class);
         // Two times for organization (with and without Sokigo-prefix) and two times for person (with and without hyphen)
         verify(minutMiljoClientMock, times(4)).searchParty(searchPartyArgumentCaptor.capture());
@@ -145,14 +147,14 @@ class EcosServiceTest {
         List<SearchParty> personSearchParties = searchPartyList.stream().filter(searchParty -> searchParty.getModel().getPersonalIdentificationNumber() != null).toList();
         assertEquals(2, organizationSearchParties.size());
         assertEquals(2, personSearchParties.size());
-        
+
         ArgumentCaptor<CreateOrganizationParty> createOrganizationPartyArgumentCaptor = ArgumentCaptor.forClass(CreateOrganizationParty.class);
         verify(minutMiljoClientMock, times(1)).createOrganizationParty(createOrganizationPartyArgumentCaptor.capture());
         assertEquals("16" + organization.getOrganizationNumber(), createOrganizationPartyArgumentCaptor.getValue().getOrganizationParty().getNationalIdentificationNumber());
         assertEquals(organization.getOrganizationName(), createOrganizationPartyArgumentCaptor.getValue().getOrganizationParty().getOrganizationName());
         assertAddress(organization.getAddresses(), createOrganizationPartyArgumentCaptor.getValue().getOrganizationParty().getAddresses());
         createOrganizationPartyArgumentCaptor.getValue().getOrganizationParty().getContactInfo().getContactInfoSvcDto().forEach(this::assertContactInfo);
-        
+
         ArgumentCaptor<CreatePersonParty> createPersonPartyArgumentCaptor = ArgumentCaptor.forClass(CreatePersonParty.class);
         verify(minutMiljoClientMock, times(1)).createPersonParty(createPersonPartyArgumentCaptor.capture());
         assertEquals(new StringBuilder(person.getPersonalNumber()).insert(8, "-").toString(), createPersonPartyArgumentCaptor.getValue().getPersonParty().getNationalIdentificationNumber());
@@ -160,15 +162,15 @@ class EcosServiceTest {
         assertEquals(person.getLastName(), createPersonPartyArgumentCaptor.getValue().getPersonParty().getLastName());
         assertAddress(person.getAddresses(), createPersonPartyArgumentCaptor.getValue().getPersonParty().getAddresses());
         assertContactInfo(createPersonPartyArgumentCaptor.getValue().getPersonParty().getContactInfo());
-        
+
         ArgumentCaptor<CreateFoodFacility> createFoodFacilityArgumentCaptor = ArgumentCaptor.forClass(CreateFoodFacility.class);
         verify(minutMiljoClientMock, times(1)).createFoodFacility(createFoodFacilityArgumentCaptor.capture());
-        assertEquals(TestConstants.ADRESSPLATS_ID, createFoodFacilityArgumentCaptor.getValue().getCreateFoodFacilitySvcDto().getAddress().getAdressPlatsId());
-        assertEquals(TestConstants.FNR, createFoodFacilityArgumentCaptor.getValue().getCreateFoodFacilitySvcDto().getEstateDesignation().getFnr());
+        assertEquals(ADRESSPLATS_ID, createFoodFacilityArgumentCaptor.getValue().getCreateFoodFacilitySvcDto().getAddress().getAdressPlatsId());
+        assertEquals(FNR, createFoodFacilityArgumentCaptor.getValue().getCreateFoodFacilitySvcDto().getEstateDesignation().getFnr());
         assertEquals(result.getCaseId(), createFoodFacilityArgumentCaptor.getValue().getCreateFoodFacilitySvcDto().getCase());
         assertEquals(eCase.getFacilities().get(0).getDescription(), createFoodFacilityArgumentCaptor.getValue().getCreateFoodFacilitySvcDto().getNote());
         assertTrue(createFoodFacilityArgumentCaptor.getValue().getCreateFoodFacilitySvcDto().getFacilityCollectionName().contains(eCase.getFacilities().get(0).getFacilityCollectionName()));
-        
+
         ArgumentCaptor<AddPartyToFacility> addPartyToFacilityArgumentCaptor = ArgumentCaptor.forClass(AddPartyToFacility.class);
         verify(minutMiljoClientMock, times(2)).addPartyToFacility(addPartyToFacilityArgumentCaptor.capture());
         List<AddPartyToFacility> addPartyToFacilityList = addPartyToFacilityArgumentCaptor.getAllValues();
@@ -177,7 +179,7 @@ class EcosServiceTest {
             assertNotNull(addPartyToFacility.getModel().getPartyId());
             assertNotNull(addPartyToFacility.getModel().getRoles().getGuid());
         });
-        
+
         ArgumentCaptor<AddPartyToCase> addPartyToCaseArgumentCaptor = ArgumentCaptor.forClass(AddPartyToCase.class);
         verify(minutMiljoClientMock, times(2)).addPartyToCase(addPartyToCaseArgumentCaptor.capture());
         List<AddPartyToCase> addPartyToCaseList = addPartyToCaseArgumentCaptor.getAllValues();
@@ -186,7 +188,7 @@ class EcosServiceTest {
             assertNotNull(addPartyToCase.getModel().getPartyId());
             assertNotNull(addPartyToCase.getModel().getRoles().getGuid());
         });
-        
+
         ArgumentCaptor<RegisterDocument> registerDocumentArgumentCaptor = ArgumentCaptor.forClass(RegisterDocument.class);
         verify(minutMiljoClientV2Mock, times(1)).registerDocumentV2(registerDocumentArgumentCaptor.capture());
         RegisterDocumentCaseSvcDtoV2 registerDocumentCaseSvcDtoV2 = registerDocumentArgumentCaptor.getValue().getRegisterDocumentCaseSvcDto();
@@ -195,23 +197,23 @@ class EcosServiceTest {
         assertEquals(Constants.ECOS_HANDLING_OFFICER_GROUP_ID_EXPEDITIONEN, registerDocumentCaseSvcDtoV2.getHandlingOfficerGroupId());
         assertEquals(Constants.ECOS_DIARY_PLAN_LIVSMEDEL, registerDocumentCaseSvcDtoV2.getDiaryPlanId());
         assertEquals(Constants.ECOS_PROCESS_TYPE_ID_REGISTRERING_AV_LIVSMEDEL, registerDocumentCaseSvcDtoV2.getProcessTypeId());
-        
+
         verify(caseMappingServiceMock, times(1)).postCaseMapping(any(CaseMapping.class));
     }
-    
+
     @Test
-    void testMinimalFoodFacilityCase() throws ApplicationException {
-        
+    void testMinimalFoodFacilityCase() {
+
         EnvironmentalCaseDTO eCase = new EnvironmentalCaseDTO();
         List<AttachmentDTO> aList = new ArrayList<>();
         AttachmentDTO attachment = new AttachmentDTO();
         attachment.setCategory(AttachmentCategory.ANMALAN_LIVSMEDELSANLAGGNING);
-        attachment.setExtension(TestConstants.PDF_EXTENSION);
+        attachment.setExtension(".pdf");
         attachment.setName("Document Name");
-        attachment.setFile(TestConstants.BASE64_STRING);
+        attachment.setFile("dGVzdA==");
         aList.add(attachment);
         eCase.setAttachments(aList);
-        
+
         List<StakeholderDTO> sList = new ArrayList<>();
         OrganizationDTO organization = new OrganizationDTO();
         organization.setType(StakeholderType.ORGANIZATION);
@@ -219,10 +221,10 @@ class EcosServiceTest {
         srList.add(StakeholderRole.OPERATOR);
         organization.setRoles(srList);
         organization.setOrganizationName("organizationName");
-        organization.setOrganizationNumber(TestConstants.ORG_NUMBER);
-        
+        organization.setOrganizationNumber("123456-1234");
+
         sList.add(organization);
-        
+
         PersonDTO person = new PersonDTO();
         person.setType(StakeholderType.PERSON);
         List<StakeholderRole> srList2 = new ArrayList<>();
@@ -230,25 +232,25 @@ class EcosServiceTest {
         person.setRoles(srList2);
         person.setFirstName("Förnamn");
         person.setLastName("Efternamn");
-        
+
         sList.add(person);
-        
+
         eCase.setStakeholders(sList);
-        
+
         EnvironmentalFacilityDTO facility = new EnvironmentalFacilityDTO();
         facility.setFacilityCollectionName("facilityCollectionName");
-        
+
         AddressDTO facilityAddress = new AddressDTO();
         facilityAddress.setAddressCategories(List.of(AddressCategory.VISITING_ADDRESS));
-        facilityAddress.setPropertyDesignation(TestConstants.PROPERTY_DESIGNATION_BALDER);
+        facilityAddress.setPropertyDesignation("SUNDSVALL BALDER 2");
         facility.setAddress(facilityAddress);
         eCase.setFacilities(List.of(facility));
-        
+
         eCase.setCaseType(CaseType.REGISTRERING_AV_LIVSMEDEL);
         eCase.setExternalCaseId(String.valueOf(new Random().nextLong()));
-        
+
         ecosService.postCase(eCase);
-        
+
         verify(minutMiljoClientMock, times(2)).searchParty(any());
         verify(minutMiljoClientMock, times(1)).createOrganizationParty(any());
         verify(minutMiljoClientMock, times(1)).createPersonParty(any());
@@ -258,37 +260,37 @@ class EcosServiceTest {
         verify(minutMiljoClientV2Mock, times(1)).registerDocumentV2(any());
         verify(caseMappingServiceMock, times(1)).postCaseMapping(any(CaseMapping.class));
     }
-    
+
     // createHeatPumpFacility
     @Test
-    void testCreateHeatPumpFacilityCase() throws ApplicationException {
+    void testCreateHeatPumpFacilityCase() {
         EnvironmentalCaseDTO eCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP, AttachmentCategory.ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
         OrganizationDTO organization = (OrganizationDTO) TestUtil.createStakeholder(StakeholderType.ORGANIZATION, List.of(StakeholderRole.APPLICANT, StakeholderRole.OPERATOR));
         PersonDTO person = (PersonDTO) TestUtil.createStakeholder(StakeholderType.PERSON, List.of(StakeholderRole.CONTACT_PERSON));
         eCase.setStakeholders(List.of(organization, person));
-        
+
         // Mock citizenMappingService.getPersonalNumber
         doReturn(person.getPersonalNumber()).when(citizenMappingServiceMock).getPersonalNumber(person.getPersonId());
-        
+
         var result = ecosService.postCase(eCase);
-        assertEquals(TestConstants.ECOS_CASE_NUMBER, result.getCaseNumber());
-        
+        assertEquals("Inskickat", result.getCaseNumber());
+
         ArgumentCaptor<CreateHeatPumpFacility> createHeatPumpFacilityArgumentCaptor = ArgumentCaptor.forClass(CreateHeatPumpFacility.class);
         verify(minutMiljoClientMock, times(1)).createHeatPumpFacility(createHeatPumpFacilityArgumentCaptor.capture());
         CreateSoilHeatingFacilitySvcDto createSoilHeatingFacilitySvcDto = (CreateSoilHeatingFacilitySvcDto) createHeatPumpFacilityArgumentCaptor.getValue().getCreateIndividualSewageSvcDto();
-        
-        assertEquals(TestConstants.ADRESSPLATS_ID, createSoilHeatingFacilitySvcDto.getAddress().getAdressPlatsId());
+
+        assertEquals(ADRESSPLATS_ID, createSoilHeatingFacilitySvcDto.getAddress().getAdressPlatsId());
         assertEquals(Constants.ECOS_FACILITY_STATUS_ID_ANMALD_ANSOKT, createSoilHeatingFacilitySvcDto.getFacilityStatusId());
         assertEquals(result.getCaseId(), createSoilHeatingFacilitySvcDto.getCreatedFromCaseId());
-        assertEquals(TestConstants.FNR, createSoilHeatingFacilitySvcDto.getEstate().getFnr());
+        assertEquals(FNR, createSoilHeatingFacilitySvcDto.getEstate().getFnr());
         assertNotNull(createSoilHeatingFacilitySvcDto.getManufacturer());
         assertNotNull(createSoilHeatingFacilitySvcDto.getModel());
         assertNotNull(createSoilHeatingFacilitySvcDto.getPowerConsumption());
         assertNotNull(createSoilHeatingFacilitySvcDto.getPowerOutput());
     }
-    
+
     @Test
-    void testAirHeating() throws ApplicationException {
+    void testAirHeating() {
         EnvironmentalCaseDTO eCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP, AttachmentCategory.ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
         Map<String, String> extraParameters = new HashMap<>();
         extraParameters.put("CreateAirHeatingFacilitySvcDto_Manufacturer", "Mitsubishi");
@@ -296,17 +298,17 @@ class EcosServiceTest {
         extraParameters.put("CreateAirHeatingFacilitySvcDto_PowerConsumption", "1.7");
         extraParameters.put("CreateAirHeatingFacilitySvcDto_PowerOutput", "4.8");
         eCase.getFacilities().get(0).setExtraParameters(extraParameters);
-        
+
         ecosService.postCase(eCase);
-        
+
         ArgumentCaptor<CreateHeatPumpFacility> createHeatPumpFacilityArgumentCaptor = ArgumentCaptor.forClass(CreateHeatPumpFacility.class);
         verifyMinutMiljoCallsForHeatPumpCase(createHeatPumpFacilityArgumentCaptor);
-        
+
         verifyStandardParams(extraParameters, createHeatPumpFacilityArgumentCaptor.getValue().getCreateIndividualSewageSvcDto());
     }
-    
+
     @Test
-    void testGeothermalHeating() throws ApplicationException {
+    void testGeothermalHeating() {
         EnvironmentalCaseDTO eCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP, AttachmentCategory.ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
         Map<String, String> extraParameters = new HashMap<>();
         extraParameters.put("CreateGeothermalHeatingFacilitySvcDto_Manufacturer", "Mitsubishi");
@@ -316,18 +318,18 @@ class EcosServiceTest {
         extraParameters.put("CreateGeothermalHeatingFacilitySvcDto_Capacity", "90.8");
         extraParameters.put("CreateGeothermalHeatingFacilitySvcDto_HeatTransferFluidId", CYTONOL);
         eCase.getFacilities().get(0).setExtraParameters(extraParameters);
-        
+
         ecosService.postCase(eCase);
-        
+
         ArgumentCaptor<CreateHeatPumpFacility> createHeatPumpFacilityArgumentCaptor = ArgumentCaptor.forClass(CreateHeatPumpFacility.class);
         verifyMinutMiljoCallsForHeatPumpCase(createHeatPumpFacilityArgumentCaptor);
-        
+
         verifyStandardParams(extraParameters, createHeatPumpFacilityArgumentCaptor.getValue().getCreateIndividualSewageSvcDto());
         verifyFluidParams(extraParameters, (CreateHeatPumpFacilityWithHeatTransferFluidSvcDto) createHeatPumpFacilityArgumentCaptor.getValue().getCreateIndividualSewageSvcDto());
     }
-    
+
     @Test
-    void testSoilHeating() throws ApplicationException {
+    void testSoilHeating() {
         EnvironmentalCaseDTO eCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP, AttachmentCategory.ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
         Map<String, String> extraParameters = new HashMap<>();
         extraParameters.put("CreateSoilHeatingFacilitySvcDto_Manufacturer", "Mitsubishi");
@@ -337,23 +339,23 @@ class EcosServiceTest {
         extraParameters.put("CreateSoilHeatingFacilitySvcDto_Capacity", "90.8");
         extraParameters.put("CreateSoilHeatingFacilitySvcDto_HeatTransferFluidId", CYTONOL);
         eCase.getFacilities().get(0).setExtraParameters(extraParameters);
-        
+
         ecosService.postCase(eCase);
-        
+
         ArgumentCaptor<CreateHeatPumpFacility> createHeatPumpFacilityArgumentCaptor = ArgumentCaptor.forClass(CreateHeatPumpFacility.class);
         verifyMinutMiljoCallsForHeatPumpCase(createHeatPumpFacilityArgumentCaptor);
-        
+
         verifyStandardParams(extraParameters, createHeatPumpFacilityArgumentCaptor.getValue().getCreateIndividualSewageSvcDto());
         verifyFluidParams(extraParameters, (CreateHeatPumpFacilityWithHeatTransferFluidSvcDto) createHeatPumpFacilityArgumentCaptor.getValue().getCreateIndividualSewageSvcDto());
     }
-    
+
     @Test
-    void testExtraParamsNull() throws ApplicationException {
+    void testExtraParamsNull() {
         EnvironmentalCaseDTO eCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP, AttachmentCategory.ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
         eCase.getFacilities().get(0).setExtraParameters(null);
-        
+
         ecosService.postCase(eCase);
-        
+
         verify(minutMiljoClientMock, times(6)).searchParty(any());
         verify(minutMiljoClientMock, times(1)).createOrganizationParty(any());
         verify(minutMiljoClientMock, times(2)).createPersonParty(any());
@@ -362,15 +364,15 @@ class EcosServiceTest {
         verify(minutMiljoClientMock, times(3)).addPartyToCase(any());
         verify(minutMiljoClientV2Mock, times(1)).registerDocumentV2(any());
     }
-    
+
     @Test
-    void testExtraParamsEmpty() throws ApplicationException {
+    void testExtraParamsEmpty() {
         EnvironmentalCaseDTO eCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP, AttachmentCategory.ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
         Map<String, String> extraParameters = new HashMap<>();
         eCase.getFacilities().get(0).setExtraParameters(extraParameters);
-        
+
         ecosService.postCase(eCase);
-        
+
         verify(minutMiljoClientMock, times(6)).searchParty(any());
         verify(minutMiljoClientMock, times(1)).createOrganizationParty(any());
         verify(minutMiljoClientMock, times(2)).createPersonParty(any());
@@ -379,9 +381,9 @@ class EcosServiceTest {
         verify(minutMiljoClientMock, times(3)).addPartyToCase(any());
         verify(minutMiljoClientV2Mock, times(1)).registerDocumentV2(any());
     }
-    
+
     @Test
-    void testMarineHeating() throws ApplicationException {
+    void testMarineHeating() {
         EnvironmentalCaseDTO eCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP, AttachmentCategory.ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
         Map<String, String> extraParameters = new HashMap<>();
         extraParameters.put("CreateMarineHeatingFacilitySvcDto_Manufacturer", "Mitsubishi");
@@ -391,28 +393,28 @@ class EcosServiceTest {
         extraParameters.put("CreateMarineHeatingFacilitySvcDto_Capacity", "90.8");
         extraParameters.put("CreateMarineHeatingFacilitySvcDto_HeatTransferFluidId", CYTONOL);
         eCase.getFacilities().get(0).setExtraParameters(extraParameters);
-        
+
         ecosService.postCase(eCase);
-        
+
         ArgumentCaptor<CreateHeatPumpFacility> createHeatPumpFacilityArgumentCaptor = ArgumentCaptor.forClass(CreateHeatPumpFacility.class);
         verifyMinutMiljoCallsForHeatPumpCase(createHeatPumpFacilityArgumentCaptor);
-        
+
         verifyStandardParams(extraParameters, createHeatPumpFacilityArgumentCaptor.getValue().getCreateIndividualSewageSvcDto());
         verifyFluidParams(extraParameters, (CreateHeatPumpFacilityWithHeatTransferFluidSvcDto) createHeatPumpFacilityArgumentCaptor.getValue().getCreateIndividualSewageSvcDto());
     }
-    
+
     private void verifyStandardParams(Map<String, String> extraParameters, CreateHeatPumpFacilitySvcDto svcDto) {
         Assertions.assertEquals(extraParameters.entrySet().stream().filter(e -> e.getKey().contains("Manufacturer")).findFirst().orElseThrow().getValue(), svcDto.getManufacturer());
         Assertions.assertEquals(extraParameters.entrySet().stream().filter(e -> e.getKey().contains("Model")).findFirst().orElseThrow().getValue(), svcDto.getModel());
         Assertions.assertEquals(CaseUtil.parseDouble(extraParameters.entrySet().stream().filter(e -> e.getKey().contains("PowerConsumption")).findFirst().orElseThrow().getValue()), svcDto.getPowerConsumption());
         Assertions.assertEquals(CaseUtil.parseDouble(extraParameters.entrySet().stream().filter(e -> e.getKey().contains("PowerOutput")).findFirst().orElseThrow().getValue()), svcDto.getPowerOutput());
     }
-    
+
     private void verifyFluidParams(Map<String, String> extraParameters, CreateHeatPumpFacilityWithHeatTransferFluidSvcDto svcDto) {
         Assertions.assertEquals(extraParameters.entrySet().stream().filter(e -> e.getKey().contains("HeatTransferFluidId")).findFirst().orElseThrow().getValue(), svcDto.getHeatTransferFluidId());
         Assertions.assertEquals(CaseUtil.parseDouble(extraParameters.entrySet().stream().filter(e -> e.getKey().contains("Capacity")).findFirst().orElseThrow().getValue()), svcDto.getCapacity());
     }
-    
+
     private void verifyMinutMiljoCallsForHeatPumpCase(ArgumentCaptor<CreateHeatPumpFacility> createHeatPumpFacilityArgumentCaptor) {
         verify(minutMiljoClientMock, times(6)).searchParty(any());
         verify(minutMiljoClientMock, times(1)).createOrganizationParty(any());
@@ -422,13 +424,13 @@ class EcosServiceTest {
         verify(minutMiljoClientMock, times(3)).addPartyToCase(any());
         verify(minutMiljoClientV2Mock, times(1)).registerDocumentV2(any());
     }
-    
+
     @Test
-    void healthProtectionTest() throws ApplicationException {
+    void healthProtectionTest() {
         EnvironmentalCaseDTO eCase = TestUtil.createEnvironmentalCase(CaseType.ANMALAN_HALSOSKYDDSVERKSAMHET, AttachmentCategory.ANMALAN_HALSOSKYDDSVERKSAMHET);
-        
+
         ecosService.postCase(eCase);
-        
+
         ArgumentCaptor<CreateHealthProtectionFacility> createHealthProtectionFacilityArgumentCaptor = ArgumentCaptor.forClass(CreateHealthProtectionFacility.class);
         verify(minutMiljoClientMock, times(6)).searchParty(any());
         verify(minutMiljoClientMock, times(1)).createOrganizationParty(any());
@@ -437,17 +439,17 @@ class EcosServiceTest {
         verify(minutMiljoClientMock, times(3)).addPartyToFacility(any());
         verify(minutMiljoClientMock, times(3)).addPartyToCase(any());
         verify(minutMiljoClientV2Mock, times(1)).registerDocumentV2(any());
-        
+
         CreateHealthProtectionFacilitySvcDto svcDto = createHealthProtectionFacilityArgumentCaptor.getValue().getCreateHealthProtectionFacilitySvcDto();
-        Assertions.assertEquals(TestConstants.ADRESSPLATS_ID, svcDto.getAddress().getAdressPlatsId());
-        Assertions.assertEquals(TestConstants.FNR, svcDto.getEstateDesignation().getFnr());
-        Assertions.assertEquals(TestConstants.ECOS_CASE_ID, svcDto.getCase());
+        Assertions.assertEquals(ADRESSPLATS_ID, svcDto.getAddress().getAdressPlatsId());
+        Assertions.assertEquals(FNR, svcDto.getEstateDesignation().getFnr());
+        Assertions.assertEquals("e19981ad-34b2-4e14-88f5-133f61ca85aa", svcDto.getCase());
         Assertions.assertEquals(eCase.getFacilities().get(0).getDescription(), svcDto.getNote());
         Assertions.assertEquals(eCase.getFacilities().get(0).getFacilityCollectionName(), svcDto.getFacilityCollectionName());
     }
-    
+
     @Test
-    void individualSewageSepticTank() throws ApplicationException {
+    void individualSewageSepticTank() {
         EnvironmentalCaseDTO eCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, AttachmentCategory.ANSOKAN_ENSKILT_AVLOPP);
         Map<String, String> extraParameters = new HashMap<>();
         String prefix = "SepticTankSvcDto_";
@@ -457,82 +459,82 @@ class EcosServiceTest {
         extraParameters.put(prefix + "HasTPipe", String.valueOf(new Random().nextBoolean()));
         extraParameters.put(prefix + "Volume", String.valueOf(new Random().nextDouble()));
         eCase.getFacilities().get(0).setExtraParameters(extraParameters);
-        
+
         ecosService.postCase(eCase);
-        
+
         ArgumentCaptor<CreateIndividualSewageFacility> argumentCaptor = ArgumentCaptor.forClass(CreateIndividualSewageFacility.class);
         verifyMinutMiljoCallsForSewageCase(argumentCaptor);
         verifyStandardParams(extraParameters, argumentCaptor.getValue().getCreateIndividualSewageSvcDto(), prefix);
-        
+
         SepticTankSvcDto septicTankSvcDto = (SepticTankSvcDto) argumentCaptor.getValue().getCreateIndividualSewageSvcDto().getPurificationSteps().getPurificationStepSvcDto().get(0);
-        
+
         Assertions.assertEquals(CaseUtil.parseInteger(extraParameters.entrySet().stream().filter(e -> e.getKey().contains(prefix + "EmptyingInterval")).findFirst().orElseThrow().getValue()), septicTankSvcDto.getEmptyingInterval());
         Assertions.assertEquals(CaseUtil.parseBoolean(extraParameters.entrySet().stream().filter(e -> e.getKey().contains(prefix + "HasCeMarking")).findFirst().orElseThrow().getValue()), septicTankSvcDto.isHasCeMarking());
         Assertions.assertEquals(CaseUtil.parseBoolean(extraParameters.entrySet().stream().filter(e -> e.getKey().contains(prefix + "HasTPipe")).findFirst().orElseThrow().getValue()), septicTankSvcDto.isHasTPipe());
         Assertions.assertEquals(CaseUtil.parseDouble(extraParameters.entrySet().stream().filter(e -> e.getKey().contains(prefix + "Volume")).findFirst().orElseThrow().getValue()), septicTankSvcDto.getVolume());
     }
-    
+
     @Test
-    void individualSewageInfiltration() throws ApplicationException {
+    void individualSewageInfiltration() {
         EnvironmentalCaseDTO eCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, AttachmentCategory.ANSOKAN_ENSKILT_AVLOPP);
         Map<String, String> extraParameters = new HashMap<>();
         String prefix = "InfiltrationPlantSvcDto_";
         TestUtil.setSewageStandardExtraParams(extraParameters, prefix);
-        
+
         extraParameters.put(prefix + "Elevated", String.valueOf(new Random().nextBoolean()));
         extraParameters.put(prefix + "Reinforced", String.valueOf(new Random().nextBoolean()));
         extraParameters.put(prefix + "IsModuleSystem", String.valueOf(new Random().nextBoolean()));
         extraParameters.put(prefix + "SpreadLinesCount", String.valueOf(new Random().nextInt()));
         extraParameters.put(prefix + "SpreadLinesLength", String.valueOf(new Random().nextInt()));
         eCase.getFacilities().get(0).setExtraParameters(extraParameters);
-        
+
         ecosService.postCase(eCase);
-        
+
         ArgumentCaptor<CreateIndividualSewageFacility> argumentCaptor = ArgumentCaptor.forClass(CreateIndividualSewageFacility.class);
         verifyMinutMiljoCallsForSewageCase(argumentCaptor);
         verifyStandardParams(extraParameters, argumentCaptor.getValue().getCreateIndividualSewageSvcDto(), prefix);
-        
+
         InfiltrationPlantSvcDto infiltrationPlantSvcDto = (InfiltrationPlantSvcDto) argumentCaptor.getValue().getCreateIndividualSewageSvcDto().getPurificationSteps().getPurificationStepSvcDto().get(0);
-        
+
         Assertions.assertEquals(CaseUtil.parseBoolean(extraParameters.entrySet().stream().filter(e -> e.getKey().contains(prefix + "Elevated")).findFirst().orElseThrow().getValue()), infiltrationPlantSvcDto.isElevated());
         Assertions.assertEquals(CaseUtil.parseBoolean(extraParameters.entrySet().stream().filter(e -> e.getKey().contains(prefix + "Reinforced")).findFirst().orElseThrow().getValue()), infiltrationPlantSvcDto.isReinforced());
         Assertions.assertEquals(CaseUtil.parseBoolean(extraParameters.entrySet().stream().filter(e -> e.getKey().contains(prefix + "IsModuleSystem")).findFirst().orElseThrow().getValue()), infiltrationPlantSvcDto.isIsModuleSystem());
         Assertions.assertEquals(CaseUtil.parseInteger(extraParameters.entrySet().stream().filter(e -> e.getKey().contains(prefix + "SpreadLinesCount")).findFirst().orElseThrow().getValue()), infiltrationPlantSvcDto.getSpreadLinesCount());
         Assertions.assertEquals(CaseUtil.parseInteger(extraParameters.entrySet().stream().filter(e -> e.getKey().contains(prefix + "SpreadLinesLength")).findFirst().orElseThrow().getValue()), infiltrationPlantSvcDto.getSpreadLinesLength());
     }
-    
+
     @Test
-    void individualSewageClosedTank() throws ApplicationException {
+    void individualSewageClosedTank() {
         EnvironmentalCaseDTO eCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, AttachmentCategory.ANSOKAN_ENSKILT_AVLOPP);
         Map<String, String> extraParameters = new HashMap<>();
         String prefix = "ClosedTankSvcDto_";
         TestUtil.setSewageStandardExtraParams(extraParameters, prefix);
-        
+
         extraParameters.put(prefix + "EmptyingInterval", String.valueOf(new Random().nextInt()));
         extraParameters.put(prefix + "HasCeMarking", String.valueOf(new Random().nextBoolean()));
         extraParameters.put(prefix + "Volume", String.valueOf(new Random().nextDouble()));
         eCase.getFacilities().get(0).setExtraParameters(extraParameters);
-        
+
         ecosService.postCase(eCase);
-        
+
         ArgumentCaptor<CreateIndividualSewageFacility> argumentCaptor = ArgumentCaptor.forClass(CreateIndividualSewageFacility.class);
         verifyMinutMiljoCallsForSewageCase(argumentCaptor);
         verifyStandardParams(extraParameters, argumentCaptor.getValue().getCreateIndividualSewageSvcDto(), prefix);
-        
+
         ClosedTankSvcDto closedTankSvcDto = (ClosedTankSvcDto) argumentCaptor.getValue().getCreateIndividualSewageSvcDto().getPurificationSteps().getPurificationStepSvcDto().get(0);
-        
+
         Assertions.assertEquals(CaseUtil.parseInteger(extraParameters.entrySet().stream().filter(e -> e.getKey().contains(prefix + "EmptyingInterval")).findFirst().orElseThrow().getValue()), closedTankSvcDto.getEmptyingInterval());
         Assertions.assertEquals(CaseUtil.parseBoolean(extraParameters.entrySet().stream().filter(e -> e.getKey().contains(prefix + "HasCeMarking")).findFirst().orElseThrow().getValue()), closedTankSvcDto.isHasCeMarking());
         Assertions.assertEquals(CaseUtil.parseDouble(extraParameters.entrySet().stream().filter(e -> e.getKey().contains(prefix + "Volume")).findFirst().orElseThrow().getValue()), closedTankSvcDto.getVolume());
     }
-    
+
     @Test
-    void individualSewageDrySolution() throws ApplicationException {
+    void individualSewageDrySolution() {
         EnvironmentalCaseDTO eCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, AttachmentCategory.ANSOKAN_ENSKILT_AVLOPP);
         Map<String, String> extraParameters = new HashMap<>();
         String prefix = "DrySolutionSvcDto_";
         TestUtil.setSewageStandardExtraParams(extraParameters, prefix);
-        
+
         extraParameters.put(prefix + "CompostProductName", UUID.randomUUID().toString());
         extraParameters.put(prefix + "DrySolutionCompostTypeId", UUID.randomUUID().toString());
         extraParameters.put(prefix + "DrySolutionTypeId", UUID.randomUUID().toString());
@@ -541,15 +543,15 @@ class EcosServiceTest {
         extraParameters.put(prefix + "ToiletProductName", UUID.randomUUID().toString());
         extraParameters.put(prefix + "Volume", String.valueOf(new Random().nextDouble()));
         eCase.getFacilities().get(0).setExtraParameters(extraParameters);
-        
+
         ecosService.postCase(eCase);
-        
+
         ArgumentCaptor<CreateIndividualSewageFacility> argumentCaptor = ArgumentCaptor.forClass(CreateIndividualSewageFacility.class);
         verifyMinutMiljoCallsForSewageCase(argumentCaptor);
         verifyStandardParams(extraParameters, argumentCaptor.getValue().getCreateIndividualSewageSvcDto(), prefix);
-        
+
         DrySolutionSvcDto drySolutionSvcDto = (DrySolutionSvcDto) argumentCaptor.getValue().getCreateIndividualSewageSvcDto().getPurificationSteps().getPurificationStepSvcDto().get(0);
-        
+
         Assertions.assertEquals(CaseUtil.parseString(extraParameters.entrySet().stream().filter(e -> e.getKey().contains(prefix + "CompostProductName")).findFirst().orElseThrow().getValue()), drySolutionSvcDto.getCompostProductName());
         Assertions.assertEquals(CaseUtil.parseString(extraParameters.entrySet().stream().filter(e -> e.getKey().contains(prefix + "DrySolutionCompostTypeId")).findFirst().orElseThrow().getValue()), drySolutionSvcDto.getDrySolutionCompostTypeId());
         Assertions.assertEquals(CaseUtil.parseString(extraParameters.entrySet().stream().filter(e -> e.getKey().contains(prefix + "DrySolutionTypeId")).findFirst().orElseThrow().getValue()), drySolutionSvcDto.getDrySolutionTypeId());
@@ -558,128 +560,128 @@ class EcosServiceTest {
         Assertions.assertEquals(CaseUtil.parseString(extraParameters.entrySet().stream().filter(e -> e.getKey().contains(prefix + "ToiletProductName")).findFirst().orElseThrow().getValue()), drySolutionSvcDto.getToiletProductName());
         Assertions.assertEquals(CaseUtil.parseDouble(extraParameters.entrySet().stream().filter(e -> e.getKey().contains(prefix + "Volume")).findFirst().orElseThrow().getValue()), drySolutionSvcDto.getVolume());
     }
-    
+
     @Test
-    void individualSewageMiniSewage() throws ApplicationException {
+    void individualSewageMiniSewage() {
         EnvironmentalCaseDTO eCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, AttachmentCategory.ANSOKAN_ENSKILT_AVLOPP);
         Map<String, String> extraParameters = new HashMap<>();
         String prefix = "MiniSewageSvcDto_";
         TestUtil.setSewageStandardExtraParams(extraParameters, prefix);
-        
+
         extraParameters.put(prefix + "CeMarking", String.valueOf(new Random().nextBoolean()));
         extraParameters.put(prefix + "Manufacturer", UUID.randomUUID().toString());
         extraParameters.put(prefix + "Model", UUID.randomUUID().toString());
         eCase.getFacilities().get(0).setExtraParameters(extraParameters);
-        
+
         ecosService.postCase(eCase);
-        
+
         ArgumentCaptor<CreateIndividualSewageFacility> argumentCaptor = ArgumentCaptor.forClass(CreateIndividualSewageFacility.class);
         verifyMinutMiljoCallsForSewageCase(argumentCaptor);
         verifyStandardParams(extraParameters, argumentCaptor.getValue().getCreateIndividualSewageSvcDto(), prefix);
-        
+
         MiniSewageSvcDto svcDto = (MiniSewageSvcDto) argumentCaptor.getValue().getCreateIndividualSewageSvcDto().getPurificationSteps().getPurificationStepSvcDto().get(0);
-        
+
         Assertions.assertEquals(CaseUtil.parseBoolean(extraParameters.entrySet().stream().filter(e -> e.getKey().contains(prefix + "CeMarking")).findFirst().orElseThrow().getValue()), svcDto.isCeMarking());
         Assertions.assertEquals(CaseUtil.parseString(extraParameters.entrySet().stream().filter(e -> e.getKey().contains(prefix + "Manufacturer")).findFirst().orElseThrow().getValue()), svcDto.getManufacturer());
         Assertions.assertEquals(CaseUtil.parseString(extraParameters.entrySet().stream().filter(e -> e.getKey().contains(prefix + "Model")).findFirst().orElseThrow().getValue()), svcDto.getModel());
     }
-    
+
     @Test
-    void individualSewageFilterBed() throws ApplicationException {
+    void individualSewageFilterBed() {
         EnvironmentalCaseDTO eCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, AttachmentCategory.ANSOKAN_ENSKILT_AVLOPP);
         Map<String, String> extraParameters = new HashMap<>();
         String prefix = "FilterBedSvcDto_";
         TestUtil.setSewageStandardExtraParams(extraParameters, prefix);
-        
+
         extraParameters.put(prefix + "Volume", String.valueOf(new Random().nextDouble()));
         eCase.getFacilities().get(0).setExtraParameters(extraParameters);
-        
+
         ecosService.postCase(eCase);
-        
+
         ArgumentCaptor<CreateIndividualSewageFacility> argumentCaptor = ArgumentCaptor.forClass(CreateIndividualSewageFacility.class);
         verifyMinutMiljoCallsForSewageCase(argumentCaptor);
         verifyStandardParams(extraParameters, argumentCaptor.getValue().getCreateIndividualSewageSvcDto(), prefix);
-        
+
         FilterBedSvcDto svcDto = (FilterBedSvcDto) argumentCaptor.getValue().getCreateIndividualSewageSvcDto().getPurificationSteps().getPurificationStepSvcDto().get(0);
         Assertions.assertEquals(CaseUtil.parseDouble(extraParameters.entrySet().stream().filter(e -> e.getKey().contains(prefix + "Volume")).findFirst().orElseThrow().getValue()), svcDto.getVolume());
     }
-    
+
     @Test
-    void individualSewageSandFilter() throws ApplicationException {
+    void individualSewageSandFilter() {
         EnvironmentalCaseDTO eCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, AttachmentCategory.ANSOKAN_ENSKILT_AVLOPP);
         Map<String, String> extraParameters = new HashMap<>();
         String prefix = "SandFilterSvcDto_";
         TestUtil.setSewageStandardExtraParams(extraParameters, prefix);
-        
+
         extraParameters.put(prefix + "Area", String.valueOf(new Random().nextInt()));
         extraParameters.put(prefix + "Elevated", String.valueOf(new Random().nextBoolean()));
         extraParameters.put(prefix + "WaterTight", String.valueOf(new Random().nextBoolean()));
         eCase.getFacilities().get(0).setExtraParameters(extraParameters);
-        
+
         ecosService.postCase(eCase);
-        
+
         ArgumentCaptor<CreateIndividualSewageFacility> argumentCaptor = ArgumentCaptor.forClass(CreateIndividualSewageFacility.class);
         verifyMinutMiljoCallsForSewageCase(argumentCaptor);
         verifyStandardParams(extraParameters, argumentCaptor.getValue().getCreateIndividualSewageSvcDto(), prefix);
-        
+
         SandFilterSvcDto svcDto = (SandFilterSvcDto) argumentCaptor.getValue().getCreateIndividualSewageSvcDto().getPurificationSteps().getPurificationStepSvcDto().get(0);
         Assertions.assertEquals(CaseUtil.parseInteger(extraParameters.entrySet().stream().filter(e -> e.getKey().contains(prefix + "Area")).findFirst().orElseThrow().getValue()), svcDto.getArea());
         Assertions.assertEquals(CaseUtil.parseBoolean(extraParameters.entrySet().stream().filter(e -> e.getKey().contains(prefix + "Elevated")).findFirst().orElseThrow().getValue()), svcDto.isElevated());
         Assertions.assertEquals(CaseUtil.parseBoolean(extraParameters.entrySet().stream().filter(e -> e.getKey().contains(prefix + "WaterTight")).findFirst().orElseThrow().getValue()), svcDto.isWaterTight());
     }
-    
+
     @Test
-    void individualSewageBiologicalStep() throws ApplicationException {
+    void individualSewageBiologicalStep() {
         EnvironmentalCaseDTO eCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, AttachmentCategory.ANSOKAN_ENSKILT_AVLOPP);
         Map<String, String> extraParameters = new HashMap<>();
         String prefix = "BiologicalStepSvcDto_";
         TestUtil.setSewageStandardExtraParams(extraParameters, prefix);
-        
+
         extraParameters.put(prefix + "Area", String.valueOf(new Random().nextInt()));
         extraParameters.put(prefix + "BiologicalStepTypeId", UUID.randomUUID().toString());
         eCase.getFacilities().get(0).setExtraParameters(extraParameters);
-        
+
         ecosService.postCase(eCase);
-        
+
         ArgumentCaptor<CreateIndividualSewageFacility> argumentCaptor = ArgumentCaptor.forClass(CreateIndividualSewageFacility.class);
         verifyMinutMiljoCallsForSewageCase(argumentCaptor);
         verifyStandardParams(extraParameters, argumentCaptor.getValue().getCreateIndividualSewageSvcDto(), prefix);
-        
+
         BiologicalStepSvcDto svcDto = (BiologicalStepSvcDto) argumentCaptor.getValue().getCreateIndividualSewageSvcDto().getPurificationSteps().getPurificationStepSvcDto().get(0);
         Assertions.assertEquals(CaseUtil.parseInteger(extraParameters.entrySet().stream().filter(e -> e.getKey().contains(prefix + "Area")).findFirst().orElseThrow().getValue()), svcDto.getArea());
         Assertions.assertEquals(CaseUtil.parseString(extraParameters.entrySet().stream().filter(e -> e.getKey().contains(prefix + "BiologicalStepTypeId")).findFirst().orElseThrow().getValue()), svcDto.getBiologicalStepTypeId());
     }
-    
+
     @Test
-    void individualSewagePhosphorusTrap() throws ApplicationException {
+    void individualSewagePhosphorusTrap() {
         EnvironmentalCaseDTO eCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, AttachmentCategory.ANSOKAN_ENSKILT_AVLOPP);
         Map<String, String> extraParameters = new HashMap<>();
         String prefix = "PhosphorusTrapSvcDto_";
         TestUtil.setSewageStandardExtraParams(extraParameters, prefix);
         eCase.getFacilities().get(0).setExtraParameters(extraParameters);
-        
+
         ecosService.postCase(eCase);
-        
+
         ArgumentCaptor<CreateIndividualSewageFacility> argumentCaptor = ArgumentCaptor.forClass(CreateIndividualSewageFacility.class);
         verifyMinutMiljoCallsForSewageCase(argumentCaptor);
         verifyStandardParams(extraParameters, argumentCaptor.getValue().getCreateIndividualSewageSvcDto(), prefix);
     }
-    
+
     @Test
-    void individualSewageChemicalPretreatment() throws ApplicationException {
+    void individualSewageChemicalPretreatment() {
         EnvironmentalCaseDTO eCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, AttachmentCategory.ANSOKAN_ENSKILT_AVLOPP);
         Map<String, String> extraParameters = new HashMap<>();
         String prefix = "ChemicalPretreatmentSvcDto_";
         TestUtil.setSewageStandardExtraParams(extraParameters, prefix);
         eCase.getFacilities().get(0).setExtraParameters(extraParameters);
-        
+
         ecosService.postCase(eCase);
-        
+
         ArgumentCaptor<CreateIndividualSewageFacility> argumentCaptor = ArgumentCaptor.forClass(CreateIndividualSewageFacility.class);
         verifyMinutMiljoCallsForSewageCase(argumentCaptor);
         verifyStandardParams(extraParameters, argumentCaptor.getValue().getCreateIndividualSewageSvcDto(), prefix);
     }
-    
+
     private void verifyMinutMiljoCallsForSewageCase(ArgumentCaptor<CreateIndividualSewageFacility> argumentCaptor) {
         verify(minutMiljoClientMock, times(6)).searchParty(any());
         verify(minutMiljoClientMock, times(1)).createOrganizationParty(any());
@@ -689,15 +691,15 @@ class EcosServiceTest {
         verify(minutMiljoClientMock, times(3)).addPartyToCase(any());
         verify(minutMiljoClientV2Mock, times(1)).registerDocumentV2(any());
     }
-    
-    
+
+
     private void verifyStandardParams(Map<String, String> extraParameters, CreateIndividualSewageFacilitySvcDto svcDto, String prefix) {
         Assertions.assertEquals(CaseUtil.parseBoolean(extraParameters.entrySet().stream().filter(e -> e.getKey().contains("OnGrantLand")).findFirst().orElseThrow().getValue()), svcDto.isOnGrantLand());
         Assertions.assertEquals(extraParameters.entrySet().stream().filter(e -> e.getKey().contains("ProtectionLevelApprovedEnvironmentId")).findFirst().orElseThrow().getValue(), svcDto.getProtectionLevelApprovedEnvironmentId());
         Assertions.assertEquals(extraParameters.entrySet().stream().filter(e -> e.getKey().contains("ProtectionLevelApprovedHealthId")).findFirst().orElseThrow().getValue(), svcDto.getProtectionLevelApprovedHealthId());
         Assertions.assertEquals(extraParameters.entrySet().stream().filter(e -> e.getKey().contains("WastewaterApprovedForId")).findFirst().orElseThrow().getValue(), svcDto.getWastewaterApprovedForId());
         Assertions.assertEquals(extraParameters.entrySet().stream().filter(e -> e.getKey().contains("WasteWaterInboundId")).findFirst().orElseThrow().getValue(), svcDto.getWasteWaterInboundId());
-        
+
         PurificationStepSvcDto purificationStepSvcDto = svcDto.getPurificationSteps().getPurificationStepSvcDto().get(0);
         Assertions.assertEquals(CaseUtil.parseBoolean(extraParameters.entrySet().stream().filter(e -> e.getKey().contains(prefix + "HasOverflowAlarm")).findFirst().orElseThrow().getValue()), purificationStepSvcDto.isHasOverflowAlarm());
         Assertions.assertEquals(CaseUtil.parseLocalDateTime(extraParameters.entrySet().stream().filter(e -> e.getKey().contains(prefix + "InstallationDate")).findFirst().orElseThrow().getValue()), purificationStepSvcDto.getInstallationDate());
@@ -706,15 +708,15 @@ class EcosServiceTest {
         Assertions.assertEquals(Constants.ECOS_FACILITY_STATUS_ID_ANMALD_ANSOKT, purificationStepSvcDto.getPurificationStepFacilityStatusId());
         Assertions.assertEquals(CaseUtil.parseInteger(extraParameters.entrySet().stream().filter(e -> e.getKey().contains(prefix + "StepNumber")).findFirst().orElseThrow().getValue()), purificationStepSvcDto.getStepNumber());
     }
-    
+
     @Test
-    void testMissingFacilityAddress() throws ApplicationException {
-        
+    void testMissingFacilityAddress() {
+
         EnvironmentalCaseDTO eCase = TestUtil.createEnvironmentalCase(CaseType.REGISTRERING_AV_LIVSMEDEL, AttachmentCategory.ANMALAN_LIVSMEDELSANLAGGNING);
         eCase.getFacilities().get(0).setAddress(null);
-        
+
         var result = ecosService.postCase(eCase);
-        
+
         verify(minutMiljoClientMock, times(6)).searchParty(any());
         verify(minutMiljoClientMock, times(1)).createOrganizationParty(any());
         verify(minutMiljoClientMock, times(2)).createPersonParty(any());
@@ -726,20 +728,20 @@ class EcosServiceTest {
         assertNotNull(createOccurrenceOnCaseArgumentCaptor.getValue().getCreateOccurrenceOnCaseSvcDto().getOccurrenceDate());
         assertEquals(Constants.ECOS_OCCURRENCE_TYPE_ID_INFO_FRAN_ETJANST, createOccurrenceOnCaseArgumentCaptor.getValue().getCreateOccurrenceOnCaseSvcDto().getOccurrenceTypeId());
         assertEquals(Constants.ECOS_OCCURENCE_TEXT_MOBIL_ANLAGGNING, createOccurrenceOnCaseArgumentCaptor.getValue().getCreateOccurrenceOnCaseSvcDto().getNote());
-        
+
         // If facility doesn't have any address, we should not register any facility and therefore not add any stakeholder to facility.
         // This results in manual handling for admin.
         verify(minutMiljoClientMock, times(0)).createFoodFacility(any());
         verify(minutMiljoClientMock, times(0)).addPartyToFacility(any());
-        
+
         verify(caseMappingServiceMock, times(1)).postCaseMapping(any(CaseMapping.class));
     }
-    
+
     @Test
     void testGetStatus() {
         String caseId = MessageFormat.format("MK-2022-{0}", new Random().nextInt(100000));
         String externalCaseID = UUID.randomUUID().toString();
-        
+
         CaseMapping caseMapping = new CaseMapping();
         caseMapping.setExternalCaseId(externalCaseID);
         caseMapping.setCaseId(caseId);
@@ -748,7 +750,7 @@ class EcosServiceTest {
         caseMapping.setServiceName(RandomStringUtils.random(10, true, false));
         caseMapping.setTimestamp(LocalDateTime.now());
         doReturn(List.of(caseMapping)).when(caseMappingServiceMock).getCaseMapping(externalCaseID, caseId);
-        
+
         GetCaseResponse getCaseResponse = new GetCaseResponse();
         CaseSvcDto caseSvcDto = new CaseSvcDto();
         caseSvcDto.setCaseNumber(caseId);
@@ -767,9 +769,9 @@ class EcosServiceTest {
         caseSvcDto.setOccurrences(arrayOfOccurrenceListItemSvcDto);
         getCaseResponse.setGetCaseResult(caseSvcDto);
         doReturn(getCaseResponse).when(minutMiljoClientMock).getCase(any());
-        
+
         var result = ecosService.getStatus(caseId, externalCaseID);
-        
+
         assertEquals(caseId, result.getCaseId());
         assertEquals(externalCaseID, result.getExternalCaseId());
         assertEquals(caseMapping.getCaseType(), result.getCaseType());
@@ -777,36 +779,36 @@ class EcosServiceTest {
         assertEquals(caseMapping.getServiceName(), result.getServiceName());
         assertEquals(occurrenceListItemSvcDto_2.getOccurrenceDescription(), result.getStatus());
         assertEquals(occurrenceListItemSvcDto_2.getOccurrenceDate(), result.getTimestamp());
-        
+
         ArgumentCaptor<GetCase> getCaseArgumentCaptor = ArgumentCaptor.forClass(GetCase.class);
         verify(minutMiljoClientMock, times(1)).getCase(getCaseArgumentCaptor.capture());
         assertEquals(caseId, getCaseArgumentCaptor.getValue().getCaseId());
     }
-    
+
     @Test
     void testGetStatusNotFound() {
         String caseId = MessageFormat.format("MK-2022-{0}", new Random().nextInt(100000));
         String externalCaseID = UUID.randomUUID().toString();
-        
+
         GetCaseResponse getCaseResponse = new GetCaseResponse();
         CaseSvcDto caseSvcDto = new CaseSvcDto();
         caseSvcDto.setCaseNumber(caseId);
         caseSvcDto.setCaseId(UUID.randomUUID().toString());
         getCaseResponse.setGetCaseResult(caseSvcDto);
         doReturn(getCaseResponse).when(minutMiljoClientMock).getCase(any());
-        
+
         var problem = assertThrows(ThrowableProblem.class, () -> ecosService.getStatus(caseId, externalCaseID));
         assertEquals(Status.NOT_FOUND, problem.getStatus());
         assertEquals(Constants.ERR_MSG_STATUS_NOT_FOUND, problem.getDetail());
     }
-    
+
     @Test
     void testGetStatusByOrgnr() {
         String caseNumber = MessageFormat.format("MK-2022-{0}", new Random().nextInt(100000));
         String caseId = UUID.randomUUID().toString();
         String externalCaseID = UUID.randomUUID().toString();
         String orgnr = TestUtil.generateRandomOrganizationNumber();
-        
+
         // Mock minutMiljoClient.searchParty
         SearchPartyResponse searchPartyResponse = new SearchPartyResponse();
         ArrayOfPartySvcDto arrayOfPartySvcDto = new ArrayOfPartySvcDto();
@@ -817,7 +819,7 @@ class EcosServiceTest {
         arrayOfPartySvcDto.getPartySvcDto().addAll(List.of(partySvcDto_1, partySvcDto_2));
         searchPartyResponse.setSearchPartyResult(arrayOfPartySvcDto);
         doReturn(searchPartyResponse).when(minutMiljoClientMock).searchParty(any());
-        
+
         // Mock minutMiljoClient.searchCase
         SearchCaseResponse searchCaseResponse = new SearchCaseResponse();
         ArrayOfSearchCaseResultSvcDto arrayOfSearchCaseResultSvcDto = new ArrayOfSearchCaseResultSvcDto();
@@ -830,7 +832,7 @@ class EcosServiceTest {
         arrayOfSearchCaseResultSvcDto.getSearchCaseResultSvcDto().addAll(List.of(searchCaseResultSvcDto_1, searchCaseResultSvcDto_2));
         searchCaseResponse.setSearchCaseResult(arrayOfSearchCaseResultSvcDto);
         doReturn(searchCaseResponse).when(minutMiljoClientMock).searchCase(any());
-        
+
         // Mock caseMappingService.getCaseMapping
         CaseMapping caseMapping = new CaseMapping();
         caseMapping.setExternalCaseId(externalCaseID);
@@ -840,7 +842,7 @@ class EcosServiceTest {
         caseMapping.setServiceName(RandomStringUtils.random(10, true, false));
         caseMapping.setTimestamp(LocalDateTime.now());
         doReturn(List.of(caseMapping)).when(caseMappingServiceMock).getCaseMapping(any(), any());
-        
+
         // Mock minutMiljoClient.getCase
         GetCaseResponse getCaseResponse = new GetCaseResponse();
         CaseSvcDto caseSvcDto = new CaseSvcDto();
@@ -860,9 +862,9 @@ class EcosServiceTest {
         caseSvcDto.setOccurrences(arrayOfOccurrenceListItemSvcDto);
         getCaseResponse.setGetCaseResult(caseSvcDto);
         doReturn(getCaseResponse).when(minutMiljoClientMock).getCase(any());
-        
+
         var result = ecosService.getEcosStatusByOrgNr(orgnr);
-        
+
         assertEquals(2, result.size());
         result.forEach(status -> {
             assertEquals(caseNumber, status.getCaseId());
@@ -873,18 +875,18 @@ class EcosServiceTest {
             assertEquals(occurrenceListItemSvcDto_2.getOccurrenceDescription(), status.getStatus());
             assertEquals(occurrenceListItemSvcDto_2.getOccurrenceDate(), status.getTimestamp());
         });
-        
+
         ArgumentCaptor<GetCase> getCaseArgumentCaptor = ArgumentCaptor.forClass(GetCase.class);
         verify(minutMiljoClientMock, times(2)).getCase(getCaseArgumentCaptor.capture());
     }
-    
+
     @Test
     void testAddDocumentsToCase() {
         String caseId = UUID.randomUUID().toString();
         AttachmentDTO attachmentDTO = TestUtil.createAttachmentDTO(AttachmentCategory.ANMALAN_LIVSMEDELSANLAGGNING);
-        
+
         ecosService.addDocumentsToCase(caseId, List.of(attachmentDTO));
-        
+
         ArgumentCaptor<AddDocumentsToCase> addDocumentsToCaseArgumentCaptor = ArgumentCaptor.forClass(AddDocumentsToCase.class);
         verify(minutMiljoClientMock, times(1)).addDocumentsToCase(addDocumentsToCaseArgumentCaptor.capture());
         AddDocumentsToCaseSvcDto addDocumentsToCaseSvcDto = addDocumentsToCaseArgumentCaptor.getValue().getAddDocumentToCaseSvcDto();
@@ -898,7 +900,7 @@ class EcosServiceTest {
         assertEquals(attachmentDTO.getCategory().getDescription(), documentSvcDto.getDocumentTypeId());
         assertEquals(attachmentDTO.getNote(), documentSvcDto.getNote());
     }
-    
+
     private void assertContactInfo(ContactInfoSvcDto contactInfoSvcDto) {
         assertNotNull(contactInfoSvcDto.getTitle());
         contactInfoSvcDto.getContactDetails().getContactInfoItemSvcDto().forEach(contactInfoItemSvcDto -> {
@@ -907,7 +909,7 @@ class EcosServiceTest {
             assertNotNull(contactInfoItemSvcDto.getValue());
         });
     }
-    
+
     private void assertAddress(List<AddressDTO> addresses, ArrayOfPartyAddressSvcDto minutAddresses) {
         assertEquals(addresses.size(), minutAddresses.getPartyAddressSvcDto().size());
         for (int i = 0; i < addresses.size(); i++) {

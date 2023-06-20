@@ -1,0 +1,97 @@
+{
+  "externalCaseId": "5123",
+  "caseType": "NYBYGGNAD_ANSOKAN_OM_BYGGLOV",
+  "description": null,
+  "caseTitleAddition": null,
+  "stakeholders": [
+    {
+      "type": "PERSON",
+      "roles": [
+        "APPLICANT"
+      ],
+      "firstName": "Test",
+      "lastName": "Testorsson",
+      "personId": "e19981ad-34b2-4e14-88f5-133f61ca85aa",
+      "phoneNumber": "0701234567",
+      "emailAddress": "test@sundsvall.se",
+      "cellphoneNumber": "060123456",
+      "addresses": null,
+      "extraParameters": null,
+      "personalNumber": null
+    },
+    {
+      "type": "ORGANIZATION",
+      "roles": [
+        "PROPERTY_OWNER"
+      ],
+      "organizationName": "organizationName",
+      "organizationNumber": "123456-1234",
+      "phoneNumber": null,
+      "emailAddress": null,
+      "cellphoneNumber": null,
+      "addresses": [
+        {
+          "addressCategories": [
+            "POSTAL_ADDRESS",
+            "VISITING_ADDRESS",
+            "INVOICE_ADDRESS"
+          ],
+          "street": "Testargatan",
+          "houseNumber": "123",
+          "postalCode": null,
+          "city": "Sundsvall",
+          "country": "Sweden",
+          "careOf": null,
+          "attention": null,
+          "propertyDesignation": null,
+          "appartmentNumber": null,
+          "location": null,
+          "isZoningPlanArea": null,
+          "invoiceMarking": null,
+          "extraParameters": null
+        }
+      ],
+      "extraParameters": null,
+      "authorizedSignatory": null
+    }
+  ],
+  "attachments": [
+    {
+      "category": "ANS",
+      "name": "Ansökan om bygglov",
+      "note": null,
+      "extension": ".pdf",
+      "mimeType": "application/pdf",
+      "file": "dGVzdA==",
+      "extraParameters": null
+    }
+  ],
+  "extraParameters": null,
+  "facilities": [
+    {
+      "facilityType": "ONE_FAMILY_HOUSE",
+      "description": null,
+      "address": {
+        "addressCategories": [
+          "INVOICE_ADDRESS"
+        ],
+        "street": null,
+        "houseNumber": null,
+        "postalCode": null,
+        "city": null,
+        "country": null,
+        "careOf": null,
+        "attention": null,
+        "propertyDesignation": "SUNDSVALL BALDER 2",
+        "appartmentNumber": null,
+        "location": null,
+        "isZoningPlanArea": null,
+        "invoiceMarking": null,
+        "extraParameters": null
+      },
+      "extraParameters": null,
+      "mainFacility": false
+    }
+  ],
+  "diaryNumber": null
+}

@@ -3,7 +3,6 @@ package se.sundsvall.casemanagement.integration.fb.model;
 import org.assertj.core.api.Assertions;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
-import se.sundsvall.casemanagement.integration.rest.fb.model.GruppItem;
 
 import java.util.Random;
 import java.util.UUID;

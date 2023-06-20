@@ -3,7 +3,6 @@ package se.sundsvall.casemanagement.integration.citizenmapping.model;
 import org.assertj.core.api.Assertions;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
-import se.sundsvall.casemanagement.integration.rest.citizenmapping.model.CitizenMappingErrorResponse;
 
 import java.util.UUID;
 

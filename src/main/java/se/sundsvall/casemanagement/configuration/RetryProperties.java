@@ -4,16 +4,11 @@ import java.time.Duration;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
 @ConfigurationProperties(prefix = "retry")
-public class RetryProperties {
+public record RetryProperties(int maxAttempts, Duration initialDelay, Duration maxDelay) {
 
-    private final int maxAttempts = 3;
-
-    private final Duration initialDelay = Duration.ofSeconds(2);
-
-    private final Duration maxDelay = Duration.ofSeconds(20);
+    RetryProperties() {
+        this(3, Duration.ofMillis(100), Duration.ofMillis(1000));
+    }
 }

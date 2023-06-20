@@ -1,0 +1,27 @@
+{
+  "status": 400,
+  "title": "Constraint Violation",
+  "type": "https://zalando.github.io/problem/constraint-violation",
+  "violations": [
+    {
+      "field": "postAttachmentsToCase.attachmentDTOList[0].category",
+      "message": "must not be null"
+    },
+    {
+      "field": "postAttachmentsToCase.attachmentDTOList[0].extension",
+      "message": "must not be blank"
+    },
+    {
+      "field": "postAttachmentsToCase.attachmentDTOList[0].file",
+      "message": "must not be blank"
+    },
+    {
+      "field": "postAttachmentsToCase.attachmentDTOList[0].mimeType",
+      "message": "must not be blank"
+    },
+    {
+      "field": "postAttachmentsToCase.attachmentDTOList[0].name",
+      "message": "must not be blank"
+    }
+  ]
+}
