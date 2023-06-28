@@ -1,5 +1,6 @@
 package se.sundsvall.casemanagement.integration.byggr;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -62,11 +63,11 @@ class ByggrProcessorTest {
 
         byggrProcessor.handleIncomingErrand(event);
 
-        verify(caseRepository, times(1)).findById(any());
-        verify(caseRepository, times(1)).deleteById(any());
+        verify(caseRepository, times(1)).findById(any(String.class));
         verifyNoMoreInteractions(caseRepository);
         verify(service, times(1)).postCase(any(PlanningPermissionCaseDTO.class));
 
+        assertThat(caseRepository.findAll().size()).isEqualTo(0);
     }
 
     @Test
