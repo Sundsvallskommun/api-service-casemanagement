@@ -46,27 +46,26 @@ public abstract class Processor {
     }
 
     @Transactional
-    public void handleSuccessfulDelivery(final CaseEntity entity, final String system) {
+    public void handleSuccessfulDelivery(final String flowInstanceID, final String system, final String caseID) {
 
-        log.info("Successful created errand for externalCaseId {})", entity.getId());
+        log.info("Successful created errand for externalCaseId {})", flowInstanceID);
 
-        caseRepository.deleteById(entity.getId());
+        caseRepository.deleteById(flowInstanceID);
 
-        var caseMapping = caseMappingRepository.findAllByExternalCaseId(entity.getId()).get(0);
         try {
             openeClient.confirmDelivery(new ConfirmDelivery()
                 .withDelivered(true)
                 .withExternalID(new ExternalID()
                     .withSystem(system)
-                    .withID(caseMapping.getCaseId()))
-                .withFlowInstanceID(Integer.parseInt(entity.getId())));
+                    .withID(caseID))
+                .withFlowInstanceID(Integer.parseInt(flowInstanceID)));
         } catch (Exception e) {
             log.error("Error while confirming delivery", e);
         }
     }
 
     @Transactional
-    public void handleMaximumDeliveryAttemptsExceeded(Throwable failureEvent, final CaseEntity entity, String system) {
+    public void handleMaximumDeliveryAttemptsExceeded(Throwable failureEvent, final CaseEntity entity, final String system) {
 
         log.info("Exceeded max sending attempts case with externalCaseId {}", entity.getId());
         caseRepository.save(entity.withDeliveryStatus(DeliveryStatus.FAILED));
