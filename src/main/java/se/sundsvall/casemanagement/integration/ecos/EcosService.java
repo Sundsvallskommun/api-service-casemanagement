@@ -197,16 +197,15 @@ public class EcosService {
             }
 
         } else {
-            try {
-                if (caseInput.getCaseType().equals(CaseType.UPPDATERING_RISKKLASSNING)) {
-
+            if (caseInput.getCaseType().equals(CaseType.UPPDATERING_RISKKLASSNING)) {
+                try {
                     riskClassService.updateRiskClass(caseInput, registerDocumentResult.getCaseId());
+                } catch (Exception e) {
+                    log.warn("Error when updating risk class for case with OpenE-ID: {}", caseInput.getExternalCaseId(), e);
                 }
-            } catch (Exception e) {
-                log.warn("Error when updating risk class for case with OpenE-ID: "+caseInput.getExternalCaseId(), e);
+            } else {
+                createOccurrenceOnCase(registerDocumentResult.getCaseId());
             }
-            // -----> CreateOccurrenceOnCase
-            createOccurrenceOnCase(registerDocumentResult.getCaseId());
         }
 
         // Persist the connection between OeP-case and Ecos-case
