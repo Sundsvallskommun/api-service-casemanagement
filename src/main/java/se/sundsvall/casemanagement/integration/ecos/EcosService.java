@@ -643,7 +643,7 @@ public class EcosService {
             registerDocumentCaseSvcDtoV2.setCaseSubtitle(fixedFacilityType);
             registerDocumentCaseSvcDtoV2.setCaseSubtitleFree(propertyDesignation);
         } else {
-            var freeSubtitle = eFacility.getFacilityCollectionName().trim();
+            var freeSubtitle = Optional.ofNullable(eFacility.getFacilityCollectionName()).orElse("").trim();
             if (!propertyDesignation.isEmpty()) {
                 freeSubtitle = String.join(", ", freeSubtitle, propertyDesignation);
             }
