@@ -187,12 +187,13 @@ public class EcosService {
                     createIndividualSewage(eFacility, propertyInfo, registerDocumentResult);
                 case ANMALAN_HALSOSKYDDSVERKSAMHET ->
                     createHealthProtectionFacility(eFacility, propertyInfo, registerDocumentResult);
+                case ANMALAN_KOMPOSTERING -> "";
                 default ->
                     throw Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "CaseType: " + caseInput.getCaseType() + " is not valid. There is a problem in the API validation.");
             };
 
             // -----> AddPartyToFacility
-            if (facilityGuid != null) {
+            if (facilityGuid != null && caseInput.getCaseType() != CaseType.ANMALAN_KOMPOSTERING) {
                 addPartyToFacility(partyRoles, partyList, facilityGuid);
             }
 
