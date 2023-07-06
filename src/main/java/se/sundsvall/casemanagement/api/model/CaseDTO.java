@@ -9,6 +9,7 @@ import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANDRING
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_ANDRING_AVLOPPSANLAGGNING;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_ANDRING_AVLOPPSANORDNING;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_ATTEFALL;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_AVHJALPANDEATGARD_FORORENING;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_ELDSTAD;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_HALSOSKYDDSVERKSAMHET;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_INSTALLATION_VARMEPUMP;
@@ -94,7 +95,8 @@ import lombok.Data;
         ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP,
         UPPDATERING_RISKKLASSNING,
         ANMALAN_HALSOSKYDDSVERKSAMHET,
-        ANMALAN_KOMPOSTERING}),
+        ANMALAN_KOMPOSTERING,
+        ANMALAN_AVHJALPANDEATGARD_FORORENING}),
     @Type(value = OtherCaseDTO.class, names = {
         PARKING_PERMIT,
         LOST_PARKING_PERMIT,

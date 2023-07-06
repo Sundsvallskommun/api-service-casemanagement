@@ -88,6 +88,8 @@ public final class Constants {
     public static final String ECOS_PROCESS_TYPE_ID_ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP = "50B6FA5B-23E2-4ABA-B393-0B3ADEFC6C9F";
     // Anmälan av hälsoskyddsverksamhet
     public static final String ECOS_PROCESS_TYPE_ID_ANMALAN_HALSOSKYDDSVERKSAMHET = "AF6D94EC-94FB-4C0A-AF39-CC5E4C732D4B";
+    public static final String ECOS_PROCESS_TYPE_ID_ANMALAN_AVHJALPANDEATGARD_FORORENING = "7AA1A70E-4842-4CF0-A15A-EEF99707811E";
+
     // Uppdatering av riskklass
     public static final String ECOS_PROCESS_TYPE_ID_UPPDATERING_RISKKLASS = "E8E389D4-FE45-4195-A790-C58AE4DC96BF";
     // Anmälan kompostering
@@ -188,4 +190,3 @@ public final class Constants {
     }
 
 }
-
