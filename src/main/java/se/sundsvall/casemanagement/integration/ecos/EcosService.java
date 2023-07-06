@@ -187,13 +187,13 @@ public class EcosService {
                     createIndividualSewage(eFacility, propertyInfo, registerDocumentResult);
                 case ANMALAN_HALSOSKYDDSVERKSAMHET ->
                     createHealthProtectionFacility(eFacility, propertyInfo, registerDocumentResult);
-                case ANMALAN_KOMPOSTERING -> "";
+                case ANMALAN_KOMPOSTERING, ANMALAN_AVHJALPANDEATGARD_FORORENING -> "";
                 default ->
                     throw Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "CaseType: " + caseInput.getCaseType() + " is not valid. There is a problem in the API validation.");
             };
 
             // -----> AddPartyToFacility
-            if (facilityGuid != null && caseInput.getCaseType() != CaseType.ANMALAN_KOMPOSTERING) {
+            if (facilityGuid != null && !CaseType.WITH_NULLABLE_FACILITY_TYPE.contains(caseInput.getCaseType())) {
                 addPartyToFacility(partyRoles, partyList, facilityGuid);
             }
 
@@ -663,7 +663,9 @@ public class EcosService {
     private String getDiaryPlanId(CaseType caseType) {
         return switch (caseType) {
             case REGISTRERING_AV_LIVSMEDEL, UPPDATERING_RISKKLASSNING -> Constants.ECOS_DIARY_PLAN_LIVSMEDEL;
-            case ANMALAN_ANDRING_AVLOPPSANLAGGNING, ANMALAN_ANDRING_AVLOPPSANORDNING, ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC, ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, ANMALAN_INSTALLATION_VARMEPUMP, ANSOKAN_TILLSTAND_VARMEPUMP ->
+            case ANMALAN_ANDRING_AVLOPPSANLAGGNING, ANMALAN_ANDRING_AVLOPPSANORDNING, ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC,
+                ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, ANMALAN_INSTALLATION_VARMEPUMP, ANSOKAN_TILLSTAND_VARMEPUMP,
+                ANMALAN_KOMPOSTERING, ANMALAN_AVHJALPANDEATGARD_FORORENING ->
                 Constants.ECOS_DIARY_PLAN_AVLOPP;
             case ANMALAN_HALSOSKYDDSVERKSAMHET -> Constants.ECOS_DIARY_PLAN_HALSOSKYDD;
             default -> null;
@@ -690,6 +692,7 @@ public class EcosService {
                 Constants.ECOS_PROCESS_TYPE_ID_ANMALAN_HALSOSKYDDSVERKSAMHET;
             case UPPDATERING_RISKKLASSNING -> Constants.ECOS_PROCESS_TYPE_ID_UPPDATERING_RISKKLASS;
             case ANMALAN_KOMPOSTERING -> Constants.ECOS_PROCESS_TYPE_ID_ANMALAN_KOMPOSTERING;
+            case ANMALAN_AVHJALPANDEATGARD_FORORENING -> Constants.ECOS_PROCESS_TYPE_ID_ANMALAN_AVHJALPANDEATGARD_FORORENING;
             default ->
                 throw Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "CaseType: " + caseType + " is not valid...");
         };

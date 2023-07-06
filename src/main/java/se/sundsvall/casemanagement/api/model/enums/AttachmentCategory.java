@@ -246,8 +246,11 @@ public enum AttachmentCategory {
     // archiveClassification UNKNOWN
     MASE("Marksektionsritning", null),
     ///////////////////////////////////
-    //                                  3AD42CEE-C09E-401B-ABE8-0CD5D03FE6B4
+    //    ECOS
     ///////////////////////////////////
+
+    ANMALAN_AVHJALPANDEATGARD_FORORENING("FACD0F1D-BAFF-4506-95C9-99014EA8D827", null),
+
     ANMALAN_LIVSMEDELSANLAGGNING("3AD42CEE-C09E-401B-ABE8-0CD5D03FE6B4", null),
 
     UNDERLAG_RISKKLASSNING("77DBC762-4EDC-46A8-983C-BE03EDC07E13", null),
