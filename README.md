@@ -55,5 +55,14 @@ Applikationen kan köras lokalt med detta kommando:
 ./mvnw spring-boot:run -Dspring.profiles.active=local
 ```
 
+## Status
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Sundsvallskommun_api-service-casemanagement&metric=alert_status)](https://sonarcloud.io/summary/overall?id=Sundsvallskommun_api-service-casemanagement)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=Sundsvallskommun_api-service-casemanagement&metric=reliability_rating)](https://sonarcloud.io/summary/overall?id=Sundsvallskommun_api-service-casemanagement)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=Sundsvallskommun_api-service-casemanagement&metric=security_rating)](https://sonarcloud.io/summary/overall?id=Sundsvallskommun_api-service-casemanagement)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=Sundsvallskommun_api-service-casemanagement&metric=sqale_rating)](https://sonarcloud.io/summary/overall?id=Sundsvallskommun_api-service-casemanagement)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=Sundsvallskommun_api-service-casemanagement&metric=vulnerabilities)](https://sonarcloud.io/summary/overall?id=Sundsvallskommun_api-service-casemanagement)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=Sundsvallskommun_api-service-casemanagement&metric=bugs)](https://sonarcloud.io/summary/overall?id=Sundsvallskommun_api-service-casemanagement)
+
+
 ## 
 Copyright (c) 2021 Sundsvalls kommun
