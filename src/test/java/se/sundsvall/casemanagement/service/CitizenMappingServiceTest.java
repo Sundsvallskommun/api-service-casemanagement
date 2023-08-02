@@ -9,7 +9,7 @@ import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
 import org.zalando.problem.ThrowableProblem;
 import se.sundsvall.casemanagement.TestUtil;
-import se.sundsvall.casemanagement.integration.rest.citizenmapping.CitizenMappingClient;
+import se.sundsvall.casemanagement.integration.citizenmapping.CitizenMappingClient;
 import se.sundsvall.casemanagement.util.Constants;
 
 import java.util.UUID;

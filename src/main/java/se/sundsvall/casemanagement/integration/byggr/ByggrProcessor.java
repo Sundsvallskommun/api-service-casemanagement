@@ -36,12 +36,12 @@ class ByggrProcessor extends Processor {
         this.service = service;
 
         retryPolicy = RetryPolicy.<SaveNewArendeResponse2>builder()
-            .withMaxAttempts(retryProperties.getMaxAttempts())
-            .withBackoff(retryProperties.getInitialDelay(), retryProperties.getMaxDelay())
+            .withMaxAttempts(retryProperties.maxAttempts())
+            .withBackoff(retryProperties.initialDelay(), retryProperties.maxDelay())
             .handle(Exception.class)
             .onSuccess(successEvent -> log.debug("Created byggR errand {}", successEvent.getResult().getDnr()))
             .handleResultIf(response -> response.getDnr().isEmpty())
-            .onFailedAttempt(event -> log.debug("Unable to create byggR errand ({}/{}): {}", event.getAttemptCount(), retryProperties.getMaxAttempts(), event.getLastException().getMessage()))
+            .onFailedAttempt(event -> log.debug("Unable to create byggR errand ({}/{}): {}", event.getAttemptCount(), retryProperties.maxAttempts(), event.getLastException().getMessage()))
             .build();
     }
 
@@ -63,7 +63,7 @@ class ByggrProcessor extends Processor {
         try {
             Failsafe
                 .with(retryPolicy)
-                .onSuccess(successEvent -> handleSuccessfulDelivery(caseEntity, "BYGGR"))
+                .onSuccess(successEvent -> handleSuccessfulDelivery(caseEntity.getId(), "BYGGR", successEvent.getResult().getDnr()))
                 .onFailure(failureEvent -> handleMaximumDeliveryAttemptsExceeded(failureEvent.getException(), caseEntity, "BYGGR"))
                 .get(() -> service.postCase(planningPermissionCaseDTO));
         } catch (Exception e) {

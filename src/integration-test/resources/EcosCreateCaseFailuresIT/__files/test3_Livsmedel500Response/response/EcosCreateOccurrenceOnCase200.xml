@@ -1,0 +1,7 @@
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+    <s:Body>
+        <CreateOccurrenceOnCaseResponse  xmlns="urn:Ecos.API.MinutMiljo.Service.V1">
+            <CreateOccurrenceOnCaseResult>e19981ad-34b2-4e14-88f5-133f61ca85aa</CreateOccurrenceOnCaseResult>
+        </CreateOccurrenceOnCaseResponse>
+    </s:Body>
+</s:Envelope>

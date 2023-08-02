@@ -47,7 +47,6 @@ import se.sundsvall.casemanagement.api.model.enums.SystemType;
 import se.sundsvall.casemanagement.integration.casedata.CaseDataClient;
 import se.sundsvall.casemanagement.integration.casedata.CaseDataService;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
-import se.sundsvall.casemanagement.testutils.TestConstants;
 import se.sundsvall.casemanagement.util.Constants;
 
 import generated.client.casedata.ErrandDTO;
@@ -85,12 +84,12 @@ class CaseDataServiceTest {
         doReturn(mockResponse).when(caseDataClientMock).postErrands(any());
 
         ErrandDTO getErrandDTO = new ErrandDTO();
-        getErrandDTO.setErrandNumber(TestConstants.CASE_DATA_ERRAND_NUMBER);
+        getErrandDTO.setErrandNumber("Inskickat");
         doReturn(getErrandDTO).when(caseDataClientMock).getErrand(errandId);
 
         OtherCaseDTO inputCase = createCase(caseType);
         var response = caseDataService.postErrand(inputCase);
-        assertEquals(TestConstants.CASE_DATA_ERRAND_NUMBER, response);
+        assertEquals("Inskickat", response);
 
         ArgumentCaptor<ErrandDTO> errandDTOArgumentCaptor = ArgumentCaptor.forClass(ErrandDTO.class);
         verify(caseDataClientMock, times(1)).postErrands(errandDTOArgumentCaptor.capture());
@@ -123,7 +122,7 @@ class CaseDataServiceTest {
         verify(caseMappingServiceMock, times(1)).postCaseMapping(caseMappingArgumentCaptor.capture());
         CaseMapping caseMapping = caseMappingArgumentCaptor.getValue();
         assertEquals(inputCase.getExternalCaseId(), caseMapping.getExternalCaseId());
-        assertEquals("Inskickat", caseMapping.getCaseId());
+        assertEquals(String.valueOf(errandId), caseMapping.getCaseId());
         assertEquals(SystemType.CASE_DATA, caseMapping.getSystem());
         assertEquals(inputCase.getCaseType(), caseMapping.getCaseType());
         assertNull(caseMapping.getServiceName());

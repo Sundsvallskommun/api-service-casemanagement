@@ -15,8 +15,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testcontainers.shaded.org.apache.commons.lang3.RandomStringUtils;
 
-import se.sundsvall.casemanagement.integration.rest.lantmateriet.RegisterbeteckningClient;
-import se.sundsvall.casemanagement.integration.rest.lantmateriet.model.Registerbeteckningsreferens;
+import se.sundsvall.casemanagement.integration.lantmateriet.RegisterbeteckningClient;
+import se.sundsvall.casemanagement.integration.lantmateriet.model.Registerbeteckningsreferens;
 import se.sundsvall.casemanagement.util.Constants;
 
 @ExtendWith(MockitoExtension.class)

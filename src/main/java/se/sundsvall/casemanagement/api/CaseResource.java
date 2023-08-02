@@ -25,7 +25,6 @@ import se.sundsvall.casemanagement.api.model.PlanningPermissionCaseDTO;
 import se.sundsvall.casemanagement.integration.casedata.CaseDataService;
 import se.sundsvall.casemanagement.service.CaseMappingService;
 import se.sundsvall.casemanagement.service.CaseService;
-import se.sundsvall.casemanagement.service.exceptions.ApplicationException;
 import se.sundsvall.casemanagement.util.Constants;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -79,7 +78,7 @@ public class CaseResource {
         @PathVariable String externalCaseId,
         @Schema(oneOf = {PlanningPermissionCaseDTO.class, EnvironmentalCaseDTO.class, OtherCaseDTO.class}, example = Constants.POST_CASES_REQUEST_BODY_EXAMPLE)
         @RequestBody
-        @Valid CaseDTO caseDTOInput) throws ApplicationException {
+        @Valid CaseDTO caseDTOInput) {
 
         if (caseDTOInput instanceof OtherCaseDTO otherCaseDTO) {
             caseDataService.putErrand(Long.valueOf(caseMappingService.getCaseMapping(externalCaseId).getCaseId()), otherCaseDTO);

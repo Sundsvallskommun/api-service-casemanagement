@@ -1,0 +1,22 @@
+{
+  "request": {
+    "url": "/TekisArende/ArendeExportWS.svc",
+    "method": "POST",
+    "bodyPatterns": [
+      {
+        "contains": "GetArende"
+      }
+    ]
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "test2_GetByggrStatusByExternalCaseId/response/byggr_GetArende.xml",
+    "headers": {
+      "Content-Type": "text/xml; charset=utf-8",
+      "Vary": "Accept-Encoding",
+      "Server": "Microsoft-IIS/10.0",
+      "X-Powered-By": "ASP.NET",
+      "Date": "Wed, 28 Jul 2021 06:31:46 GMT"
+    }
+  }
+}

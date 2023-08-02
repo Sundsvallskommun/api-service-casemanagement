@@ -1,5 +1,16 @@
 package se.sundsvall.casemanagement.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.lenient;
+import static se.sundsvall.casemanagement.TestUtil.ADRESSPLATS_ID;
+import static se.sundsvall.casemanagement.TestUtil.FNR;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -7,27 +18,18 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.zalando.problem.Status;
 import org.zalando.problem.ThrowableProblem;
+
 import se.sundsvall.casemanagement.TestUtil;
 import se.sundsvall.casemanagement.api.model.AddressDTO;
 import se.sundsvall.casemanagement.api.model.PersonDTO;
 import se.sundsvall.casemanagement.api.model.enums.AddressCategory;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderType;
-import se.sundsvall.casemanagement.integration.rest.fb.FbClient;
-import se.sundsvall.casemanagement.integration.rest.fb.model.DataItem;
-import se.sundsvall.casemanagement.integration.rest.fb.model.GruppItem;
-import se.sundsvall.casemanagement.integration.rest.fb.model.ResponseDto;
-import se.sundsvall.casemanagement.integration.rest.lantmateriet.model.Registerbeteckningsreferens;
+import se.sundsvall.casemanagement.integration.fb.FbClient;
+import se.sundsvall.casemanagement.integration.fb.model.DataItem;
+import se.sundsvall.casemanagement.integration.fb.model.GruppItem;
+import se.sundsvall.casemanagement.integration.fb.model.ResponseDto;
+import se.sundsvall.casemanagement.integration.lantmateriet.model.Registerbeteckningsreferens;
 import se.sundsvall.casemanagement.util.Constants;
-import se.sundsvall.casemanagement.testutils.TestConstants;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.lenient;
 
 @ExtendWith(MockitoExtension.class)
 class FbServiceTest {
@@ -46,8 +48,8 @@ class FbServiceTest {
         mockFb(propertyDesignation);
 
         var result = fbService.getPropertyInfoByPropertyDesignation(propertyDesignation);
-        assertEquals(TestConstants.FNR, result.getFnr());
-        assertEquals(TestConstants.ADRESSPLATS_ID, result.getAdressplatsId());
+        assertEquals(FNR, result.getFnr());
+        assertEquals(ADRESSPLATS_ID, result.getAdressplatsId());
     }
 
     @Test
@@ -96,7 +98,7 @@ class FbServiceTest {
 
     private void mockFb(String propertyDesignation) {
         Registerbeteckningsreferens registerbeteckningsreferensMock = new Registerbeteckningsreferens();
-        registerbeteckningsreferensMock.setBeteckning(TestConstants.PROPERTY_DESIGNATION_FILLA);
+        registerbeteckningsreferensMock.setBeteckning("SUNDSVALL FILLA 8:185");
         registerbeteckningsreferensMock.setBeteckningsid("ny-4020855");
         registerbeteckningsreferensMock.setRegisterenhet("e19981ad-34b2-4e14-88f5-133f61ca85aa");
 
@@ -104,13 +106,13 @@ class FbServiceTest {
 
         ResponseDto getPropertyInfoByUuidMockResponse = new ResponseDto();
         getPropertyInfoByUuidMockResponse.setData(List.of(new DataItem()));
-        getPropertyInfoByUuidMockResponse.getData().get(0).setFnr(TestConstants.FNR);
+        getPropertyInfoByUuidMockResponse.getData().get(0).setFnr(FNR);
         doReturn(getPropertyInfoByUuidMockResponse).when(fbClientMock).getPropertyInfoByUuid(any(), any(), any(), any());
 
         ResponseDto getAddressInfoByUuidMockResponse = new ResponseDto();
         getAddressInfoByUuidMockResponse.setData(List.of(new DataItem()));
         getAddressInfoByUuidMockResponse.getData().get(0).setGrupp(List.of(new GruppItem()));
-        getAddressInfoByUuidMockResponse.getData().get(0).getGrupp().get(0).setAdressplatsId(TestConstants.ADRESSPLATS_ID);
+        getAddressInfoByUuidMockResponse.getData().get(0).getGrupp().get(0).setAdressplatsId(ADRESSPLATS_ID);
         doReturn(getAddressInfoByUuidMockResponse).when(fbClientMock).getAddressInfoByUuid(any(), any(), any(), any());
 
     }

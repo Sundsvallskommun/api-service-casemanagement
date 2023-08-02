@@ -1,10 +1,10 @@
 package se.sundsvall.casemanagement.api;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
+
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,12 +15,12 @@ import org.zalando.problem.Problem;
 
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.service.CaseMappingService;
-import se.sundsvall.casemanagement.service.exceptions.ApplicationException;
 
-import java.util.List;
-
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @Validated
@@ -40,7 +40,7 @@ public class CaseMappingResource {
     @GetMapping(produces = {APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE})
     @Operation(description = "Returns the connection between externalCaseId and the case in the underlying system.")
     @ApiResponse(responseCode = "200", description = "OK - Successful operation")
-    public ResponseEntity<List<CaseMapping>> getCaseMapping(@RequestParam(name = "external-case-id", required = false) String externalCaseId) throws ApplicationException {
+    public ResponseEntity<List<CaseMapping>> getCaseMapping(@RequestParam(name = "external-case-id", required = false) String externalCaseId) {
         if (externalCaseId != null) {
             return ResponseEntity.ok(List.of(caseMappingService.getCaseMapping(externalCaseId)));
         } else {

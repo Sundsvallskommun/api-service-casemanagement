@@ -37,12 +37,12 @@ class EcosProcessor extends Processor {
         this.ecosService = ecosService;
 
         retryPolicy = RetryPolicy.<RegisterDocumentCaseResultSvcDto>builder()
-            .withMaxAttempts(retryProperties.getMaxAttempts())
-            .withBackoff(retryProperties.getInitialDelay(), retryProperties.getMaxDelay())
+            .withMaxAttempts(retryProperties.maxAttempts())
+            .withBackoff(retryProperties.initialDelay(), retryProperties.maxDelay())
             .handle(Exception.class)
             .handleResultIf(response -> response.getCaseNumber().isEmpty())
             .onFailedAttempt(event -> log.debug("Unable to create ecos errand ({}/{}): {}",
-                event.getAttemptCount(), retryProperties.getMaxAttempts(), event.getLastException().getMessage()))
+                event.getAttemptCount(), retryProperties.maxAttempts(), event.getLastException().getMessage()))
             .build();
     }
 
@@ -66,7 +66,7 @@ class EcosProcessor extends Processor {
         try {
             Failsafe
                 .with(retryPolicy)
-                .onSuccess(successEvent -> handleSuccessfulDelivery(caseEntity, "ECOS"))
+                .onSuccess(successEvent -> handleSuccessfulDelivery(caseEntity.getId(), "ECOS", successEvent.getResult().getCaseNumber()))
                 .onFailure(failureEvent -> handleMaximumDeliveryAttemptsExceeded(failureEvent.getException(), caseEntity, "ECOS"))
                 .get(() -> ecosService.postCase(environmentalCaseDTO));
         } catch (Exception e) {

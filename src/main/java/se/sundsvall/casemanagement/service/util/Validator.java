@@ -53,10 +53,9 @@ public class Validator {
                     }
                 }
             }
-
-            // Validates that FacilityTypes is compatible with the CaseType
-            validateFacilityTypes(pCase);
         }
+        // Validates that FacilityTypes is compatible with the CaseType
+        validateFacilityTypes(pCase);
     }
 
     /**

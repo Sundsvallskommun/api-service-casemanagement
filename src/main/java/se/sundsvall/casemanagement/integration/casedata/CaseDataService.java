@@ -73,7 +73,7 @@ public class CaseDataService {
         var errandNumber = getErrand(id).getErrandNumber();
         caseMappingService.postCaseMapping(new CaseMapping(
             otherCase.getExternalCaseId(),
-            errandNumber,
+            String.valueOf(id),
             SystemType.CASE_DATA,
             otherCase.getCaseType(),
             isNull(otherCase.getExtraParameters()) ? null : otherCase.getExtraParameters().get(SERVICE_NAME)));
@@ -115,13 +115,13 @@ public class CaseDataService {
             .orElseThrow(() -> Problem.valueOf(NOT_FOUND, Constants.ERR_MSG_STATUS_NOT_FOUND));
 
         return CaseStatusDTO.builder()
-            .caseType(caseMapping.getCaseType())
-            .system(caseMapping.getSystem())
-            .caseId(caseMapping.getCaseId())
-            .externalCaseId(caseMapping.getExternalCaseId())
-            .status(latestStatus.getStatusType())
-            .serviceName(caseMapping.getServiceName())
-            .timestamp(latestStatus.getDateTime().atZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime())
+            .withCaseType(caseMapping.getCaseType())
+            .withSystem(caseMapping.getSystem())
+            .withCaseId(caseMapping.getCaseId())
+            .withExternalCaseId(caseMapping.getExternalCaseId())
+            .withStatus(latestStatus.getStatusType())
+            .withServiceName(caseMapping.getServiceName())
+            .withTimestamp(latestStatus.getDateTime().atZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime())
             .build();
     }
 

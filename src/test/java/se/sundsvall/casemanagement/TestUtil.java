@@ -15,13 +15,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.mockito.Mockito;
-import org.springframework.stereotype.Component;
 
 import se.sundsvall.casemanagement.api.model.AddressDTO;
 import se.sundsvall.casemanagement.api.model.AttachmentDTO;
@@ -44,14 +39,13 @@ import se.sundsvall.casemanagement.integration.byggr.ArendeExportClient;
 import se.sundsvall.casemanagement.integration.db.model.CaseTypeData;
 import se.sundsvall.casemanagement.integration.ecos.MinutMiljoClient;
 import se.sundsvall.casemanagement.integration.ecos.MinutMiljoClientV2;
-import se.sundsvall.casemanagement.integration.rest.fb.FbClient;
-import se.sundsvall.casemanagement.integration.rest.fb.model.DataItem;
-import se.sundsvall.casemanagement.integration.rest.fb.model.FbPropertyInfo;
-import se.sundsvall.casemanagement.integration.rest.fb.model.GruppItem;
-import se.sundsvall.casemanagement.integration.rest.fb.model.ResponseDto;
+import se.sundsvall.casemanagement.integration.fb.FbClient;
+import se.sundsvall.casemanagement.integration.fb.model.DataItem;
+import se.sundsvall.casemanagement.integration.fb.model.FbPropertyInfo;
+import se.sundsvall.casemanagement.integration.fb.model.GruppItem;
+import se.sundsvall.casemanagement.integration.fb.model.ResponseDto;
 import se.sundsvall.casemanagement.service.CitizenMappingService;
 import se.sundsvall.casemanagement.service.FbService;
-import se.sundsvall.casemanagement.testutils.TestConstants;
 import se.sundsvall.casemanagement.util.Constants;
 
 import arendeexport.SaveNewArendeResponse;
@@ -66,14 +60,10 @@ import minutmiljo.SearchPartyResponse;
 import minutmiljoV2.RegisterDocumentCaseResultSvcDto;
 import minutmiljoV2.RegisterDocumentResponse;
 
-@Component
 public class TestUtil {
 
-    public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
-        .enable(SerializationFeature.INDENT_OUTPUT)
-        .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-        .configure(DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE, false)
-        .registerModule(new JavaTimeModule());
+    public static final Integer FNR = 22045604;
+    public static final Integer ADRESSPLATS_ID = 90022392;
 
     public static void mockFbPropertyOwners(FbClient fbClientMock, List<StakeholderDTO> propertyOwners) {
         ResponseDto lagfarenAgareResponse = new ResponseDto();
@@ -151,10 +141,10 @@ public class TestUtil {
         AttachmentDTO attachmentDTO = new AttachmentDTO();
         attachmentDTO.setCategory(attachmentCategory);
         attachmentDTO.setExtension(".pdf");
-        attachmentDTO.setMimeType(TestConstants.MIMETYPE_PDF);
+        attachmentDTO.setMimeType("application/pdf");
         attachmentDTO.setName(RandomStringUtils.random(10, true, false));
         attachmentDTO.setNote(RandomStringUtils.random(10, true, false));
-        attachmentDTO.setFile(TestConstants.BASE64_STRING);
+        attachmentDTO.setFile("dGVzdA==");
         return attachmentDTO;
     }
 
@@ -163,7 +153,7 @@ public class TestUtil {
         facility.setFacilityCollectionName(RandomStringUtils.random(10, true, false));
         AddressDTO addressDTO = new AddressDTO();
         addressDTO.setAddressCategories(List.of(AddressCategory.VISITING_ADDRESS));
-        addressDTO.setPropertyDesignation(TestConstants.PROPERTY_DESIGNATION_BALDER);
+        addressDTO.setPropertyDesignation("SUNDSVALL BALDER 2");
         facility.setAddress(addressDTO);
         facility.setDescription(RandomStringUtils.random(10, true, false));
         facility.setExtraParameters(switch (caseType) {
@@ -203,22 +193,9 @@ public class TestUtil {
         PlanningPermissionFacilityDTO facility = new PlanningPermissionFacilityDTO();
         AddressDTO addressDTO = new AddressDTO();
         addressDTO.setAddressCategories(List.of(AddressCategory.VISITING_ADDRESS));
-        addressDTO.setPropertyDesignation(TestConstants.PROPERTY_DESIGNATION_BALDER);
+        addressDTO.setPropertyDesignation("SUNDSVALL BALDER 2");
         facility.setAddress(addressDTO);
         facility.setFacilityType(FacilityType.ONE_FAMILY_HOUSE);
-        facility.setDescription(RandomStringUtils.random(10, true, false));
-        facility.setExtraParameters(createExtraParameters());
-        facility.setMainFacility(mainFacility);
-        return facility;
-    }
-
-    public static PlanningPermissionFacilityDTO createAttefallFacilityDTO(boolean mainFacility) {
-        PlanningPermissionFacilityDTO facility = new PlanningPermissionFacilityDTO();
-        AddressDTO addressDTO = new AddressDTO();
-        addressDTO.setAddressCategories(List.of(AddressCategory.VISITING_ADDRESS));
-        addressDTO.setPropertyDesignation(TestConstants.PROPERTY_DESIGNATION_BALDER);
-        facility.setAddress(addressDTO);
-        facility.setFacilityType(FacilityType.ANCILLARY_BUILDING);
         facility.setDescription(RandomStringUtils.random(10, true, false));
         facility.setExtraParameters(createExtraParameters());
         facility.setMainFacility(mainFacility);
@@ -285,7 +262,7 @@ public class TestUtil {
         addressDTO.setAddressCategories(addressCategories);
         addressDTO.setCity(RandomStringUtils.random(10, true, false));
         addressDTO.setCountry(Constants.SWEDEN);
-        addressDTO.setPropertyDesignation(TestConstants.PROPERTY_DESIGNATION_FILLA);
+        addressDTO.setPropertyDesignation("SUNDSVALL FILLA 8:185");
         addressDTO.setStreet(RandomStringUtils.random(10, true, false));
         addressDTO.setHouseNumber(RandomStringUtils.random(10, true, true));
         addressDTO.setCareOf(RandomStringUtils.random(10, true, false));
@@ -325,8 +302,8 @@ public class TestUtil {
 
         RegisterDocumentResponse registerDocumentResponse = new RegisterDocumentResponse();
         RegisterDocumentCaseResultSvcDto registerDocumentCaseResultSvcDto = new RegisterDocumentCaseResultSvcDto();
-        registerDocumentCaseResultSvcDto.setCaseId(TestConstants.ECOS_CASE_ID);
-        registerDocumentCaseResultSvcDto.setCaseNumber(TestConstants.ECOS_CASE_NUMBER);
+        registerDocumentCaseResultSvcDto.setCaseId("e19981ad-34b2-4e14-88f5-133f61ca85aa");
+        registerDocumentCaseResultSvcDto.setCaseNumber("Inskickat");
         registerDocumentResponse.setRegisterDocumentResult(registerDocumentCaseResultSvcDto);
         lenient().doReturn(registerDocumentResponse).when(mockV2).registerDocumentV2(any());
 
@@ -350,7 +327,7 @@ public class TestUtil {
     public static void standardMockArendeExport(ArendeExportClient mock) {
         SaveNewArendeResponse saveNewArendeResponse = new SaveNewArendeResponse();
         SaveNewArendeResponse2 saveNewArendeResult = new SaveNewArendeResponse2();
-        saveNewArendeResult.setDnr(TestConstants.BYGG_CASE_ID);
+        saveNewArendeResult.setDnr("Inskickat");
         saveNewArendeResponse.setSaveNewArendeResult(saveNewArendeResult);
 
         lenient().doReturn(saveNewArendeResponse).when(mock).saveNewArende(any());
@@ -358,8 +335,8 @@ public class TestUtil {
 
     public static void standardMockFb(FbService fbMock) {
         FbPropertyInfo fbPropertyInfo = new FbPropertyInfo();
-        fbPropertyInfo.setFnr(TestConstants.FNR);
-        fbPropertyInfo.setAdressplatsId(TestConstants.ADRESSPLATS_ID);
+        fbPropertyInfo.setFnr(FNR);
+        fbPropertyInfo.setAdressplatsId(ADRESSPLATS_ID);
 
         lenient().doReturn(fbPropertyInfo).when(fbMock).getPropertyInfoByPropertyDesignation(anyString());
     }
@@ -379,18 +356,6 @@ public class TestUtil {
         extraParameters.put(prefix + "LifeTime", String.valueOf(new Random().nextInt()));
         extraParameters.put(prefix + "InstallationDate", LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
         extraParameters.put(prefix + "PersonCapacity", String.valueOf(new Random().nextInt()));
-    }
-
-    public static Map<String, String> getSandfilterExtraParams() {
-        Map<String, String> extraParameters = new HashMap<>();
-        String prefix = "SandFilterSvcDto_";
-        TestUtil.setSewageStandardExtraParams(extraParameters, prefix);
-
-        extraParameters.put(prefix + "Area", String.valueOf(new Random().nextInt()));
-        extraParameters.put(prefix + "Elevated", String.valueOf(new Random().nextBoolean()));
-        extraParameters.put(prefix + "WaterTight", String.valueOf(new Random().nextBoolean()));
-
-        return extraParameters;
     }
 
     public static Map<String, String> getHeatPumpExtraParams() {
@@ -415,7 +380,7 @@ public class TestUtil {
         attachmentDTO.setNote("Some attachment note");
         attachmentDTO.setExtension(".pdf");
         attachmentDTO.setMimeType("application/pdf");
-        attachmentDTO.setFile(TestConstants.BASE64_STRING);
+        attachmentDTO.setFile("dGVzdA==");
         attachmentDTO.setExtraParameters(createExtraParameters());
 
         return attachmentDTO;
