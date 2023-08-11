@@ -5,34 +5,34 @@ import java.util.Map;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
 
 @Data
 public class AttachmentDTO {
-    @NotNull
-    private AttachmentCategory category;
 
-    @NotBlank
-    @Schema(example = "The attachment name")
-    private String name;
+	@NotNull
+	private AttachmentCategory category;
 
-    @Schema(example = "A note on an attachment.")
-    private String note;
+	@NotBlank
+	@Schema(example = "The attachment name")
+	private String name;
 
-    @NotBlank
-    @Schema(example = ".pdf")
-    private String extension;
+	@Schema(example = "A note on an attachment.")
+	private String note;
 
-    @NotBlank
-    @Schema(example = "application/pdf")
-    private String mimeType;
+	@NotBlank
+	@Schema(example = ".pdf")
+	private String extension;
 
-    @NotBlank
-    @Schema(type = "string", format = "byte", description = "Base64-encoded file (plain text)", example = "dGVzdA==")
-    private String file;
+	@NotBlank
+	@Schema(example = "application/pdf")
+	private String mimeType;
 
-    private Map<String, String> extraParameters;
+	@NotBlank
+	@Schema(type = "string", format = "byte", description = "Base64-encoded file (plain text)", example = "dGVzdA==")
+	private String file;
+
+	private Map<String, String> extraParameters;
 }

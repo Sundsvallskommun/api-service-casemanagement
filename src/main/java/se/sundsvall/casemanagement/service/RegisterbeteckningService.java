@@ -12,23 +12,20 @@ import se.sundsvall.casemanagement.util.Constants;
 @Service
 public class RegisterbeteckningService {
 
-    private final RegisterbeteckningClient registerbeteckningClient;
+	private final RegisterbeteckningClient registerbeteckningClient;
 
+	public RegisterbeteckningService(RegisterbeteckningClient registerbeteckningClient) {
+		this.registerbeteckningClient = registerbeteckningClient;
+	}
 
-    public RegisterbeteckningService(RegisterbeteckningClient registerbeteckningClient) {
-        this.registerbeteckningClient = registerbeteckningClient;
-    }
+	public Registerbeteckningsreferens getRegisterbeteckningsreferens(String propertyDesignation) {
 
-    public Registerbeteckningsreferens getRegisterbeteckningsreferens(String propertyDesignation) {
+		final List<Registerbeteckningsreferens> registerbeteckningsreferenser = registerbeteckningClient.getRegisterbeteckningsreferenser(propertyDesignation, Constants.LANTMATERIET_REFERENS_STATUS_GALLANDE, 1);
 
-        List<Registerbeteckningsreferens> registerbeteckningsreferenser = registerbeteckningClient.getRegisterbeteckningsreferenser(propertyDesignation, Constants.LANTMATERIET_REFERENS_STATUS_GALLANDE, 1);
-
-        if (CaseUtil.notNullOrEmpty(registerbeteckningsreferenser)
-            && registerbeteckningsreferenser.get(0).getBeteckning().equalsIgnoreCase(propertyDesignation)) {
-            return registerbeteckningsreferenser.get(0);
-        } else {
-            return null;
-        }
-    }
-
+		if (CaseUtil.notNullOrEmpty(registerbeteckningsreferenser)
+			&& registerbeteckningsreferenser.get(0).getBeteckning().equalsIgnoreCase(propertyDesignation)) {
+			return registerbeteckningsreferenser.get(0);
+		}
+		return null;
+	}
 }

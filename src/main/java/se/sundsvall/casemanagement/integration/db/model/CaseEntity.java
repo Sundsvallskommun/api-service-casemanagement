@@ -20,11 +20,14 @@ import lombok.With;
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class CaseEntity {
-    @Id
-    private String id;
-    @Lob
-    private Clob dto;
-    @With
-    @Enumerated(EnumType.STRING)
-    private DeliveryStatus deliveryStatus;
+
+	@Id
+	private String id;
+
+	@Lob
+	private Clob dto;
+
+	@With
+	@Enumerated(EnumType.STRING)
+	private DeliveryStatus deliveryStatus;
 }
