@@ -30,7 +30,7 @@
         <published.container.port.test>8715</published.container.port.test>
         <published.container.port.production>8715</published.container.port.production>
 
-        <failsafe.version>3.2.4</failsafe.version>
+        <failsafe.version>3.3.2</failsafe.version>
 
         <!--- Generated Clients -->
         <jaxb2-maven-plugin.version>2.5.0</jaxb2-maven-plugin.version>
