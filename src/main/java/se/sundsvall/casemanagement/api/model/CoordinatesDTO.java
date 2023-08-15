@@ -6,9 +6,9 @@ import lombok.Data;
 @Data
 public class CoordinatesDTO {
 
-    @Schema(description = "Decimal Degrees (DD)", example = "62.390205")
-    private double latitude;
-    @Schema(description = "Decimal Degrees (DD)", example = "17.306616")
-    private double longitude;
+	@Schema(description = "Decimal Degrees (DD)", example = "62.390205")
+	private double latitude;
 
+	@Schema(description = "Decimal Degrees (DD)", example = "17.306616")
+	private double longitude;
 }

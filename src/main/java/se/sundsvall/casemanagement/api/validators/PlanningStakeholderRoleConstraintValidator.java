@@ -1,26 +1,31 @@
 package se.sundsvall.casemanagement.api.validators;
 
-import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
-import java.util.List;
 
-public class PlanningStakeholderRoleConstraintValidator
-        implements ConstraintValidator<PlanningStakeholderRole, List<StakeholderRole>> {
+import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
 
-    @Override
-    public boolean isValid(List<StakeholderRole> value, ConstraintValidatorContext context) {
-        for (StakeholderRole role : value) {
-            switch (role) {
-                case CONTACT_PERSON, PAYMENT_PERSON, PROPERTY_OWNER, APPLICANT, CONTROL_OFFICIAL:
-                    break;
-                default:
-                    return false;
-            }
-        }
+public class PlanningStakeholderRoleConstraintValidator implements ConstraintValidator<PlanningStakeholderRole, List<StakeholderRole>> {
 
-        return true;
-    }
+	@Override
+	public boolean isValid(List<StakeholderRole> roles, ConstraintValidatorContext context) {
+		return roles.stream().allMatch(this::isValidRole);
+	}
 
+	private boolean isValidRole(StakeholderRole role) {
+		// Valid roles
+		final Set<StakeholderRole> validRoles = EnumSet.of(
+			StakeholderRole.CONTACT_PERSON,
+			StakeholderRole.PAYMENT_PERSON,
+			StakeholderRole.PROPERTY_OWNER,
+			StakeholderRole.APPLICANT,
+			StakeholderRole.CONTROL_OFFICIAL);
+
+		// Check if provided role is one of the valid roles.
+		return validRoles.contains(role);
+	}
 }

@@ -17,15 +17,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CaseTypeData {
-    
-    @Id
-    private String value;
-    private String arendeSlag;
-    private String arendeGrupp;
-    private String arendeTyp;
-    private String handelseTyp;
-    private String handelseRubrik;
-    private String handelseSlag;
-    private String arendeMening;
-    
+
+	@Id
+	private String value;
+	private String arendeSlag;
+	private String arendeGrupp;
+	private String arendeTyp;
+	private String handelseTyp;
+	private String handelseRubrik;
+	private String handelseSlag;
+	private String arendeMening;
 }
