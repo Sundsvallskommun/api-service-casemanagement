@@ -33,7 +33,7 @@
         <failsafe.version>3.3.2</failsafe.version>
 
         <!--- Generated Clients -->
-        <jaxb2-maven-plugin.version>2.5.0</jaxb2-maven-plugin.version>
+        <jaxb2-maven-plugin.version>3.1.0</jaxb2-maven-plugin.version>
         <jaxb2-fluent-api.version>3.0</jaxb2-fluent-api.version>
         <jaxb-api.version>2.3.0</jaxb-api.version>
         <sun-xml-bind.version>3.0.2</sun-xml-bind.version>
