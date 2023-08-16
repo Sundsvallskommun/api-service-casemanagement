@@ -8,15 +8,16 @@ import lombok.experimental.SuperBuilder;
 import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.validation.constraints.NotNull;
+
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
@@ -28,6 +29,26 @@ import java.util.Objects;
 @SuperBuilder(setterPrefix = "with")
 public class CaseMapping {
 
+    @Id
+    @Column(unique = true, name = "externalCaseId")
+    private String externalCaseId;
+    @Id
+    @Column(name = "caseId")
+    private String caseId;
+    @NotNull
+    @Column(nullable = false, name = "system")
+    @Enumerated(EnumType.STRING)
+    private SystemType system;
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(name = "caseType")
+    private CaseType caseType;
+    @Column(name = "serviceName")
+    private String serviceName;
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
+    @Column(name = "timestamp")
+    private LocalDateTime timestamp;
+
     public CaseMapping(String externalCaseId, String caseId, SystemType system, CaseType caseType, String serviceName) {
         this.externalCaseId = externalCaseId;
         this.caseId = caseId;
@@ -35,31 +56,6 @@ public class CaseMapping {
         this.caseType = caseType;
         this.serviceName = serviceName;
     }
-
-    @Id
-    @Column(unique = true, name = "externalCaseId")
-    private String externalCaseId;
-
-    @Id
-    @Column(name = "caseId")
-    private String caseId;
-
-    @NotNull
-    @Column(nullable = false, name = "system")
-    @Enumerated(EnumType.STRING)
-    private SystemType system;
-
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    @Column(name = "caseType")
-    private CaseType caseType;
-
-    @Column(name = "serviceName")
-    private String serviceName;
-
-    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
-    @Column(name = "timestamp")
-    private LocalDateTime timestamp;
 
     @PrePersist
     @PreUpdate
@@ -79,4 +75,3 @@ public class CaseMapping {
         return Objects.hash(externalCaseId, caseId, system, caseType, serviceName, timestamp);
     }
 }
-

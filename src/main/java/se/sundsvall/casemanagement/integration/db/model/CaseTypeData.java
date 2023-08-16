@@ -1,8 +1,8 @@
 package se.sundsvall.casemanagement.integration.db.model;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -18,13 +18,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CaseTypeData {
 
-	@Id
-	private String value;
-	private String arendeSlag;
-	private String arendeGrupp;
-	private String arendeTyp;
-	private String handelseTyp;
-	private String handelseRubrik;
-	private String handelseSlag;
-	private String arendeMening;
+    @Id
+    private String value;
+    private String arendeSlag;
+    private String arendeGrupp;
+    private String arendeTyp;
+    private String handelseTyp;
+    private String handelseRubrik;
+    private String handelseSlag;
+    private String arendeMening;
 }
