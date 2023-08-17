@@ -3,7 +3,7 @@ package se.sundsvall.casemanagement.api;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

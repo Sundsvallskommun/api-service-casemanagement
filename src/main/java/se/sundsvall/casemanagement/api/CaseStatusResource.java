@@ -7,7 +7,7 @@ import static org.zalando.problem.Status.NOT_FOUND;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.validation.constraints.Pattern;
+import jakarta.validation.constraints.Pattern;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;

@@ -3,7 +3,7 @@ package se.sundsvall.casemanagement.integration.byggr.configuration;
 
 import java.nio.charset.StandardCharsets;
 
-import javax.xml.soap.SOAPConstants;
+import jakarta.xml.soap.SOAPConstants;
 
 import org.springframework.cloud.openfeign.FeignBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -18,20 +18,20 @@ import feign.soap.SOAPEncoder;
 
 @Import(FeignConfiguration.class)
 public class ArendeExportConfiguration {
-    
+
     public static final String REGISTRATION_ID = "arendeexport";
-    
+
     private static final JAXBContextFactory JAXB_FACTORY = new JAXBContextFactory.Builder()
         .withMarshallerJAXBEncoding(StandardCharsets.UTF_8.toString())
         .build();
-    
+
     private static final SOAPEncoder.Builder ENCODER_BUILDER = new SOAPEncoder.Builder()
         .withCharsetEncoding(StandardCharsets.UTF_8)
         .withFormattedOutput(false)
         .withJAXBContextFactory(JAXB_FACTORY)
         .withSOAPProtocol(SOAPConstants.SOAP_1_1_PROTOCOL)
         .withWriteXmlDeclaration(true);
-    
+
     @Bean
     FeignBuilderCustomizer feignBuilderCustomizer(ArendeExportProperties properties) {
         return FeignMultiCustomizer.create()
