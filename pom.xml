@@ -21,7 +21,7 @@
         <generated-sources-java-path>src/main/java</generated-sources-java-path>
 
         <!-- Dependencies -->
-        <testcontainers.version>1.18.3</testcontainers.version>
+        <testcontainers.version>1.19.0</testcontainers.version>
         <openapi-generator-maven-plugin-version>6.6.0</openapi-generator-maven-plugin-version>
         <!-- Jenkins pipeline -->
         <docker.image.name>ms-casemanagementservice</docker.image.name>
