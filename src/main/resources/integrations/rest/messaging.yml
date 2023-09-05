@@ -1732,10 +1732,6 @@ x-wso2-production-endpoints:
   urls:
     - 'https://microservices-test.sundsvall.se/messaging/'
   type: http
-x-wso2-sandbox-endpoints:
-  urls:
-    - 'https://microservices-test.sundsvall.se/sandbox/messaging/'
-  type: http
 x-wso2-basePath: /messaging/3.1
 x-wso2-transports:
   - https
