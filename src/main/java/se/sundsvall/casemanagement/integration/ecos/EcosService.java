@@ -9,7 +9,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -79,7 +78,6 @@ import minutmiljo.InfiltrationPlantSvcDto;
 import minutmiljo.LocationSvcDto;
 import minutmiljo.MiniSewageSvcDto;
 import minutmiljo.OccurrenceListItemSvcDto;
-import minutmiljo.PartySvcDto;
 import minutmiljo.PhosphorusTrapSvcDto;
 import minutmiljo.PurificationStepSvcDto;
 import minutmiljo.SandFilterSvcDto;
@@ -137,18 +135,10 @@ public class EcosService {
 			// Collects this early to avoid creating something before we discover potential errors
 			propertyInfo = fbService.getPropertyInfoByPropertyDesignation(eFacility.getAddress().getPropertyDesignation());
 		}
-
-		// Do requests to SearchParty for every stakeholder and collect these stakeholders to be able to add them
-		// to the facility later.
-		final var partyList = new ArrayList<PartySvcDto>();
-
-		// The stakeholder is stored with associated roles so that we can set roles later.
-		final var partyRoles = new HashMap<String, ArrayOfguid>();
-
-
+		
 		// -----> RegisterDocument
 		final var registerDocumentResult = registerDocument(caseInput);
-
+		// -----> Search party, Create party if not found and add to case
 		final var mapped = partyService.findAndAddPartyToCase(caseInput, registerDocumentResult.getCaseId());
 
 		if (propertyInfo != null) {
