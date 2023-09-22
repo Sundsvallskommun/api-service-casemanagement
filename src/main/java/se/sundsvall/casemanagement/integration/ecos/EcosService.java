@@ -27,7 +27,6 @@ import se.sundsvall.casemanagement.api.model.AttachmentDTO;
 import se.sundsvall.casemanagement.api.model.CaseStatusDTO;
 import se.sundsvall.casemanagement.api.model.EnvironmentalCaseDTO;
 import se.sundsvall.casemanagement.api.model.EnvironmentalFacilityDTO;
-import se.sundsvall.casemanagement.api.model.StakeholderDTO;
 import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
@@ -146,15 +145,11 @@ public class EcosService {
 		// The stakeholder is stored with associated roles so that we can set roles later.
 		final var partyRoles = new HashMap<String, ArrayOfguid>();
 
-		// If the stakeholder is missing in Ecos, we keep it in this list and create them later (CreateParty)
-		final var missingStakeholderDTOS = new ArrayList<StakeholderDTO>();
 
 		// -----> RegisterDocument
 		final var registerDocumentResult = registerDocument(caseInput);
 
-
-		// -----> SearchParty
-		partyService.findAndAddPartyToCase(caseInput, registerDocumentResult.getCaseId());
+		final var mapped = partyService.findAndAddPartyToCase(caseInput, registerDocumentResult.getCaseId());
 
 		if (propertyInfo != null) {
 			final String facilityGuid = switch (caseInput.getCaseType()) {
@@ -173,7 +168,7 @@ public class EcosService {
 
 			// -----> AddPartyToFacility
 			if (facilityGuid != null && !CaseType.WITH_NULLABLE_FACILITY_TYPE.contains(caseInput.getCaseType())) {
-				addPartyToFacility(partyRoles, partyList, facilityGuid);
+				mapped.forEach(o -> addPartyToFacility(facilityGuid, o));
 			}
 
 		} else {
@@ -198,17 +193,16 @@ public class EcosService {
 		return registerDocumentResult;
 	}
 
-	private void addPartyToFacility(final Map<String, ArrayOfguid> partyRoles, final List<PartySvcDto> partyList, final String foodFacilityGuid) {
-		for (final PartySvcDto p : partyList) {
-			final AddPartyToFacility addPartyToFacility = new AddPartyToFacility();
-			final AddPartyToFacilitySvcDto addPartyToFacilitySvcDto = new AddPartyToFacilitySvcDto();
-			addPartyToFacilitySvcDto.setFacilityId(foodFacilityGuid);
-			addPartyToFacilitySvcDto.setPartyId(p.getId());
-			addPartyToFacilitySvcDto.setRoles(partyRoles.get(p.getId()));
-			addPartyToFacility.setModel(addPartyToFacilitySvcDto);
+	private void addPartyToFacility(final String foodFacilityGuid, final Map<String, ArrayOfguid> partyRoles) {
 
+		partyRoles.forEach((partyId, roles) -> {
+			final AddPartyToFacility addPartyToFacility = new AddPartyToFacility()
+				.withModel(new AddPartyToFacilitySvcDto()
+					.withFacilityId(foodFacilityGuid)
+					.withPartyId(partyId)
+					.withRoles(roles));
 			minutMiljoClient.addPartyToFacility(addPartyToFacility);
-		}
+		});
 	}
 
 	private String createFoodFacility(final EnvironmentalCaseDTO eCase, final FbPropertyInfo propertyInfo, final RegisterDocumentCaseResultSvcDto registerDocumentResult) {
@@ -752,7 +746,7 @@ public class EcosService {
 		final List<CaseStatusDTO> caseStatusDTOList = new ArrayList<>();
 
 		// Find party both with and without prefix "16"
-		final ArrayOfPartySvcDto allParties = searchPartyByOrganizationNumber(organizationNumber);
+		final ArrayOfPartySvcDto allParties = partyService.searchPartyByOrganizationNumber(organizationNumber);
 
 		// Search Ecos Case
 		if (allParties.getPartySvcDto() != null && !allParties.getPartySvcDto().isEmpty()) {

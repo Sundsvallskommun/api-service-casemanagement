@@ -1,11 +1,8 @@
 package se.sundsvall.casemanagement.integration.ecos;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
@@ -34,7 +31,6 @@ import minutmiljo.CreateOrganizationParty;
 import minutmiljo.CreatePersonParty;
 import minutmiljo.OrganizationSvcDto;
 import minutmiljo.PartyAddressSvcDto;
-import minutmiljo.PartySvcDto;
 import minutmiljo.PersonSvcDto;
 import minutmiljo.SearchParty;
 import minutmiljo.SearchPartySvcDto;
@@ -51,28 +47,8 @@ public class PartyService {
 		this.citizenMappingService = citizenMappingService;
 	}
 
-	public void findAndAddPartyToCase(final EnvironmentalCaseDTO caseInput, final String caseId) {
 
-		// to the facility later.
-		final var partyList = new ArrayList<PartySvcDto>();
-
-		// The stakeholder is stored with associated roles so that we can set roles later.
-		final var partyRoles = new HashMap<String, ArrayOfguid>();
-
-		// If the stakeholder is missing in Ecos, we keep it in this list and create them later (CreateParty)
-		final var missingStakeholderDTOS = new ArrayList<StakeholderDTO>();
-
-		populatePartyList(caseInput, partyRoles, partyList, missingStakeholderDTOS);
-
-		// -----> CreateParty
-		createParty(partyRoles, partyList, missingStakeholderDTOS);
-
-		// -----> AddPartyToCase
-		addPartyToCase(partyRoles, partyList, caseId);
-	}
-
-	private void populatePartyList(final EnvironmentalCaseDTO eCase, final Map<String, ArrayOfguid> partyRoles, final List<PartySvcDto> partyList, final List<StakeholderDTO> missingStakeholderDTOS) {
-
+	public List<Map<String, ArrayOfguid>> findAndAddPartyToCase(final EnvironmentalCaseDTO eCase, final String caseId) {
 
 		final var organizationDTOs = eCase.getStakeholders().stream()
 			.filter(OrganizationDTO.class::isInstance)
@@ -84,144 +60,92 @@ public class PartyService {
 			.map(PersonDTO.class::cast)
 			.toList();
 
+		final List<Map<String, ArrayOfguid>> mapped;
 
 		if (!organizationDTOs.isEmpty()) {
-			mapAsOrganization(organizationDTOs.get(0), privateDTOs);
+			mapped = organizationDTOs.stream()
+				.map((OrganizationDTO organizationDTO) -> mapAsOrganization(organizationDTO, privateDTOs))
+				.toList();
 		} else {
-			mapAsPerson(privateDTOs);
+			mapped = privateDTOs.stream().
+				map(this::mapAsPerson)
+				.toList();
 		}
+		mapped.forEach(key -> addPartyToCase(caseId, key));
 
-
-		for (final StakeholderDTO s : eCase.getStakeholders()) {
-			ArrayOfPartySvcDto searchPartyResult = null;
-
-			if (s instanceof final OrganizationDTO organizationDTO) {
-				searchPartyResult = searchPartyByOrganizationNumber(organizationDTO.getOrganizationNumber());
-			} else if (s instanceof final PersonDTO personDTO && (StringUtils.isNotBlank(personDTO.getPersonId()))) {
-				searchPartyResult = searchPartyByPersonId(personDTO.getPersonId());
-			}
-
-			// If we get a result we put it in partyList, else we put it in missingStakeholders
-			if (searchPartyResult == null || searchPartyResult.getPartySvcDto().isEmpty()) {
-				// These, we are going to create later
-				missingStakeholderDTOS.add(s);
-			} else if (!searchPartyResult.getPartySvcDto().isEmpty()) {
-
-				// Sometimes we get multiple search results, but we should only use one in the case.
-				final var party = searchPartyResult.getPartySvcDto().get(0);
-				partyList.add(party);
-
-				// Adds stakeholder to a hashmap with the role so that we can connect the stakeholder to the case later
-				partyRoles.put(party.getId(), getEcosFacilityRoles(s));
-			}
-		}
+		return mapped;
 	}
 
-	private void mapAsOrganization(final OrganizationDTO organizationDTO, final List<PersonDTO> personDTOs) {
+	private Map<String, ArrayOfguid> mapAsOrganization(final OrganizationDTO organizationDTO, final List<PersonDTO> personDTOs) {
 
 		final var searchResult = searchPartyByOrganizationNumber(organizationDTO.getOrganizationNumber());
-		final OrganizationSvcDto dto;
+		var dto = new OrganizationSvcDto();
 
-		if (searchResult.getPartySvcDto().isEmpty() && searchResult.getPartySvcDto().get(0) != null) {
+		if (!searchResult.getPartySvcDto().isEmpty()) {
+			dto = (OrganizationSvcDto) searchResult.getPartySvcDto().get(0);
+		} else if (searchResult.getPartySvcDto().isEmpty() && searchResult.getPartySvcDto().get(0) != null) {
 			dto = new OrganizationSvcDto()
 				.withNationalIdentificationNumber(CaseUtil.getSokigoFormattedOrganizationNumber(organizationDTO.getOrganizationNumber()))
 				.withOrganizationName(organizationDTO.getOrganizationName())
 				.withAddresses(getEcosAddresses(organizationDTO.getAddresses()));
 
-		} else if (!searchResult.getPartySvcDto().isEmpty()) {
-			dto = (OrganizationSvcDto) searchResult.getPartySvcDto().get(0);
-		}
-
-		final var filtered = personDTOs.stream()
-			.filter(p -> contactNameIsAMatch(p, dto.getContactInfo()))
-			.toList();
-
-		if (!filtered.isEmpty()) {
 			dto.getContactInfo().withContactInfoSvcDto(
-				filtered.stream()
+				personDTOs.stream()
 					.map(this::getEcosContactInfo)
 					.flatMap(personDTO -> personDTO.getContactInfoSvcDto()
 						.stream())
 					.toList());
+
+			final var result = minutMiljoClient.createOrganizationParty(new CreateOrganizationParty().withOrganizationParty(dto));
+			dto.setId(result.getCreateOrganizationPartyResult());
 		}
-		if (dto.getId() == null || !filtered.isEmpty()) {
-			minutMiljoClient.createOrganizationParty(new CreateOrganizationParty().withOrganizationParty(dto));
+		final var roles = getEcosFacilityRoles(organizationDTO);
+		return Map.of(dto.getId(), roles);
+	}
+
+	private Map<String, ArrayOfguid> mapAsPerson(final PersonDTO personDTO) {
+		final var searchPartyResult = searchPartyByPersonId(personDTO.getPersonId());
+		var dto = new PersonSvcDto();
+
+		if (!searchPartyResult.getPartySvcDto().isEmpty()) {
+			dto = (PersonSvcDto) searchPartyResult.getPartySvcDto().get(0);
+		} else if (searchPartyResult.getPartySvcDto().isEmpty() && searchPartyResult.getPartySvcDto().get(0) != null) {
+			dto = getPersonSvcDto(personDTO);
+
+			final var result = minutMiljoClient.createPersonParty(new CreatePersonParty().withPersonParty(dto));
+			dto.setId(result.getCreatePersonPartyResult());
 		}
+		final var roles = getEcosFacilityRoles(personDTO);
+		return Map.of(dto.getId(), roles);
 
 	}
 
-	private boolean contactNameIsAMatch(final PersonDTO personDTO, final ArrayOfContactInfoSvcDto arrayOfContactInfoSvcDto) {
+	private void addPartyToCase(final String caseId, final Map<String, ArrayOfguid> partyRoles) {
 
-		return arrayOfContactInfoSvcDto.getContactInfoSvcDto().stream()
-			.map(contactInfoSvcDto -> contactInfoSvcDto.getTitle()
-				.equals(personDTO.getFirstName() + " " + personDTO.getLastName()))
-			.findFirst()
-			.orElseThrow();
-
-	}
-
-	private void mapAsPerson(final List<PersonDTO> privateDTOs) {
-
-	}
-
-	private void createParty(final Map<String, ArrayOfguid> partyRoles, final List<PartySvcDto> partyList, final List<StakeholderDTO> missingStakeholderDTOS) {
-
-		for (final var s : missingStakeholderDTOS) {
-			String guidResult = null;
-
-			if (s instanceof final OrganizationDTO organizationDTO) {
-				final var createOrganizationParty = new CreateOrganizationParty().withOrganizationParty(getOrganizationSvcDto(s, organizationDTO));
-				guidResult = minutMiljoClient.createOrganizationParty(createOrganizationParty).getCreateOrganizationPartyResult();
-
-			} else if (s instanceof final PersonDTO personDTO) {
-				final var createPersonParty = new CreatePersonParty().withPersonParty(getPersonSvcDto(s, personDTO));
-				guidResult = minutMiljoClient.createPersonParty(createPersonParty).getCreatePersonPartyResult();
-			}
-
-			if (guidResult != null) {
-				final var party = new PartySvcDto().withId(guidResult);
-
-				partyList.add(party);
-				// Adds party in a hashmap with the role so that we can connect stakeholder to case with the
-				// role later
-				partyRoles.put(party.getId(), getEcosFacilityRoles(s));
-
-			}
-		}
-	}
-
-	private void addPartyToCase(final Map<String, ArrayOfguid> partyRoles, final List<PartySvcDto> partyList, final String caseId) {
-
-		partyList.stream().map(p -> new AddPartyToCase()
+		partyRoles.forEach((partyId, roles) -> {
+			final var addPartyToCase = new AddPartyToCase()
 				.withModel(new AddPartyToCaseSvcDto()
 					.withCaseId(caseId)
-					.withPartyId(p.getId())
-					.withRoles(partyRoles.get(p.getId()))))
-			.forEach(minutMiljoClient::addPartyToCase);
+					.withPartyId(partyId)
+					.withRoles(roles));
+
+			minutMiljoClient.addPartyToCase(addPartyToCase);
+		});
 	}
 
-	PersonSvcDto getPersonSvcDto(final StakeholderDTO s, final PersonDTO personDTO) {
+
+	PersonSvcDto getPersonSvcDto(final PersonDTO personDTO) {
 
 		final var personSvcDto = new PersonSvcDto()
 			.withFirstName(personDTO.getFirstName())
 			.withLastName(personDTO.getLastName())
-			.withAddresses(getEcosAddresses(s.getAddresses()))
-			.withContactInfo(getEcosContactInfo(s).getContactInfoSvcDto().get(0));
+			.withAddresses(getEcosAddresses(personDTO.getAddresses()))
+			.withContactInfo(getEcosContactInfo(personDTO).getContactInfoSvcDto().get(0));
 
 		personSvcDto.setNationalIdentificationNumber(CaseUtil.getSokigoFormattedPersonalNumber(citizenMappingService.getPersonalNumber(personDTO.getPersonId())));
 
 		return personSvcDto;
 	}
-
-	OrganizationSvcDto getOrganizationSvcDto(final StakeholderDTO s, final OrganizationDTO organizationDTO) {
-
-		return new OrganizationSvcDto()
-			.withNationalIdentificationNumber(CaseUtil.getSokigoFormattedOrganizationNumber(organizationDTO.getOrganizationNumber()))
-			.withOrganizationName(organizationDTO.getOrganizationName())
-			.withAddresses(getEcosAddresses(s.getAddresses()))
-			.withContactInfo(getEcosContactInfo(s));
-	}
-
 
 	ArrayOfguid getEcosFacilityRoles(final StakeholderDTO s) {
 
@@ -342,7 +266,7 @@ public class PartyService {
 	}
 
 
-	private ArrayOfPartySvcDto searchPartyByOrganizationNumber(final String organizationNumber) {
+	public ArrayOfPartySvcDto searchPartyByOrganizationNumber(final String organizationNumber) {
 
 		// Find party both with and without prefix "16"
 		final var allParties = new ArrayOfPartySvcDto();
