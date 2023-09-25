@@ -62,7 +62,7 @@ public class RiskClassService {
 
 	private static final String FACILITY_STATUS_ID_REVOKED = "9A748E4E-BD7E-481A-B449-73CBD0992213"; //Upphörd/Skrotad
 
-	private static final String FACILITY_STATUS_ID_MAKULERAD = "80FFA45C-B3DF-4A10-8DB3-A042F36C64B7"; //Makulerad
+	private static final String FACILITY_STATUS_ID_DISCARDED = "80FFA45C-B3DF-4A10-8DB3-A042F36C64B7"; //Makulerad
 
 	private final MinutMiljoClient minutMiljoClient;
 
@@ -107,7 +107,7 @@ public class RiskClassService {
 			.withFilter(new FacilityFacilityStatusIdsFilterSvcDto()
 				.withFacilityStatusIds(new ArrayOfguid()
 					.withGuid(List.of(FACILITY_STATUS_ID_REVOKED,
-						FACILITY_STATUS_ID_MAKULERAD))));
+						FACILITY_STATUS_ID_DISCARDED))));
 
 		final var orgFilter = new FacilityPartyOrganizationNumberFilterSvcDto()
 			.withOrganizationNumber(orgNr);
