@@ -1,7 +1,9 @@
 package se.sundsvall.casemanagement.integration.ecos;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
@@ -33,6 +35,7 @@ import minutmiljo.OrganizationSvcDto;
 import minutmiljo.PartyAddressSvcDto;
 import minutmiljo.PersonSvcDto;
 import minutmiljo.SearchParty;
+import minutmiljo.SearchPartyResponse;
 import minutmiljo.SearchPartySvcDto;
 
 @Service
@@ -83,33 +86,38 @@ public class PartyService {
 
 		if (!searchResult.getPartySvcDto().isEmpty()) {
 			dto = (OrganizationSvcDto) searchResult.getPartySvcDto().get(0);
-		} else if (searchResult.getPartySvcDto().isEmpty() && searchResult.getPartySvcDto().get(0) != null) {
+		} else if (searchResult.getPartySvcDto().isEmpty() || searchResult.getPartySvcDto().get(0) != null) {
 			dto = new OrganizationSvcDto()
 				.withNationalIdentificationNumber(CaseUtil.getSokigoFormattedOrganizationNumber(organizationDTO.getOrganizationNumber()))
 				.withOrganizationName(organizationDTO.getOrganizationName())
 				.withAddresses(getEcosAddresses(organizationDTO.getAddresses()));
 
-			dto.getContactInfo().withContactInfoSvcDto(
+			dto.withContactInfo(new ArrayOfContactInfoSvcDto().withContactInfoSvcDto(
 				personDTOs.stream()
 					.map(this::getEcosContactInfo)
 					.flatMap(personDTO -> personDTO.getContactInfoSvcDto()
 						.stream())
-					.toList());
+					.toList()));
 
 			final var result = minutMiljoClient.createOrganizationParty(new CreateOrganizationParty().withOrganizationParty(dto));
+
+			if (result == null) {
+				return Collections.emptyMap();
+			}
 			dto.setId(result.getCreateOrganizationPartyResult());
 		}
+
 		final var roles = getEcosFacilityRoles(organizationDTO);
 		return Map.of(dto.getId(), roles);
 	}
 
 	private Map<String, ArrayOfguid> mapAsPerson(final PersonDTO personDTO) {
 		final var searchPartyResult = searchPartyByPersonId(personDTO.getPersonId());
-		var dto = new PersonSvcDto();
+		final PersonSvcDto dto;
 
-		if (!searchPartyResult.getPartySvcDto().isEmpty()) {
+		if (searchPartyResult != null && !searchPartyResult.getPartySvcDto().isEmpty()) {
 			dto = (PersonSvcDto) searchPartyResult.getPartySvcDto().get(0);
-		} else if (searchPartyResult.getPartySvcDto().isEmpty() && searchPartyResult.getPartySvcDto().get(0) != null) {
+		} else {
 			dto = getPersonSvcDto(personDTO);
 
 			final var result = minutMiljoClient.createPersonParty(new CreatePersonParty().withPersonParty(dto));
@@ -134,7 +142,7 @@ public class PartyService {
 	}
 
 
-	PersonSvcDto getPersonSvcDto(final PersonDTO personDTO) {
+	private PersonSvcDto getPersonSvcDto(final PersonDTO personDTO) {
 
 		final var personSvcDto = new PersonSvcDto()
 			.withFirstName(personDTO.getFirstName())
@@ -147,7 +155,7 @@ public class PartyService {
 		return personSvcDto;
 	}
 
-	ArrayOfguid getEcosFacilityRoles(final StakeholderDTO s) {
+	private ArrayOfguid getEcosFacilityRoles(final StakeholderDTO s) {
 
 		return new ArrayOfguid()
 			.withGuid(s.getRoles().stream()
@@ -178,19 +186,19 @@ public class PartyService {
 				.withPersonalIdentificationNumber((CaseUtil
 					.getSokigoFormattedPersonalNumber(citizenMappingService.getPersonalNumber(personId)))));
 
-		final var resultWithHyphen = minutMiljoClient.searchParty(searchPartyWithHyphen).getSearchPartyResult();
+		final var resultWithHyphen = minutMiljoClient.searchParty(searchPartyWithHyphen);
 
-		if (resultWithHyphen != null && !resultWithHyphen.getPartySvcDto().isEmpty()) {
-			return resultWithHyphen;
+		if (resultWithHyphen != null && !resultWithHyphen.getSearchPartyResult().getPartySvcDto().isEmpty()) {
+			return resultWithHyphen.getSearchPartyResult();
 		} else {
 			final var searchPartyWithoutHyphen = new SearchParty().withModel(new SearchPartySvcDto()
 				.withPersonalIdentificationNumber(citizenMappingService.getPersonalNumber(personId)));
 
-			return minutMiljoClient.searchParty(searchPartyWithoutHyphen).getSearchPartyResult();
+			return Optional.ofNullable(minutMiljoClient.searchParty(searchPartyWithoutHyphen)).orElse(new SearchPartyResponse()).getSearchPartyResult();
 		}
 	}
 
-	ArrayOfContactInfoSvcDto getEcosContactInfo(final StakeholderDTO s) {
+	private ArrayOfContactInfoSvcDto getEcosContactInfo(final StakeholderDTO s) {
 		final var arrayOfContactInfoSvcDto = new ArrayOfContactInfoSvcDto();
 		final var contactInfoSvcDto = new ContactInfoSvcDto();
 		final var arrayOfContactInfoItemSvcDto = new ArrayOfContactInfoItemSvcDto();
@@ -236,7 +244,7 @@ public class PartyService {
 		return arrayOfContactInfoSvcDto;
 	}
 
-	ArrayOfPartyAddressSvcDto getEcosAddresses(final List<AddressDTO> addressDTOS) {
+	private ArrayOfPartyAddressSvcDto getEcosAddresses(final List<AddressDTO> addressDTOS) {
 		if (addressDTOS == null) {
 			return null;
 		}
@@ -276,20 +284,20 @@ public class PartyService {
 			.withModel(new SearchPartySvcDto()
 				.withOrganizationIdentificationNumber(organizationNumber));
 
-		final var partiesWithoutPrefix = minutMiljoClient.searchParty(searchPartyWithoutPrefix).getSearchPartyResult();
+		final var partiesWithoutPrefix = minutMiljoClient.searchParty(searchPartyWithoutPrefix);
 
 		// Search for party with prefix
 		final var searchPartyWithPrefix = new SearchParty()
 			.withModel(new SearchPartySvcDto()
 				.withOrganizationIdentificationNumber(CaseUtil.getSokigoFormattedOrganizationNumber(organizationNumber)));
 
-		final ArrayOfPartySvcDto partiesWithPrefix = minutMiljoClient.searchParty(searchPartyWithPrefix).getSearchPartyResult();
+		final var partiesWithPrefix = minutMiljoClient.searchParty(searchPartyWithPrefix);
 
 		if (partiesWithoutPrefix != null) {
-			allParties.getPartySvcDto().addAll(partiesWithoutPrefix.getPartySvcDto());
+			allParties.getPartySvcDto().addAll(partiesWithoutPrefix.getSearchPartyResult().getPartySvcDto());
 		}
 		if (partiesWithPrefix != null) {
-			allParties.getPartySvcDto().addAll(partiesWithPrefix.getPartySvcDto());
+			allParties.getPartySvcDto().addAll(partiesWithPrefix.getSearchPartyResult().getPartySvcDto());
 		}
 
 		return allParties;

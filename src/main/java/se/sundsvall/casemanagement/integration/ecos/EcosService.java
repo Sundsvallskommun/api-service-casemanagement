@@ -135,12 +135,14 @@ public class EcosService {
 			// Collects this early to avoid creating something before we discover potential errors
 			propertyInfo = fbService.getPropertyInfoByPropertyDesignation(eFacility.getAddress().getPropertyDesignation());
 		}
-		
+
 		// -----> RegisterDocument
 		final var registerDocumentResult = registerDocument(caseInput);
 		// -----> Search party, Create party if not found and add to case
-		final var mapped = partyService.findAndAddPartyToCase(caseInput, registerDocumentResult.getCaseId());
-
+		List<Map<String, ArrayOfguid>> mapped = List.of();
+		if (registerDocumentResult.getCaseId() != null) {
+			mapped = partyService.findAndAddPartyToCase(caseInput, registerDocumentResult.getCaseId());
+		}
 		if (propertyInfo != null) {
 			final String facilityGuid = switch (caseInput.getCaseType()) {
 				case REGISTRERING_AV_LIVSMEDEL ->
@@ -360,7 +362,6 @@ public class EcosService {
 
 		svcDto.setManufacturer(CaseUtil.parseString(extraParameters.get(prefix + "Manufacturer")));
 		svcDto.setModel(CaseUtil.parseString(extraParameters.get(prefix + "Model")));
-		log.info("-searchablestring-> powerconsumption: {}", extraParameters.get(prefix + "PowerConsumption"));
 		svcDto.setPowerConsumption(CaseUtil.parseDouble(extraParameters.get(prefix + "PowerConsumption")));
 		svcDto.setPowerOutput(CaseUtil.parseDouble(extraParameters.get(prefix + "PowerOutput")));
 	}

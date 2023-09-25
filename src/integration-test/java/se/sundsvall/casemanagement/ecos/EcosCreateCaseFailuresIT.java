@@ -26,125 +26,126 @@ import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 @WireMockAppTestSuite(files = "classpath:/EcosCreateCaseFailuresIT/", classes = Application.class)
 public class EcosCreateCaseFailuresIT extends CustomAbstractAppTest {
 
-    public static final String ECOS_CASE_ID = "e19981ad-34b2-4e14-88f5-133f61ca85aa";
+	public static final String ECOS_CASE_ID = "e19981ad-34b2-4e14-88f5-133f61ca85aa";
 
 
-    @Autowired
-    private CaseMappingRepository caseMappingRepository;
+	@Autowired
+	private CaseMappingRepository caseMappingRepository;
 
-    @Autowired
-    private CaseRepository caseRepository;
+	@Autowired
+	private CaseRepository caseRepository;
 
-    // Okay this is not actually a failure test from our perspective.
-    // But it is a failure test from the perspective of ECOS since the
-    // case is not created correctly and a so-called "occurrence" is created on case.
-    // And the test uses different mocks than other happy path tests.
-    @Test
-    void test1_LivsmedelMovingFacility() throws JsonProcessingException, ClassNotFoundException {
+	// Okay this is not actually a failure test from our perspective.
+	// But it is a failure test from the perspective of ECOS since the
+	// case is not created correctly and a so-called "occurrence" is created on case.
+	// And the test uses different mocks than other happy path tests.
+	@Test
+	void test1_LivsmedelMovingFacility() throws JsonProcessingException, ClassNotFoundException {
 
-        var result = setupCall()
-            .withHttpMethod(HttpMethod.POST)
-            .withServicePath("/cases")
-            .withRequest("request.json")
-            .withExpectedResponseStatus(HttpStatus.OK)
-            .withExpectedResponse("expected-response.json")
-            .sendRequestAndVerifyResponse()
-            .andReturnBody(CaseResourceResponseDTO.class);
+		final var result = setupCall()
+			.withHttpMethod(HttpMethod.POST)
+			.withServicePath("/cases")
+			.withRequest("request.json")
+			.withExpectedResponseStatus(HttpStatus.OK)
+			.withExpectedResponse("expected-response.json")
+			.sendRequestAndVerifyResponse()
+			.andReturnBody(CaseResourceResponseDTO.class);
 
-        assertThat(result).isNotNull();
-        assertThat(result.getCaseId()).isEqualTo("Inskickat");
+		assertThat(result).isNotNull();
+		assertThat(result.getCaseId()).isEqualTo("Inskickat");
 
-        //  Make sure that there doesn't exist a case entity
-        assertThat(caseRepository.findById("1256239125").isPresent()).isFalse();
-        // Make sure that there exists a case mapping
-        assertThat(caseMappingRepository.findAllByExternalCaseId("1256239125"))
-            .isNotNull()
-            .hasSize(1)
-            .allSatisfy(caseMapping -> {
-                assertThat(caseMapping.getExternalCaseId()).isEqualTo("1256239125");
-                assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.REGISTRERING_AV_LIVSMEDEL);
-                assertThat(caseMapping.getCaseId()).isEqualTo(ECOS_CASE_ID);
-                assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
-            });
-        caseMappingRepository.delete(caseMappingRepository.findAllByExternalCaseId("1256239125").get(0));
-    }
+		//  Make sure that there doesn't exist a case entity
+		assertThat(caseRepository.findById("1256239125")).isNotPresent();
+		// Make sure that there exists a case mapping
+		assertThat(caseMappingRepository.findAllByExternalCaseId("1256239125"))
+			.isNotNull()
+			.hasSize(1)
+			.allSatisfy(caseMapping -> {
+				assertThat(caseMapping.getExternalCaseId()).isEqualTo("1256239125");
+				assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.REGISTRERING_AV_LIVSMEDEL);
+				assertThat(caseMapping.getCaseId()).isEqualTo(ECOS_CASE_ID);
+				assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
+			});
+		caseMappingRepository.delete(caseMappingRepository.findAllByExternalCaseId("1256239125").get(0));
+	}
 
-    @Test
-    void test2_LivsmedelEndBeforeStart() throws JsonProcessingException, ClassNotFoundException {
-        var EXTERNAL_CASE_ID = "1722008445";
-
-
-        setupCall()
-            .withHttpMethod(HttpMethod.POST)
-            .withServicePath("/cases")
-            .withRequest("request.json")
-            .withExpectedResponseStatus(HttpStatus.BAD_REQUEST)
-            .withExpectedResponse("expected-response.json")
-            .sendRequestAndVerifyResponse()
-            .andReturnBody(ConstraintViolationProblem.class);
+	@Test
+	void test2_LivsmedelEndBeforeStart() throws JsonProcessingException, ClassNotFoundException {
+		final var EXTERNAL_CASE_ID = "1722008445";
 
 
-        //  Make sure that there doesn't exist a case entity
-        assertThat(caseRepository.findById(EXTERNAL_CASE_ID).isPresent()).isFalse();
-        // Make sure that there doesn't exist a case mapping
-        assertThat(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID))
-            .isNotNull()
-            .hasSize(0);
-
-    }
-
-    @Test
-    void test3_Livsmedel500Response() throws JsonProcessingException, ClassNotFoundException {
+		setupCall()
+			.withHttpMethod(HttpMethod.POST)
+			.withServicePath("/cases")
+			.withRequest("request.json")
+			.withExpectedResponseStatus(HttpStatus.BAD_REQUEST)
+			.withExpectedResponse("expected-response.json")
+			.sendRequestAndVerifyResponse()
+			.andReturnBody(ConstraintViolationProblem.class);
 
 
-        var EXTERNAL_CASE_ID = "1307815498";
+		//  Make sure that there doesn't exist a case entity
+		assertThat(caseRepository.findById(EXTERNAL_CASE_ID)).isNotPresent();
+		// Make sure that there doesn't exist a case mapping
+		assertThat(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID))
+			.isNotNull()
+			.isEmpty();
 
-        var result = setupCall()
-            .withHttpMethod(HttpMethod.POST)
-            .withServicePath("/cases")
-            .withRequest("request.json")
-            .withExpectedResponseStatus(HttpStatus.OK)
-            .withExpectedResponse("expected-response.json")
-            .sendRequestAndVerifyResponse()
-            .andReturnBody(CaseResourceResponseDTO.class);
+	}
 
-        assertThat(this.wiremock.findAllUnmatchedRequests()).isEmpty();
-        assertThat(result).isNotNull();
-        assertThat(result.getCaseId()).isEqualTo("Inskickat");
-
-        //  Make sure that there exists a case entity
-        assertThat(caseRepository.findById(EXTERNAL_CASE_ID).isPresent()).isTrue();
-        // Make sure that there doesn't exist a case mapping
-        assertThat(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID))
-            .isNotNull()
-            .hasSize(0);
-    }
+	@Test
+	void test3_Livsmedel500Response() throws JsonProcessingException, ClassNotFoundException {
 
 
-    @Test
-    void test4_PropertyDesignationNotFound() throws JsonProcessingException, ClassNotFoundException, InterruptedException {
+		final var EXTERNAL_CASE_ID = "1307815498";
 
-        var EXTERNAL_CASE_ID = "513913320";
+		final var result = setupCall()
+			.withHttpMethod(HttpMethod.POST)
+			.withServicePath("/cases")
+			.withRequest("request.json")
+			.withExpectedResponseStatus(HttpStatus.OK)
+			.withExpectedResponse("expected-response.json")
+			.sendRequestAndVerifyResponse()
+			.andReturnBody(CaseResourceResponseDTO.class);
 
-        var result = setupCall()
-            .withHttpMethod(HttpMethod.POST)
-            .withServicePath("/cases")
-            .withRequest("request.json")
-            .withExpectedResponseStatus(HttpStatus.OK)
-            .withExpectedResponse("expected-response.json")
-            .sendRequestAndVerifyResponse()
-            .andReturnBody(CaseResourceResponseDTO.class);
+		assertThat(this.wiremock.findAllUnmatchedRequests()).isEmpty();
+		assertThat(result).isNotNull();
+		assertThat(result.getCaseId()).isEqualTo("Inskickat");
 
-        assertThat(this.wiremock.findAllUnmatchedRequests()).isEmpty();
-        assertThat(result).isNotNull();
-        assertThat(result.getCaseId()).isEqualTo("Inskickat");
+		//  Make sure that there exists a case entity
+		assertThat(caseRepository.findById(EXTERNAL_CASE_ID)).isPresent();
+		// Make sure that there doesn't exist a case mapping
+		assertThat(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID))
+			.isNotNull()
+			.hasSize(0);
+	}
 
-        //  Make sure that there exists a case entity
-        assertThat(caseRepository.findById(EXTERNAL_CASE_ID).isPresent()).isTrue();
-        // Make sure that there doesn't exist a case mapping
-        assertThat(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID))
-            .isNotNull()
-            .hasSize(0);
 
-    }
+	@Test
+	void test4_PropertyDesignationNotFound() throws JsonProcessingException, ClassNotFoundException, InterruptedException {
+
+		final var EXTERNAL_CASE_ID = "513913320";
+
+		final var result = setupCall()
+			.withHttpMethod(HttpMethod.POST)
+			.withServicePath("/cases")
+			.withRequest("request.json")
+			.withExpectedResponseStatus(HttpStatus.OK)
+			.withExpectedResponse("expected-response.json")
+			.sendRequestAndVerifyResponse()
+			.andReturnBody(CaseResourceResponseDTO.class);
+
+		assertThat(this.wiremock.findAllUnmatchedRequests()).isEmpty();
+		assertThat(result).isNotNull();
+		assertThat(result.getCaseId()).isEqualTo("Inskickat");
+
+		//  Make sure that there exists a case entity
+		assertThat(caseRepository.findById(EXTERNAL_CASE_ID)).isPresent();
+		// Make sure that there doesn't exist a case mapping
+		assertThat(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID))
+			.isNotNull()
+			.isEmpty();
+
+	}
+
 }

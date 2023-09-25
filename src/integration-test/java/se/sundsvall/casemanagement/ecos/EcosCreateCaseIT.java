@@ -35,7 +35,6 @@ public class EcosCreateCaseIT extends CustomAbstractAppTest {
 	@Test
 	void test2_AnmalanVarmepump() throws JsonProcessingException, ClassNotFoundException {
 
-
 		final var result = setupCall()
 			.withHttpMethod(HttpMethod.POST)
 			.withServicePath("/cases")
@@ -49,7 +48,7 @@ public class EcosCreateCaseIT extends CustomAbstractAppTest {
 		assertThat(result.getCaseId()).isEqualTo("Inskickat");
 
 		//  Make sure that there doesn't exist a case entity
-		assertThat(caseRepository.findById("874407364").isPresent()).isFalse();
+		assertThat(caseRepository.findById("874407364")).isNotPresent();
 		// Make sure that there exists a case mapping
 		assertThat(caseMappingRepository.findAllByExternalCaseId("874407364"))
 			.isNotNull()
@@ -83,7 +82,7 @@ public class EcosCreateCaseIT extends CustomAbstractAppTest {
 		assertThat(result.getCaseId()).isEqualTo("Inskickat");
 
 		// Make sure that there doesn't exist a case entity
-		assertThat(caseRepository.findById(EXTERNAL_CASE_ID).isPresent()).isFalse();
+		assertThat(caseRepository.findById(EXTERNAL_CASE_ID)).isNotPresent();
 		// Make sure that there exists a case mapping
 		assertThat(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID))
 			.isNotNull()
@@ -117,7 +116,7 @@ public class EcosCreateCaseIT extends CustomAbstractAppTest {
 
 
 		// Make sure that there doesn't exist a case entity
-		assertThat(caseRepository.findById(EXTERNAL_CASE_ID).isPresent()).isFalse();
+		assertThat(caseRepository.findById(EXTERNAL_CASE_ID)).isNotPresent();
 		// Make sure that there exists a case mapping
 		assertThat(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID))
 			.isNotNull()
@@ -151,7 +150,7 @@ public class EcosCreateCaseIT extends CustomAbstractAppTest {
 		assertThat(result.getCaseId()).isEqualTo("Inskickat");
 
 		// Make sure that there doesn't exist a case entity
-		assertThat(caseRepository.findById(EXTERNAL_CASE_ID).isPresent()).isFalse();
+		assertThat(caseRepository.findById(EXTERNAL_CASE_ID)).isNotPresent();
 		// Make sure that there exists a case mapping
 		assertThat(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID))
 			.isNotNull()
@@ -185,7 +184,7 @@ public class EcosCreateCaseIT extends CustomAbstractAppTest {
 		assertThat(result.getCaseId()).isEqualTo("Inskickat");
 
 		// Make sure that there doesn't exist a case entity
-		assertThat(caseRepository.findById(EXTERNAL_CASE_ID).isPresent()).isFalse();
+		assertThat(caseRepository.findById(EXTERNAL_CASE_ID)).isNotPresent();
 		// Make sure that there exists a case mapping
 		assertThat(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID))
 			.isNotNull()
@@ -218,7 +217,7 @@ public class EcosCreateCaseIT extends CustomAbstractAppTest {
 		assertThat(result.getCaseId()).isEqualTo("Inskickat");
 
 		// Make sure that there doesn't exist a case entity
-		assertThat(caseRepository.findById(EXTERNAL_CASE_ID).isPresent()).isFalse();
+		assertThat(caseRepository.findById(EXTERNAL_CASE_ID)).isNotPresent();
 		// Make sure that there exists a case mapping
 		assertThat(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID))
 			.isNotNull()
@@ -253,7 +252,7 @@ public class EcosCreateCaseIT extends CustomAbstractAppTest {
 		assertThat(result.getCaseId()).isEqualTo("Inskickat");
 
 		// Make sure that there doesn't exist a case entity
-		assertThat(caseRepository.findById(EXTERNAL_CASE_ID).isPresent()).isFalse();
+		assertThat(caseRepository.findById(EXTERNAL_CASE_ID)).isNotPresent();
 		// Make sure that there exists a case mapping
 		assertThat(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID))
 			.isNotNull()
@@ -286,7 +285,7 @@ public class EcosCreateCaseIT extends CustomAbstractAppTest {
 		assertThat(result.getCaseId()).isEqualTo("Inskickat");
 
 		// Make sure that there doesn't exist a case entity
-		assertThat(caseRepository.findById(EXTERNAL_CASE_ID).isPresent()).isFalse();
+		assertThat(caseRepository.findById(EXTERNAL_CASE_ID)).isNotPresent();
 		// Make sure that there exists a case mapping
 		assertThat(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID))
 			.isNotNull()
