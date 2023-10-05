@@ -1,7 +1,7 @@
 {
   "request": {
-    "urlPathPattern": "/case-data/\\d.\\d/errands/(.+)/attachments",
-    "method": "PATCH"
+    "urlPathPattern": "/case-data/\\d.\\d/attachments/(.+)",
+    "method": "DELETE"
   },
   "response": {
     "status": 204,

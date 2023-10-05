@@ -43,40 +43,41 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @ApiResponse(responseCode = "502", description = "Bad Gateway", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 public class AttachmentResource {
 
-    private final ByggrService byggrService;
+	private final ByggrService byggrService;
 
-    private final EcosService ecosService;
+	private final EcosService ecosService;
 
-    private final CaseDataService caseDataService;
+	private final CaseDataService caseDataService;
 
-    private final CaseMappingService caseMappingService;
+	private final CaseMappingService caseMappingService;
 
-    public AttachmentResource(ByggrService byggrService, EcosService ecosService, CaseDataService caseDataService, CaseMappingService caseMappingService) {
-        this.byggrService = byggrService;
-        this.ecosService = ecosService;
-        this.caseDataService = caseDataService;
-        this.caseMappingService = caseMappingService;
-    }
+	public AttachmentResource(final ByggrService byggrService, final EcosService ecosService, final CaseDataService caseDataService, final CaseMappingService caseMappingService) {
+		this.byggrService = byggrService;
+		this.ecosService = ecosService;
+		this.caseDataService = caseDataService;
+		this.caseMappingService = caseMappingService;
+	}
 
-    @Operation(description = "Add attachments to existing case.")
-    @PostMapping(path = "cases/{externalCaseId}/attachments", consumes = MediaType.APPLICATION_JSON_VALUE, produces = {MediaType.APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE})
-    @ApiResponse(responseCode = "204", description = "No content - Successful request.")
-    public ResponseEntity<Void> postAttachmentsToCase(@PathVariable String externalCaseId,
-        @NotNull(message = Constants.REQUEST_BODY_MUST_NOT_BE_NULL)
-        @RequestBody @Valid List<AttachmentDTO> attachmentDTOList) {
+	@Operation(description = "Add attachments to existing case.")
+	@PostMapping(path = "cases/{externalCaseId}/attachments", consumes = MediaType.APPLICATION_JSON_VALUE, produces = {MediaType.APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE})
+	@ApiResponse(responseCode = "204", description = "No content - Successful request.")
+	public ResponseEntity<Void> postAttachmentsToCase(@PathVariable final String externalCaseId,
+		@NotNull(message = Constants.REQUEST_BODY_MUST_NOT_BE_NULL)
+		@RequestBody @Valid final List<AttachmentDTO> attachmentDTOList) {
 
-        CaseMapping caseMapping = caseMappingService.getCaseMapping(externalCaseId);
+		final CaseMapping caseMapping = caseMappingService.getCaseMapping(externalCaseId);
 
-        switch (caseMapping.getSystem()) {
-            case BYGGR ->
-                byggrService.saveNewIncomingAttachmentHandelse(caseMapping.getCaseId(), attachmentDTOList);
-            case ECOS -> ecosService.addDocumentsToCase(caseMapping.getCaseId(), attachmentDTOList);
-            case CASE_DATA ->
-                caseDataService.patchErrandWithAttachment(Long.valueOf(caseMapping.getCaseId()), attachmentDTOList);
-            default ->
-                throw Problem.valueOf(Status.BAD_REQUEST, "It should not be possible to reach this row. systemType was: " + caseMapping.getSystem());
-        }
+		switch (caseMapping.getSystem()) {
+			case BYGGR ->
+				byggrService.saveNewIncomingAttachmentHandelse(caseMapping.getCaseId(), attachmentDTOList);
+			case ECOS -> ecosService.addDocumentsToCase(caseMapping.getCaseId(), attachmentDTOList);
+			case CASE_DATA ->
+				caseDataService.patchErrandWithAttachment(caseMapping.getExternalCaseId(), attachmentDTOList);
+			default ->
+				throw Problem.valueOf(Status.BAD_REQUEST, "It should not be possible to reach this row. systemType was: " + caseMapping.getSystem());
+		}
 
-        return ResponseEntity.noContent().build();
-    }
+		return ResponseEntity.noContent().build();
+	}
+
 }

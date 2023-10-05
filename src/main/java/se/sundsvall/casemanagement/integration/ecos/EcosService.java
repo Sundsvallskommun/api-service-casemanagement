@@ -414,6 +414,7 @@ public class EcosService {
 
         svcDto.setManufacturer(CaseUtil.parseString(extraParameters.get(prefix + "Manufacturer")));
         svcDto.setModel(CaseUtil.parseString(extraParameters.get(prefix + "Model")));
+        log.info("-searchablestring-> powerconsumption: {}", extraParameters.get(prefix + "PowerConsumption"));
         svcDto.setPowerConsumption(CaseUtil.parseDouble(extraParameters.get(prefix + "PowerConsumption")));
         svcDto.setPowerOutput(CaseUtil.parseDouble(extraParameters.get(prefix + "PowerOutput")));
     }
@@ -947,9 +948,7 @@ public class EcosService {
      * @throws ThrowableProblem NOT_FOUND if no status was found.
      */
     public CaseStatusDTO getStatus(final String caseId, final String externalCaseId) {
-
         final var getCase = new GetCase().withCaseId(caseId);
-
         final CaseSvcDto ecosCase = minutMiljoClient.getCase(getCase).getGetCaseResult();
 
         if (Optional.ofNullable(ecosCase)

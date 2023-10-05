@@ -14,7 +14,6 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
 import org.zalando.problem.ThrowableProblem;
@@ -70,6 +69,7 @@ public class CaseDataService {
 		final Long id = Long.valueOf(location.substring(location.lastIndexOf("/") + 1));
 
 		final var errandNumber = getErrand(id).getErrandNumber();
+
 		caseMappingService.postCaseMapping(new CaseMapping(
 			otherCase.getExternalCaseId(),
 			String.valueOf(id),
@@ -123,6 +123,7 @@ public class CaseDataService {
 	}
 
 	private generated.client.casedata.AttachmentDTO mapAttachment(AttachmentDTO attachment) {
+
 		final generated.client.casedata.AttachmentDTO attachmentDTO = new generated.client.casedata.AttachmentDTO();
 		attachmentDTO.setCategory(generated.client.casedata.AttachmentDTO.CategoryEnum.fromValue(attachment.getCategory().toString()));
 		attachmentDTO.setName(attachment.getName());
@@ -203,6 +204,7 @@ public class CaseDataService {
 	}
 
 	private List<generated.client.casedata.AddressDTO> mapAddresses(List<AddressDTO> addressDTOS) {
+
 		final List<generated.client.casedata.AddressDTO> addressDTODTOList = new ArrayList<>();
 
 		if (addressDTOS != null) {
