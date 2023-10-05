@@ -17,12 +17,12 @@ import se.sundsvall.casemanagement.api.model.CaseStatusDTO;
 import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
 import se.sundsvall.casemanagement.integration.db.CaseMappingRepository;
-import se.sundsvall.casemanagement.testutils.CustomAbstractAppTest;
+import se.sundsvall.dept44.test.AbstractAppTest;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 
 @Testcontainers
 @WireMockAppTestSuite(files = "classpath:/CaseStatusIT/", classes = Application.class)
-class CaseStatusIT extends CustomAbstractAppTest {
+class CaseStatusIT extends AbstractAppTest {
 
 	@Autowired
 	private CaseMappingRepository caseMappingRepository;

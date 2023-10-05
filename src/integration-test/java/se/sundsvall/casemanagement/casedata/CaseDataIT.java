@@ -16,12 +16,12 @@ import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
 import se.sundsvall.casemanagement.integration.db.CaseMappingRepository;
 import se.sundsvall.casemanagement.integration.db.CaseRepository;
-import se.sundsvall.casemanagement.testutils.CustomAbstractAppTest;
+import se.sundsvall.dept44.test.AbstractAppTest;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 
 @Testcontainers
 @WireMockAppTestSuite(files = "classpath:/CasedataIT/", classes = Application.class)
-public class CaseDataIT extends CustomAbstractAppTest {
+public class CaseDataIT extends AbstractAppTest {
 
 	public static final String CASE_DATA_ID = "24";
 

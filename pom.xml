@@ -6,7 +6,7 @@
     <parent>
         <groupId>se.sundsvall.dept44</groupId>
         <artifactId>dept44-service-parent</artifactId>
-        <version>2.1.3</version>
+        <version>3.0</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>se.sundsvall</groupId>
@@ -21,12 +21,10 @@
         <generated-sources-java-path>src/main/java</generated-sources-java-path>
 
         <!-- Dependencies -->
-        <testcontainers.version>1.17.3</testcontainers.version>
-        <openapi-generator-maven-plugin-version>6.2.1</openapi-generator-maven-plugin-version>
+        <openapi-generator-maven-plugin-version>7.0.1</openapi-generator-maven-plugin-version>
         <!-- Jenkins pipeline -->
         <docker.image.name>ms-casemanagementservice</docker.image.name>
         <exposed.app.port>9090</exposed.app.port>
-        <published.container.port.sandbox>8716</published.container.port.sandbox>
         <published.container.port.test>8715</published.container.port.test>
         <published.container.port.production>8715</published.container.port.production>
 
@@ -79,14 +77,12 @@
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>${testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>mariadb</artifactId>
-            <version>${testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
         <!-- Other -->
@@ -103,7 +99,6 @@
         <dependency>
             <groupId>org.apache.httpcomponents.client5</groupId>
             <artifactId>httpclient5</artifactId>
-            <version>5.2.1</version>
         </dependency>
     </dependencies>
 
@@ -118,10 +113,10 @@
                     <output>${generated-sources-path}</output>
                     <generatorName>spring</generatorName>
                     <generateApis>false</generateApis>
+                    <generateSupportingFiles>false</generateSupportingFiles>
                     <configOptions>
                         <useSpringBoot3>true</useSpringBoot3>
                         <sourceFolder>${generated-sources-java-path}</sourceFolder>
-                        <generateSupportingFiles>false</generateSupportingFiles>
                         <dateLibrary>java8</dateLibrary>
                         <apiPackage>generated</apiPackage>
                         <openApiNullable>false</openApiNullable>
