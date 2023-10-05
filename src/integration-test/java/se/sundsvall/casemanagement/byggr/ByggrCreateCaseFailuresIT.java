@@ -5,12 +5,12 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 
 import se.sundsvall.casemanagement.Application;
-import se.sundsvall.casemanagement.testutils.CustomAbstractAppTest;
+import se.sundsvall.dept44.test.AbstractAppTest;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 
 //@Testcontainers
 @WireMockAppTestSuite(files = "classpath:/ByggrCreateCaseFailuresIT/", classes = Application.class)
-class ByggrCreateCaseFailuresIT extends CustomAbstractAppTest {
+class ByggrCreateCaseFailuresIT extends AbstractAppTest {
 
 	@Test
 	void test1_postWithExistingExternalCaseId() {

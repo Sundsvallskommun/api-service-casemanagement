@@ -5,12 +5,12 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import se.sundsvall.casemanagement.testutils.CustomAbstractAppTest;
+import se.sundsvall.dept44.test.AbstractAppTest;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 
 @Testcontainers
 @WireMockAppTestSuite(files = "classpath:/AttachmentsIT/", classes = Application.class)
-class AttachmentsIT extends CustomAbstractAppTest {
+class AttachmentsIT extends AbstractAppTest {
 
 	@Test
 	void test1_postEcosAttachment() {

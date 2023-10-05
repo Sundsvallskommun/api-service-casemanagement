@@ -18,13 +18,13 @@ import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
 import se.sundsvall.casemanagement.integration.db.CaseMappingRepository;
 import se.sundsvall.casemanagement.integration.db.CaseRepository;
-import se.sundsvall.casemanagement.testutils.CustomAbstractAppTest;
+import se.sundsvall.dept44.test.AbstractAppTest;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 
 @ActiveProfiles("it")
 @Testcontainers
 @WireMockAppTestSuite(files = "classpath:/EcosCreateCaseFailuresIT/", classes = Application.class)
-public class EcosCreateCaseFailuresIT extends CustomAbstractAppTest {
+public class EcosCreateCaseFailuresIT extends AbstractAppTest {
 
 	public static final String ECOS_CASE_ID = "e19981ad-34b2-4e14-88f5-133f61ca85aa";
 

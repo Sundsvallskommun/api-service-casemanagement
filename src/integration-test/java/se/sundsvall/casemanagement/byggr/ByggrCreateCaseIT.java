@@ -2,9 +2,6 @@ package se.sundsvall.casemanagement.byggr;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.time.Duration;
-import java.util.Optional;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
@@ -19,23 +16,18 @@ import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
 import se.sundsvall.casemanagement.integration.db.CaseMappingRepository;
 import se.sundsvall.casemanagement.integration.db.CaseRepository;
-import se.sundsvall.casemanagement.testutils.CustomAbstractAppTest;
+import se.sundsvall.dept44.test.AbstractAppTest;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 
 @Testcontainers
 @WireMockAppTestSuite(files = "classpath:/ByggrCreateCaseIT", classes = Application.class)
-class ByggrCreateCaseIT extends CustomAbstractAppTest {
+class ByggrCreateCaseIT extends AbstractAppTest {
 
 	@Autowired
 	private CaseMappingRepository caseMappingRepository;
 
 	@Autowired
 	private CaseRepository caseRepository;
-
-	@Override
-	protected Optional<Duration> getVerificationDelay() {
-		return Optional.of(Duration.ofSeconds(3));
-	}
 
 	@Test
 	void test1_PostByggrCase() throws JsonProcessingException, ClassNotFoundException {
