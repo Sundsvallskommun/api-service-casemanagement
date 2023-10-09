@@ -1,6 +1,5 @@
 package se.sundsvall.casemanagement.integration.messaging;
 
-
 import java.time.Duration;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -13,17 +12,15 @@ import lombok.Setter;
 @Setter
 public class MessagingProperties {
 
-    private String channel;
-    private String token;
+	private String channel;
+	private String token;
 
-
-    /// BASE PROPERTIES
-    private String baseUrl;
-    private Duration readTimeout = Duration.ofSeconds(15);
-    private Duration connectTimeout = Duration.ofSeconds(5);
-    private String tokenUri;
-    private String clientId;
-    private String clientSecret;
-    private String grantType = "client_credentials";
-
+	/// BASE PROPERTIES
+	private String baseUrl;
+	private Duration readTimeout = Duration.ofSeconds(15);
+	private Duration connectTimeout = Duration.ofSeconds(5);
+	private String tokenUri;
+	private String clientId;
+	private String clientSecret;
+	private String grantType = "client_credentials";
 }

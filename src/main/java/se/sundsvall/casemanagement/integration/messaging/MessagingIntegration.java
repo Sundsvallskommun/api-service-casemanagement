@@ -7,20 +7,18 @@ import org.springframework.stereotype.Component;
 @EnableConfigurationProperties(MessagingProperties.class)
 public class MessagingIntegration {
 
-    static final String INTEGRATION_NAME = "Messaging";
+	static final String INTEGRATION_NAME = "Messaging";
 
+	private final MessagingClient messagingClient;
 
-    private final MessagingClient messagingClient;
+	private final MessagingIntegrationMapper mapper;
 
-    private final MessagingIntegrationMapper mapper;
+	public MessagingIntegration(final MessagingClient messagingClient, final MessagingIntegrationMapper mapper) {
+		this.messagingClient = messagingClient;
+		this.mapper = mapper;
+	}
 
-    public MessagingIntegration(final MessagingClient messagingClient, final MessagingIntegrationMapper mapper) {
-        this.messagingClient = messagingClient;
-        this.mapper = mapper;
-    }
-
-
-    public void sendSlack(final String message) {
-        messagingClient.sendSlack(mapper.toRequest(message));
-    }
+	public void sendSlack(final String message) {
+		messagingClient.sendSlack(mapper.toRequest(message));
+	}
 }

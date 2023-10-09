@@ -1,13 +1,14 @@
 package se.sundsvall.casemanagement.api.model;
 
+import jakarta.validation.constraints.NotBlank;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+
 import se.sundsvall.casemanagement.api.validators.PersonConstraints;
 import se.sundsvall.dept44.common.validators.annotation.ValidUuid;
-
-import javax.validation.constraints.NotBlank;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
@@ -29,5 +30,4 @@ public class PersonDTO extends StakeholderDTO {
 
     @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private String personalNumber;
-
 }

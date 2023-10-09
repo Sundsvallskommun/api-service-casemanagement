@@ -7,9 +7,9 @@ import static se.sundsvall.casemanagement.api.model.enums.CaseType.WITH_NULLABLE
 import java.text.MessageFormat;
 import java.util.Set;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.validation.Validation;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Validation;
 
 import org.springframework.stereotype.Component;
 import org.zalando.problem.Problem;
@@ -33,9 +33,9 @@ public class Validator {
 
     public void validateByggrErrand(PlanningPermissionCaseDTO pCase) {
         try (var factory = Validation.buildDefaultValidatorFactory()) {
-            javax.validation.Validator validator = factory.getValidator();
+            final jakarta.validation.Validator validator = factory.getValidator();
 
-            Set<ConstraintViolation<PlanningPermissionCaseDTO>> caseViolations = validator.validate(pCase, PlanningConstraints.class);
+            final Set<ConstraintViolation<PlanningPermissionCaseDTO>> caseViolations = validator.validate(pCase, PlanningConstraints.class);
 
             if (!caseViolations.isEmpty()) {
                 throw new ConstraintViolationException(caseViolations);
@@ -43,10 +43,10 @@ public class Validator {
 
             // Validation for person. This is necessary because the role CONTROL_OFFICIAL doesn't have the same validation
             // as the other roles.
-            for (StakeholderDTO stakeholderDTO : pCase.getStakeholders()) {
-                if (stakeholderDTO instanceof PersonDTO personDTO
+            for (final StakeholderDTO stakeholderDTO : pCase.getStakeholders()) {
+                if (stakeholderDTO instanceof final PersonDTO personDTO
                     && !stakeholderDTO.getRoles().contains(StakeholderRole.CONTROL_OFFICIAL)) {
-                    Set<ConstraintViolation<PersonDTO>> personViolations = validator.validate(personDTO, PersonConstraints.class);
+                    final Set<ConstraintViolation<PersonDTO>> personViolations = validator.validate(personDTO, PersonConstraints.class);
 
                     if (!personViolations.isEmpty()) {
                         throw new ConstraintViolationException(personViolations);
@@ -65,13 +65,14 @@ public class Validator {
         boolean anmmalanAttefallFacilityType = false;
         FacilityType facilityType = null;
 
-        for (PlanningPermissionFacilityDTO facility : pCase.getFacilities()) {
+        for (final PlanningPermissionFacilityDTO facility : pCase.getFacilities()) {
 
             facilityType = facility.getFacilityType();
 
-            if (facilityType == null && WITH_NULLABLE_FACILITY_TYPE.contains(pCase.getCaseType())) {
+            if ((facilityType == null) && WITH_NULLABLE_FACILITY_TYPE.contains(pCase.getCaseType())) {
                 return;
-            } else if (facilityType == null) {
+            }
+            if (facilityType == null) {
                 throw Problem.valueOf(Status.BAD_REQUEST, MessageFormat.format("FacilityType is not allowed to be null for CaseType {0}", pCase.getCaseType()));
             }
             anmmalanAttefallFacilityType = switch (facility.getFacilityType()) {
@@ -81,28 +82,27 @@ public class Validator {
             };
         }
 
-        if ((pCase.getCaseType() == ANMALAN_ATTEFALL && !anmmalanAttefallFacilityType) || (pCase.getCaseType() == NYBYGGNAD_ANSOKAN_OM_BYGGLOV && anmmalanAttefallFacilityType)) {
+        if (((pCase.getCaseType() == ANMALAN_ATTEFALL) && !anmmalanAttefallFacilityType) || ((pCase.getCaseType() == NYBYGGNAD_ANSOKAN_OM_BYGGLOV) && anmmalanAttefallFacilityType)) {
             throw Problem.valueOf(Status.BAD_REQUEST, MessageFormat.format("FacilityType {0} is not compatible with CaseType {1}", facilityType, pCase.getCaseType()));
         }
     }
 
-
     public void validateEcosErrand(EnvironmentalCaseDTO eCase) {
         try (var factory = Validation.buildDefaultValidatorFactory()) {
-            javax.validation.Validator validator = factory.getValidator();
+            final jakarta.validation.Validator validator = factory.getValidator();
 
-            if (eCase.getCaseType().equals(CaseType.UPPDATERING_RISKKLASSNING)) {
+            if (CaseType.UPPDATERING_RISKKLASSNING.equals(eCase.getCaseType())) {
                 return;
             }
 
-            Set<ConstraintViolation<EnvironmentalCaseDTO>> violations = validator.validate(eCase, EnvironmentalConstraints.class);
+            final Set<ConstraintViolation<EnvironmentalCaseDTO>> violations = validator.validate(eCase, EnvironmentalConstraints.class);
 
             if (!violations.isEmpty()) {
                 throw new ConstraintViolationException(violations);
             }
 
-            for (EnvironmentalFacilityDTO facilityDTO : eCase.getFacilities()) {
-                if (facilityDTO.getFacilityCollectionName() == null && !WITH_NULLABLE_FACILITY_TYPE.contains(eCase.getCaseType())) {
+            for (final EnvironmentalFacilityDTO facilityDTO : eCase.getFacilities()) {
+                if ((facilityDTO.getFacilityCollectionName() == null) && !WITH_NULLABLE_FACILITY_TYPE.contains(eCase.getCaseType())) {
                     throw Problem.valueOf(Status.BAD_REQUEST, MessageFormat.format("FacilityType is not allowed to be null for CaseType {0}", eCase.getCaseType()));
                 }
             }

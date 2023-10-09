@@ -2,13 +2,15 @@ package se.sundsvall.casemanagement.api.model;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+
 import se.sundsvall.casemanagement.api.model.enums.AddressCategory;
 import se.sundsvall.casemanagement.api.validators.EnvironmentalConstraints;
 import se.sundsvall.casemanagement.api.validators.PlanningConstraints;
 import se.sundsvall.casemanagement.util.Constants;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+
 import java.util.List;
 import java.util.Map;
 
@@ -40,7 +42,7 @@ public class AddressDTO {
     @Schema(example = "Test Testorsson")
     private String attention;
 
-    @NotBlank(groups = { EnvironmentalConstraints.class, PlanningConstraints.class })
+    @NotBlank(groups = {EnvironmentalConstraints.class, PlanningConstraints.class})
     @Schema(example = "SUNDSVALL BALDER 7:2")
     private String propertyDesignation;
 

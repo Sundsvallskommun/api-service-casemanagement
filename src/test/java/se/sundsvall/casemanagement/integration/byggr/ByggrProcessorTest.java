@@ -48,15 +48,12 @@ class ByggrProcessorTest {
     @Spy
     private CaseRepository caseRepository;
 
-
     @Test
     void testHandleIncomingErrand() throws SQLException, JsonProcessingException {
-        var event = new IncomingByggrCase(ByggrProcessorTest.class, createPlanningPermissionCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.ANS));
+        final var event = new IncomingByggrCase(ByggrProcessorTest.class, createPlanningPermissionCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.ANS));
 
-
-        var objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
-        String jsonString = objectMapper.writeValueAsString(event.getPayload());
-
+        final var objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+        final String jsonString = objectMapper.writeValueAsString(event.getPayload());
 
         when(caseRepository.findById(any(String.class)))
             .thenReturn(java.util.Optional.of(CaseEntity.builder().withId("id").withDto(new SerialClob(jsonString.toCharArray())).build()));
@@ -67,12 +64,12 @@ class ByggrProcessorTest {
         verifyNoMoreInteractions(caseRepository);
         verify(service, times(1)).postCase(any(PlanningPermissionCaseDTO.class));
 
-        assertThat(caseRepository.findAll().size()).isEqualTo(0);
+        assertThat(caseRepository.findAll()).isEmpty();
     }
 
     @Test
     void testHandleIncomingErrand_NoErrandFound() throws SQLException, JsonProcessingException {
-        var event = new IncomingByggrCase(ByggrProcessorTest.class, new PlanningPermissionCaseDTO());
+        final var event = new IncomingByggrCase(ByggrProcessorTest.class, new PlanningPermissionCaseDTO());
 
         byggrProcessor.handleIncomingErrand(event);
 
@@ -82,15 +79,12 @@ class ByggrProcessorTest {
 
     }
 
-
     @Test
     void testHandleIncomingErrand_maximumFound() throws SQLException, JsonProcessingException {
-        var event = new IncomingByggrCase(ByggrProcessorTest.class, createPlanningPermissionCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.ANS));
+        final var event = new IncomingByggrCase(ByggrProcessorTest.class, createPlanningPermissionCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.ANS));
 
-
-        var objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
-        String jsonString = objectMapper.writeValueAsString(event.getPayload());
-
+        final var objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+        final String jsonString = objectMapper.writeValueAsString(event.getPayload());
 
         when(caseRepository.findById(any(String.class)))
             .thenReturn(java.util.Optional.of(CaseEntity.builder().withId("id").withDto(new SerialClob(jsonString.toCharArray())).build()));

@@ -2,16 +2,17 @@ package se.sundsvall.casemanagement.api.model;
 
 import java.util.Map;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-
-import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
+
 @Data
 public class AttachmentDTO {
+
     @NotNull
     private AttachmentCategory category;
 

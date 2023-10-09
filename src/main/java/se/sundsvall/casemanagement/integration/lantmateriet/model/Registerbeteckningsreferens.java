@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class Registerbeteckningsreferens {
-    private String beteckningsid;
-    private String registerenhet;
-    private String beteckning;
+	private String beteckningsid;
+	private String registerenhet;
+	private String beteckning;
 }
