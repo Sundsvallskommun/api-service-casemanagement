@@ -1,6 +1,5 @@
 package se.sundsvall.casemanagement.integration.ecos;
 
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -82,13 +81,14 @@ public class RiskClassService {
 			.map(stakeholderDTO -> {
 				if (stakeholderDTO instanceof final OrganizationDTO orgDTO) {
 					return orgDTO.getOrganizationNumber();
-				} else return "";
+				}
+                return "";
 			})
 			.findFirst()
 			.orElse(""));
 	}
 
-	private String searchFacility(final String orgNr, final String facilityCollectionName) {
+	private String searchFacility(final String orgNr, final String facilityName) {
 
 
 		final var facilityTypeFilter = new FacilityFacilityTypeIdsFilterSvcDto()
@@ -121,12 +121,12 @@ public class RiskClassService {
 			.orElseThrow(() -> Problem.valueOf(Status.NOT_FOUND, "Could not find facility "));
 
 		return result.stream()
-			.filter(resultSvcDto -> resultSvcDto.getFacilityCollectionName() != null)
-			.filter(resultSvcDto -> resultSvcDto.getFacilityCollectionName().trim().equalsIgnoreCase(facilityCollectionName.trim()))
+			.filter(resultSvcDto -> resultSvcDto.getFacilityName() != null)
+			.filter(resultSvcDto -> resultSvcDto.getFacilityName().trim().equalsIgnoreCase(facilityName.trim()))
 			.findFirst()
 			.orElseThrow(() -> Problem.valueOf(Status.BAD_REQUEST,
-				("Could not match facilityCollectionName: %s to a facility belonging to organization with organizationNumber: %s")
-					.formatted(facilityCollectionName, orgNr)))
+				("Could not match facilityName: %s to a facility belonging to organization with organizationNumber: %s")
+					.formatted(facilityName, orgNr)))
 			.getFacilityId();
 	}
 
@@ -146,7 +146,7 @@ public class RiskClassService {
 				.withFacilityId(facilityId)
 				.withMainOrientationSlvCode(dto.getExtraParameters().get(MAIN_ORIENTATION_ID))
 				.withProductionSizeSlvCode(dto.getExtraParameters().get(PROD_SIZE_ID))
-				.withIsSeasonal(Optional.ofNullable(dto.getExtraParameters().get(IS_SEASONAL)).orElse("").equalsIgnoreCase("true"))
+				.withIsSeasonal("true".equalsIgnoreCase(Optional.ofNullable(dto.getExtraParameters().get(IS_SEASONAL)).orElse("")))
 				.withSeasonalNote(dto.getExtraParameters().get(SEASONAL_NOTE))
 				.withActivities(mapActivities(dto))
 				.withProductGroups(mapProductGroups(dto.getExtraParameters().get(PRODUCT_GROUPS)))
@@ -166,7 +166,6 @@ public class RiskClassService {
 			return null;
 		}
 		final var activities = splitString(activityString.toString());
-
 
 		return new ArrayOfSaveRiskClass2024ActivityDto()
 			.withSaveRiskClass2024ActivityDto(activities.stream()
@@ -210,6 +209,5 @@ public class RiskClassService {
 	private List<String> splitString(final String string) {
 		return Arrays.asList(string.split("(,+\\s?)"));
 	}
-
 
 }

@@ -1,6 +1,7 @@
 package se.sundsvall.casemanagement.integration.fb.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import lombok.Data;
 import lombok.ToString;
 
@@ -8,6 +9,6 @@ import lombok.ToString;
 @ToString
 @Data
 public class FbPropertyInfo {
-    private Integer fnr;
-    private Integer adressplatsId;
+	private Integer fnr;
+	private Integer adressplatsId;
 }

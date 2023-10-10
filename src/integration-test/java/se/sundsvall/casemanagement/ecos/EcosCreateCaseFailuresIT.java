@@ -2,7 +2,6 @@ package se.sundsvall.casemanagement.ecos;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
@@ -11,20 +10,21 @@ import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.zalando.problem.violations.ConstraintViolationProblem;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import se.sundsvall.casemanagement.Application;
 import se.sundsvall.casemanagement.api.model.CaseResourceResponseDTO;
 import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
 import se.sundsvall.casemanagement.integration.db.CaseMappingRepository;
 import se.sundsvall.casemanagement.integration.db.CaseRepository;
-import se.sundsvall.casemanagement.testutils.CustomAbstractAppTest;
+import se.sundsvall.dept44.test.AbstractAppTest;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
-
 
 @ActiveProfiles("it")
 @Testcontainers
 @WireMockAppTestSuite(files = "classpath:/EcosCreateCaseFailuresIT/", classes = Application.class)
-public class EcosCreateCaseFailuresIT extends CustomAbstractAppTest {
+public class EcosCreateCaseFailuresIT extends AbstractAppTest {
 
 	public static final String ECOS_CASE_ID = "e19981ad-34b2-4e14-88f5-133f61ca85aa";
 
@@ -54,8 +54,8 @@ public class EcosCreateCaseFailuresIT extends CustomAbstractAppTest {
 		assertThat(result).isNotNull();
 		assertThat(result.getCaseId()).isEqualTo("Inskickat");
 
-		//  Make sure that there doesn't exist a case entity
-		assertThat(caseRepository.findById("1256239125")).isNotPresent();
+		// Make sure that there doesn't exist a case entity
+		assertThat(caseRepository.findById("1256239125")).isEmpty();
 		// Make sure that there exists a case mapping
 		assertThat(caseMappingRepository.findAllByExternalCaseId("1256239125"))
 			.isNotNull()
@@ -73,7 +73,6 @@ public class EcosCreateCaseFailuresIT extends CustomAbstractAppTest {
 	void test2_LivsmedelEndBeforeStart() throws JsonProcessingException, ClassNotFoundException {
 		final var EXTERNAL_CASE_ID = "1722008445";
 
-
 		setupCall()
 			.withHttpMethod(HttpMethod.POST)
 			.withServicePath("/cases")
@@ -83,19 +82,16 @@ public class EcosCreateCaseFailuresIT extends CustomAbstractAppTest {
 			.sendRequestAndVerifyResponse()
 			.andReturnBody(ConstraintViolationProblem.class);
 
-
-		//  Make sure that there doesn't exist a case entity
-		assertThat(caseRepository.findById(EXTERNAL_CASE_ID)).isNotPresent();
+		// Make sure that there doesn't exist a case entity
+		assertThat(caseRepository.findById(EXTERNAL_CASE_ID)).isEmpty();
 		// Make sure that there doesn't exist a case mapping
 		assertThat(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID))
 			.isNotNull()
 			.isEmpty();
-
 	}
 
 	@Test
 	void test3_Livsmedel500Response() throws JsonProcessingException, ClassNotFoundException {
-
 
 		final var EXTERNAL_CASE_ID = "1307815498";
 
@@ -117,9 +113,8 @@ public class EcosCreateCaseFailuresIT extends CustomAbstractAppTest {
 		// Make sure that there doesn't exist a case mapping
 		assertThat(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID))
 			.isNotNull()
-			.hasSize(0);
+			.isEmpty();
 	}
-
 
 	@Test
 	void test4_PropertyDesignationNotFound() throws JsonProcessingException, ClassNotFoundException, InterruptedException {
@@ -139,13 +134,11 @@ public class EcosCreateCaseFailuresIT extends CustomAbstractAppTest {
 		assertThat(result).isNotNull();
 		assertThat(result.getCaseId()).isEqualTo("Inskickat");
 
-		//  Make sure that there exists a case entity
+		// Make sure that there exists a case entity
 		assertThat(caseRepository.findById(EXTERNAL_CASE_ID)).isPresent();
 		// Make sure that there doesn't exist a case mapping
 		assertThat(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID))
 			.isNotNull()
 			.isEmpty();
-
 	}
-
 }

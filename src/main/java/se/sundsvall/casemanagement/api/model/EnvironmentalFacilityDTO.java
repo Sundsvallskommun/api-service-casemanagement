@@ -10,7 +10,6 @@ import lombok.ToString;
 @Data
 public class EnvironmentalFacilityDTO extends FacilityDTO {
 
-    @Schema(description = "The name on the sign.", example = "Sundsvalls testfabrik")
-    private String facilityCollectionName;
-
+	@Schema(description = "The name on the sign.", example = "Sundsvalls testfabrik")
+	private String facilityCollectionName;
 }

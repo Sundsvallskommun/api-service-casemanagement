@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>se.sundsvall.dept44</groupId>
         <artifactId>dept44-service-parent</artifactId>
-        <version>1.35</version>
+        <version>3.0</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>se.sundsvall</groupId>
@@ -21,7 +21,6 @@
         <generated-sources-java-path>src/main/java</generated-sources-java-path>
 
         <!-- Dependencies -->
-        <testcontainers.version>1.19.0</testcontainers.version>
         <openapi-generator-maven-plugin-version>7.0.1</openapi-generator-maven-plugin-version>
         <!-- Jenkins pipeline -->
         <docker.image.name>ms-casemanagementservice</docker.image.name>
@@ -32,10 +31,8 @@
         <failsafe.version>3.3.2</failsafe.version>
 
         <!--- Generated Clients -->
-        <jaxb2-maven-plugin.version>2.5.0</jaxb2-maven-plugin.version>
+        <jaxb2-maven-plugin.version>3.1.0</jaxb2-maven-plugin.version>
         <jaxb2-fluent-api.version>3.0</jaxb2-fluent-api.version>
-        <jaxb-api.version>2.3.0</jaxb-api.version>
-        <sun-xml-bind.version>3.0.2</sun-xml-bind.version>
 
         <app.jvm.xmx.mb>1024</app.jvm.xmx.mb>
     </properties>
@@ -80,14 +77,12 @@
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>${testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>mariadb</artifactId>
-            <version>${testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
         <!-- Other -->
@@ -104,7 +99,6 @@
         <dependency>
             <groupId>org.apache.httpcomponents.client5</groupId>
             <artifactId>httpclient5</artifactId>
-            <version>5.2.1</version>
         </dependency>
     </dependencies>
 
@@ -119,20 +113,16 @@
                     <output>${generated-sources-path}</output>
                     <generatorName>spring</generatorName>
                     <generateApis>false</generateApis>
+                    <generateSupportingFiles>false</generateSupportingFiles>
                     <configOptions>
+                        <useSpringBoot3>true</useSpringBoot3>
                         <sourceFolder>${generated-sources-java-path}</sourceFolder>
-                        <generateSupportingFiles>false</generateSupportingFiles>
-                        <generatedConstructorWithRequiredArgs>false
-                        </generatedConstructorWithRequiredArgs>
-                        <generatePom>false</generatePom>
-                        <library>spring-boot</library>
                         <dateLibrary>java8</dateLibrary>
                         <apiPackage>generated</apiPackage>
                         <openApiNullable>false</openApiNullable>
-                        <useSwaggerUi>false</useSwaggerUi>
+                        <generatePom>false</generatePom>
                         <useBeanValidation>true</useBeanValidation>
                         <useSwaggerAnnotations>true</useSwaggerAnnotations>
-                        <hideGenerationTimestamp>true</hideGenerationTimestamp>
                         <interfaceOnly>true</interfaceOnly>
                     </configOptions>
                 </configuration>

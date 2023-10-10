@@ -2,8 +2,9 @@ package se.sundsvall.casemanagement.api.validators;
 
 import se.sundsvall.casemanagement.api.model.PlanningPermissionFacilityDTO;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
+
 import java.util.List;
 
 public class OnlyOneMainFacilityValidator implements ConstraintValidator<OnlyOneMainFacility, List<PlanningPermissionFacilityDTO>> {

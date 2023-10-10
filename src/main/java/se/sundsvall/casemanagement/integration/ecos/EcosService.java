@@ -5,7 +5,6 @@ import static se.sundsvall.casemanagement.util.Constants.SERVICE_NAME;
 
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Comparator;
@@ -131,7 +130,7 @@ public class EcosService {
 		final var eFacility = caseInput.getFacilities().get(0);
 
 		FbPropertyInfo propertyInfo = null;
-		if (eFacility.getAddress() != null && eFacility.getAddress().getPropertyDesignation() != null) {
+		if ((eFacility.getAddress() != null) && (eFacility.getAddress().getPropertyDesignation() != null)) {
 			// Collects this early to avoid creating something before we discover potential errors
 			propertyInfo = fbService.getPropertyInfoByPropertyDesignation(eFacility.getAddress().getPropertyDesignation());
 		}
@@ -159,12 +158,12 @@ public class EcosService {
 			};
 
 			// -----> AddPartyToFacility
-			if (facilityGuid != null && !CaseType.WITH_NULLABLE_FACILITY_TYPE.contains(caseInput.getCaseType())) {
+			if ((facilityGuid != null) && !CaseType.WITH_NULLABLE_FACILITY_TYPE.contains(caseInput.getCaseType())) {
 				mapped.forEach(o -> addPartyToFacility(facilityGuid, o));
 			}
 
 		} else {
-			if (caseInput.getCaseType().equals(CaseType.UPPDATERING_RISKKLASSNING)) {
+			if (CaseType.UPPDATERING_RISKKLASSNING.equals(caseInput.getCaseType())) {
 				try {
 					riskClassService.updateRiskClass(caseInput, registerDocumentResult.getCaseId());
 				} catch (final Exception e) {
@@ -206,7 +205,7 @@ public class EcosService {
 		createFoodFacilitySvcDto.setCase(registerDocumentResult.getCaseId());
 
 		createFoodFacilitySvcDto.setEstateDesignation(getEstateSvcDto(propertyInfo));
-		createFoodFacilitySvcDto.setFacilityCollectionName(eCase.getFacilities().get(0).getFacilityCollectionName() + " " + LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
+		createFoodFacilitySvcDto.setFacilityCollectionName(eCase.getFacilities().get(0).getFacilityCollectionName());
 		createFoodFacilitySvcDto.setNote(eCase.getFacilities().get(0).getDescription());
 
 		createFoodFacility.setCreateFoodFacilitySvcDto(createFoodFacilitySvcDto);
@@ -216,10 +215,10 @@ public class EcosService {
 		if (foodFacilityGuid != null) {
 			log.debug("FoodFacility created: {}", foodFacilityGuid);
 			return foodFacilityGuid;
-		} else {
+		}
 			throw Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "FoodFacility could not be created.");
 		}
-	}
+
 
 	private String createHeatPumpFacility(final Map<String, String> facilityExtraParameters, final FbPropertyInfo propertyInfo, final RegisterDocumentCaseResultSvcDto registerDocumentResult) {
 
@@ -231,10 +230,11 @@ public class EcosService {
 		final String soilPrefix = "CreateSoilHeatingFacilitySvcDto_";
 		final String marinePrefix = "CreateMarineHeatingFacilitySvcDto_";
 
-		if (facilityExtraParameters == null || facilityExtraParameters.isEmpty()) {
+		if ((facilityExtraParameters == null) || facilityExtraParameters.isEmpty()) {
 			log.info("facilityExtraParameters was null or empty, do not create facility. Return null.");
 			return null;
-		} else if (facilityExtraParameters.keySet().stream().anyMatch(s -> s.startsWith(airPrefix))) {
+		}
+        if (facilityExtraParameters.keySet().stream().anyMatch(s -> s.startsWith(airPrefix))) {
 			createHeatPumpFacilitySvcDto = getAirHeatingFacility(facilityExtraParameters, propertyInfo, registerDocumentResult, airPrefix);
 		} else if (facilityExtraParameters.keySet().stream().anyMatch(s -> s.startsWith(geoThermalPrefix))) {
 			createHeatPumpFacilitySvcDto = getGeoThermalHeatingFacility(facilityExtraParameters, propertyInfo, registerDocumentResult, geoThermalPrefix);
@@ -243,7 +243,8 @@ public class EcosService {
 		} else if (facilityExtraParameters.keySet().stream().anyMatch(s -> s.startsWith(marinePrefix))) {
 			createHeatPumpFacilitySvcDto = getMarineHeatingFacility(facilityExtraParameters, propertyInfo, registerDocumentResult, marinePrefix);
 		} else {
-			throw Problem.valueOf(Status.BAD_REQUEST, MessageFormat.format("The request does not contain any extraParameters on the facility-object with prefix: \"{0}\", \"{1}\"\", \"{2}\"\" or \"{3}\"", airPrefix, geoThermalPrefix, soilPrefix, marinePrefix));
+			throw Problem.valueOf(Status.BAD_REQUEST, MessageFormat.format("The request does not contain any extraParameters on the facility-object with prefix: \"{0}\", \"{1}\"\", \"{2}\"\" or \"{3}\"", airPrefix, geoThermalPrefix, soilPrefix,
+                marinePrefix));
 		}
 
 		createHeatPumpFacility.setCreateIndividualSewageSvcDto(createHeatPumpFacilitySvcDto);
@@ -252,10 +253,10 @@ public class EcosService {
 		if (facilityGuid != null) {
 			log.debug("HeatPumpFacility created: {}", facilityGuid);
 			return facilityGuid;
-		} else {
+		}
 			throw Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "HeatPumpFacility could not be created");
 		}
-	}
+
 
 	private CreateHeatPumpFacilityWithHeatTransferFluidSvcDto getGeoThermalHeatingFacility(final Map<String, String> extraParameters, final FbPropertyInfo propertyInfo, final RegisterDocumentCaseResultSvcDto registerDocumentResult, final String prefix) {
 		final CreateGeothermalHeatingFacilitySvcDto createHeatPumpFacilityWithHeatTransferFluidSvcDto = new CreateGeothermalHeatingFacilitySvcDto();
@@ -394,10 +395,10 @@ public class EcosService {
 		if (facilityGuid != null) {
 			log.debug("Individual Sewage created: {}", facilityGuid);
 			return facilityGuid;
-		} else {
+		}
 			throw Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "Individual Sewage could not be created");
 		}
-	}
+
 
 	private FacilityAddressSvcDto getAddress(final FbPropertyInfo propertyInfo) {
 		if (propertyInfo.getAdressplatsId() != null) {
@@ -597,7 +598,9 @@ public class EcosService {
 			registerDocumentCaseSvcDtoV2.setCaseSubtitleFree(propertyDesignation);
 		} else {
 			var freeSubtitle = Optional.ofNullable(eFacility.getFacilityCollectionName()).orElse("").trim();
-			if (!propertyDesignation.isEmpty()) {
+			if (!propertyDesignation.isEmpty()) {if (freeSubtitle.isEmpty()) {
+                    freeSubtitle = propertyDesignation;
+                }
 				freeSubtitle = String.join(", ", freeSubtitle, propertyDesignation);
 			}
 			registerDocumentCaseSvcDtoV2.setCaseSubtitleFree(freeSubtitle);
@@ -740,7 +743,7 @@ public class EcosService {
 		final ArrayOfPartySvcDto allParties = partyService.searchPartyByOrganizationNumber(organizationNumber);
 
 		// Search Ecos Case
-		if (allParties.getPartySvcDto() != null && !allParties.getPartySvcDto().isEmpty()) {
+		if ((allParties.getPartySvcDto() != null) && !allParties.getPartySvcDto().isEmpty()) {
 
 			final ArrayOfSearchCaseResultSvcDto caseResult = new ArrayOfSearchCaseResultSvcDto();
 
@@ -807,10 +810,10 @@ public class EcosService {
 		if (facilityGuid != null) {
 			log.debug("Health Protection Facility created: {}", facilityGuid);
 			return facilityGuid;
-		} else {
+		}
 			throw Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "Health Protection Facility could not be created");
 		}
-	}
+
 
 	private EstateSvcDto getEstateSvcDto(final FbPropertyInfo propertyInfo) {
 		final EstateSvcDto estateSvcDto = new EstateSvcDto();

@@ -8,10 +8,10 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.xml.soap.SOAPBody;
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPFault;
-import javax.xml.soap.SOAPMessage;
+import jakarta.xml.soap.SOAPBody;
+import jakarta.xml.soap.SOAPException;
+import jakarta.xml.soap.SOAPFault;
+import jakarta.xml.soap.SOAPMessage;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,29 +22,29 @@ import feign.Response;
 
 class OpeneErrorDecoderTests {
     private OpeneErrorDecoder errorDecoder;
-    
-    
+
+
     @BeforeEach
     void setUp() {
         errorDecoder = new OpeneErrorDecoder();
     }
-    
-    
+
+
     @Test
     void shouldDecodeEmptyResponse() {
         // given
         Response response = mock(Response.class);
         when(response.body()).thenReturn(null);
         when(response.reason()).thenReturn("Bad Request");
-        
+
         // when
         Exception decodedError = errorDecoder.decode("someMethodKey", response);
-        
+
         // then
         assertThat(decodedError).isInstanceOf(ClientProblem.class);
         assertThat(decodedError.getMessage()).isEqualTo("Bad Request: Bad request exception from OpenE Bad Request");
     }
-    
+
     @Test
     void shouldHandleIOException() throws IOException {
         // given
@@ -52,15 +52,15 @@ class OpeneErrorDecoderTests {
         Response.Body body = mock(Response.Body.class);
         when(response.body()).thenReturn(body);
         when(body.asInputStream()).thenThrow(new IOException("Failed to read response body"));
-        
+
         // when
         Exception decodedError = errorDecoder.decode("someMethodKey", response);
-        
+
         // then
         assertThat(decodedError).isInstanceOf(ClientProblem.class);
         assertThat(decodedError.getMessage()).isEqualTo("Bad Request: Bad request exception from OpenE Failed to read response body");
     }
-    
+
     @Test
     void shouldDecodeSOAPFault() throws Exception {
         // given
@@ -69,7 +69,7 @@ class OpeneErrorDecoderTests {
         Response.Body body = mock(Response.Body.class);
         when(response.body()).thenReturn(body);
         when(body.asInputStream()).thenReturn(inputStream);
-        
+
         OpeneErrorDecoder decoder = new OpeneErrorDecoder() {
             @Override
             protected SOAPMessage createSOAPMessage(InputStream inputStream) throws SOAPException, IOException {
@@ -83,14 +83,14 @@ class OpeneErrorDecoderTests {
                 return message;
             }
         };
-        
+
         // when
         Exception decodedError = decoder.decode("someMethodKey", response);
-        
+
         // then
         assertThat(decodedError).isInstanceOf(ClientProblem.class);
         assertThat(decodedError.getMessage()).isEqualTo("Bad Request: Bad request exception from OpenE Internal Server Error");
     }
-    
-    
+
+
 }

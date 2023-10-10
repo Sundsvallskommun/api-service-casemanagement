@@ -1,15 +1,16 @@
 package se.sundsvall.casemanagement.integration.fb.model;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import lombok.Data;
 import lombok.ToString;
-
-import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @ToString
 @Data
-public class DataItem{
+public class DataItem {
 	private Integer fnr;
 	private List<GruppItem> grupp;
 	private String kommun;
@@ -24,7 +25,8 @@ public class DataItem{
 	// Kod för organisationens eller personens juridiska form. För privatpersoner är koden alltid 00.
 	private String juridiskForm;
 
-	// Typ av adress. LFADR = folkbokföringsadress för person eller adress för organisation. LFSÄR = Särskild adress. LFUTL = utlandsadress
+	// Typ av adress. LFADR = folkbokföringsadress för person eller adress för organisation. LFSÄR = Särskild adress. LFUTL
+	// = utlandsadress
 	private String adresstyp;
 	// c/o-adress. Finns inte för utländska adresser
 	private String coAdress;

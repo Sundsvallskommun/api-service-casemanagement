@@ -1,6 +1,6 @@
 package se.sundsvall.casemanagement.api.model;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -22,5 +22,4 @@ public class OrganizationDTO extends StakeholderDTO {
 
     @Schema(example = "Test Testorsson")
     private String authorizedSignatory;
-
 }

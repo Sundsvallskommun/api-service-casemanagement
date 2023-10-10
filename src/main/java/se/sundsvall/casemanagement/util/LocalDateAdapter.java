@@ -3,7 +3,7 @@ package se.sundsvall.casemanagement.util;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 public class LocalDateAdapter extends XmlAdapter<String, LocalDate> {
 

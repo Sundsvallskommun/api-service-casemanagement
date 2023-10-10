@@ -1,14 +1,16 @@
 package se.sundsvall.casemanagement.api.model;
 
+import java.util.List;
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import se.sundsvall.casemanagement.api.validators.OnlyOneMainFacility;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
-import java.util.List;
+import se.sundsvall.casemanagement.api.validators.OnlyOneMainFacility;
 
 @Schema(description = "ByggR-cases")
 @EqualsAndHashCode(callSuper = true)
@@ -22,5 +24,4 @@ public class PlanningPermissionCaseDTO extends CaseDTO {
     private List<PlanningPermissionFacilityDTO> facilities;
 
     private String diaryNumber;
-
 }

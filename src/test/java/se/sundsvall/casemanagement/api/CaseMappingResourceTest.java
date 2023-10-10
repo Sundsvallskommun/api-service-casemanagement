@@ -22,19 +22,16 @@ import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.service.CaseMappingService;
 
-
 @ExtendWith(MockitoExtension.class)
 class CaseMappingResourceTest {
 
+	@Mock
+	private CaseMappingService caseMappingService;
 
-    @Mock
-    private CaseMappingService caseMappingService;
+	@InjectMocks
+	private CaseMappingResource caseMappingResource;
 
-    @InjectMocks
-    private CaseMappingResource caseMappingResource;
-
-
-    @Test
+	@Test
     void getCaseMapping() {
 
         when(caseMappingService.getCaseMapping(any(String.class))).thenReturn(CaseMapping.builder()
@@ -45,24 +42,23 @@ class CaseMappingResourceTest {
             .withTimestamp(LocalDateTime.now())
             .build());
 
-        var result = caseMappingResource.getCaseMapping("externalCaseId");
+        final var result = caseMappingResource.getCaseMapping("externalCaseId");
 
         verify(caseMappingService).getCaseMapping(any(String.class));
 
         assertThat(result).isNotNull();
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody()).isNotNull();
-        assertThat(result.getBody().size()).isEqualTo(1);
+        assertThat(result.getBody()).hasSize(1);
         assertThat(result.getBody().get(0).getCaseId()).isEqualTo("caseId");
         assertThat(result.getBody().get(0).getExternalCaseId()).isEqualTo("externalCaseId");
         assertThat(result.getBody().get(0).getCaseType()).isEqualTo(CaseType.REGISTRERING_AV_LIVSMEDEL);
         assertThat(result.getBody().get(0).getServiceName()).isEqualTo("serviceName");
         assertThat(result.getBody().get(0).getTimestamp()).isNotNull();
         assertThat(result.getBody().get(0).getTimestamp()).isBeforeOrEqualTo(LocalDateTime.now());
-
     }
 
-    @Test
+	@Test
     void getAllCaseMappings() {
 
         when(caseMappingService.getAllCaseMappings()).thenReturn(List.of(CaseMapping.builder()
@@ -80,14 +76,14 @@ class CaseMappingResourceTest {
                 .withTimestamp(LocalDateTime.now())
                 .build()));
 
-        var result = caseMappingResource.getCaseMapping(null);
+        final var result = caseMappingResource.getCaseMapping(null);
 
         verify(caseMappingService).getAllCaseMappings();
 
         assertThat(result).isNotNull();
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody()).isNotNull();
-        assertThat(result.getBody().size()).isEqualTo(2);
+        assertThat(result.getBody()).hasSize(2);
         assertThat(result.getBody().get(0).getCaseId()).isEqualTo("caseId");
         assertThat(result.getBody().get(0).getExternalCaseId()).isEqualTo("externalCaseId");
         assertThat(result.getBody().get(0).getCaseType()).isEqualTo(CaseType.REGISTRERING_AV_LIVSMEDEL);
@@ -100,12 +96,9 @@ class CaseMappingResourceTest {
         assertThat(result.getBody().get(1).getServiceName()).isEqualTo("serviceName2");
         assertThat(result.getBody().get(1).getTimestamp()).isNotNull();
         assertThat(result.getBody().get(1).getTimestamp()).isBeforeOrEqualTo(LocalDateTime.now());
-
-
     }
 
-
-    @Test
+	@Test
     void getCeaseMappingNothingFound() {
         when(caseMappingService.getCaseMapping(any(String.class))).thenThrow(Problem.builder()
             .withTitle("No case mapping found")
@@ -115,7 +108,7 @@ class CaseMappingResourceTest {
         assertThatThrownBy(() -> caseMappingResource.getCaseMapping("externalCaseId"), "", Problem.class);
     }
 
-    @Test
+	@Test
     void getAllCaseMappingsNothingFound() {
         when(caseMappingService.getAllCaseMappings()).thenThrow(Problem.builder()
             .withTitle("No case mappings found")
@@ -125,5 +118,4 @@ class CaseMappingResourceTest {
         assertThatThrownBy(() -> caseMappingResource.getCaseMapping(null), "", Problem.class)
             .hasMessage("No case mappings found");
     }
-
 }

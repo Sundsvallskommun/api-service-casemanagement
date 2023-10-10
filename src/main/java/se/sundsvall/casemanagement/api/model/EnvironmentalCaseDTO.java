@@ -1,18 +1,21 @@
 package se.sundsvall.casemanagement.api.model;
 
+import java.time.LocalDate;
+import java.util.List;
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import se.sundsvall.casemanagement.api.validators.EnvironmentalCaseDateOrder;
 
-import javax.validation.Valid;
-import javax.validation.constraints.FutureOrPresent;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
-import java.time.LocalDate;
-import java.util.List;
+import se.sundsvall.casemanagement.api.validators.EnvironmentalCaseDateOrder;
 
 @Schema(description = "Ecos2-cases")
 @EnvironmentalCaseDateOrder
@@ -34,5 +37,4 @@ public class EnvironmentalCaseDTO extends CaseDTO {
     @Schema(description = "End date of the business if it is time-limited.", format = "date", example = "2022-06-01")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate endDate;
-
 }
