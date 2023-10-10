@@ -25,11 +25,13 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 
 	public static final String ECOS_CASE_ID = "e19981ad-34b2-4e14-88f5-133f61ca85aa";
 
+
 	@Autowired
 	private CaseMappingRepository caseMappingRepository;
 
 	@Autowired
 	private CaseRepository caseRepository;
+
 
 	@Test
 	void test2_AnmalanVarmepump() throws JsonProcessingException, ClassNotFoundException {
@@ -61,6 +63,7 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 
 		caseMappingRepository.delete(caseMappingRepository.findAllByExternalCaseId("874407364").get(0));
 	}
+
 
 	@Test
 	void test3_TillstandVarmepump() throws JsonProcessingException, ClassNotFoundException {
@@ -94,6 +97,7 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 		caseMappingRepository.delete(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID).get(0));
 	}
 
+
 	@Test
 	void test4_AnsokanAvlopp() throws JsonProcessingException, ClassNotFoundException {
 		final var EXTERNAL_CASE_ID = "869540711";
@@ -124,6 +128,7 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 			});
 
 		caseMappingRepository.delete(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID).get(0));
+
 	}
 
 	@Test
@@ -156,6 +161,7 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 			});
 
 		caseMappingRepository.delete(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID).get(0));
+
 	}
 
 	@Test
@@ -188,6 +194,7 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 			});
 
 		caseMappingRepository.delete(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID).get(0));
+
 	}
 
 	@Test
@@ -220,6 +227,7 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 			});
 
 		caseMappingRepository.delete(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID).get(0));
+
 	}
 
 	@Test
@@ -253,6 +261,7 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 			});
 
 		caseMappingRepository.delete(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID).get(0));
+
 	}
 
 	@Test
@@ -285,5 +294,7 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 			});
 
 		caseMappingRepository.delete(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID).get(0));
+
 	}
+
 }

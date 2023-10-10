@@ -28,6 +28,7 @@ public class EcosCreateCaseFailuresIT extends AbstractAppTest {
 
 	public static final String ECOS_CASE_ID = "e19981ad-34b2-4e14-88f5-133f61ca85aa";
 
+
 	@Autowired
 	private CaseMappingRepository caseMappingRepository;
 
@@ -107,7 +108,7 @@ public class EcosCreateCaseFailuresIT extends AbstractAppTest {
 		assertThat(result).isNotNull();
 		assertThat(result.getCaseId()).isEqualTo("Inskickat");
 
-		// Make sure that there exists a case entity
+		//  Make sure that there exists a case entity
 		assertThat(caseRepository.findById(EXTERNAL_CASE_ID)).isPresent();
 		// Make sure that there doesn't exist a case mapping
 		assertThat(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID))
