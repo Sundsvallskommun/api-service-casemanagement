@@ -11,7 +11,7 @@
   },
   "servers": [
     {
-      "url": "https://microservices-test.sundsvall.se/case-data",
+      "url": "https://localhost:8080/case-data",
       "description": "Generated server url"
     }
   ],

@@ -4934,12 +4934,12 @@
 		<wsdl:port name="BasicHttpBinding_IMinutMiljoService"
 				   binding="tns:BasicHttpBinding_IMinutMiljoService">
 			<soap:address
-					location="http://saas730.personal.sundsvall.se/Ecos2PublicServices/MinutMiljoService.svc"/>
+					location="http://localhost:8080/Ecos2PublicServices/MinutMiljoService.svc"/>
 		</wsdl:port>
 		<wsdl:port name="BasicHttpBinding_IMinutMiljoService1"
 				   binding="tns:BasicHttpBinding_IMinutMiljoService1">
 			<soap:address
-					location="https://saas730.personal.sundsvall.se/Ecos2PublicServices/MinutMiljoService.svc"/>
+					location="https://localhost:8080/Ecos2PublicServices/MinutMiljoService.svc"/>
 		</wsdl:port>
 	</wsdl:service>
 </wsdl:definitions>
