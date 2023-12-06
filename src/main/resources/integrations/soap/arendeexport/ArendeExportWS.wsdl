@@ -1890,10 +1890,10 @@
     </wsdl:binding>
     <wsdl:service name="ArendeExport">
         <wsdl:port name="BasicHttpBinding_IExportArenden" binding="tns:BasicHttpBinding_IExportArenden">
-            <soap:address location="http://saas224.personal.sundsvall.se/TekisArende/ArendeExportWS.svc"/>
+            <soap:address location="http://localhost:8080/TekisArende/ArendeExportWS.svc"/>
         </wsdl:port>
         <wsdl:port name="BasicHttpBinding_IExportArenden1" binding="tns:BasicHttpBinding_IExportArenden1">
-            <soap:address location="https://saas224.personal.sundsvall.se/TekisArende/ArendeExportWS.svc"/>
+            <soap:address location="https://localhost:8080/TekisArende/ArendeExportWS.svc"/>
         </wsdl:port>
     </wsdl:service>
 </wsdl:definitions>
