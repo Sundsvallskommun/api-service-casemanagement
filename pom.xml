@@ -6,7 +6,7 @@
     <parent>
         <groupId>se.sundsvall.dept44</groupId>
         <artifactId>dept44-service-parent</artifactId>
-        <version>3.0</version>
+        <version>3.4</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>se.sundsvall</groupId>
@@ -134,7 +134,7 @@
                         </goals>
                         <configuration>
                             <inputSpec>
-                                ${project.basedir}/src/main/resources/integrations/rest/casedata-openapi.json
+                                ${project.basedir}/src/main/resources/integrations/rest/case-data.yml
                             </inputSpec>
                             <configOptions>
                                 <modelPackage>generated.client.casedata</modelPackage>
