@@ -1,0 +1,10 @@
+retry:
+  initial-delay: 1
+  max-delay: 2
+  maxAttempts: 1
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+  h2:
+    console:
+      enabled: true

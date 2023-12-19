@@ -1,0 +1,40 @@
+integration:
+  arendeexport:
+    url: ${ARENDEEXPORT_ORIGIN}/TekisArende/ArendeExportWS.svc
+  case-data:
+    oauth2ClientId: ${SUNDSVALLS_KOMMUN_CONSUMER_KEY}
+    oauth2ClientSecret: ${SUNDSVALLS_KOMMUN_CONSUMER_SECRET}
+    oauth2TokenUrl: ${SUNDSVALLS_KOMMUN_INTERNAL_ORIGIN}${SUNDSVALLS_KOMMUN_TOKEN_PATH}
+    url: ${SUNDSVALLS_KOMMUN_INTERNAL_ORIGIN}/case-data/1.0
+  citizen-mapping:
+    oauth2ClientId: ${SUNDSVALLS_KOMMUN_CONSUMER_KEY}
+    oauth2ClientSecret: ${SUNDSVALLS_KOMMUN_CONSUMER_SECRET}
+    oauth2TokenUrl: ${SUNDSVALLS_KOMMUN_INTERNAL_ORIGIN}${SUNDSVALLS_KOMMUN_TOKEN_PATH}
+    url: ${SUNDSVALLS_KOMMUN_INTERNAL_ORIGIN}/citizenmapping/1.0
+  fb:
+    database: ${FB_DB}
+    password: ${FB_PASS}
+    url: ${FB_ORIGIN}
+    username: ${FB_USER}
+  lantmateriet:
+    oauth2ClientId: ${LANTMATERIET_CONSUMER_KEY}
+    oauth2ClientSecret: ${LANTMATERIET_CONSUMER_SECRET}
+    oauth2TokenUrl: ${LANTMATERIET_ORIGIN}${LANTMATERIET_TOKEN_PATH}
+    registerbeteckning:
+      url: ${LANTMATERIET_ORIGIN}/distribution/produkter/registerbeteckning/v4
+  minutmiljo:
+    password: ${MINUTMILJO_PASS}
+    url: ${minutmiljo.origin}/Ecos2PublicServices/MinutMiljoService.svc
+    username: ${MINUTMILJO_USER}
+  minutmiljoV2:
+    url: ${minutmiljo.origin}/Ecos2PublicServices/MinutMiljoServiceV2.svc
+minutmiljo:
+  origin: ${MINUT_MILJO_ORIGIN}
+spring:
+  datasource:
+    password: ${DB_PASS}
+    url: ${DB_URL}
+    username: ${DB_USER}
+  jpa:
+    hibernate:
+      ddl-auto: validate
