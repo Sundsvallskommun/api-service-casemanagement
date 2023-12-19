@@ -1,0 +1,95 @@
+integration:
+  arendeexport:
+    connectTimeout: 5
+    readTimeout: 60
+    url: override
+  case-data:
+    oauth2ClientId: override
+    oauth2ClientSecret: override
+    oauth2TokenUrl: override
+    url: override
+  citizen-mapping:
+    oauth2ClientId: override
+    oauth2ClientSecret: override
+    oauth2TokenUrl: override
+    url: override
+  fb:
+    database: override
+    password: override
+    url: override
+    username: override
+  lantmateriet:
+    oauth2ClientId: override
+    oauth2ClientSecret: override
+    oauth2TokenUrl: override
+    registerbeteckning:
+      url: override
+  messaging:
+    channel: override
+    client-id: override
+    client-secret: override
+    token: override
+    token-uri: override
+    url: override
+  minutmiljo:
+    connectTimeout: 5
+    password: override
+    readTimeout: 60
+    url: override
+    username: override
+  minutmiljoV2:
+    url: override
+  opene:
+    password: password
+    username: username
+logger:
+  max:
+    payload:
+      length: 10000
+logging:
+  level:
+    se:
+      sundsvall:
+        dept44:
+          payload: 'OFF'
+openapi:
+  name: ${spring.application.name}
+  title: ${spring.application.name}
+  version: '@project.version@'
+resilience4j:
+  circuitbreaker:
+    instances:
+      arendeexport:
+        ignoreExceptions: se.sundsvall.dept44.exception.ClientProblem
+      case-data:
+        ignoreExceptions: se.sundsvall.dept44.exception.ClientProblem
+      citizen-mapping:
+        ignoreExceptions: se.sundsvall.dept44.exception.ClientProblem
+      fb:
+        ignoreExceptions: se.sundsvall.dept44.exception.ClientProblem
+      lantmateriet:
+        ignoreExceptions: se.sundsvall.dept44.exception.ClientProblem
+      minutmiljo:
+        ignoreExceptions: se.sundsvall.dept44.exception.ClientProblem
+      minutmiljoV2:
+        ignoreExceptions: se.sundsvall.dept44.exception.ClientProblem
+server:
+  port: 9090
+spring:
+  application:
+    name: ms-casemanagementservice
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    password: override
+    url: override
+    username: override
+  flyway:
+    baseline-on-migrate: true
+    enabled: true
+  jpa:
+    database-platform: org.hibernate.dialect.MariaDB106Dialect
+    hibernate:
+      ddl-auto: validate
+      naming:
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl

@@ -6,7 +6,7 @@
     <parent>
         <groupId>se.sundsvall.dept44</groupId>
         <artifactId>dept44-service-parent</artifactId>
-        <version>3.4</version>
+        <version>4.0</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>se.sundsvall</groupId>
@@ -44,11 +44,6 @@
         </dependency>
         <dependency>
             <groupId>se.sundsvall.dept44</groupId>
-            <artifactId>dept44-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>se.sundsvall.dept44</groupId>
             <artifactId>dept44-common-validators</artifactId>
         </dependency>
         <dependency>
@@ -64,7 +59,6 @@
             <groupId>org.mariadb.jdbc</groupId>
             <artifactId>mariadb-java-client</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
@@ -75,11 +69,15 @@
         </dependency>
         <!-- Test -->
         <dependency>
+            <groupId>se.sundsvall.dept44</groupId>
+            <artifactId>dept44-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>junit-jupiter</artifactId>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>mariadb</artifactId>
@@ -101,7 +99,6 @@
             <artifactId>httpclient5</artifactId>
         </dependency>
     </dependencies>
-
     <build>
         <plugins>
 
