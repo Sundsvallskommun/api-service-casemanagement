@@ -21,7 +21,7 @@
         <generated-sources-java-path>src/main/java</generated-sources-java-path>
 
         <!-- Dependencies -->
-        <openapi-generator-maven-plugin-version>7.0.1</openapi-generator-maven-plugin-version>
+        <openapi-generator-maven-plugin-version>7.1.0</openapi-generator-maven-plugin-version>
         <!-- Jenkins pipeline -->
         <docker.image.name>ms-casemanagementservice</docker.image.name>
         <exposed.app.port>9090</exposed.app.port>
