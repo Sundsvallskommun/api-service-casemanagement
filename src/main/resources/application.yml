@@ -45,8 +45,8 @@ integration:
 logbook:
   exclusionfilters:
     json-path:
-      '$.attachments[*].file': 'base64'
-      '$.decisions[*].attachments[*].file': 'base64'
+      '$.attachments[*].file': '[base64]'
+      '$.decisions[*].attachments[*].file': '[base64]'
 logger:
   max:
     payload:
