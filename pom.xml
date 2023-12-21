@@ -10,31 +10,22 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>se.sundsvall</groupId>
-    <artifactId>ms-casemanagementservice</artifactId>
+    <artifactId>api-service-casemanagement</artifactId>
     <version>3.5</version>
-    <name>ms-casemanagementservice</name>
-    <description>ms-casemanagementservice</description>
+    <name>api-service-casemanagement</name>
     <properties>
-        <java.version>17</java.version>
-        <generated-sources-path>${project.build.directory}/generated-sources
-        </generated-sources-path>
-        <generated-sources-java-path>src/main/java</generated-sources-java-path>
-
-        <!-- Dependencies -->
-        <openapi-generator-maven-plugin-version>7.1.0</openapi-generator-maven-plugin-version>
         <!-- Jenkins pipeline -->
         <docker.image.name>ms-casemanagementservice</docker.image.name>
         <exposed.app.port>9090</exposed.app.port>
+        <app.jvm.xmx.mb>1024</app.jvm.xmx.mb>
         <published.container.port.test>8715</published.container.port.test>
         <published.container.port.production>8715</published.container.port.production>
-
-        <failsafe.version>3.3.2</failsafe.version>
-
-        <!--- Generated Clients -->
+        <!--- Service properties -->
+        <generated-sources-path>${project.build.directory}/generated-sources</generated-sources-path>
+        <generated-sources-java-path>src/main/java</generated-sources-java-path>
         <jaxb2-maven-plugin.version>3.1.0</jaxb2-maven-plugin.version>
         <jaxb2-fluent-api.version>3.0</jaxb2-fluent-api.version>
-
-        <app.jvm.xmx.mb>1024</app.jvm.xmx.mb>
+		<failsafe.version>3.3.2</failsafe.version>
     </properties>
     <dependencies>
         <!-- Dept44 Framework -->
@@ -58,10 +49,6 @@
         <dependency>
             <groupId>org.mariadb.jdbc</groupId>
             <artifactId>mariadb-java-client</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.flywaydb</groupId>
-            <artifactId>flyway-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.flywaydb</groupId>
@@ -101,11 +88,9 @@
     </dependencies>
     <build>
         <plugins>
-
             <plugin>
                 <groupId>org.openapitools</groupId>
                 <artifactId>openapi-generator-maven-plugin</artifactId>
-                <version>${openapi-generator-maven-plugin-version}</version>
                 <configuration>
                     <output>${generated-sources-path}</output>
                     <generatorName>spring</generatorName>
@@ -138,7 +123,6 @@
                             </configOptions>
                         </configuration>
                     </execution>
-
                     <execution>
                         <id>messaging</id>
                         <goals>
@@ -155,7 +139,6 @@
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
@@ -176,7 +159,6 @@
                     </execution>
                 </executions>
             </plugin>
-
             <!-- Generate java from wsdl -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -238,7 +220,6 @@
                             <addGeneratedAnnotation>true</addGeneratedAnnotation>
                             <noGeneratedHeaderComments>true</noGeneratedHeaderComments>
                             <sourceType>wsdl</sourceType>
-
                             <arguments>
                                 <argument>-Xfluent-api</argument>
                                 <argument>-XautoNameResolution</argument>
@@ -286,7 +267,6 @@
                             </xjbSources>
                         </configuration>
                     </execution>
-
                     <execution>
                         <id>arendeexport</id>
                         <goals>
@@ -342,5 +322,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
