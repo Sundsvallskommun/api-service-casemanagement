@@ -32,6 +32,40 @@ import org.testcontainers.shaded.org.apache.commons.lang3.RandomStringUtils;
 import org.zalando.problem.Status;
 import org.zalando.problem.ThrowableProblem;
 
+import minutmiljo.AddDocumentsToCase;
+import minutmiljo.AddDocumentsToCaseSvcDto;
+import minutmiljo.ArrayOfOccurrenceListItemSvcDto;
+import minutmiljo.ArrayOfPartySvcDto;
+import minutmiljo.ArrayOfSearchCaseResultSvcDto;
+import minutmiljo.BiologicalStepSvcDto;
+import minutmiljo.CaseSvcDto;
+import minutmiljo.ClosedTankSvcDto;
+import minutmiljo.CreateFoodFacility;
+import minutmiljo.CreateHealthProtectionFacility;
+import minutmiljo.CreateHealthProtectionFacilitySvcDto;
+import minutmiljo.CreateHeatPumpFacility;
+import minutmiljo.CreateHeatPumpFacilitySvcDto;
+import minutmiljo.CreateHeatPumpFacilityWithHeatTransferFluidSvcDto;
+import minutmiljo.CreateIndividualSewageFacility;
+import minutmiljo.CreateIndividualSewageFacilitySvcDto;
+import minutmiljo.CreateOccurrenceOnCase;
+import minutmiljo.CreateSoilHeatingFacilitySvcDto;
+import minutmiljo.DocumentSvcDto;
+import minutmiljo.DrySolutionSvcDto;
+import minutmiljo.FilterBedSvcDto;
+import minutmiljo.GetCase;
+import minutmiljo.GetCaseResponse;
+import minutmiljo.InfiltrationPlantSvcDto;
+import minutmiljo.MiniSewageSvcDto;
+import minutmiljo.OccurrenceListItemSvcDto;
+import minutmiljo.PartySvcDto;
+import minutmiljo.PurificationStepSvcDto;
+import minutmiljo.SandFilterSvcDto;
+import minutmiljo.SearchCaseResponse;
+import minutmiljo.SearchCaseResultSvcDto;
+import minutmiljo.SepticTankSvcDto;
+import minutmiljoV2.RegisterDocument;
+import minutmiljoV2.RegisterDocumentCaseSvcDtoV2;
 import se.sundsvall.casemanagement.TestUtil;
 import se.sundsvall.casemanagement.api.model.AddressDTO;
 import se.sundsvall.casemanagement.api.model.AttachmentDTO;
@@ -53,44 +87,6 @@ import se.sundsvall.casemanagement.integration.ecos.MinutMiljoClientV2;
 import se.sundsvall.casemanagement.integration.ecos.PartyService;
 import se.sundsvall.casemanagement.util.CaseUtil;
 import se.sundsvall.casemanagement.util.Constants;
-
-import minutmiljo.AddDocumentsToCase;
-import minutmiljo.AddDocumentsToCaseSvcDto;
-import minutmiljo.ArrayOfOccurrenceListItemSvcDto;
-import minutmiljo.ArrayOfPartyAddressSvcDto;
-import minutmiljo.ArrayOfPartySvcDto;
-import minutmiljo.ArrayOfSearchCaseResultSvcDto;
-import minutmiljo.BiologicalStepSvcDto;
-import minutmiljo.CaseSvcDto;
-import minutmiljo.ClosedTankSvcDto;
-import minutmiljo.ContactInfoSvcDto;
-import minutmiljo.CreateFoodFacility;
-import minutmiljo.CreateHealthProtectionFacility;
-import minutmiljo.CreateHealthProtectionFacilitySvcDto;
-import minutmiljo.CreateHeatPumpFacility;
-import minutmiljo.CreateHeatPumpFacilitySvcDto;
-import minutmiljo.CreateHeatPumpFacilityWithHeatTransferFluidSvcDto;
-import minutmiljo.CreateIndividualSewageFacility;
-import minutmiljo.CreateIndividualSewageFacilitySvcDto;
-import minutmiljo.CreateOccurrenceOnCase;
-import minutmiljo.CreateSoilHeatingFacilitySvcDto;
-import minutmiljo.DocumentSvcDto;
-import minutmiljo.DrySolutionSvcDto;
-import minutmiljo.FilterBedSvcDto;
-import minutmiljo.GetCase;
-import minutmiljo.GetCaseResponse;
-import minutmiljo.InfiltrationPlantSvcDto;
-import minutmiljo.MiniSewageSvcDto;
-import minutmiljo.OccurrenceListItemSvcDto;
-import minutmiljo.PartyAddressSvcDto;
-import minutmiljo.PartySvcDto;
-import minutmiljo.PurificationStepSvcDto;
-import minutmiljo.SandFilterSvcDto;
-import minutmiljo.SearchCaseResponse;
-import minutmiljo.SearchCaseResultSvcDto;
-import minutmiljo.SepticTankSvcDto;
-import minutmiljoV2.RegisterDocument;
-import minutmiljoV2.RegisterDocumentCaseSvcDtoV2;
 
 @ExtendWith(MockitoExtension.class)
 class EcosServiceTest {
@@ -626,7 +622,6 @@ class EcosServiceTest {
 		verify(minutMiljoClientV2Mock, times(1)).registerDocumentV2(any());
 	}
 
-
 	private void verifyStandardParams(final Map<String, String> extraParameters, final CreateIndividualSewageFacilitySvcDto svcDto, final String prefix) {
 		Assertions.assertEquals(CaseUtil.parseBoolean(extraParameters.entrySet().stream().filter(e -> e.getKey().contains("OnGrantLand")).findFirst().orElseThrow().getValue()), svcDto.isOnGrantLand());
 		Assertions.assertEquals(extraParameters.entrySet().stream().filter(e -> e.getKey().contains("ProtectionLevelApprovedEnvironmentId")).findFirst().orElseThrow().getValue(), svcDto.getProtectionLevelApprovedEnvironmentId());
@@ -660,7 +655,8 @@ class EcosServiceTest {
 		assertEquals(Constants.ECOS_OCCURRENCE_TYPE_ID_INFO_FRAN_ETJANST, createOccurrenceOnCaseArgumentCaptor.getValue().getCreateOccurrenceOnCaseSvcDto().getOccurrenceTypeId());
 		assertEquals(Constants.ECOS_OCCURENCE_TEXT_MOBIL_ANLAGGNING, createOccurrenceOnCaseArgumentCaptor.getValue().getCreateOccurrenceOnCaseSvcDto().getNote());
 
-		// If facility doesn't have any address, we should not register any facility and therefore not add any stakeholder to facility.
+		// If facility doesn't have any address, we should not register any facility and therefore not add any stakeholder to
+		// facility.
 		// This results in manual handling for admin.
 		verify(minutMiljoClientMock, times(0)).createFoodFacility(any());
 		verify(minutMiljoClientMock, times(0)).addPartyToFacility(any());
@@ -763,7 +759,6 @@ class EcosServiceTest {
 		searchCaseResponse.setSearchCaseResult(arrayOfSearchCaseResultSvcDto);
 		doReturn(searchCaseResponse).when(minutMiljoClientMock).searchCase(any());
 
-
 		// Mock caseMappingService.getCaseMapping
 		final CaseMapping caseMapping = new CaseMapping();
 		caseMapping.setExternalCaseId(externalCaseID);
@@ -831,29 +826,4 @@ class EcosServiceTest {
 		assertEquals(attachmentDTO.getCategory().getDescription(), documentSvcDto.getDocumentTypeId());
 		assertEquals(attachmentDTO.getNote(), documentSvcDto.getNote());
 	}
-
-	private void assertContactInfo(final ContactInfoSvcDto contactInfoSvcDto) {
-		assertNotNull(contactInfoSvcDto.getTitle());
-		contactInfoSvcDto.getContactDetails().getContactInfoItemSvcDto().forEach(contactInfoItemSvcDto -> {
-			assertNotNull(contactInfoItemSvcDto.getContactDetailTypeId());
-			assertNotNull(contactInfoItemSvcDto.getContactPathId());
-			assertNotNull(contactInfoItemSvcDto.getValue());
-		});
-	}
-
-	private void assertAddress(final List<AddressDTO> addresses, final ArrayOfPartyAddressSvcDto minutAddresses) {
-		assertEquals(addresses.size(), minutAddresses.getPartyAddressSvcDto().size());
-		for (int i = 0; i < addresses.size(); i++) {
-			final AddressDTO address = addresses.get(i);
-			final PartyAddressSvcDto minutAddress = minutAddresses.getPartyAddressSvcDto().get(i);
-			assertEquals(address.getCareOf(), minutAddress.getCareOfName());
-			assertEquals(address.getStreet(), minutAddress.getStreetName());
-			assertEquals(address.getHouseNumber(), minutAddress.getStreetNumber());
-			assertEquals(address.getPostalCode(), minutAddress.getPostCode());
-			assertEquals(address.getCity(), minutAddress.getPostalArea());
-			assertEquals(address.getCountry(), minutAddress.getCountry());
-			assertEquals(address.getAddressCategories().size(), minutAddress.getAddressTypes().getAddressTypeSvcDto().size());
-		}
-	}
-
 }
