@@ -25,6 +25,21 @@ import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MARKLOV
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MARKLOV_OVRIGT;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MARKLOV_SCHAKTNING;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MARKLOV_TRADFALLNING;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_APPLICATION_FOR_ROAD_ALLOWANCE;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_APPLICATION_FOR_ROAD_ALLOWANCE_CITY_GRANT;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_APPLICATION_SQUARE_PLACE;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_BUY_INDUSTRIAL_LAND;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_BUY_LAND_FROM_THE_MUNICIPALITY;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_BUY_SMALL_HOUSE_PLOT;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_EXCAVATION_PERMIT_STATEMENT;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_LAND_GRANT;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_LAND_SURVEYING_OFFICE;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_LEASE_REQUEST;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_LEASE_TERMINATION;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_PROTECTIVE_HUNTING;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_SELL_LAND_TO_THE_MUNICIPALITY;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_TERMINATION_OF_HUNTING_RIGHTS;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_UNAUTHORIZED_RESIDENCE;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.NYBYGGNAD_ANSOKAN_OM_BYGGLOV;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.NYBYGGNAD_FORHANDSBESKED;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARKING_PERMIT;
@@ -58,72 +73,89 @@ import lombok.Data;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "caseType", include = JsonTypeInfo.As.EXISTING_PROPERTY, visible = true)
 @JsonSubTypes({
-    @Type(value = PlanningPermissionCaseDTO.class, names = {
-        NYBYGGNAD_ANSOKAN_OM_BYGGLOV,
-        NYBYGGNAD_FORHANDSBESKED,
-        ANMALAN_ATTEFALL,
-        UPPSATTANDE_SKYLT,
-        TILLBYGGNAD_ANSOKAN_OM_BYGGLOV,
-        ANDRING_ANSOKAN_OM_BYGGLOV,
-        STRANDSKYDD_NYBYGGNAD,
-        STRANDSKYDD_ANDRAD_ANVANDNING,
-        STRANDSKYDD_ANORDNANDE,
-        STRANDSKYDD_ANLAGGANDE,
-        ANMALAN_ELDSTAD,
-        ANDRING_VENTILATION,
-        INSTALLATION_VENTILATION,
-        ANDRING_VA,
-        INSTALLATION_VA,
-        ANDRING_PLANLOSNING,
-        ANDRING_BARANDE_KONSTRUKTION,
-        ANDRING_BRANDSKYDD,
-        INSTALLLATION_HISS,
-        MARKLOV_SCHAKTNING,
-        MARKLOV_FYLL,
-        MARKLOV_TRADFALLNING,
-        MARKLOV_OVRIGT,
-        STRANDSKYDD_OVRIGT
+	@Type(value = PlanningPermissionCaseDTO.class, names = {
+		NYBYGGNAD_ANSOKAN_OM_BYGGLOV,
+		NYBYGGNAD_FORHANDSBESKED,
+		ANMALAN_ATTEFALL,
+		UPPSATTANDE_SKYLT,
+		TILLBYGGNAD_ANSOKAN_OM_BYGGLOV,
+		ANDRING_ANSOKAN_OM_BYGGLOV,
+		STRANDSKYDD_NYBYGGNAD,
+		STRANDSKYDD_ANDRAD_ANVANDNING,
+		STRANDSKYDD_ANORDNANDE,
+		STRANDSKYDD_ANLAGGANDE,
+		ANMALAN_ELDSTAD,
+		ANDRING_VENTILATION,
+		INSTALLATION_VENTILATION,
+		ANDRING_VA,
+		INSTALLATION_VA,
+		ANDRING_PLANLOSNING,
+		ANDRING_BARANDE_KONSTRUKTION,
+		ANDRING_BRANDSKYDD,
+		INSTALLLATION_HISS,
+		MARKLOV_SCHAKTNING,
+		MARKLOV_FYLL,
+		MARKLOV_TRADFALLNING,
+		MARKLOV_OVRIGT,
+		STRANDSKYDD_OVRIGT
 
-    }),
-    @Type(value = EnvironmentalCaseDTO.class, names = {
-        REGISTRERING_AV_LIVSMEDEL,
-        ANMALAN_INSTALLATION_VARMEPUMP,
-        ANSOKAN_TILLSTAND_VARMEPUMP,
-        ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC,
-        ANMALAN_ANDRING_AVLOPPSANLAGGNING,
-        ANMALAN_ANDRING_AVLOPPSANORDNING,
-        ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP,
-        UPPDATERING_RISKKLASSNING,
-        ANMALAN_HALSOSKYDDSVERKSAMHET,
-        ANMALAN_KOMPOSTERING,
-        ANMALAN_AVHJALPANDEATGARD_FORORENING}),
-    @Type(value = OtherCaseDTO.class, names = {
-        PARKING_PERMIT,
-        LOST_PARKING_PERMIT,
-        PARKING_PERMIT_RENEWAL})})
+	}),
+	@Type(value = EnvironmentalCaseDTO.class, names = {
+		REGISTRERING_AV_LIVSMEDEL,
+		ANMALAN_INSTALLATION_VARMEPUMP,
+		ANSOKAN_TILLSTAND_VARMEPUMP,
+		ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC,
+		ANMALAN_ANDRING_AVLOPPSANLAGGNING,
+		ANMALAN_ANDRING_AVLOPPSANORDNING,
+		ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP,
+		UPPDATERING_RISKKLASSNING,
+		ANMALAN_HALSOSKYDDSVERKSAMHET,
+		ANMALAN_KOMPOSTERING,
+		ANMALAN_AVHJALPANDEATGARD_FORORENING}),
+	@Type(value = OtherCaseDTO.class, names = {
+		PARKING_PERMIT,
+		LOST_PARKING_PERMIT,
+		PARKING_PERMIT_RENEWAL,
+		MEX_APPLICATION_SQUARE_PLACE,
+		MEX_APPLICATION_FOR_ROAD_ALLOWANCE,
+		MEX_APPLICATION_FOR_ROAD_ALLOWANCE_CITY_GRANT,
+		MEX_LAND_SURVEYING_OFFICE,
+		MEX_LEASE_REQUEST,
+		MEX_BUY_INDUSTRIAL_LAND,
+		MEX_BUY_LAND_FROM_THE_MUNICIPALITY,
+		MEX_BUY_SMALL_HOUSE_PLOT,
+		MEX_LAND_GRANT,
+		MEX_UNAUTHORIZED_RESIDENCE,
+		MEX_PROTECTIVE_HUNTING,
+		MEX_SELL_LAND_TO_THE_MUNICIPALITY,
+		MEX_LEASE_TERMINATION,
+		MEX_TERMINATION_OF_HUNTING_RIGHTS,
+		MEX_EXCAVATION_PERMIT_STATEMENT
+	})})
 @Data
 public abstract class CaseDTO {
 
-    @NotBlank
-    @Schema(description = "Case ID from the client.", example = "caa230c6-abb4-4592-ad9a-34e263c2787b")
-    private String externalCaseId;
+	@NotBlank
+	@Schema(description = "Case ID from the client.", example = "caa230c6-abb4-4592-ad9a-34e263c2787b")
+	private String externalCaseId;
 
-    @NotNull
-    private CaseType caseType;
+	@NotNull
+	private CaseType caseType;
 
-    @Schema(example = "Some description of the case.")
-    private String description;
+	@Schema(example = "Some description of the case.")
+	private String description;
 
-    @Schema(description = "Additions to the case title. Right now only applicable to cases of CaseType: NYBYGGNAD_ANSOKAN_OM_BYGGLOV.", example = "Eldstad/rökkanal, Skylt")
-    private String caseTitleAddition;
+	@Schema(description = "Additions to the case title. Right now only applicable to cases of CaseType: NYBYGGNAD_ANSOKAN_OM_BYGGLOV.", example = "Eldstad/rökkanal, Skylt")
+	private String caseTitleAddition;
 
-    @NotEmpty
-    @Valid
-    private List<StakeholderDTO> stakeholders;
+	@NotEmpty
+	@Valid
+	private List<StakeholderDTO> stakeholders;
 
-    @NotEmpty
-    @Valid
-    private List<AttachmentDTO> attachments;
+	@NotEmpty
+	@Valid
+	private List<AttachmentDTO> attachments;
 
-    private Map<String, String> extraParameters;
+	private Map<String, String> extraParameters;
+
 }

@@ -82,7 +82,7 @@ public class RiskClassService {
 				if (stakeholderDTO instanceof final OrganizationDTO orgDTO) {
 					return orgDTO.getOrganizationNumber();
 				}
-                return "";
+				return "";
 			})
 			.findFirst()
 			.orElse(""));
@@ -182,7 +182,7 @@ public class RiskClassService {
 
 		final var productGroupIds = splitString(productGroupIdString);
 
-		if (productGroupIds.get(0).isEmpty()) {
+		if (productGroupIds.getFirst().isEmpty()) {
 			return null;
 		}
 		return new ArrayOfSaveRiskClass2024ProductGroupDto()

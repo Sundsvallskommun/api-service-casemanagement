@@ -28,42 +28,42 @@ import minutmiljo.SearchFacilityResultSvcDto;
 @ExtendWith(MockitoExtension.class)
 class RiskClassServiceTest {
 
-    @Mock
-    private MinutMiljoClient minutMiljoClient;
+	@Mock
+	private MinutMiljoClient minutMiljoClient;
 
-    @InjectMocks
-    private RiskClassService service;
+	@InjectMocks
+	private RiskClassService service;
 
-    @Test
-    void updateRiskClass() {
+	@Test
+	void updateRiskClass() {
 
-        final var facility = new EnvironmentalFacilityDTO();
-        facility.setFacilityCollectionName("someFacilityName");
+		final var facility = new EnvironmentalFacilityDTO();
+		facility.setFacilityCollectionName("someFacilityName");
 
-        when(minutMiljoClient.searchFacility(any()))
-            .thenReturn(new SearchFacilityResponse()
-                .withSearchFacilityResult(new ArrayOfSearchFacilityResultSvcDto()
-                    .withSearchFacilityResultSvcDto(new SearchFacilityResultSvcDto()
-                        .withFacilityName("someFacilityName")
-                        .withFacilityCollectionName("someFacilityName")
-                        .withFacilityId("someFacilityId"))));
+		when(minutMiljoClient.searchFacility(any()))
+			.thenReturn(new SearchFacilityResponse()
+				.withSearchFacilityResult(new ArrayOfSearchFacilityResultSvcDto()
+					.withSearchFacilityResultSvcDto(new SearchFacilityResultSvcDto()
+						.withFacilityName("someFacilityName")
+						.withFacilityCollectionName("someFacilityName")
+						.withFacilityId("someFacilityId"))));
 
-        final var dto = new EnvironmentalCaseDTO();
-        final var stakeholder = new OrganizationDTO();
-        stakeholder.setOrganizationNumber("123456-7890");
-        dto.setFacilities(List.of(facility));
-        dto.setStakeholders(List.of(stakeholder));
-        dto.setExtraParameters(Map.of("activities", "1,1, 1", "activities2", "2,2, 2",
-            "activities3", "3,3, 3",
-            "productGroups", "123, 123, 123",
-            "thirdPartyCertifications", "12, 123,12"));
+		final var dto = new EnvironmentalCaseDTO();
+		final var stakeholder = new OrganizationDTO();
+		stakeholder.setOrganizationNumber("123456-7890");
+		dto.setFacilities(List.of(facility));
+		dto.setStakeholders(List.of(stakeholder));
+		dto.setExtraParameters(Map.of("activities", "1,1, 1", "activities2", "2,2, 2",
+			"activities3", "3,3, 3",
+			"productGroups", "123, 123, 123",
+			"thirdPartyCertifications", "12, 123,12"));
 
-        service.updateRiskClass(dto, "someCaseId");
+		service.updateRiskClass(dto, "someCaseId");
 
-        verify(minutMiljoClient, times(1)).searchFacility(any());
-        verify(minutMiljoClient, times(1)).addFacilityToCase(any());
-        verify(minutMiljoClient, times(1)).updateRiskClass(any());
-        verifyNoMoreInteractions(minutMiljoClient);
-    }
+		verify(minutMiljoClient, times(1)).searchFacility(any());
+		verify(minutMiljoClient, times(1)).addFacilityToCase(any());
+		verify(minutMiljoClient, times(1)).updateRiskClass(any());
+		verifyNoMoreInteractions(minutMiljoClient);
+	}
 
 }
