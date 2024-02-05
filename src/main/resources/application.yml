@@ -43,9 +43,10 @@ integration:
     password: password
     username: username
 logbook:
-  exclusionfilters:
+  body-filters:
     json-path:
-      '$..file': '[base64]'
+      - key: '$..file'
+        value: '[base64]'
 logger:
   max:
     payload:
