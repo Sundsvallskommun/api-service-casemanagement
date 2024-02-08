@@ -23,8 +23,8 @@ public class RegisterbeteckningService {
 		final List<Registerbeteckningsreferens> registerbeteckningsreferenser = registerbeteckningClient.getRegisterbeteckningsreferenser(propertyDesignation, Constants.LANTMATERIET_REFERENS_STATUS_GALLANDE, 1);
 
 		if (CaseUtil.notNullOrEmpty(registerbeteckningsreferenser)
-			&& registerbeteckningsreferenser.get(0).getBeteckning().equalsIgnoreCase(propertyDesignation)) {
-			return registerbeteckningsreferenser.get(0);
+			&& registerbeteckningsreferenser.getFirst().getBeteckning().equalsIgnoreCase(propertyDesignation)) {
+			return registerbeteckningsreferenser.getFirst();
 		}
 		return null;
 	}

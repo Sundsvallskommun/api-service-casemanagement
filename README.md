@@ -14,7 +14,7 @@ Tjänsten integrerar mot:
 * Sokigo FB
 * ArendeExport (Byggr)
 * MinutMiljo (Ecos2)
-* CitizenMapping
+* Citizen
 * CaseData
 
 ### Starta tjänsten

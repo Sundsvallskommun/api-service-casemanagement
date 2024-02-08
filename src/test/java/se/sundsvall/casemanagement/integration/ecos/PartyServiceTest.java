@@ -19,7 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import se.sundsvall.casemanagement.TestUtil;
 import se.sundsvall.casemanagement.api.model.enums.CaseType;
-import se.sundsvall.casemanagement.service.CitizenMappingService;
+import se.sundsvall.casemanagement.service.CitizenService;
 
 import minutmiljo.CreateOrganizationParty;
 import minutmiljo.CreateOrganizationPartyResponse;
@@ -34,7 +34,7 @@ class PartyServiceTest {
 	private MinutMiljoClient minutMiljoClient;
 
 	@Mock
-	private CitizenMappingService citizenMappingService;
+	private CitizenService citizenService;
 
 	@InjectMocks
 	private PartyService partyService;
@@ -49,14 +49,14 @@ class PartyServiceTest {
 		final var result = partyService.findAndAddPartyToCase(TestUtil.createEnvironmentalCase(CaseType.REGISTRERING_AV_LIVSMEDEL, UNDERLAG_RISKKLASSNING), "someCaseId");
 
 		assertThat(result).isNotNull().isNotEmpty();
-		assertThat(result.get(0).get(createdOrganizationPartyID)).isNotNull().satisfies(party -> assertThat(party.getGuid()).isNotEmpty());
+		assertThat(result.getFirst().get(createdOrganizationPartyID)).isNotNull().satisfies(party -> assertThat(party.getGuid()).isNotEmpty());
 
 		verify(minutMiljoClient, times(2)).searchParty(any(SearchParty.class));
 		verify(minutMiljoClient, times(1)).createOrganizationParty(any(CreateOrganizationParty.class));
 		verify(minutMiljoClient, times(1)).addPartyToCase(any());
 
 		verifyNoMoreInteractions(minutMiljoClient);
-		verifyNoInteractions(citizenMappingService);
+		verifyNoInteractions(citizenService);
 	}
 
 
@@ -66,9 +66,9 @@ class PartyServiceTest {
 		final var createdPersonPartyID = UUID.randomUUID().toString();
 
 		final var caseDTO = TestUtil.createEnvironmentalCase(CaseType.REGISTRERING_AV_LIVSMEDEL, UNDERLAG_RISKKLASSNING);
-		caseDTO.getStakeholders().remove(0);
+		caseDTO.getStakeholders().removeFirst();
 
-		when(citizenMappingService.getPersonalNumber(any(String.class))).thenReturn("19800101-1234");
+		when(citizenService.getPersonalNumber(any(String.class))).thenReturn("19800101-1234");
 
 		when(minutMiljoClient.createPersonParty(any(CreatePersonParty.class)))
 			.thenReturn(new CreatePersonPartyResponse().withCreatePersonPartyResult(createdPersonPartyID));
@@ -76,7 +76,7 @@ class PartyServiceTest {
 		final var result = partyService.findAndAddPartyToCase(caseDTO, "someCaseId");
 
 		assertThat(result).isNotNull().isNotEmpty();
-		assertThat(result.get(0).get(createdPersonPartyID)).isNotNull().satisfies(party -> assertThat(party.getGuid()).isNotEmpty());
+		assertThat(result.getFirst().get(createdPersonPartyID)).isNotNull().satisfies(party -> assertThat(party.getGuid()).isNotEmpty());
 
 	}
 

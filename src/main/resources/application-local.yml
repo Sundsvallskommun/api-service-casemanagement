@@ -6,11 +6,11 @@ integration:
     oauth2ClientSecret: ${SUNDSVALLS_KOMMUN_CONSUMER_SECRET}
     oauth2TokenUrl: ${SUNDSVALLS_KOMMUN_INTERNAL_ORIGIN}${SUNDSVALLS_KOMMUN_TOKEN_PATH}
     url: ${SUNDSVALLS_KOMMUN_INTERNAL_ORIGIN}/case-data/1.0
-  citizen-mapping:
+  citizen:
     oauth2ClientId: ${SUNDSVALLS_KOMMUN_CONSUMER_KEY}
     oauth2ClientSecret: ${SUNDSVALLS_KOMMUN_CONSUMER_SECRET}
     oauth2TokenUrl: ${SUNDSVALLS_KOMMUN_INTERNAL_ORIGIN}${SUNDSVALLS_KOMMUN_TOKEN_PATH}
-    url: ${SUNDSVALLS_KOMMUN_INTERNAL_ORIGIN}/citizenmapping/1.0
+    url: ${SUNDSVALLS_KOMMUN_INTERNAL_ORIGIN}/citizen/1.0
   fb:
     database: ${FB_DB}
     password: ${FB_PASS}

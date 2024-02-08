@@ -14,7 +14,7 @@ import se.sundsvall.casemanagement.api.model.EnvironmentalCaseDTO;
 import se.sundsvall.casemanagement.api.model.OrganizationDTO;
 import se.sundsvall.casemanagement.api.model.PersonDTO;
 import se.sundsvall.casemanagement.api.model.StakeholderDTO;
-import se.sundsvall.casemanagement.service.CitizenMappingService;
+import se.sundsvall.casemanagement.service.CitizenService;
 import se.sundsvall.casemanagement.util.CaseUtil;
 import se.sundsvall.casemanagement.util.Constants;
 
@@ -43,11 +43,11 @@ public class PartyService {
 
 	private final MinutMiljoClient minutMiljoClient;
 
-	private final CitizenMappingService citizenMappingService;
+	private final CitizenService citizenService;
 
-	public PartyService(final MinutMiljoClient minutMiljoClient, final CitizenMappingService citizenMappingService) {
+	public PartyService(final MinutMiljoClient minutMiljoClient, final CitizenService citizenService) {
 		this.minutMiljoClient = minutMiljoClient;
-		this.citizenMappingService = citizenMappingService;
+		this.citizenService = citizenService;
 	}
 
 
@@ -85,8 +85,8 @@ public class PartyService {
 		var dto = new OrganizationSvcDto();
 
 		if (!searchResult.getPartySvcDto().isEmpty()) {
-			dto = (OrganizationSvcDto) searchResult.getPartySvcDto().get(0);
-		} else if (searchResult.getPartySvcDto().isEmpty() || searchResult.getPartySvcDto().get(0) != null) {
+			dto = (OrganizationSvcDto) searchResult.getPartySvcDto().getFirst();
+		} else if (searchResult.getPartySvcDto().isEmpty() || searchResult.getPartySvcDto().getFirst() != null) {
 			dto = new OrganizationSvcDto()
 				.withNationalIdentificationNumber(CaseUtil.getSokigoFormattedOrganizationNumber(organizationDTO.getOrganizationNumber()))
 				.withOrganizationName(organizationDTO.getOrganizationName())
@@ -116,7 +116,7 @@ public class PartyService {
 		final PersonSvcDto dto;
 
 		if (searchPartyResult != null && !searchPartyResult.getPartySvcDto().isEmpty()) {
-			dto = (PersonSvcDto) searchPartyResult.getPartySvcDto().get(0);
+			dto = (PersonSvcDto) searchPartyResult.getPartySvcDto().getFirst();
 		} else {
 			dto = getPersonSvcDto(personDTO);
 
@@ -148,9 +148,9 @@ public class PartyService {
 			.withFirstName(personDTO.getFirstName())
 			.withLastName(personDTO.getLastName())
 			.withAddresses(getEcosAddresses(personDTO.getAddresses()))
-			.withContactInfo(getEcosContactInfo(personDTO).getContactInfoSvcDto().get(0));
+			.withContactInfo(getEcosContactInfo(personDTO).getContactInfoSvcDto().getFirst());
 
-		personSvcDto.setNationalIdentificationNumber(CaseUtil.getSokigoFormattedPersonalNumber(citizenMappingService.getPersonalNumber(personDTO.getPersonId())));
+		personSvcDto.setNationalIdentificationNumber(CaseUtil.getSokigoFormattedPersonalNumber(citizenService.getPersonalNumber(personDTO.getPersonId())));
 
 		return personSvcDto;
 	}
@@ -184,7 +184,7 @@ public class PartyService {
 		final var searchPartyWithHyphen = new SearchParty()
 			.withModel(new SearchPartySvcDto()
 				.withPersonalIdentificationNumber((CaseUtil
-					.getSokigoFormattedPersonalNumber(citizenMappingService.getPersonalNumber(personId)))));
+					.getSokigoFormattedPersonalNumber(citizenService.getPersonalNumber(personId)))));
 
 		final var resultWithHyphen = minutMiljoClient.searchParty(searchPartyWithHyphen);
 
@@ -192,7 +192,7 @@ public class PartyService {
 			return resultWithHyphen.getSearchPartyResult();
 		} else {
 			final var searchPartyWithoutHyphen = new SearchParty().withModel(new SearchPartySvcDto()
-				.withPersonalIdentificationNumber(citizenMappingService.getPersonalNumber(personId)));
+				.withPersonalIdentificationNumber(citizenService.getPersonalNumber(personId)));
 
 			return Optional.ofNullable(minutMiljoClient.searchParty(searchPartyWithoutHyphen)).orElse(new SearchPartyResponse()).getSearchPartyResult();
 		}

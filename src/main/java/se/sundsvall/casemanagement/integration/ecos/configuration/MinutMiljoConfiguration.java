@@ -97,7 +97,7 @@ public class MinutMiljoConfiguration {
             }
             String ntlmMsg3 = null;
             try {
-                ntlmMsg3 = engine.generateType3Msg(username, password.toCharArray(), null, null, wwwAuthenticate.get(0).substring(5));
+                ntlmMsg3 = engine.generateType3Msg(username, password.toCharArray(), null, null, wwwAuthenticate.getFirst().substring(5));
             } catch (Exception e) {
                 log.error("Error generating NTLM type 3 message", e);
             }

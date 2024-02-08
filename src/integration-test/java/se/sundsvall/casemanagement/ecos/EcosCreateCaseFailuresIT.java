@@ -66,7 +66,7 @@ public class EcosCreateCaseFailuresIT extends AbstractAppTest {
 				assertThat(caseMapping.getCaseId()).isEqualTo(ECOS_CASE_ID);
 				assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
 			});
-		caseMappingRepository.delete(caseMappingRepository.findAllByExternalCaseId("1256239125").get(0));
+		caseMappingRepository.delete(caseMappingRepository.findAllByExternalCaseId("1256239125").getFirst());
 	}
 
 	@Test

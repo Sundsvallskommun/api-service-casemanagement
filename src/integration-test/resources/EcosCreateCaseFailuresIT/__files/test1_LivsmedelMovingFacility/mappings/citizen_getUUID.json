@@ -1,8 +1,8 @@
 {
   "id": "e19981ad-34b2-4e14-88f5-133f61ca85aa",
-  "name": "citizenmapping_v1_citizenmapping_e19981ad-34b2-4e14-88f5-133f61ca85aa_personalnumber",
+  "name": "citizen_e19981ad-34b2-4e14-88f5-133f61ca85aa_personnumber",
   "request": {
-    "urlPathPattern": "/citizenmapping/1.0/citizenmapping/(.+)/personalnumber",
+    "urlPathPattern": "/citizen/(.+)/personnumber",
     "method": "GET"
   },
   "response": {
