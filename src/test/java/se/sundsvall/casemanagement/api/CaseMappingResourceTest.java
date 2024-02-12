@@ -50,12 +50,12 @@ class CaseMappingResourceTest {
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody()).isNotNull();
         assertThat(result.getBody()).hasSize(1);
-        assertThat(result.getBody().get(0).getCaseId()).isEqualTo("caseId");
-        assertThat(result.getBody().get(0).getExternalCaseId()).isEqualTo("externalCaseId");
-        assertThat(result.getBody().get(0).getCaseType()).isEqualTo(CaseType.REGISTRERING_AV_LIVSMEDEL);
-        assertThat(result.getBody().get(0).getServiceName()).isEqualTo("serviceName");
-        assertThat(result.getBody().get(0).getTimestamp()).isNotNull();
-        assertThat(result.getBody().get(0).getTimestamp()).isBeforeOrEqualTo(LocalDateTime.now());
+        assertThat(result.getBody().getFirst().getCaseId()).isEqualTo("caseId");
+        assertThat(result.getBody().getFirst().getExternalCaseId()).isEqualTo("externalCaseId");
+        assertThat(result.getBody().getFirst().getCaseType()).isEqualTo(CaseType.REGISTRERING_AV_LIVSMEDEL);
+        assertThat(result.getBody().getFirst().getServiceName()).isEqualTo("serviceName");
+        assertThat(result.getBody().getFirst().getTimestamp()).isNotNull();
+        assertThat(result.getBody().getFirst().getTimestamp()).isBeforeOrEqualTo(LocalDateTime.now());
     }
 
 	@Test
@@ -84,12 +84,12 @@ class CaseMappingResourceTest {
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody()).isNotNull();
         assertThat(result.getBody()).hasSize(2);
-        assertThat(result.getBody().get(0).getCaseId()).isEqualTo("caseId");
-        assertThat(result.getBody().get(0).getExternalCaseId()).isEqualTo("externalCaseId");
-        assertThat(result.getBody().get(0).getCaseType()).isEqualTo(CaseType.REGISTRERING_AV_LIVSMEDEL);
-        assertThat(result.getBody().get(0).getServiceName()).isEqualTo("serviceName");
-        assertThat(result.getBody().get(0).getTimestamp()).isNotNull();
-        assertThat(result.getBody().get(0).getTimestamp()).isBeforeOrEqualTo(LocalDateTime.now());
+        assertThat(result.getBody().getFirst().getCaseId()).isEqualTo("caseId");
+        assertThat(result.getBody().getFirst().getExternalCaseId()).isEqualTo("externalCaseId");
+        assertThat(result.getBody().getFirst().getCaseType()).isEqualTo(CaseType.REGISTRERING_AV_LIVSMEDEL);
+        assertThat(result.getBody().getFirst().getServiceName()).isEqualTo("serviceName");
+        assertThat(result.getBody().getFirst().getTimestamp()).isNotNull();
+        assertThat(result.getBody().getFirst().getTimestamp()).isBeforeOrEqualTo(LocalDateTime.now());
         assertThat(result.getBody().get(1).getCaseId()).isEqualTo("caseId2");
         assertThat(result.getBody().get(1).getExternalCaseId()).isEqualTo("externalCaseId2");
         assertThat(result.getBody().get(1).getCaseType()).isEqualTo(CaseType.LOST_PARKING_PERMIT);

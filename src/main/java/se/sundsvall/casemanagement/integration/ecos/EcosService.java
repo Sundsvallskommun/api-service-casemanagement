@@ -127,7 +127,7 @@ public class EcosService {
 
 	public RegisterDocumentCaseResultSvcDto postCase(final EnvironmentalCaseDTO caseInput) {
 
-		final var eFacility = caseInput.getFacilities().get(0);
+		final var eFacility = caseInput.getFacilities().getFirst();
 
 		FbPropertyInfo propertyInfo = null;
 		if ((eFacility.getAddress() != null) && (eFacility.getAddress().getPropertyDesignation() != null)) {
@@ -205,8 +205,8 @@ public class EcosService {
 		createFoodFacilitySvcDto.setCase(registerDocumentResult.getCaseId());
 
 		createFoodFacilitySvcDto.setEstateDesignation(getEstateSvcDto(propertyInfo));
-		createFoodFacilitySvcDto.setFacilityCollectionName(eCase.getFacilities().get(0).getFacilityCollectionName());
-		createFoodFacilitySvcDto.setNote(eCase.getFacilities().get(0).getDescription());
+		createFoodFacilitySvcDto.setFacilityCollectionName(eCase.getFacilities().getFirst().getFacilityCollectionName());
+		createFoodFacilitySvcDto.setNote(eCase.getFacilities().getFirst().getDescription());
 
 		createFoodFacility.setCreateFoodFacilitySvcDto(createFoodFacilitySvcDto);
 
@@ -587,7 +587,7 @@ public class EcosService {
 		registerDocumentCaseSvcDtoV2.setProcessTypeId(getProcessTypeId(eCase.getCaseType()));
 		registerDocumentCaseSvcDtoV2.setDocuments(getArrayOfDocumentSvcDtoV2(eCase.getAttachments()));
 
-		final var eFacility = eCase.getFacilities().get(0);
+		final var eFacility = eCase.getFacilities().getFirst();
 
 		final var fixedFacilityType = Optional.ofNullable(Optional.ofNullable(eCase.getExtraParameters()).orElse(Map.of()).get("fixedFacilityType")).orElse("").trim();
 
@@ -712,7 +712,7 @@ public class EcosService {
 			.filter(list -> !list.isEmpty())
 			.isPresent()) {
 
-			final var caseMapping = Optional.ofNullable(caseMappingService.getCaseMapping(externalCaseId, caseId).get(0)).orElse(new CaseMapping());
+			final var caseMapping = Optional.ofNullable(caseMappingService.getCaseMapping(externalCaseId, caseId).getFirst()).orElse(new CaseMapping());
 
 			final var latestOccurrence = ecosCase.getOccurrences()
 				.getOccurrenceListItemSvcDto()
@@ -754,7 +754,7 @@ public class EcosService {
 
 			caseResultWithoutDuplicates.forEach(ecosCase -> {
 				final List<CaseMapping> caseMappingList = caseMappingService.getCaseMapping(null, ecosCase.getCaseId());
-				final String externalCaseId = caseMappingList.isEmpty() ? null : caseMappingList.get(0).getExternalCaseId();
+				final String externalCaseId = caseMappingList.isEmpty() ? null : caseMappingList.getFirst().getExternalCaseId();
 				final CaseStatusDTO caseStatusDTO = getStatus(ecosCase.getCaseId(), externalCaseId);
 
 				if (caseStatusDTO != null) {

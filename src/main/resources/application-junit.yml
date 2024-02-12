@@ -1,0 +1,54 @@
+retry:
+  initial-delay: 1
+  max-delay: 2
+  maxAttempts: 1
+spring:
+  datasource:
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+    password: password
+    url: jdbc:tc:mariadb:10.6.14:///casemanagement?TC_INITSCRIPT=db/casemanagement.sql
+    username: sa
+  flyway:
+    enabled: false
+integration:
+  arendeexport:
+    url:
+  case-data:
+    oauth2ClientId: clientId
+    oauth2ClientSecret: clientSecret
+    oauth2TokenUrl: token.url
+    url: case-data.url
+  citizen:
+    oauth2ClientId: clientId
+    oauth2ClientSecret: clientSecret
+    oauth2TokenUrl: token.url
+    url: citizen.url
+  fb:
+    database: test_db
+    password: test_pass
+    url: fb.url
+    username: test_user
+  lantmateriet:
+    oauth2ClientId: test_key
+    oauth2ClientSecret: test_secret
+    oauth2TokenUrl: token.url
+    registerbeteckning:
+      url: lantmateriet.url
+  messaging:
+    channel: channel
+    client-id: test_user
+    client-secret: test_pass
+    token: token
+    token-uri: token.url
+    url: messaging.url
+  minutmiljo:
+    password: test_pass
+    url: minutmiljo.url
+    username: test_user
+  minutmiljoV2:
+    url: minutmiljoV2.url
+  opene:
+    password: password
+    url: opene.url
+    username: username
+

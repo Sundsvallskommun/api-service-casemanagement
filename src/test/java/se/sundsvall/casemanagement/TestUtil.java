@@ -45,7 +45,7 @@ import se.sundsvall.casemanagement.integration.fb.model.DataItem;
 import se.sundsvall.casemanagement.integration.fb.model.FbPropertyInfo;
 import se.sundsvall.casemanagement.integration.fb.model.GruppItem;
 import se.sundsvall.casemanagement.integration.fb.model.ResponseDto;
-import se.sundsvall.casemanagement.service.CitizenMappingService;
+import se.sundsvall.casemanagement.service.CitizenService;
 import se.sundsvall.casemanagement.service.FbService;
 import se.sundsvall.casemanagement.util.Constants;
 
@@ -354,7 +354,7 @@ public class TestUtil {
 		lenient().doReturn(fbPropertyInfo).when(fbMock).getPropertyInfoByPropertyDesignation(anyString());
 	}
 
-	public static void standardMockCitizenMapping(final CitizenMappingService mock) {
+	public static void standardMockCitizen(final CitizenService mock) {
 		lenient().doReturn(generateRandomPersonalNumber()).when(mock).getPersonalNumber(anyString());
 	}
 

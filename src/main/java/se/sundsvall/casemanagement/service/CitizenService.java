@@ -1,22 +1,21 @@
 package se.sundsvall.casemanagement.service;
 
-import java.util.Objects;
-
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
 import org.zalando.problem.ThrowableProblem;
-
-import se.sundsvall.casemanagement.integration.citizenmapping.CitizenMappingClient;
+import se.sundsvall.casemanagement.integration.citizen.CitizenClient;
 import se.sundsvall.casemanagement.util.Constants;
 
+import java.util.Objects;
+
 @Service
-public class CitizenMappingService {
+public class CitizenService {
 
-	private final CitizenMappingClient citizenMappingClient;
+	private final CitizenClient citizenClient;
 
-	public CitizenMappingService(CitizenMappingClient citizenMappingClient) {
-		this.citizenMappingClient = citizenMappingClient;
+	public CitizenService(CitizenClient citizenClient) {
+		this.citizenClient = citizenClient;
 	}
 
 	/**
@@ -27,7 +26,7 @@ public class CitizenMappingService {
 
 		if ((personId != null) && !personId.isBlank()) {
 			try {
-				personalNumber = citizenMappingClient.getPersonalNumber(personId);
+				personalNumber = citizenClient.getPersonalNumber(personId);
 			} catch (final ThrowableProblem e) {
 				if (Objects.equals(e.getStatus(), Status.NOT_FOUND)) {
 					throw Problem.valueOf(Status.BAD_REQUEST, String.format(Constants.ERR_MSG_PERSONAL_NUMBER_NOT_FOUND_WITH_PERSON_ID, personId), null);

@@ -104,8 +104,8 @@ class CaseDataServiceTest {
 		assertEquals(inputCase.getExtraParameters(), errandDTO.getExtraParameters());
 		assertEquals("Aktualisering", errandDTO.getPhase());
 		assertEquals(ErrandDTO.PriorityEnum.HIGH, errandDTO.getPriority());
-		assertEquals("Ärende inkommit", errandDTO.getStatuses().get(0).getStatusType());
-		assertNotNull(errandDTO.getStatuses().get(0).getDateTime());
+		assertEquals("Ärende inkommit", errandDTO.getStatuses().getFirst().getStatusType());
+		assertNotNull(errandDTO.getStatuses().getFirst().getDateTime());
 
 		verify(caseDataClientMock, times(3)).postAttachment(attachmentDTOArgumentCaptor.capture());
 		final var attachmentDTO = attachmentDTOArgumentCaptor.getValue();
@@ -151,8 +151,8 @@ class CaseDataServiceTest {
 
 		final List<StatusDTO> statusDTOs = statusDTOListArgumentCaptor.getValue();
 		assertEquals(1, statusDTOs.size());
-		assertEquals("Komplettering inkommen", statusDTOs.get(0).getStatusType());
-		assertNotNull(statusDTOs.get(0).getDateTime());
+		assertEquals("Komplettering inkommen", statusDTOs.getFirst().getStatusType());
+		assertNotNull(statusDTOs.getFirst().getDateTime());
 
 		final List<StakeholderDTO> stakeholderDTOs = stakeholderDTOListArgumentCaptor.getValue();
 		assertEquals(inputCase.getStakeholders().size(), stakeholderDTOs.size());

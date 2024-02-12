@@ -99,7 +99,7 @@ class EcosServiceTest {
 	private EcosService ecosService;
 
 	@Mock
-	private CitizenMappingService citizenMappingServiceMock;
+	private CitizenService citizenServiceMock;
 
 	@Mock
 	private CaseMappingService caseMappingServiceMock;
@@ -119,10 +119,10 @@ class EcosServiceTest {
 	@BeforeEach
 	void beforeEach() {
 		TestUtil.standardMockFb(fbServiceMock);
-		TestUtil.standardMockCitizenMapping(citizenMappingServiceMock);
+		TestUtil.standardMockCitizen(citizenServiceMock);
 		TestUtil.standardMockMinutMiljo(minutMiljoClientMock, minutMiljoClientV2Mock);
 		TestUtil.standardMockFb(fbServiceMock);
-		TestUtil.standardMockCitizenMapping(citizenMappingServiceMock);
+		TestUtil.standardMockCitizen(citizenServiceMock);
 		TestUtil.standardMockPartyService(partyServiceMock);
 	}
 
@@ -142,13 +142,13 @@ class EcosServiceTest {
 		assertEquals(ADRESSPLATS_ID, createFoodFacilityArgumentCaptor.getValue().getCreateFoodFacilitySvcDto().getAddress().getAdressPlatsId());
 		assertEquals(FNR, createFoodFacilityArgumentCaptor.getValue().getCreateFoodFacilitySvcDto().getEstateDesignation().getFnr());
 		assertEquals(result.getCaseId(), createFoodFacilityArgumentCaptor.getValue().getCreateFoodFacilitySvcDto().getCase());
-		assertEquals(eCase.getFacilities().get(0).getDescription(), createFoodFacilityArgumentCaptor.getValue().getCreateFoodFacilitySvcDto().getNote());
-		assertTrue(createFoodFacilityArgumentCaptor.getValue().getCreateFoodFacilitySvcDto().getFacilityCollectionName().contains(eCase.getFacilities().get(0).getFacilityCollectionName()));
+		assertEquals(eCase.getFacilities().getFirst().getDescription(), createFoodFacilityArgumentCaptor.getValue().getCreateFoodFacilitySvcDto().getNote());
+		assertTrue(createFoodFacilityArgumentCaptor.getValue().getCreateFoodFacilitySvcDto().getFacilityCollectionName().contains(eCase.getFacilities().getFirst().getFacilityCollectionName()));
 
 		final ArgumentCaptor<RegisterDocument> registerDocumentArgumentCaptor = ArgumentCaptor.forClass(RegisterDocument.class);
 		verify(minutMiljoClientV2Mock, times(1)).registerDocumentV2(registerDocumentArgumentCaptor.capture());
 		final RegisterDocumentCaseSvcDtoV2 registerDocumentCaseSvcDtoV2 = registerDocumentArgumentCaptor.getValue().getRegisterDocumentCaseSvcDto();
-		assertEquals(eCase.getFacilities().get(0).getFacilityCollectionName() + ", " + eCase.getFacilities().get(0).getAddress().getPropertyDesignation().toUpperCase(), registerDocumentCaseSvcDtoV2.getCaseSubtitleFree());
+		assertEquals(eCase.getFacilities().getFirst().getFacilityCollectionName() + ", " + eCase.getFacilities().getFirst().getAddress().getPropertyDesignation().toUpperCase(), registerDocumentCaseSvcDtoV2.getCaseSubtitleFree());
 		assertEquals(Constants.ECOS_OCCURENCE_TYPE_ID_ANMALAN, registerDocumentCaseSvcDtoV2.getOccurrenceTypeId());
 		assertEquals(Constants.ECOS_HANDLING_OFFICER_GROUP_ID_EXPEDITIONEN, registerDocumentCaseSvcDtoV2.getHandlingOfficerGroupId());
 		assertEquals(Constants.ECOS_DIARY_PLAN_LIVSMEDEL, registerDocumentCaseSvcDtoV2.getDiaryPlanId());
@@ -245,7 +245,7 @@ class EcosServiceTest {
 		extraParameters.put("CreateAirHeatingFacilitySvcDto_Model", "SuperHeater 2000");
 		extraParameters.put("CreateAirHeatingFacilitySvcDto_PowerConsumption", "1.7");
 		extraParameters.put("CreateAirHeatingFacilitySvcDto_PowerOutput", "4.8");
-		eCase.getFacilities().get(0).setExtraParameters(extraParameters);
+		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
 
 		ecosService.postCase(eCase);
 
@@ -265,7 +265,7 @@ class EcosServiceTest {
 		extraParameters.put("CreateGeothermalHeatingFacilitySvcDto_PowerOutput", "4.8");
 		extraParameters.put("CreateGeothermalHeatingFacilitySvcDto_Capacity", "90.8");
 		extraParameters.put("CreateGeothermalHeatingFacilitySvcDto_HeatTransferFluidId", CYTONOL);
-		eCase.getFacilities().get(0).setExtraParameters(extraParameters);
+		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
 
 		ecosService.postCase(eCase);
 
@@ -286,7 +286,7 @@ class EcosServiceTest {
 		extraParameters.put("CreateSoilHeatingFacilitySvcDto_PowerOutput", "4.8");
 		extraParameters.put("CreateSoilHeatingFacilitySvcDto_Capacity", "90.8");
 		extraParameters.put("CreateSoilHeatingFacilitySvcDto_HeatTransferFluidId", CYTONOL);
-		eCase.getFacilities().get(0).setExtraParameters(extraParameters);
+		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
 
 		ecosService.postCase(eCase);
 
@@ -300,7 +300,7 @@ class EcosServiceTest {
 	@Test
 	void testExtraParamsNull() {
 		final EnvironmentalCaseDTO eCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP, AttachmentCategory.ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
-		eCase.getFacilities().get(0).setExtraParameters(null);
+		eCase.getFacilities().getFirst().setExtraParameters(null);
 
 		ecosService.postCase(eCase);
 
@@ -312,7 +312,7 @@ class EcosServiceTest {
 	void testExtraParamsEmpty() {
 		final EnvironmentalCaseDTO eCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP, AttachmentCategory.ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
 		final Map<String, String> extraParameters = new HashMap<>();
-		eCase.getFacilities().get(0).setExtraParameters(extraParameters);
+		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
 
 		ecosService.postCase(eCase);
 
@@ -330,7 +330,7 @@ class EcosServiceTest {
 		extraParameters.put("CreateMarineHeatingFacilitySvcDto_PowerOutput", "4.8");
 		extraParameters.put("CreateMarineHeatingFacilitySvcDto_Capacity", "90.8");
 		extraParameters.put("CreateMarineHeatingFacilitySvcDto_HeatTransferFluidId", CYTONOL);
-		eCase.getFacilities().get(0).setExtraParameters(extraParameters);
+		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
 
 		ecosService.postCase(eCase);
 
@@ -377,8 +377,8 @@ class EcosServiceTest {
 		Assertions.assertEquals(ADRESSPLATS_ID, svcDto.getAddress().getAdressPlatsId());
 		Assertions.assertEquals(FNR, svcDto.getEstateDesignation().getFnr());
 		Assertions.assertEquals("e19981ad-34b2-4e14-88f5-133f61ca85aa", svcDto.getCase());
-		Assertions.assertEquals(eCase.getFacilities().get(0).getDescription(), svcDto.getNote());
-		Assertions.assertEquals(eCase.getFacilities().get(0).getFacilityCollectionName(), svcDto.getFacilityCollectionName());
+		Assertions.assertEquals(eCase.getFacilities().getFirst().getDescription(), svcDto.getNote());
+		Assertions.assertEquals(eCase.getFacilities().getFirst().getFacilityCollectionName(), svcDto.getFacilityCollectionName());
 	}
 
 	@Test
@@ -391,7 +391,7 @@ class EcosServiceTest {
 		extraParameters.put(prefix + "HasCeMarking", String.valueOf(new Random().nextBoolean()));
 		extraParameters.put(prefix + "HasTPipe", String.valueOf(new Random().nextBoolean()));
 		extraParameters.put(prefix + "Volume", String.valueOf(new Random().nextDouble()));
-		eCase.getFacilities().get(0).setExtraParameters(extraParameters);
+		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
 
 		ecosService.postCase(eCase);
 
@@ -399,7 +399,7 @@ class EcosServiceTest {
 		verifyMinutMiljoCallsForSewageCase(argumentCaptor);
 		verifyStandardParams(extraParameters, argumentCaptor.getValue().getCreateIndividualSewageSvcDto(), prefix);
 
-		final SepticTankSvcDto septicTankSvcDto = (SepticTankSvcDto) argumentCaptor.getValue().getCreateIndividualSewageSvcDto().getPurificationSteps().getPurificationStepSvcDto().get(0);
+		final SepticTankSvcDto septicTankSvcDto = (SepticTankSvcDto) argumentCaptor.getValue().getCreateIndividualSewageSvcDto().getPurificationSteps().getPurificationStepSvcDto().getFirst();
 
 		Assertions.assertEquals(CaseUtil.parseInteger(extraParameters.entrySet().stream().filter(e -> e.getKey().contains(prefix + "EmptyingInterval")).findFirst().orElseThrow().getValue()), septicTankSvcDto.getEmptyingInterval());
 		Assertions.assertEquals(CaseUtil.parseBoolean(extraParameters.entrySet().stream().filter(e -> e.getKey().contains(prefix + "HasCeMarking")).findFirst().orElseThrow().getValue()), septicTankSvcDto.isHasCeMarking());
@@ -419,7 +419,7 @@ class EcosServiceTest {
 		extraParameters.put(prefix + "IsModuleSystem", String.valueOf(new Random().nextBoolean()));
 		extraParameters.put(prefix + "SpreadLinesCount", String.valueOf(new Random().nextInt()));
 		extraParameters.put(prefix + "SpreadLinesLength", String.valueOf(new Random().nextInt()));
-		eCase.getFacilities().get(0).setExtraParameters(extraParameters);
+		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
 
 		ecosService.postCase(eCase);
 
@@ -427,7 +427,7 @@ class EcosServiceTest {
 		verifyMinutMiljoCallsForSewageCase(argumentCaptor);
 		verifyStandardParams(extraParameters, argumentCaptor.getValue().getCreateIndividualSewageSvcDto(), prefix);
 
-		final InfiltrationPlantSvcDto infiltrationPlantSvcDto = (InfiltrationPlantSvcDto) argumentCaptor.getValue().getCreateIndividualSewageSvcDto().getPurificationSteps().getPurificationStepSvcDto().get(0);
+		final InfiltrationPlantSvcDto infiltrationPlantSvcDto = (InfiltrationPlantSvcDto) argumentCaptor.getValue().getCreateIndividualSewageSvcDto().getPurificationSteps().getPurificationStepSvcDto().getFirst();
 
 		Assertions.assertEquals(CaseUtil.parseBoolean(extraParameters.entrySet().stream().filter(e -> e.getKey().contains(prefix + "Elevated")).findFirst().orElseThrow().getValue()), infiltrationPlantSvcDto.isElevated());
 		Assertions.assertEquals(CaseUtil.parseBoolean(extraParameters.entrySet().stream().filter(e -> e.getKey().contains(prefix + "Reinforced")).findFirst().orElseThrow().getValue()), infiltrationPlantSvcDto.isReinforced());
@@ -446,7 +446,7 @@ class EcosServiceTest {
 		extraParameters.put(prefix + "EmptyingInterval", String.valueOf(new Random().nextInt()));
 		extraParameters.put(prefix + "HasCeMarking", String.valueOf(new Random().nextBoolean()));
 		extraParameters.put(prefix + "Volume", String.valueOf(new Random().nextDouble()));
-		eCase.getFacilities().get(0).setExtraParameters(extraParameters);
+		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
 
 		ecosService.postCase(eCase);
 
@@ -454,7 +454,7 @@ class EcosServiceTest {
 		verifyMinutMiljoCallsForSewageCase(argumentCaptor);
 		verifyStandardParams(extraParameters, argumentCaptor.getValue().getCreateIndividualSewageSvcDto(), prefix);
 
-		final ClosedTankSvcDto closedTankSvcDto = (ClosedTankSvcDto) argumentCaptor.getValue().getCreateIndividualSewageSvcDto().getPurificationSteps().getPurificationStepSvcDto().get(0);
+		final ClosedTankSvcDto closedTankSvcDto = (ClosedTankSvcDto) argumentCaptor.getValue().getCreateIndividualSewageSvcDto().getPurificationSteps().getPurificationStepSvcDto().getFirst();
 
 		Assertions.assertEquals(CaseUtil.parseInteger(extraParameters.entrySet().stream().filter(e -> e.getKey().contains(prefix + "EmptyingInterval")).findFirst().orElseThrow().getValue()), closedTankSvcDto.getEmptyingInterval());
 		Assertions.assertEquals(CaseUtil.parseBoolean(extraParameters.entrySet().stream().filter(e -> e.getKey().contains(prefix + "HasCeMarking")).findFirst().orElseThrow().getValue()), closedTankSvcDto.isHasCeMarking());
@@ -475,7 +475,7 @@ class EcosServiceTest {
 		extraParameters.put(prefix + "NoLPerContOrCompt", UUID.randomUUID().toString());
 		extraParameters.put(prefix + "ToiletProductName", UUID.randomUUID().toString());
 		extraParameters.put(prefix + "Volume", String.valueOf(new Random().nextDouble()));
-		eCase.getFacilities().get(0).setExtraParameters(extraParameters);
+		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
 
 		ecosService.postCase(eCase);
 
@@ -483,7 +483,7 @@ class EcosServiceTest {
 		verifyMinutMiljoCallsForSewageCase(argumentCaptor);
 		verifyStandardParams(extraParameters, argumentCaptor.getValue().getCreateIndividualSewageSvcDto(), prefix);
 
-		final DrySolutionSvcDto drySolutionSvcDto = (DrySolutionSvcDto) argumentCaptor.getValue().getCreateIndividualSewageSvcDto().getPurificationSteps().getPurificationStepSvcDto().get(0);
+		final DrySolutionSvcDto drySolutionSvcDto = (DrySolutionSvcDto) argumentCaptor.getValue().getCreateIndividualSewageSvcDto().getPurificationSteps().getPurificationStepSvcDto().getFirst();
 
 		Assertions.assertEquals(CaseUtil.parseString(extraParameters.entrySet().stream().filter(e -> e.getKey().contains(prefix + "CompostProductName")).findFirst().orElseThrow().getValue()), drySolutionSvcDto.getCompostProductName());
 		Assertions.assertEquals(CaseUtil.parseString(extraParameters.entrySet().stream().filter(e -> e.getKey().contains(prefix + "DrySolutionCompostTypeId")).findFirst().orElseThrow().getValue()), drySolutionSvcDto.getDrySolutionCompostTypeId());
@@ -504,7 +504,7 @@ class EcosServiceTest {
 		extraParameters.put(prefix + "CeMarking", String.valueOf(new Random().nextBoolean()));
 		extraParameters.put(prefix + "Manufacturer", UUID.randomUUID().toString());
 		extraParameters.put(prefix + "Model", UUID.randomUUID().toString());
-		eCase.getFacilities().get(0).setExtraParameters(extraParameters);
+		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
 
 		ecosService.postCase(eCase);
 
@@ -512,7 +512,7 @@ class EcosServiceTest {
 		verifyMinutMiljoCallsForSewageCase(argumentCaptor);
 		verifyStandardParams(extraParameters, argumentCaptor.getValue().getCreateIndividualSewageSvcDto(), prefix);
 
-		final MiniSewageSvcDto svcDto = (MiniSewageSvcDto) argumentCaptor.getValue().getCreateIndividualSewageSvcDto().getPurificationSteps().getPurificationStepSvcDto().get(0);
+		final MiniSewageSvcDto svcDto = (MiniSewageSvcDto) argumentCaptor.getValue().getCreateIndividualSewageSvcDto().getPurificationSteps().getPurificationStepSvcDto().getFirst();
 
 		Assertions.assertEquals(CaseUtil.parseBoolean(extraParameters.entrySet().stream().filter(e -> e.getKey().contains(prefix + "CeMarking")).findFirst().orElseThrow().getValue()), svcDto.isCeMarking());
 		Assertions.assertEquals(CaseUtil.parseString(extraParameters.entrySet().stream().filter(e -> e.getKey().contains(prefix + "Manufacturer")).findFirst().orElseThrow().getValue()), svcDto.getManufacturer());
@@ -527,7 +527,7 @@ class EcosServiceTest {
 		TestUtil.setSewageStandardExtraParams(extraParameters, prefix);
 
 		extraParameters.put(prefix + "Volume", String.valueOf(new Random().nextDouble()));
-		eCase.getFacilities().get(0).setExtraParameters(extraParameters);
+		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
 
 		ecosService.postCase(eCase);
 
@@ -535,7 +535,7 @@ class EcosServiceTest {
 		verifyMinutMiljoCallsForSewageCase(argumentCaptor);
 		verifyStandardParams(extraParameters, argumentCaptor.getValue().getCreateIndividualSewageSvcDto(), prefix);
 
-		final FilterBedSvcDto svcDto = (FilterBedSvcDto) argumentCaptor.getValue().getCreateIndividualSewageSvcDto().getPurificationSteps().getPurificationStepSvcDto().get(0);
+		final FilterBedSvcDto svcDto = (FilterBedSvcDto) argumentCaptor.getValue().getCreateIndividualSewageSvcDto().getPurificationSteps().getPurificationStepSvcDto().getFirst();
 		Assertions.assertEquals(CaseUtil.parseDouble(extraParameters.entrySet().stream().filter(e -> e.getKey().contains(prefix + "Volume")).findFirst().orElseThrow().getValue()), svcDto.getVolume());
 	}
 
@@ -549,7 +549,7 @@ class EcosServiceTest {
 		extraParameters.put(prefix + "Area", String.valueOf(new Random().nextInt()));
 		extraParameters.put(prefix + "Elevated", String.valueOf(new Random().nextBoolean()));
 		extraParameters.put(prefix + "WaterTight", String.valueOf(new Random().nextBoolean()));
-		eCase.getFacilities().get(0).setExtraParameters(extraParameters);
+		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
 
 		ecosService.postCase(eCase);
 
@@ -557,7 +557,7 @@ class EcosServiceTest {
 		verifyMinutMiljoCallsForSewageCase(argumentCaptor);
 		verifyStandardParams(extraParameters, argumentCaptor.getValue().getCreateIndividualSewageSvcDto(), prefix);
 
-		final SandFilterSvcDto svcDto = (SandFilterSvcDto) argumentCaptor.getValue().getCreateIndividualSewageSvcDto().getPurificationSteps().getPurificationStepSvcDto().get(0);
+		final SandFilterSvcDto svcDto = (SandFilterSvcDto) argumentCaptor.getValue().getCreateIndividualSewageSvcDto().getPurificationSteps().getPurificationStepSvcDto().getFirst();
 		Assertions.assertEquals(CaseUtil.parseInteger(extraParameters.entrySet().stream().filter(e -> e.getKey().contains(prefix + "Area")).findFirst().orElseThrow().getValue()), svcDto.getArea());
 		Assertions.assertEquals(CaseUtil.parseBoolean(extraParameters.entrySet().stream().filter(e -> e.getKey().contains(prefix + "Elevated")).findFirst().orElseThrow().getValue()), svcDto.isElevated());
 		Assertions.assertEquals(CaseUtil.parseBoolean(extraParameters.entrySet().stream().filter(e -> e.getKey().contains(prefix + "WaterTight")).findFirst().orElseThrow().getValue()), svcDto.isWaterTight());
@@ -572,7 +572,7 @@ class EcosServiceTest {
 
 		extraParameters.put(prefix + "Area", String.valueOf(new Random().nextInt()));
 		extraParameters.put(prefix + "BiologicalStepTypeId", UUID.randomUUID().toString());
-		eCase.getFacilities().get(0).setExtraParameters(extraParameters);
+		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
 
 		ecosService.postCase(eCase);
 
@@ -580,7 +580,7 @@ class EcosServiceTest {
 		verifyMinutMiljoCallsForSewageCase(argumentCaptor);
 		verifyStandardParams(extraParameters, argumentCaptor.getValue().getCreateIndividualSewageSvcDto(), prefix);
 
-		final BiologicalStepSvcDto svcDto = (BiologicalStepSvcDto) argumentCaptor.getValue().getCreateIndividualSewageSvcDto().getPurificationSteps().getPurificationStepSvcDto().get(0);
+		final BiologicalStepSvcDto svcDto = (BiologicalStepSvcDto) argumentCaptor.getValue().getCreateIndividualSewageSvcDto().getPurificationSteps().getPurificationStepSvcDto().getFirst();
 		Assertions.assertEquals(CaseUtil.parseInteger(extraParameters.entrySet().stream().filter(e -> e.getKey().contains(prefix + "Area")).findFirst().orElseThrow().getValue()), svcDto.getArea());
 		Assertions.assertEquals(CaseUtil.parseString(extraParameters.entrySet().stream().filter(e -> e.getKey().contains(prefix + "BiologicalStepTypeId")).findFirst().orElseThrow().getValue()), svcDto.getBiologicalStepTypeId());
 	}
@@ -591,7 +591,7 @@ class EcosServiceTest {
 		final Map<String, String> extraParameters = new HashMap<>();
 		final String prefix = "PhosphorusTrapSvcDto_";
 		TestUtil.setSewageStandardExtraParams(extraParameters, prefix);
-		eCase.getFacilities().get(0).setExtraParameters(extraParameters);
+		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
 
 		ecosService.postCase(eCase);
 
@@ -606,7 +606,7 @@ class EcosServiceTest {
 		final Map<String, String> extraParameters = new HashMap<>();
 		final String prefix = "ChemicalPretreatmentSvcDto_";
 		TestUtil.setSewageStandardExtraParams(extraParameters, prefix);
-		eCase.getFacilities().get(0).setExtraParameters(extraParameters);
+		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
 
 		ecosService.postCase(eCase);
 
@@ -629,7 +629,7 @@ class EcosServiceTest {
 		Assertions.assertEquals(extraParameters.entrySet().stream().filter(e -> e.getKey().contains("WastewaterApprovedForId")).findFirst().orElseThrow().getValue(), svcDto.getWastewaterApprovedForId());
 		Assertions.assertEquals(extraParameters.entrySet().stream().filter(e -> e.getKey().contains("WasteWaterInboundId")).findFirst().orElseThrow().getValue(), svcDto.getWasteWaterInboundId());
 
-		final PurificationStepSvcDto purificationStepSvcDto = svcDto.getPurificationSteps().getPurificationStepSvcDto().get(0);
+		final PurificationStepSvcDto purificationStepSvcDto = svcDto.getPurificationSteps().getPurificationStepSvcDto().getFirst();
 		Assertions.assertEquals(CaseUtil.parseBoolean(extraParameters.entrySet().stream().filter(e -> e.getKey().contains(prefix + "HasOverflowAlarm")).findFirst().orElseThrow().getValue()), purificationStepSvcDto.isHasOverflowAlarm());
 		Assertions.assertEquals(CaseUtil.parseLocalDateTime(extraParameters.entrySet().stream().filter(e -> e.getKey().contains(prefix + "InstallationDate")).findFirst().orElseThrow().getValue()), purificationStepSvcDto.getInstallationDate());
 		Assertions.assertEquals(CaseUtil.parseInteger(extraParameters.entrySet().stream().filter(e -> e.getKey().contains(prefix + "LifeTime")).findFirst().orElseThrow().getValue()), purificationStepSvcDto.getLifeTime());
@@ -642,7 +642,7 @@ class EcosServiceTest {
 	void testMissingFacilityAddress() {
 
 		final EnvironmentalCaseDTO eCase = TestUtil.createEnvironmentalCase(CaseType.REGISTRERING_AV_LIVSMEDEL, AttachmentCategory.ANMALAN_LIVSMEDELSANLAGGNING);
-		eCase.getFacilities().get(0).setAddress(null);
+		eCase.getFacilities().getFirst().setAddress(null);
 
 		final var result = ecosService.postCase(eCase);
 
@@ -819,7 +819,7 @@ class EcosServiceTest {
 		assertEquals(caseId, addDocumentsToCaseSvcDto.getCaseId());
 		assertEquals(Constants.ECOS_OCCURRENCE_TYPE_ID_KOMPLETTERING, addDocumentsToCaseSvcDto.getOccurrenceTypeId());
 		assertEquals(Constants.ECOS_DOCUMENT_STATUS_INKOMMEN, addDocumentsToCaseSvcDto.getDocumentStatusId());
-		final DocumentSvcDto documentSvcDto = addDocumentsToCaseSvcDto.getDocuments().getDocumentSvcDto().get(0);
+		final DocumentSvcDto documentSvcDto = addDocumentsToCaseSvcDto.getDocuments().getDocumentSvcDto().getFirst();
 		assertEquals(attachmentDTO.getName() + attachmentDTO.getExtension().toLowerCase(), documentSvcDto.getFilename());
 		assertEquals(attachmentDTO.getMimeType().toLowerCase(), documentSvcDto.getContentType());
 		assertNotNull(documentSvcDto.getData());

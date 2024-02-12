@@ -61,7 +61,7 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 				assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
 			});
 
-		caseMappingRepository.delete(caseMappingRepository.findAllByExternalCaseId("874407364").get(0));
+		caseMappingRepository.delete(caseMappingRepository.findAllByExternalCaseId("874407364").getFirst());
 	}
 
 
@@ -94,7 +94,7 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 				assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
 			});
 
-		caseMappingRepository.delete(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID).get(0));
+		caseMappingRepository.delete(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID).getFirst());
 	}
 
 
@@ -127,7 +127,7 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 				assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
 			});
 
-		caseMappingRepository.delete(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID).get(0));
+		caseMappingRepository.delete(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID).getFirst());
 
 	}
 
@@ -160,7 +160,7 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 				assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
 			});
 
-		caseMappingRepository.delete(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID).get(0));
+		caseMappingRepository.delete(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID).getFirst());
 
 	}
 
@@ -193,7 +193,7 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 				assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
 			});
 
-		caseMappingRepository.delete(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID).get(0));
+		caseMappingRepository.delete(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID).getFirst());
 
 	}
 
@@ -226,7 +226,7 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 				assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
 			});
 
-		caseMappingRepository.delete(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID).get(0));
+		caseMappingRepository.delete(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID).getFirst());
 
 	}
 
@@ -260,7 +260,7 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 				assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
 			});
 
-		caseMappingRepository.delete(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID).get(0));
+		caseMappingRepository.delete(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID).getFirst());
 
 	}
 
@@ -293,7 +293,7 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 				assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
 			});
 
-		caseMappingRepository.delete(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID).get(0));
+		caseMappingRepository.delete(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID).getFirst());
 
 	}
 
