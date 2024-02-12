@@ -97,11 +97,11 @@ class CaseMappingServiceTest {
         verify(caseMappingRepository, times(1)).findAll();
 
         assertThat(result).hasSize(2);
-        assertThat(result.get(0).getCaseId()).isEqualTo("caseId");
-        assertThat(result.get(0).getExternalCaseId()).isEqualTo("externalCaseId");
-        assertThat(result.get(0).getCaseType()).isEqualTo(CaseType.REGISTRERING_AV_LIVSMEDEL);
-        assertThat(result.get(0).getServiceName()).isEqualTo("serviceName");
-        assertThat(result.get(0).getTimestamp()).isNotNull();
+        assertThat(result.getFirst().getCaseId()).isEqualTo("caseId");
+        assertThat(result.getFirst().getExternalCaseId()).isEqualTo("externalCaseId");
+        assertThat(result.getFirst().getCaseType()).isEqualTo(CaseType.REGISTRERING_AV_LIVSMEDEL);
+        assertThat(result.getFirst().getServiceName()).isEqualTo("serviceName");
+        assertThat(result.getFirst().getTimestamp()).isNotNull();
 
         assertThat(result.get(1).getCaseId()).isEqualTo("caseId2");
         assertThat(result.get(1).getExternalCaseId()).isEqualTo("externalCaseId2");
@@ -143,7 +143,7 @@ class CaseMappingServiceTest {
         doReturn(List.of(caseMappingInput)).when(caseMappingRepository).findAllByExternalCaseIdOrCaseId(null, caseMappingInput.getCaseId());
 
         var result = caseMappingService.getCaseMapping(null, caseMappingInput.getCaseId());
-        assertEquals(caseMappingInput.getCaseId(), result.get(0).getCaseId());
+        assertEquals(caseMappingInput.getCaseId(), result.getFirst().getCaseId());
     }
 
     @Test
@@ -155,8 +155,8 @@ class CaseMappingServiceTest {
         doReturn(List.of(caseMappingInput)).when(caseMappingRepository).findAllByExternalCaseIdOrCaseId(caseMappingInput.getExternalCaseId(), caseMappingInput.getCaseId());
 
         var result = caseMappingService.getCaseMapping(caseMappingInput.getExternalCaseId(), caseMappingInput.getCaseId());
-        assertEquals(caseMappingInput.getCaseId(), result.get(0).getCaseId());
-        assertEquals(caseMappingInput.getExternalCaseId(), result.get(0).getExternalCaseId());
+        assertEquals(caseMappingInput.getCaseId(), result.getFirst().getCaseId());
+        assertEquals(caseMappingInput.getExternalCaseId(), result.getFirst().getExternalCaseId());
     }
 
     @Test

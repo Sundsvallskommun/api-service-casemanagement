@@ -118,7 +118,7 @@ class ByggrServiceTest {
     @Mock
     private FbService fbServiceMock;
     @Mock
-    private CitizenMappingService citizenMappingServiceMock;
+    private CitizenService citizenServiceMock;
     @Mock
     private CaseMappingService caseMappingServiceMock;
     @Mock
@@ -214,7 +214,7 @@ class ByggrServiceTest {
         lenient().when(caseTypeRepository.findAll()).thenReturn(setUpCaseTypes());
         TestUtil.standardMockFb(fbServiceMock);
         TestUtil.standardMockArendeExport(arendeExportClientMock);
-        TestUtil.standardMockCitizenMapping(citizenMappingServiceMock);
+        TestUtil.standardMockCitizen(citizenServiceMock);
     }
 
     //ANSOKAN_OM_BYGGLOV
@@ -231,8 +231,8 @@ class ByggrServiceTest {
         );
 
         var input = TestUtil.createPlanningPermissionCaseDTO(caseType, AttachmentCategory.ANS);
-        var inputFacility = input.getFacilities().get(0);
-        var inputAttachment = input.getAttachments().get(0);
+        var inputFacility = input.getFacilities().getFirst();
+        var inputAttachment = input.getAttachments().getFirst();
         var response = byggrService.postCase(input);
 
         assertEquals(BYGG_CASE_ID, response.getDnr());
@@ -259,7 +259,7 @@ class ByggrServiceTest {
         assertEquals(inputFacility.getAddress().getIsZoningPlanArea(), arende.isArInomplan());
 
         assertEquals("%s %s samt %s".formatted(caseTypes.get(caseType), inputFacility.getFacilityType().getDescription(), input.getCaseTitleAddition().trim().toLowerCase()), arende.getBeskrivning());
-        assertEquals(input.getStakeholders().get(0).getAddresses().get(0).getInvoiceMarking(), arende.getProjektnr());
+        assertEquals(input.getStakeholders().getFirst().getAddresses().getFirst().getInvoiceMarking(), arende.getProjektnr());
         assertNotNull(arende.getAnkomstDatum());
 
         // Intressenter
@@ -267,13 +267,13 @@ class ByggrServiceTest {
 
         // ArendeObjekt
         assertEquals(1, arende.getObjektLista().getAbstractArendeObjekt().size());
-        var arendeFastighet = (ArendeFastighet) arende.getObjektLista().getAbstractArendeObjekt().get(0);
+        var arendeFastighet = (ArendeFastighet) arende.getObjektLista().getAbstractArendeObjekt().getFirst();
         assertEquals(inputFacility.isMainFacility(), arendeFastighet.isArHuvudObjekt());
         assertEquals(FNR, arendeFastighet.getFastighet().getFnr());
 
         // Handlingar
         assertEquals(1, handlingar.getHandling().size());
-        var handling = handlingar.getHandling().get(0);
+        var handling = handlingar.getHandling().getFirst();
         assertEquals(handling.getAnteckning(), inputAttachment.getName());
         assertNotNull(handling.getDokument().getFil().getFilBuffer());
         assertEquals(inputAttachment.getExtension().toLowerCase(), handling.getDokument().getFil().getFilAndelse());
@@ -303,8 +303,8 @@ class ByggrServiceTest {
 
 
         var input = TestUtil.createPlanningPermissionCaseDTO(caseType, AttachmentCategory.ANS);
-        var inputFacility = input.getFacilities().get(0);
-        var inputAttachment = input.getAttachments().get(0);
+        var inputFacility = input.getFacilities().getFirst();
+        var inputAttachment = input.getAttachments().getFirst();
         var response = byggrService.postCase(input);
 
         assertEquals(BYGG_CASE_ID, response.getDnr());
@@ -335,7 +335,7 @@ class ByggrServiceTest {
         assertEquals(inputFacility.getAddress().getIsZoningPlanArea(), arende.isArInomplan());
 
         assertEquals("%s %s samt %s".formatted(caseTypes.get(caseType), inputFacility.getFacilityType().getDescription(), input.getCaseTitleAddition().trim().toLowerCase()), arende.getBeskrivning());
-        assertEquals(input.getStakeholders().get(0).getAddresses().get(0).getInvoiceMarking(), arende.getProjektnr());
+        assertEquals(input.getStakeholders().getFirst().getAddresses().getFirst().getInvoiceMarking(), arende.getProjektnr());
         assertNotNull(arende.getAnkomstDatum());
 
         // Intressenter
@@ -343,13 +343,13 @@ class ByggrServiceTest {
 
         // ArendeObjekt
         assertEquals(1, arende.getObjektLista().getAbstractArendeObjekt().size());
-        var arendeFastighet = (ArendeFastighet) arende.getObjektLista().getAbstractArendeObjekt().get(0);
+        var arendeFastighet = (ArendeFastighet) arende.getObjektLista().getAbstractArendeObjekt().getFirst();
         assertEquals(inputFacility.isMainFacility(), arendeFastighet.isArHuvudObjekt());
         assertEquals(FNR, arendeFastighet.getFastighet().getFnr());
 
         // Handlingar
         assertEquals(1, handlingar.getHandling().size());
-        var handling = handlingar.getHandling().get(0);
+        var handling = handlingar.getHandling().getFirst();
         assertEquals(handling.getAnteckning(), inputAttachment.getName());
         assertNotNull(handling.getDokument().getFil().getFilBuffer());
         assertEquals(inputAttachment.getExtension().toLowerCase(), handling.getDokument().getFil().getFilAndelse());
@@ -372,11 +372,11 @@ class ByggrServiceTest {
 
         PlanningPermissionCaseDTO input = TestUtil.createPlanningPermissionCaseDTO(CaseType.ANMALAN_ATTEFALL, AttachmentCategory.ANS);
         // Set facilityType to a compatible value
-        input.getFacilities().get(0).setFacilityType(FacilityType.EXTENSION);
+        input.getFacilities().getFirst().setFacilityType(FacilityType.EXTENSION);
         // Set addressCategory to not be INVOICE_ADDRESS, so we can test projektnr to be propertyDesignation
-        input.getStakeholders().get(0).getAddresses().get(0).setAddressCategories(List.of(AddressCategory.POSTAL_ADDRESS));
-        PlanningPermissionFacilityDTO inputFacility = input.getFacilities().get(0);
-        AttachmentDTO inputAttachment = input.getAttachments().get(0);
+        input.getStakeholders().getFirst().getAddresses().getFirst().setAddressCategories(List.of(AddressCategory.POSTAL_ADDRESS));
+        PlanningPermissionFacilityDTO inputFacility = input.getFacilities().getFirst();
+        AttachmentDTO inputAttachment = input.getAttachments().getFirst();
         SaveNewArendeResponse2 response = byggrService.postCase(input);
 
         assertEquals(BYGG_CASE_ID, response.getDnr());
@@ -412,13 +412,13 @@ class ByggrServiceTest {
 
         // ArendeObjekt
         assertEquals(1, arende.getObjektLista().getAbstractArendeObjekt().size());
-        ArendeFastighet arendeFastighet = (ArendeFastighet) arende.getObjektLista().getAbstractArendeObjekt().get(0);
+        ArendeFastighet arendeFastighet = (ArendeFastighet) arende.getObjektLista().getAbstractArendeObjekt().getFirst();
         assertEquals(inputFacility.isMainFacility(), arendeFastighet.isArHuvudObjekt());
         assertEquals(FNR, arendeFastighet.getFastighet().getFnr());
 
         // Handlingar
         assertEquals(1, handlingar.getHandling().size());
-        HandelseHandling handling = handlingar.getHandling().get(0);
+        HandelseHandling handling = handlingar.getHandling().getFirst();
         assertEquals(handling.getAnteckning(), inputAttachment.getName());
         assertNotNull(handling.getDokument().getFil().getFilBuffer());
         assertEquals(inputAttachment.getExtension().toLowerCase(), handling.getDokument().getFil().getFilAndelse());
@@ -442,11 +442,11 @@ class ByggrServiceTest {
         PlanningPermissionCaseDTO input = TestUtil.createPlanningPermissionCaseDTO(CaseType.ANMALAN_ELDSTAD,
             AttachmentCategory.ANS);
         // Set facilityType to a compatible value
-        input.getFacilities().get(0).setFacilityType(FacilityType.FIREPLACE);
+        input.getFacilities().getFirst().setFacilityType(FacilityType.FIREPLACE);
         // Set addressCategory to not be INVOICE_ADDRESS, so we can test projektnr to be propertyDesignation
-        input.getStakeholders().get(0).getAddresses().get(0).setAddressCategories(List.of(AddressCategory.POSTAL_ADDRESS));
-        PlanningPermissionFacilityDTO inputFacility = input.getFacilities().get(0);
-        AttachmentDTO inputAttachment = input.getAttachments().get(0);
+        input.getStakeholders().getFirst().getAddresses().getFirst().setAddressCategories(List.of(AddressCategory.POSTAL_ADDRESS));
+        PlanningPermissionFacilityDTO inputFacility = input.getFacilities().getFirst();
+        AttachmentDTO inputAttachment = input.getAttachments().getFirst();
         SaveNewArendeResponse2 response = byggrService.postCase(input);
 
         assertEquals(BYGG_CASE_ID, response.getDnr());
@@ -482,13 +482,13 @@ class ByggrServiceTest {
 
         // ArendeObjekt
         assertEquals(1, arende.getObjektLista().getAbstractArendeObjekt().size());
-        ArendeFastighet arendeFastighet = (ArendeFastighet) arende.getObjektLista().getAbstractArendeObjekt().get(0);
+        ArendeFastighet arendeFastighet = (ArendeFastighet) arende.getObjektLista().getAbstractArendeObjekt().getFirst();
         assertEquals(inputFacility.isMainFacility(), arendeFastighet.isArHuvudObjekt());
         assertEquals(FNR, arendeFastighet.getFastighet().getFnr());
 
         // Handlingar
         assertEquals(1, handlingar.getHandling().size());
-        HandelseHandling handling = handlingar.getHandling().get(0);
+        HandelseHandling handling = handlingar.getHandling().getFirst();
         assertEquals(handling.getAnteckning(), inputAttachment.getName());
         assertNotNull(handling.getDokument().getFil().getFilBuffer());
         assertEquals(inputAttachment.getExtension().toLowerCase(), handling.getDokument().getFil().getFilAndelse());
@@ -512,11 +512,11 @@ class ByggrServiceTest {
         PlanningPermissionCaseDTO input = TestUtil.createPlanningPermissionCaseDTO(CaseType.ANMALAN_ELDSTAD,
             AttachmentCategory.ANS);
         // Set facilityType to a compatible value
-        input.getFacilities().get(0).setFacilityType(FacilityType.FIREPLACE_SMOKECHANNEL);
+        input.getFacilities().getFirst().setFacilityType(FacilityType.FIREPLACE_SMOKECHANNEL);
         // Set addressCategory to not be INVOICE_ADDRESS, so we can test projektnr to be propertyDesignation
-        input.getStakeholders().get(0).getAddresses().get(0).setAddressCategories(List.of(AddressCategory.POSTAL_ADDRESS));
-        PlanningPermissionFacilityDTO inputFacility = input.getFacilities().get(0);
-        AttachmentDTO inputAttachment = input.getAttachments().get(0);
+        input.getStakeholders().getFirst().getAddresses().getFirst().setAddressCategories(List.of(AddressCategory.POSTAL_ADDRESS));
+        PlanningPermissionFacilityDTO inputFacility = input.getFacilities().getFirst();
+        AttachmentDTO inputAttachment = input.getAttachments().getFirst();
         SaveNewArendeResponse2 response = byggrService.postCase(input);
 
         assertEquals(BYGG_CASE_ID, response.getDnr());
@@ -552,13 +552,13 @@ class ByggrServiceTest {
 
         // ArendeObjekt
         assertEquals(1, arende.getObjektLista().getAbstractArendeObjekt().size());
-        ArendeFastighet arendeFastighet = (ArendeFastighet) arende.getObjektLista().getAbstractArendeObjekt().get(0);
+        ArendeFastighet arendeFastighet = (ArendeFastighet) arende.getObjektLista().getAbstractArendeObjekt().getFirst();
         assertEquals(inputFacility.isMainFacility(), arendeFastighet.isArHuvudObjekt());
         assertEquals(FNR, arendeFastighet.getFastighet().getFnr());
 
         // Handlingar
         assertEquals(1, handlingar.getHandling().size());
-        HandelseHandling handling = handlingar.getHandling().get(0);
+        HandelseHandling handling = handlingar.getHandling().getFirst();
         assertEquals(handling.getAnteckning(), inputAttachment.getName());
         assertNotNull(handling.getDokument().getFil().getFilBuffer());
         assertEquals(inputAttachment.getExtension().toLowerCase(), handling.getDokument().getFil().getFilAndelse());
@@ -624,7 +624,7 @@ class ByggrServiceTest {
     void testGetMainOrTheOnlyFacility() {
         PlanningPermissionCaseDTO input = TestUtil.createPlanningPermissionCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.ANS);
         // Set addressCategory to not be INVOICE_ADDRESS, so we can test projektnr to be propertyDesignation
-        input.getStakeholders().get(0).getAddresses().get(0).setAddressCategories(List.of(AddressCategory.POSTAL_ADDRESS));
+        input.getStakeholders().getFirst().getAddresses().getFirst().setAddressCategories(List.of(AddressCategory.POSTAL_ADDRESS));
 
         var mainFacility = TestUtil.createPlanningPermissionFacilityDTO(true);
         var randomFacility_1 = TestUtil.createPlanningPermissionFacilityDTO(false);
@@ -683,7 +683,7 @@ class ByggrServiceTest {
         assertEquals(1, intressenter.size());
         var applicants = intressenter.stream().filter(intressent -> intressent.getRollLista().getRoll().contains(StakeholderRole.APPLICANT.getText())).toList();
         assertEquals(1, applicants.size());
-        assertPersonDTO(applicant, applicants.get(0));
+        assertPersonDTO(applicant, applicants.getFirst());
     }
 
     @Test
@@ -703,7 +703,7 @@ class ByggrServiceTest {
         assertEquals(1, intressenter.size());
         var applicants = intressenter.stream().filter(intressent -> intressent.getRollLista().getRoll().contains(StakeholderRole.APPLICANT.getText())).toList();
         assertEquals(1, applicants.size());
-        assertOrganizationDTO(applicant, applicants.get(0));
+        assertOrganizationDTO(applicant, applicants.getFirst());
     }
 
     // 1 applicant and 1 propertyOwner
@@ -730,11 +730,11 @@ class ByggrServiceTest {
 
         var propertyOwners = intressenter.stream().filter(intressent -> intressent.getRollLista().getRoll().contains(StakeholderRole.PROPERTY_OWNER.getText())).toList();
         assertEquals(1, propertyOwners.size());
-        assertPersonDTO(propertyOwner, propertyOwners.get(0));
+        assertPersonDTO(propertyOwner, propertyOwners.getFirst());
 
         var applicants = intressenter.stream().filter(intressent -> intressent.getRollLista().getRoll().contains(StakeholderRole.APPLICANT.getText())).toList();
         assertEquals(1, applicants.size());
-        assertPersonDTO(applicant, applicants.get(0));
+        assertPersonDTO(applicant, applicants.getFirst());
     }
 
     // same as testPopulateStakeholderListWithPropertyOwners_1 but for organization
@@ -761,11 +761,11 @@ class ByggrServiceTest {
 
         var propertyOwners = intressenter.stream().filter(intressent -> intressent.getRollLista().getRoll().contains(StakeholderRole.PROPERTY_OWNER.getText())).toList();
         assertEquals(1, propertyOwners.size());
-        assertOrganizationDTO(propertyOwner, propertyOwners.get(0));
+        assertOrganizationDTO(propertyOwner, propertyOwners.getFirst());
 
         var applicants = intressenter.stream().filter(intressent -> intressent.getRollLista().getRoll().contains(StakeholderRole.APPLICANT.getText())).toList();
         assertEquals(1, applicants.size());
-        assertOrganizationDTO(applicant, applicants.get(0));
+        assertOrganizationDTO(applicant, applicants.getFirst());
     }
 
     // 1 applicant that is also propertyOwner + 1 more propertyOwner
@@ -956,7 +956,7 @@ class ByggrServiceTest {
         // Let's go
         var getStatusResult = byggrService.getByggrStatus(caseId, externalCaseID);
 
-        assertCaseStatus(caseId, externalCaseID, caseMappingList.get(0).getCaseType(), caseMappingList.get(0).getServiceName(), handelse_2.getHandelseslag(), handelse_2.getStartDatum(), getStatusResult);
+        assertCaseStatus(caseId, externalCaseID, caseMappingList.getFirst().getCaseType(), caseMappingList.getFirst().getServiceName(), handelse_2.getHandelseslag(), handelse_2.getStartDatum(), getStatusResult);
 
         ArgumentCaptor<GetArende> getArendeRequestCaptor = ArgumentCaptor.forClass(GetArende.class);
         verify(arendeExportClientMock, times(1)).getArende(getArendeRequestCaptor.capture());
@@ -1030,8 +1030,8 @@ class ByggrServiceTest {
         var getStatusResult = byggrService.getByggrStatusByOrgNr(orgnr);
 
         assertEquals(2, getStatusResult.size());
-        assertCaseStatus(caseId_1, externalCaseID_1, caseMappingList_1.get(0).getCaseType(), caseMappingList_1.get(0).getServiceName(), handelse_2.getHandelseslag(), handelse_2.getStartDatum(), getStatusResult.get(0));
-        assertCaseStatus(caseId_2, externalCaseID_2, caseMappingList_2.get(0).getCaseType(), caseMappingList_2.get(0).getServiceName(), handelse_2_1.getHandelseslag(), handelse_2_1.getStartDatum(), getStatusResult.get(1));
+        assertCaseStatus(caseId_1, externalCaseID_1, caseMappingList_1.getFirst().getCaseType(), caseMappingList_1.getFirst().getServiceName(), handelse_2.getHandelseslag(), handelse_2.getStartDatum(), getStatusResult.getFirst());
+        assertCaseStatus(caseId_2, externalCaseID_2, caseMappingList_2.getFirst().getCaseType(), caseMappingList_2.getFirst().getServiceName(), handelse_2_1.getHandelseslag(), handelse_2_1.getStartDatum(), getStatusResult.get(1));
 
         ArgumentCaptor<GetRelateradeArendenByPersOrgNrAndRole> getRelateradeArendenByPersOrgNrAndRoleRequestCaptor = ArgumentCaptor.forClass(GetRelateradeArendenByPersOrgNrAndRole.class);
         verify(arendeExportClientMock, times(1)).getRelateradeArendenByPersOrgNrAndRole(getRelateradeArendenByPersOrgNrAndRoleRequestCaptor.capture());

@@ -70,7 +70,7 @@ public class RiskClassService {
 	}
 
 	public void updateRiskClass(final EnvironmentalCaseDTO caseInput, final String caseId) {
-		final var facilityId = searchFacility(extractOrgNr(caseInput), caseInput.getFacilities().get(0).getFacilityCollectionName());
+		final var facilityId = searchFacility(extractOrgNr(caseInput), caseInput.getFacilities().getFirst().getFacilityCollectionName());
 		addFacilityToCase(facilityId, caseId);
 		final var data = createSaveRiskClassObject(facilityId, caseId, caseInput);
 		minutMiljoClient.updateRiskClass(data);

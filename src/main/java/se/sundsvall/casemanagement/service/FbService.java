@@ -63,7 +63,7 @@ public class FbService {
 			if ((fnrResponse != null)
 				&& CaseUtil.notNullOrEmpty(fnrResponse.getData())) {
 
-				propertyInfo.setFnr(fnrResponse.getData().get(0).getFnr());
+				propertyInfo.setFnr(fnrResponse.getData().getFirst().getFnr());
 
 				final ResponseDto addressResponse = fbClient.getAddressInfoByUuid(
 					List.of(registerbeteckningsreferens.getRegisterenhet()),
@@ -73,8 +73,8 @@ public class FbService {
 
 				if ((addressResponse != null)
 					&& CaseUtil.notNullOrEmpty(addressResponse.getData())
-					&& CaseUtil.notNullOrEmpty(addressResponse.getData().get(0).getGrupp())) {
-					propertyInfo.setAdressplatsId(addressResponse.getData().get(0).getGrupp().get(0).getAdressplatsId());
+					&& CaseUtil.notNullOrEmpty(addressResponse.getData().getFirst().getGrupp())) {
+					propertyInfo.setAdressplatsId(addressResponse.getData().getFirst().getGrupp().getFirst().getAdressplatsId());
 				}
 
 				if (propertyInfo.getFnr() != null) {
@@ -106,9 +106,9 @@ public class FbService {
 
 		if ((lagfarenAgareResponse != null)
 			&& CaseUtil.notNullOrEmpty(lagfarenAgareResponse.getData())
-			&& CaseUtil.notNullOrEmpty(lagfarenAgareResponse.getData().get(0).getGrupp())) {
+			&& CaseUtil.notNullOrEmpty(lagfarenAgareResponse.getData().getFirst().getGrupp())) {
 
-			final List<String> uuidList = lagfarenAgareResponse.getData().get(0).getGrupp().stream().map(GruppItem::getUuid).toList();
+			final List<String> uuidList = lagfarenAgareResponse.getData().getFirst().getGrupp().stream().map(GruppItem::getUuid).toList();
 
 			if (CaseUtil.notNullOrEmpty(uuidList)) {
 				final ResponseDto agareInfoResponse = fbClient.getPropertyOwnerInfoByUuid(uuidList,
@@ -164,7 +164,7 @@ public class FbService {
 			&& CaseUtil.notNullOrEmpty(response.getData())) {
 			final AddressDTO addressDTO = new AddressDTO();
 
-			final DataItem dataItem = response.getData().get(0);
+			final DataItem dataItem = response.getData().getFirst();
 
 			addressDTO.setAddressCategories(List.of(AddressCategory.POSTAL_ADDRESS));
 			addressDTO.setCountry(dataItem.getLand() != null ? dataItem.getLand() : Constants.SWEDEN);

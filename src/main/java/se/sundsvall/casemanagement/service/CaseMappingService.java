@@ -40,7 +40,7 @@ public class CaseMappingService {
 		if (caseMappingList.size() > 1) {
 			throw Problem.valueOf(NOT_FOUND, MessageFormat.format("More than one case was found with the same externalCaseId: \"{0}\". This should not be possible.", externalCaseId));
 		} else {
-			return caseMappingList.get(0);
+			return caseMappingList.getFirst();
 		}
 	}
 

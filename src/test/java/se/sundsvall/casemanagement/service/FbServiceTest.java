@@ -72,7 +72,7 @@ class FbServiceTest {
 
 		final ResponseDto getPropertyOwnerAddressByPersOrgNrMockResponse = new ResponseDto();
 		final DataItem dataItem = new DataItem();
-		final AddressDTO personDTOMockAddressDTO = personDTOMock.getAddresses().get(0);
+		final AddressDTO personDTOMockAddressDTO = personDTOMock.getAddresses().getFirst();
 		dataItem.setUtdelningsadress1(personDTOMockAddressDTO.getStreet());
 		dataItem.setLand(personDTOMockAddressDTO.getCountry());
 		dataItem.setPostort(personDTOMockAddressDTO.getCity());
@@ -84,13 +84,13 @@ class FbServiceTest {
 		final var result = fbService.getPropertyOwnerByPropertyDesignation(propertyDesignation);
 		assertEquals(1, result.size());
 
-		final PersonDTO personResult = (PersonDTO) result.get(0);
+		final PersonDTO personResult = (PersonDTO) result.getFirst();
 		assertEquals(personDTOMock.getPersonalNumber(), personResult.getPersonalNumber());
 		assertEquals(personDTOMock.getFirstName(), personResult.getFirstName());
 		assertEquals(personDTOMock.getLastName(), personResult.getLastName());
 		assertEquals(1, personResult.getAddresses().size());
-		final AddressDTO addressDTO = personResult.getAddresses().get(0);
-		assertEquals(AddressCategory.POSTAL_ADDRESS, addressDTO.getAddressCategories().get(0));
+		final AddressDTO addressDTO = personResult.getAddresses().getFirst();
+		assertEquals(AddressCategory.POSTAL_ADDRESS, addressDTO.getAddressCategories().getFirst());
 		assertEquals(personDTOMockAddressDTO.getStreet(), addressDTO.getStreet());
 		assertEquals(personDTOMockAddressDTO.getCountry(), addressDTO.getCountry());
 		assertEquals(personDTOMockAddressDTO.getCity(), addressDTO.getCity());
@@ -108,13 +108,13 @@ class FbServiceTest {
 
 		final ResponseDto getPropertyInfoByUuidMockResponse = new ResponseDto();
 		getPropertyInfoByUuidMockResponse.setData(List.of(new DataItem()));
-		getPropertyInfoByUuidMockResponse.getData().get(0).setFnr(FNR);
+		getPropertyInfoByUuidMockResponse.getData().getFirst().setFnr(FNR);
 		doReturn(getPropertyInfoByUuidMockResponse).when(fbClientMock).getPropertyInfoByUuid(any(), any(), any(), any());
 
 		final ResponseDto getAddressInfoByUuidMockResponse = new ResponseDto();
 		getAddressInfoByUuidMockResponse.setData(List.of(new DataItem()));
-		getAddressInfoByUuidMockResponse.getData().get(0).setGrupp(List.of(new GruppItem()));
-		getAddressInfoByUuidMockResponse.getData().get(0).getGrupp().get(0).setAdressplatsId(ADRESSPLATS_ID);
+		getAddressInfoByUuidMockResponse.getData().getFirst().setGrupp(List.of(new GruppItem()));
+		getAddressInfoByUuidMockResponse.getData().getFirst().getGrupp().getFirst().setAdressplatsId(ADRESSPLATS_ID);
 		doReturn(getAddressInfoByUuidMockResponse).when(fbClientMock).getAddressInfoByUuid(any(), any(), any(), any());
 
 	}

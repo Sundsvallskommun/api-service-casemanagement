@@ -45,7 +45,7 @@ import se.sundsvall.casemanagement.integration.db.CaseTypeRepository;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.integration.db.model.CaseTypeData;
 import se.sundsvall.casemanagement.service.CaseMappingService;
-import se.sundsvall.casemanagement.service.CitizenMappingService;
+import se.sundsvall.casemanagement.service.CitizenService;
 import se.sundsvall.casemanagement.service.FbService;
 import se.sundsvall.casemanagement.util.CaseUtil;
 import se.sundsvall.casemanagement.util.Constants;
@@ -83,15 +83,15 @@ public class ByggrService {
 
     private static final Logger log = LoggerFactory.getLogger(ByggrService.class);
     private final FbService fbService;
-    private final CitizenMappingService citizenMappingService;
+    private final CitizenService citizenService;
     private final CaseMappingService caseMappingService;
     private final ArendeExportClient arendeExportClient;
     private final Map<String, CaseTypeData> caseTypeMap = new HashMap<>();
     private final CaseTypeRepository caseTypeRepository;
 
-    public ByggrService(FbService fbService, CitizenMappingService citizenMappingService, CaseMappingService caseMappingService, ArendeExportClient arendeExportClient, CaseTypeRepository caseTypeRepository) {
+    public ByggrService(FbService fbService, CitizenService citizenService, CaseMappingService caseMappingService, ArendeExportClient arendeExportClient, CaseTypeRepository caseTypeRepository) {
         this.fbService = fbService;
-        this.citizenMappingService = citizenMappingService;
+        this.citizenService = citizenService;
         this.caseMappingService = caseMappingService;
         this.arendeExportClient = arendeExportClient;
         this.caseTypeRepository = caseTypeRepository;
@@ -188,13 +188,13 @@ public class ByggrService {
             .withHandelsetyp(caseType.getHandelseTyp())
             .withHandelseslag(caseType.getHandelseSlag());
 
-        if (dto.getFacilities().get(0).getFacilityType() != null) {
+        if (dto.getFacilities().getFirst().getFacilityType() != null) {
 
-            if (FIREPLACE.equals(dto.getFacilities().get(0).getFacilityType())) {
+            if (FIREPLACE.equals(dto.getFacilities().getFirst().getFacilityType())) {
                 handelse
                     .withRubrik(Constants.BYGGR_HANDELSE_RUBRIK_ELDSTAD)
                     .withHandelseslag(Constants.BYGGR_HANDELSESLAG_ELDSTAD);
-            } else if (FIREPLACE_SMOKECHANNEL.equals(dto.getFacilities().get(0).getFacilityType())) {
+            } else if (FIREPLACE_SMOKECHANNEL.equals(dto.getFacilities().getFirst().getFacilityType())) {
                 handelse
                     .withRubrik(Constants.BYGGR_HANDELSE_RUBRIK_ELDSTAD_ROKKANAL)
                     .withHandelseslag(Constants.BYGGR_HANDELSESLAG_ELDSTAD_ROKKANAL);
@@ -280,7 +280,7 @@ public class ByggrService {
         final var caseType = caseTypeMap.get(pCase.getCaseType().getValue());
         final var arende = new Arende2();
 
-        if ((pCase.getFacilities() == null) || (pCase.getFacilities().get(0) == null)) {
+        if ((pCase.getFacilities() == null) || (pCase.getFacilities().getFirst() == null)) {
             arende.withArendeslag(caseType.getArendeSlag());
 
         } else if (caseType.getArendeSlag() != null) {
@@ -403,7 +403,7 @@ public class ByggrService {
         return facilityList.stream()
             .filter(facility -> FacilityType.USAGE_CHANGE.equals(facility.getFacilityType()))
             .findFirst()
-            .orElse(facilityList.get(0))
+            .orElse(facilityList.getFirst())
             .getFacilityType()
             .getValue();
     }
@@ -411,12 +411,12 @@ public class ByggrService {
     private PlanningPermissionFacilityDTO getMainOrTheOnlyFacility(List<PlanningPermissionFacilityDTO> facilityList) {
         if (facilityList.size() == 1) {
             // The list only contains one facility, return it.
-            return facilityList.get(0);
+            return facilityList.getFirst();
         }
 
         // If the list contains more than one facility and mainFacility exists, return it.
         // If the list doesn't contain a mainFacility, return null.
-        return facilityList.stream().anyMatch(PlanningPermissionFacilityDTO::isMainFacility) ? facilityList.stream().filter(PlanningPermissionFacilityDTO::isMainFacility).toList().get(0) : null;
+        return facilityList.stream().anyMatch(PlanningPermissionFacilityDTO::isMainFacility) ? facilityList.stream().filter(PlanningPermissionFacilityDTO::isMainFacility).toList().getFirst() : null;
     }
 
     private ArrayOfAbstractArendeObjekt2 getByggrArendeObjektLista(PlanningPermissionCaseDTO pCase) {
@@ -519,7 +519,7 @@ public class ByggrService {
 
         // Populate personalNumber for every person
         for (final PersonDTO personDTOStakeholder : personDTOStakeholders) {
-            String pnr = citizenMappingService.getPersonalNumber(personDTOStakeholder.getPersonId());
+            String pnr = citizenService.getPersonalNumber(personDTOStakeholder.getPersonId());
             if ((pnr != null) && (pnr.length() == 12)) {
                 pnr = pnr.substring(0, 8) + "-" + pnr.substring(8);
             }
@@ -701,8 +701,8 @@ public class ByggrService {
         caseStatusDTO.setExternalCaseId(externalCaseId);
         caseStatusDTO.setCaseId(arende.getDnr());
         final List<CaseMapping> caseMappingList = caseMappingService.getCaseMapping(externalCaseId, arende.getDnr());
-        caseStatusDTO.setCaseType(caseMappingList.isEmpty() ? null : caseMappingList.get(0).getCaseType());
-        caseStatusDTO.setServiceName(caseMappingList.isEmpty() ? null : caseMappingList.get(0).getServiceName());
+        caseStatusDTO.setCaseType(caseMappingList.isEmpty() ? null : caseMappingList.getFirst().getCaseType());
+        caseStatusDTO.setServiceName(caseMappingList.isEmpty() ? null : caseMappingList.getFirst().getServiceName());
 
         // OEP-status = Ärendet arkiveras
         if ((arende.getStatus() != null) && Constants.BYGGR_STATUS_AVSLUTAT.equals(arende.getStatus())) {
@@ -810,7 +810,7 @@ public class ByggrService {
 
             arrayOfByggrArende.getArende().forEach(byggrArende -> {
                 final List<CaseMapping> caseMappingList = caseMappingService.getCaseMapping(null, byggrArende.getDnr());
-                final CaseStatusDTO status = getByggrStatus(byggrArende, caseMappingList.isEmpty() ? null : caseMappingList.get(0).getExternalCaseId());
+                final CaseStatusDTO status = getByggrStatus(byggrArende, caseMappingList.isEmpty() ? null : caseMappingList.getFirst().getExternalCaseId());
                 caseStatusDTOList.add(status);
             });
         }

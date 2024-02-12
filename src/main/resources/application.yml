@@ -8,7 +8,7 @@ integration:
     oauth2ClientSecret: override
     oauth2TokenUrl: override
     url: override
-  citizen-mapping:
+  citizen:
     oauth2ClientId: override
     oauth2ClientSecret: override
     oauth2TokenUrl: override
