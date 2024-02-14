@@ -1,5 +1,19 @@
 package se.sundsvall.casemanagement.api.model;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+import se.sundsvall.casemanagement.api.model.enums.CaseType;
+
+import java.util.List;
+import java.util.Map;
+
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANDRING_ANSOKAN_OM_BYGGLOV;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANDRING_BARANDE_KONSTRUKTION;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANDRING_BRANDSKYDD;
@@ -26,19 +40,22 @@ import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MARKLOV
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MARKLOV_SCHAKTNING;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MARKLOV_TRADFALLNING;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_APPLICATION_FOR_ROAD_ALLOWANCE;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_APPLICATION_FOR_ROAD_ALLOWANCE_CITY_GRANT;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_APPLICATION_SQUARE_PLACE;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_BUY_INDUSTRIAL_LAND;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_BUY_LAND_FROM_THE_MUNICIPALITY;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_BUY_SMALL_HOUSE_PLOT;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_EXCAVATION_PERMIT_STATEMENT;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_LAND_GRANT;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_EARLY_DIALOG_PLAN_NOTIFICATION;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_INVOICE;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_LAND_INSTRUCTION;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_LAND_RIGHT;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_LAND_SURVEYING_OFFICE;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_LEASE_REQUEST;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_LEASE_TERMINATION;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_OTHER;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_PROTECTIVE_HUNTING;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_REFERRAL_BUILDING_PERMIT_EARLY_DIALOUGE_PLANNING_NOTICE;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_REQUEST_FOR_PUBLIC_DOCUMENT;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_SELL_LAND_TO_THE_MUNICIPALITY;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_TERMINATION_OF_HUNTING_RIGHTS;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_TERMINATION_OF_HUNTING_LEASE;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_TERMINATION_OF_LEASE;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_UNAUTHORIZED_RESIDENCE;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.NYBYGGNAD_ANSOKAN_OM_BYGGLOV;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.NYBYGGNAD_FORHANDSBESKED;
@@ -54,22 +71,7 @@ import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.TILLBYG
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.UPPDATERING_RISKKLASSNING;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.UPPSATTANDE_SKYLT;
 
-import java.util.List;
-import java.util.Map;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-
-import se.sundsvall.casemanagement.api.model.enums.CaseType;
-
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "caseType", include = JsonTypeInfo.As.EXISTING_PROPERTY, visible = true)
 @JsonSubTypes({
@@ -116,21 +118,24 @@ import lombok.Data;
 		PARKING_PERMIT,
 		LOST_PARKING_PERMIT,
 		PARKING_PERMIT_RENEWAL,
-		MEX_APPLICATION_SQUARE_PLACE,
-		MEX_APPLICATION_FOR_ROAD_ALLOWANCE,
-		MEX_APPLICATION_FOR_ROAD_ALLOWANCE_CITY_GRANT,
-		MEX_LAND_SURVEYING_OFFICE,
 		MEX_LEASE_REQUEST,
-		MEX_BUY_INDUSTRIAL_LAND,
 		MEX_BUY_LAND_FROM_THE_MUNICIPALITY,
-		MEX_BUY_SMALL_HOUSE_PLOT,
-		MEX_LAND_GRANT,
-		MEX_UNAUTHORIZED_RESIDENCE,
-		MEX_PROTECTIVE_HUNTING,
 		MEX_SELL_LAND_TO_THE_MUNICIPALITY,
-		MEX_LEASE_TERMINATION,
-		MEX_TERMINATION_OF_HUNTING_RIGHTS,
-		MEX_EXCAVATION_PERMIT_STATEMENT
+		MEX_APPLICATION_SQUARE_PLACE,
+		MEX_BUY_SMALL_HOUSE_PLOT,
+		MEX_APPLICATION_FOR_ROAD_ALLOWANCE,
+		MEX_UNAUTHORIZED_RESIDENCE,
+		MEX_LAND_RIGHT,
+		MEX_EARLY_DIALOG_PLAN_NOTIFICATION,
+		MEX_PROTECTIVE_HUNTING,
+		MEX_LAND_INSTRUCTION,
+		MEX_OTHER,
+		MEX_LAND_SURVEYING_OFFICE,
+		MEX_REFERRAL_BUILDING_PERMIT_EARLY_DIALOUGE_PLANNING_NOTICE,
+		MEX_INVOICE,
+		MEX_REQUEST_FOR_PUBLIC_DOCUMENT,
+		MEX_TERMINATION_OF_LEASE,
+		MEX_TERMINATION_OF_HUNTING_LEASE
 	})})
 @Data
 public abstract class CaseDTO {
