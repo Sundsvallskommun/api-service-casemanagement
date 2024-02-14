@@ -16,7 +16,6 @@
 	<properties>
 		<!-- Jenkins pipeline -->
 		<docker.image.name>ms-casemanagementservice</docker.image.name>
-		<exposed.app.port>9090</exposed.app.port>
 		<app.jvm.xmx.mb>1024</app.jvm.xmx.mb>
 		<published.container.port.test>8715</published.container.port.test>
 		<published.container.port.production>8715</published.container.port.production>

@@ -78,8 +78,6 @@ resilience4j:
         ignoreExceptions: se.sundsvall.dept44.exception.ClientProblem
       minutmiljoV2:
         ignoreExceptions: se.sundsvall.dept44.exception.ClientProblem
-server:
-  port: 9090
 spring:
   application:
     name: ms-casemanagementservice
