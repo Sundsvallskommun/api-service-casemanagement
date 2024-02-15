@@ -11,7 +11,7 @@
 	</parent>
 	<groupId>se.sundsvall</groupId>
 	<artifactId>api-service-casemanagement</artifactId>
-	<version>3.6</version>
+	<version>4.0</version>
 	<name>api-service-casemanagement</name>
 	<properties>
 		<!-- Jenkins pipeline -->
