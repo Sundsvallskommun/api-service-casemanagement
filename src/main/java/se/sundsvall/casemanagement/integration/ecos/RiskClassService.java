@@ -1,5 +1,9 @@
 package se.sundsvall.casemanagement.integration.ecos;
 
+import static se.sundsvall.casemanagement.integration.ecos.RiskClassMapper.mapActivities;
+import static se.sundsvall.casemanagement.integration.ecos.RiskClassMapper.mapProductGroups;
+import static se.sundsvall.casemanagement.integration.ecos.RiskClassMapper.mapThirdPartyCertifications;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -41,9 +45,7 @@ public class RiskClassService {
 
 	private static final String SEASONAL_NOTE = "seasonalNote";
 
-	//Since there is too many activities for one extra parameter (on the openE side)
-	// we need to split it up in different extra parameters.
-	private static final List<String> ACTIVITIES = List.of("activities", "activities2", "activities3", "activities4");
+	private static final String ACTIVITIES = "activities";
 
 	private static final String PRODUCT_GROUPS = "productGroups";
 
@@ -89,28 +91,10 @@ public class RiskClassService {
 	}
 
 	private String searchFacility(final String orgNr, final String facilityName) {
-
-
-		final var facilityTypeFilter = new FacilityFacilityTypeIdsFilterSvcDto()
-			.withFacilityTypeIds(FACILITY_TYPE_ID);
-
-		final var facilityStatusFilter =
-			new FacilityFacilityStatusIdsFilterSvcDto()
-				.withFacilityStatusIds(new ArrayOfguid().withGuid(
-					FACILITY_STATUS_ID_APPLIED,
-					FACILITY_STATUS_ID_INACTIVE,
-					FACILITY_STATUS_ID_ACTIVE,
-					FACILITY_STATUS_ID_GRANTED
-				));
-
-		final var notFacilityStatusFilters = new FacilityNotFilterSvcDto()
-			.withFilter(new FacilityFacilityStatusIdsFilterSvcDto()
-				.withFacilityStatusIds(new ArrayOfguid()
-					.withGuid(List.of(FACILITY_STATUS_ID_REVOKED,
-						FACILITY_STATUS_ID_DISCARDED))));
-
-		final var orgFilter = new FacilityPartyOrganizationNumberFilterSvcDto()
-			.withOrganizationNumber(orgNr);
+		final var facilityTypeFilter = createFacilityTypeFilter();
+		final var facilityStatusFilter = createFacilityStatusFilter();
+		final var notFacilityStatusFilters = createNotFacilityStatusFilters();
+		final var orgFilter = createOrgFilter(orgNr);
 
 		final var result = Optional.ofNullable(minutMiljoClient
 				.searchFacility(new SearchFacility().withSearchFacilitySvcDto(new SearchFacilitySvcDto()
@@ -128,6 +112,32 @@ public class RiskClassService {
 				("Could not match facilityName: %s to a facility belonging to organization with organizationNumber: %s")
 					.formatted(facilityName, orgNr)))
 			.getFacilityId();
+	}
+
+	private FacilityFacilityTypeIdsFilterSvcDto createFacilityTypeFilter() {
+		return new FacilityFacilityTypeIdsFilterSvcDto()
+			.withFacilityTypeIds(FACILITY_TYPE_ID);
+	}
+
+	private FacilityFacilityStatusIdsFilterSvcDto createFacilityStatusFilter() {
+		return new FacilityFacilityStatusIdsFilterSvcDto()
+			.withFacilityStatusIds(new ArrayOfguid().withGuid(FACILITY_STATUS_ID_APPLIED,
+				FACILITY_STATUS_ID_INACTIVE,
+				FACILITY_STATUS_ID_ACTIVE,
+				FACILITY_STATUS_ID_GRANTED));
+	}
+
+	private FacilityNotFilterSvcDto createNotFacilityStatusFilters() {
+		return new FacilityNotFilterSvcDto()
+			.withFilter(new FacilityFacilityStatusIdsFilterSvcDto()
+				.withFacilityStatusIds(new ArrayOfguid()
+					.withGuid(List.of(FACILITY_STATUS_ID_REVOKED,
+						FACILITY_STATUS_ID_DISCARDED))));
+	}
+
+	private FacilityPartyOrganizationNumberFilterSvcDto createOrgFilter(final String orgNr) {
+		return new FacilityPartyOrganizationNumberFilterSvcDto()
+			.withOrganizationNumber(orgNr);
 	}
 
 	private void addFacilityToCase(final String facilityId, final String caseId) {
@@ -148,66 +158,11 @@ public class RiskClassService {
 				.withProductionSizeSlvCode(dto.getExtraParameters().get(PROD_SIZE_ID))
 				.withIsSeasonal("true".equalsIgnoreCase(Optional.ofNullable(dto.getExtraParameters().get(IS_SEASONAL)).orElse("")))
 				.withSeasonalNote(dto.getExtraParameters().get(SEASONAL_NOTE))
-				.withActivities(mapActivities(dto))
+				.withActivities(mapActivities(dto.getExtraParameters().get(ACTIVITIES)))
 				.withProductGroups(mapProductGroups(dto.getExtraParameters().get(PRODUCT_GROUPS)))
 				.withThirdPartyCertifications(mapThirdPartyCertifications(dto.getExtraParameters().get(THIRD_PARTY_CERTS))));
 	}
 
-	private ArrayOfSaveRiskClass2024ActivityDto mapActivities(final EnvironmentalCaseDTO dto) {
-		final StringBuilder activityString = new StringBuilder();
 
-		for (final var activityParam : ACTIVITIES) {
-
-			activityString.append(Optional.ofNullable(dto.getExtraParameters().get(activityParam)).orElse(" ")).append(
-				",");
-		}
-
-		if (activityString.isEmpty()) {
-			return null;
-		}
-		final var activities = splitString(activityString.toString());
-
-		return new ArrayOfSaveRiskClass2024ActivityDto()
-			.withSaveRiskClass2024ActivityDto(activities.stream()
-				.map(activitySlv -> new SaveRiskClass2024ActivityDto()
-					.withSlvCode(activitySlv))
-				.filter(activityDto -> !activityDto.getSlvCode().isEmpty())
-				.toList());
-	}
-
-	private ArrayOfSaveRiskClass2024ProductGroupDto mapProductGroups(final String productGroupIdString) {
-		if (productGroupIdString == null) {
-			return null;
-		}
-
-		final var productGroupIds = splitString(productGroupIdString);
-
-		if (productGroupIds.getFirst().isEmpty()) {
-			return null;
-		}
-		return new ArrayOfSaveRiskClass2024ProductGroupDto()
-			.withSaveRiskClass2024ProductGroupDto(productGroupIds.stream()
-				.map(productGroupId -> new SaveRiskClass2024ProductGroupDto()
-					.withSlvCode(productGroupId))
-				.toList());
-	}
-
-	private ArrayOfSaveRiskClass2024CertificationDto mapThirdPartyCertifications(final String thirdPartyCertString) {
-		if (thirdPartyCertString == null) {
-			return new ArrayOfSaveRiskClass2024CertificationDto().withSaveRiskClass2024CertificationDto(new SaveRiskClass2024CertificationDto());
-		}
-		final var dtos = splitString(thirdPartyCertString);
-
-		return new ArrayOfSaveRiskClass2024CertificationDto()
-			.withSaveRiskClass2024CertificationDto(
-				dtos.stream()
-					.map(dto -> new SaveRiskClass2024CertificationDto()
-						.withThirdPartyCertificationText(dto))
-					.toList());
-	}
-
-	private List<String> splitString(final String string) {
-		return Arrays.asList(string.split("(,+\\s?)"));
-	}
 
 }
