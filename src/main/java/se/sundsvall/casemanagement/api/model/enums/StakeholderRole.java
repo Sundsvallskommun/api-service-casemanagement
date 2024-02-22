@@ -1,6 +1,7 @@
 package se.sundsvall.casemanagement.api.model.enums;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Getter;
 
 @Schema(description = "<h3>General roles:</h3>" +
         "<li>APPLICANT(Sökande)</li>"+
@@ -15,6 +16,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
         "<li>INVOICE_RECIPENT(Fakturamottagare)</li>" +
         "<li>OPERATOR(Verksamhetsutövare)</li>" +
         "<li>INSTALLER(Installatör)</li>")
+@Getter
 public enum StakeholderRole {
 
     ////////// ByggR //////////
@@ -36,7 +38,6 @@ public enum StakeholderRole {
     // Kontaktperson
     CONTACT_PERSON("KPER"),
 
-
     ///////////////////////////////////
     // Parking permit
     ///////////////////////////////////
@@ -44,7 +45,16 @@ public enum StakeholderRole {
     FELLOW_APPLICANT("Medsökande"),
     DRIVER("Förare"),
     PASSENGER("Passagerare"),
-    DOCTOR("Läkare");
+    DOCTOR("Läkare"),
+
+    GRANTOR("Upplåtare"),
+    SELLER("Säljare"),
+    BUYER("Köpare"),
+    LEASEHOLDER("Arrendator"),
+    COMPANY_SIGNATORY("Firmatecknare"),
+    ASSOCIATION_REPRESENTATIVE("Föreningsrepresentant"),
+    CASHIER("Kassör"),
+    CHAIRMAN("Ordförande");
 
     private final String text;
 
@@ -52,7 +62,4 @@ public enum StakeholderRole {
         this.text = text;
     }
 
-    public String getText() {
-        return text;
-    }
 }
