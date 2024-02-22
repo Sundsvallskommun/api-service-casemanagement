@@ -7,30 +7,30 @@ info:
     url: https://opensource.org/licenses/MIT
   version: "5.0"
 servers:
-  - url: http://localhost:56756
-    description: Generated server url
+- url: http://localhost:8080
+  description: Generated server url
 tags:
-  - name: Status
-    description: Status operations
-  - name: CaseMappings
-    description: CaseMapping operations
-  - name: Attachments
-    description: Attachment operations
-  - name: Cases
-    description: Cases operations
+- name: Status
+  description: Status operations
+- name: CaseMappings
+  description: CaseMapping operations
+- name: Attachments
+  description: Attachment operations
+- name: Cases
+  description: Cases operations
 paths:
   /cases/{externalCaseId}:
     put:
       tags:
-        - Cases
+      - Cases
       description: Update a case. Only available for cases created in CaseData.
       operationId: putCase
       parameters:
-        - name: externalCaseId
-          in: path
-          required: true
-          schema:
-            type: string
+      - name: externalCaseId
+        in: path
+        required: true
+        schema:
+          type: string
       requestBody:
         content:
           application/json:
@@ -39,43 +39,37 @@ paths:
                 externalCaseId: e19981ad-34b2-4e14-88f5-133f61ca85aa
                 caseType: NYBYGGNAD_ANSOKAN_OM_BYGGLOV
                 facilities:
-                  - facilityType: STOREHOUSE
-                    address:
-                      addressCategories:
-                        - VISITING_ADDRESS
-                      propertyDesignation: SUNDSVALL BALDER 2
+                - facilityType: STOREHOUSE
+                  address:
+                    addressCategories:
+                    - VISITING_ADDRESS
+                    propertyDesignation: SUNDSVALL BALDER 2
                 stakeholders:
-                  - type: ORGANIZATION
-                    roles:
-                      - APPLICANT
-                      - PAYMENT_PERSON
-                    organizationName: Testorganisationen
-                    organizationNumber: 123456-1234
-                  - type: PERSON
-                    roles:
-                      - CONTACT_PERSON
-                    firstName: Test
-                    lastName: Testsson
-                    personId: e19981ad-34b2-4e14-88f5-133f61ca85aa
+                - type: ORGANIZATION
+                  roles:
+                  - APPLICANT
+                  - PAYMENT_PERSON
+                  organizationName: Testorganisationen
+                  organizationNumber: 123456-1234
+                - type: PERSON
+                  roles:
+                  - CONTACT_PERSON
+                  firstName: Test
+                  lastName: Testsson
+                  personId: e19981ad-34b2-4e14-88f5-133f61ca85aa
                 attachments:
-                  - category: ANS
-                    name: Some_name_2022-03-07
-                    extension: .pdf
-                    file: dGVzdA==
+                - category: ANS
+                  name: Some_name_2022-03-07
+                  extension: .pdf
+                  file: dGVzdA==
               oneOf:
-                - $ref: '#/components/schemas/PlanningPermissionCaseDTO'
-                - $ref: '#/components/schemas/EnvironmentalCaseDTO'
-                - $ref: '#/components/schemas/OtherCaseDTO'
+              - $ref: '#/components/schemas/PlanningPermissionCaseDTO'
+              - $ref: '#/components/schemas/EnvironmentalCaseDTO'
+              - $ref: '#/components/schemas/OtherCaseDTO'
         required: true
       responses:
         "204":
           description: No content
-        "404":
-          description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "400":
           description: Bad request
           content:
@@ -84,6 +78,12 @@ paths:
                 $ref: '#/components/schemas/Problem'
         "502":
           description: Bad Gateway
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "404":
+          description: Not found
           content:
             application/problem+json:
               schema:
@@ -97,7 +97,7 @@ paths:
   /cases:
     post:
       tags:
-        - Cases
+      - Cases
       description: Creates a case in ByggR or Ecos2 based on caseType. Also persists
         a connection between externalCaseId and the created case.
       operationId: postCases
@@ -109,41 +109,35 @@ paths:
                 externalCaseId: e19981ad-34b2-4e14-88f5-133f61ca85aa
                 caseType: NYBYGGNAD_ANSOKAN_OM_BYGGLOV
                 facilities:
-                  - facilityType: STOREHOUSE
-                    address:
-                      addressCategories:
-                        - VISITING_ADDRESS
-                      propertyDesignation: SUNDSVALL BALDER 2
+                - facilityType: STOREHOUSE
+                  address:
+                    addressCategories:
+                    - VISITING_ADDRESS
+                    propertyDesignation: SUNDSVALL BALDER 2
                 stakeholders:
-                  - type: ORGANIZATION
-                    roles:
-                      - APPLICANT
-                      - PAYMENT_PERSON
-                    organizationName: Testorganisationen
-                    organizationNumber: 123456-1234
-                  - type: PERSON
-                    roles:
-                      - CONTACT_PERSON
-                    firstName: Test
-                    lastName: Testsson
-                    personId: e19981ad-34b2-4e14-88f5-133f61ca85aa
+                - type: ORGANIZATION
+                  roles:
+                  - APPLICANT
+                  - PAYMENT_PERSON
+                  organizationName: Testorganisationen
+                  organizationNumber: 123456-1234
+                - type: PERSON
+                  roles:
+                  - CONTACT_PERSON
+                  firstName: Test
+                  lastName: Testsson
+                  personId: e19981ad-34b2-4e14-88f5-133f61ca85aa
                 attachments:
-                  - category: ANS
-                    name: Some_name_2022-03-07
-                    extension: .pdf
-                    file: dGVzdA==
+                - category: ANS
+                  name: Some_name_2022-03-07
+                  extension: .pdf
+                  file: dGVzdA==
               oneOf:
-                - $ref: '#/components/schemas/PlanningPermissionCaseDTO'
-                - $ref: '#/components/schemas/EnvironmentalCaseDTO'
-                - $ref: '#/components/schemas/OtherCaseDTO'
+              - $ref: '#/components/schemas/PlanningPermissionCaseDTO'
+              - $ref: '#/components/schemas/EnvironmentalCaseDTO'
+              - $ref: '#/components/schemas/OtherCaseDTO'
         required: true
       responses:
-        "404":
-          description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "200":
           description: OK
           content:
@@ -165,6 +159,12 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
+        "404":
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
         "500":
           description: Internal Server error
           content:
@@ -174,15 +174,15 @@ paths:
   /cases/{externalCaseId}/attachments:
     post:
       tags:
-        - Attachments
+      - Attachments
       description: Add attachments to existing case.
       operationId: postAttachmentsToCase
       parameters:
-        - name: externalCaseId
-          in: path
-          required: true
-          schema:
-            type: string
+      - name: externalCaseId
+        in: path
+        required: true
+        schema:
+          type: string
       requestBody:
         content:
           application/json:
@@ -192,12 +192,14 @@ paths:
                 $ref: '#/components/schemas/AttachmentDTO'
         required: true
       responses:
-        "404":
-          description: Not found
+        "501":
+          description: Not Implemented
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
+        "204":
+          description: No content - Successful request.
         "400":
           description: Bad request
           content:
@@ -210,14 +212,12 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        "501":
-          description: Not Implemented
+        "404":
+          description: Not found
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        "204":
-          description: No content - Successful request.
         "500":
           description: Internal Server error
           content:
@@ -227,40 +227,22 @@ paths:
   /organization/{organizationNumber}/cases/status:
     get:
       tags:
-        - Status
+      - Status
       description: Returns the latest status for each of the cases where the specified
         organization has the role "applicant".
       operationId: getStatusByOrgNr
       parameters:
-        - name: organizationNumber
-          in: path
+      - name: organizationNumber
+        in: path
+        description: Organization number with 10 or 12 digits.
+        required: true
+        schema:
+          pattern: "^((18|19|20|21)\\d{6}|\\d{6})-(\\d{4})$"
+          type: string
           description: Organization number with 10 or 12 digits.
-          required: true
-          schema:
-            pattern: "^((18|19|20|21)\\d{6}|\\d{6})-(\\d{4})$"
-            type: string
-            description: Organization number with 10 or 12 digits.
-            example: 20220622-2396
           example: 20220622-2396
+        example: 20220622-2396
       responses:
-        "404":
-          description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        "502":
-          description: Bad Gateway
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "200":
           description: OK - Successful operation
           content:
@@ -274,6 +256,24 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/CaseStatusDTO'
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "502":
+          description: Bad Gateway
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "404":
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
         "500":
           description: Internal Server error
           content:
@@ -283,23 +283,26 @@ paths:
   /cases/{externalCaseId}/status:
     get:
       tags:
-        - Status
+      - Status
       description: Returns the latest status for the case in the underlying system
         connected to the specified externalCaseId.
       operationId: getStatusByExternalCaseId
       parameters:
-        - name: externalCaseId
-          in: path
-          required: true
-          schema:
-            type: string
+      - name: externalCaseId
+        in: path
+        required: true
+        schema:
+          type: string
       responses:
-        "404":
-          description: Not found
+        "200":
+          description: OK - Successful operation
           content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CaseStatusDTO'
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/Problem'
+                $ref: '#/components/schemas/CaseStatusDTO'
         "400":
           description: Bad request
           content:
@@ -312,15 +315,12 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        "200":
-          description: OK - Successful operation
+        "404":
+          description: Not found
           content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CaseStatusDTO'
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/CaseStatusDTO'
+                $ref: '#/components/schemas/Problem'
         "500":
           description: Internal Server error
           content:
@@ -330,29 +330,17 @@ paths:
   /cases/case-mappings:
     get:
       tags:
-        - CaseMappings
+      - CaseMappings
       description: Returns the connection between externalCaseId and the case in the
         underlying system.
       operationId: getCaseMapping
       parameters:
-        - name: external-case-id
-          in: query
-          required: false
-          schema:
-            type: string
+      - name: external-case-id
+        in: query
+        required: false
+        schema:
+          type: string
       responses:
-        "404":
-          description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "200":
           description: OK - Successful operation
           content:
@@ -366,6 +354,18 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/CaseMapping'
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "404":
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
         "500":
           description: Internal Server error
           content:
@@ -375,7 +375,7 @@ paths:
   /api-docs:
     get:
       tags:
-        - API
+      - API
       summary: OpenAPI
       operationId: getApiDocs
       responses:
@@ -392,8 +392,8 @@ components:
   schemas:
     AddressDTO:
       required:
-        - addressCategories
-        - propertyDesignation
+      - addressCategories
+      - propertyDesignation
       type: object
       properties:
         addressCategories:
@@ -406,9 +406,9 @@ components:
               \ example, it can be the same address that is to be used for mail and\
               \ invoices."
             enum:
-              - POSTAL_ADDRESS
-              - INVOICE_ADDRESS
-              - VISITING_ADDRESS
+            - POSTAL_ADDRESS
+            - INVOICE_ADDRESS
+            - VISITING_ADDRESS
         street:
           type: string
           example: Testargatan
@@ -452,258 +452,268 @@ components:
         POSTAL_ADDRESS and another INVOICE_ADDRESS.
     AttachmentDTO:
       required:
-        - category
-        - extension
-        - file
-        - mimeType
-        - name
+      - category
+      - extension
+      - file
+      - mimeType
+      - name
       type: object
       properties:
         category:
           type: string
           enum:
-            - ARIT
-            - FAS
-            - FS2
-            - FAP
-            - FAPL
-            - FPSS
-            - FS
-            - FASSIT
-            - FAS2
-            - FASSIT2
-            - FOTOMON
-            - FÄRG
-            - MAST
-            - MUR
-            - MÅTT
-            - PERSPEKTIV
-            - PLA
-            - PLFA
-            - PLFASE
-            - PLFASESI
-            - PLFASI
-            - PLFA2
-            - PFSI2
-            - PLSE2
-            - PSS2
-            - PLSE
-            - PSS
-            - PLASIT
-            - PFS2
-            - PFSS2
-            - TEVS
-            - UPLA
-            - PLAN
-            - PLANK
-            - PLA2
-            - PSI2
-            - REL
-            - REVRIT
-            - RITNING
-            - TJ
-            - RIT
-            - SEK
-            - SEKSIT
-            - SEKT
-            - SEK2
-            - SESI2
-            - SKYL
-            - UPPM
-            - ANV
-            - ANM
-            - ANMÄ
-            - ANS
-            - ANSFÖ
-            - ANSM
-            - ANSR
-            - ANSS
-            - BEGLST
-            - BERBSA
-            - BLST
-            - OMPLÄ
-            - BULL
-            - DEB
-            - DEL
-            - DELK
-            - DELSLU
-            - DELSTA
-            - DOM
-            - ENER
-            - ENEDEK
-            - FAST
-            - FÖLJREVRIT
-            - FÖRG2
-            - GODFÄ
-            - GRAM
-            - INFOSS
-            - INTSLUT
-            - KM
-            - MOTBKR
-            - OVK
-            - PM
-            - PMINN
-            - PROARB
-            - PROTAU
-            - PROTKS
-            - PROTPLU
-            - PROTSBN
-            - PROSS
-            - PROTS
-            - REMISS
-            - REMS
-            - RÄTT
-            - SKP
-            - SBES
-            - STAB
-            - SVAR
-            - SVAR2år
-            - TJÄ
-            - UNDER
-            - ÄRB
-            - ÖVER
-            - ADRESS
-            - ANSUPA
-            - ANNO
-            - ANSF
-            - ANSSL
-            - ANSUP
-            - ANKVU
-            - ARBI
-            - BEHA
-            - AVPLAN
-            - BANK
-            - BEGSTART
-            - BEK
-            - BEKMOTANS
-            - BEMÖ
-            - BESKA
-            - BESLUT
-            - BIL
-            - BRS
-            - BRAB
-            - BRAD
-            - BROS
-            - DPH
-            - DETALJ
-            - DHBHUR
-            - ELD
-            - EPOS
-            - EXRIT
-            - FAKTU
-            - FAKTUS
-            - FOTO
-            - FUM
-            - FSF
-            - FÖLJ
-            - FÖRB
-            - FÖRK
-            - FÖRR
-            - FÖRGARBO
-            - URÖR
-            - GRA
-            - GRAN
-            - GBLAD
-            - HISSINT
-            - HUR
-            - ARK
-            - INTFAK
-            - INTY
-            - KLA
-            - KOMP
-            - KONT
-            - KPLAN
-            - RAPP
-            - KVAL
-            - LUFT
-            - LUTE
-            - MAIL
-            - MAPL
-            - MATINV
-            - MEDDEL
-            - MIRP
-            - MINN
-            - POIT
-            - PRESENTA
-            - PRES
-            - KPV
-            - PROT
-            - PÅMINNTB
-            - RAP
-            - REMUA
-            - RUE
-            - HBB
-            - RIVA
-            - RIVP
-            - SAK
-            - SAKUT
-            - KPR
-            - KP
-            - KR
-            - SIN
-            - SKR
-            - KA
-            - SKY
-            - SLUT
-            - SCB
-            - STIM
-            - SÅF
-            - TEBY
-            - TEKN
-            - TEKRAP
-            - TILL
-            - TILLVR
-            - SBN
-            - SAKNAS
-            - UND
-            - UKP
-            - UKR
-            - UNDUT
-            - UBGARBO
-            - UTBEU
-            - UTSK
-            - UTSKP
-            - UTSKS
-            - BRAU
-            - UKA
-            - ÅTG
-            - GEO
-            - GRUNDP
-            - GRUNDR
-            - KOND
-            - UKON
-            - KONR
-            - STOMR
-            - TAPL
-            - TSR
-            - KART
-            - NYKA
-            - SITU
-            - TOMTPLBE
-            - VAH
-            - VENT
-            - UVEN
-            - VS
-            - VVSH
-            - MASE
-            - ANMALAN_AVHJALPANDEATGARD_FORORENING
-            - ANMALAN_LIVSMEDELSANLAGGNING
-            - UNDERLAG_RISKKLASSNING
-            - ANMALAN_KOMPOSTERING
-            - ANMALAN_ENSKILT_AVLOPP
-            - ANSOKAN_ENSKILT_AVLOPP
-            - ANMALAN_ANDRING_AVLOPPSANLAGGNING
-            - ANMALAN_ANDRING_AVLOPPSANORDNING
-            - ANMALAN_VARMEPUMP
-            - ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW
-            - ANMALAN_HALSOSKYDDSVERKSAMHET
-            - SITUATIONSPLAN
-            - SKRIVELSE
-            - MEDICAL_CONFIRMATION
-            - POLICE_REPORT
-            - PASSPORT_PHOTO
-            - SIGNATURE
-            - POWER_OF_ATTORNEY
+          - ARIT
+          - FAS
+          - FS2
+          - FAP
+          - FAPL
+          - FPSS
+          - FS
+          - FASSIT
+          - FAS2
+          - FASSIT2
+          - FOTOMON
+          - FÄRG
+          - MAST
+          - MUR
+          - MÅTT
+          - PERSPEKTIV
+          - PLA
+          - PLFA
+          - PLFASE
+          - PLFASESI
+          - PLFASI
+          - PLFA2
+          - PFSI2
+          - PLSE2
+          - PSS2
+          - PLSE
+          - PSS
+          - PLASIT
+          - PFS2
+          - PFSS2
+          - TEVS
+          - UPLA
+          - PLAN
+          - PLANK
+          - PLA2
+          - PSI2
+          - REL
+          - REVRIT
+          - RITNING
+          - TJ
+          - RIT
+          - SEK
+          - SEKSIT
+          - SEKT
+          - SEK2
+          - SESI2
+          - SKYL
+          - UPPM
+          - ANV
+          - ANM
+          - ANMÄ
+          - ANS
+          - ANSFÖ
+          - ANSM
+          - ANSR
+          - ANSS
+          - BEGLST
+          - BERBSA
+          - BLST
+          - OMPLÄ
+          - BULL
+          - DEB
+          - DEL
+          - DELK
+          - DELSLU
+          - DELSTA
+          - DOM
+          - ENER
+          - ENEDEK
+          - FAST
+          - FÖLJREVRIT
+          - FÖRG2
+          - GODFÄ
+          - GRAM
+          - INFOSS
+          - INTSLUT
+          - KM
+          - MOTBKR
+          - OVK
+          - PM
+          - PMINN
+          - PROARB
+          - PROTAU
+          - PROTKS
+          - PROTPLU
+          - PROTSBN
+          - PROSS
+          - PROTS
+          - REMISS
+          - REMS
+          - RÄTT
+          - SKP
+          - SBES
+          - STAB
+          - SVAR
+          - SVAR2år
+          - TJÄ
+          - UNDER
+          - ÄRB
+          - ÖVER
+          - ADRESS
+          - ANSUPA
+          - ANNO
+          - ANSF
+          - ANSSL
+          - ANSUP
+          - ANKVU
+          - ARBI
+          - BEHA
+          - AVPLAN
+          - BANK
+          - BEGSTART
+          - BEK
+          - BEKMOTANS
+          - BEMÖ
+          - BESKA
+          - BESLUT
+          - BIL
+          - BRS
+          - BRAB
+          - BRAD
+          - BROS
+          - DPH
+          - DETALJ
+          - DHBHUR
+          - ELD
+          - EPOS
+          - EXRIT
+          - FAKTU
+          - FAKTUS
+          - FOTO
+          - FUM
+          - FSF
+          - FÖLJ
+          - FÖRB
+          - FÖRK
+          - FÖRR
+          - FÖRGARBO
+          - URÖR
+          - GRA
+          - GRAN
+          - GBLAD
+          - HISSINT
+          - HUR
+          - ARK
+          - INTFAK
+          - INTY
+          - KLA
+          - KOMP
+          - KONT
+          - KPLAN
+          - RAPP
+          - KVAL
+          - LUFT
+          - LUTE
+          - MAIL
+          - MAPL
+          - MATINV
+          - MEDDEL
+          - MIRP
+          - MINN
+          - POIT
+          - PRESENTA
+          - PRES
+          - KPV
+          - PROT
+          - PÅMINNTB
+          - RAP
+          - REMUA
+          - RUE
+          - HBB
+          - RIVA
+          - RIVP
+          - SAK
+          - SAKUT
+          - KPR
+          - KP
+          - KR
+          - SIN
+          - SKR
+          - KA
+          - SKY
+          - SLUT
+          - SCB
+          - STIM
+          - SÅF
+          - TEBY
+          - TEKN
+          - TEKRAP
+          - TILL
+          - TILLVR
+          - SBN
+          - SAKNAS
+          - UND
+          - UKP
+          - UKR
+          - UNDUT
+          - UBGARBO
+          - UTBEU
+          - UTSK
+          - UTSKP
+          - UTSKS
+          - BRAU
+          - UKA
+          - ÅTG
+          - GEO
+          - GRUNDP
+          - GRUNDR
+          - KOND
+          - UKON
+          - KONR
+          - STOMR
+          - TAPL
+          - TSR
+          - KART
+          - NYKA
+          - SITU
+          - TOMTPLBE
+          - VAH
+          - VENT
+          - UVEN
+          - VS
+          - VVSH
+          - MASE
+          - ANMALAN_AVHJALPANDEATGARD_FORORENING
+          - ANMALAN_LIVSMEDELSANLAGGNING
+          - UNDERLAG_RISKKLASSNING
+          - ANMALAN_KOMPOSTERING
+          - ANMALAN_ENSKILT_AVLOPP
+          - ANSOKAN_ENSKILT_AVLOPP
+          - ANMALAN_ANDRING_AVLOPPSANLAGGNING
+          - ANMALAN_ANDRING_AVLOPPSANORDNING
+          - ANMALAN_VARMEPUMP
+          - ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW
+          - ANMALAN_HALSOSKYDDSVERKSAMHET
+          - SITUATIONSPLAN
+          - SKRIVELSE
+          - MEDICAL_CONFIRMATION
+          - POLICE_REPORT
+          - PASSPORT_PHOTO
+          - SIGNATURE
+          - POWER_OF_ATTORNEY
+          - LEASE_REQUEST
+          - RECEIVED_MAP
+          - RECEIVED_CONTRACT
+          - LAND_PURCHASE_REQUEST
+          - INQUIRY_LAND_SALE
+          - APPLICATION_SQUARE_PLACE
+          - CORPORATE_TAX_CARD
+          - TERMINATION_OF_HUNTING_RIGHTS
+          - REQUEST_TO_BUY_SMALL_HOUSE_PLOT
+          - CONTRACT_DRAFT
         name:
           type: string
           example: The attachment name
@@ -740,11 +750,11 @@ components:
           example: 17.306616
     PlanningPermissionCaseDTO:
       required:
-        - attachments
-        - caseType
-        - externalCaseId
-        - facilities
-        - stakeholders
+      - attachments
+      - caseType
+      - externalCaseId
+      - facilities
+      - stakeholders
       type: object
       properties:
         externalCaseId:
@@ -755,62 +765,62 @@ components:
           type: string
           example: NYBYGGNAD_ANSOKAN_OM_BYGGLOV
           enum:
-            - NYBYGGNAD_ANSOKAN_OM_BYGGLOV
-            - TILLBYGGNAD_ANSOKAN_OM_BYGGLOV
-            - UPPSATTANDE_SKYLT
-            - ANDRING_ANSOKAN_OM_BYGGLOV
-            - NYBYGGNAD_FORHANDSBESKED
-            - STRANDSKYDD_NYBYGGNAD
-            - STRANDSKYDD_ANLAGGANDE
-            - STRANDSKYDD_ANORDNANDE
-            - STRANDSKYDD_ANDRAD_ANVANDNING
-            - STRANDSKYDD_OVRIGT
-            - ANDRING_VENTILATION
-            - INSTALLATION_VENTILATION
-            - ANDRING_VA
-            - INSTALLATION_VA
-            - ANDRING_PLANLOSNING
-            - ANDRING_BARANDE_KONSTRUKTION
-            - ANDRING_BRANDSKYDD
-            - INSTALLLATION_HISS
-            - MARKLOV_SCHAKTNING
-            - MARKLOV_FYLL
-            - MARKLOV_TRADFALLNING
-            - MARKLOV_OVRIGT
-            - ANMALAN_ATTEFALL
-            - ANMALAN_ELDSTAD
-            - REGISTRERING_AV_LIVSMEDEL
-            - ANMALAN_INSTALLATION_VARMEPUMP
-            - ANSOKAN_TILLSTAND_VARMEPUMP
-            - ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP
-            - ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC
-            - ANMALAN_ANDRING_AVLOPPSANLAGGNING
-            - ANMALAN_ANDRING_AVLOPPSANORDNING
-            - ANMALAN_HALSOSKYDDSVERKSAMHET
-            - UPPDATERING_RISKKLASSNING
-            - ANMALAN_KOMPOSTERING
-            - ANMALAN_AVHJALPANDEATGARD_FORORENING
-            - PARKING_PERMIT
-            - PARKING_PERMIT_RENEWAL
-            - LOST_PARKING_PERMIT
-            - MEX_LEASE_REQUEST
-            - MEX_BUY_LAND_FROM_THE_MUNICIPALITY
-            - MEX_SELL_LAND_TO_THE_MUNICIPALITY
-            - MEX_APPLICATION_SQUARE_PLACE
-            - MEX_BUY_SMALL_HOUSE_PLOT
-            - MEX_APPLICATION_FOR_ROAD_ALLOWANCE
-            - MEX_UNAUTHORIZED_RESIDENCE
-            - MEX_LAND_RIGHT
-            - MEX_EARLY_DIALOG_PLAN_NOTIFICATION
-            - MEX_PROTECTIVE_HUNTING
-            - MEX_LAND_INSTRUCTION
-            - MEX_OTHER
-            - MEX_LAND_SURVEYING_OFFICE
-            - MEX_REFERRAL_BUILDING_PERMIT_EARLY_DIALOUGE_PLANNING_NOTICE
-            - MEX_INVOICE
-            - MEX_REQUEST_FOR_PUBLIC_DOCUMENT
-            - MEX_TERMINATION_OF_LEASE
-            - MEX_TERMINATION_OF_HUNTING_LEASE
+          - NYBYGGNAD_ANSOKAN_OM_BYGGLOV
+          - TILLBYGGNAD_ANSOKAN_OM_BYGGLOV
+          - UPPSATTANDE_SKYLT
+          - ANDRING_ANSOKAN_OM_BYGGLOV
+          - NYBYGGNAD_FORHANDSBESKED
+          - STRANDSKYDD_NYBYGGNAD
+          - STRANDSKYDD_ANLAGGANDE
+          - STRANDSKYDD_ANORDNANDE
+          - STRANDSKYDD_ANDRAD_ANVANDNING
+          - STRANDSKYDD_OVRIGT
+          - ANDRING_VENTILATION
+          - INSTALLATION_VENTILATION
+          - ANDRING_VA
+          - INSTALLATION_VA
+          - ANDRING_PLANLOSNING
+          - ANDRING_BARANDE_KONSTRUKTION
+          - ANDRING_BRANDSKYDD
+          - INSTALLLATION_HISS
+          - MARKLOV_SCHAKTNING
+          - MARKLOV_FYLL
+          - MARKLOV_TRADFALLNING
+          - MARKLOV_OVRIGT
+          - ANMALAN_ATTEFALL
+          - ANMALAN_ELDSTAD
+          - REGISTRERING_AV_LIVSMEDEL
+          - ANMALAN_INSTALLATION_VARMEPUMP
+          - ANSOKAN_TILLSTAND_VARMEPUMP
+          - ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP
+          - ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC
+          - ANMALAN_ANDRING_AVLOPPSANLAGGNING
+          - ANMALAN_ANDRING_AVLOPPSANORDNING
+          - ANMALAN_HALSOSKYDDSVERKSAMHET
+          - UPPDATERING_RISKKLASSNING
+          - ANMALAN_KOMPOSTERING
+          - ANMALAN_AVHJALPANDEATGARD_FORORENING
+          - PARKING_PERMIT
+          - PARKING_PERMIT_RENEWAL
+          - LOST_PARKING_PERMIT
+          - MEX_LEASE_REQUEST
+          - MEX_BUY_LAND_FROM_THE_MUNICIPALITY
+          - MEX_SELL_LAND_TO_THE_MUNICIPALITY
+          - MEX_APPLICATION_SQUARE_PLACE
+          - MEX_BUY_SMALL_HOUSE_PLOT
+          - MEX_APPLICATION_FOR_ROAD_ALLOWANCE
+          - MEX_UNAUTHORIZED_RESIDENCE
+          - MEX_LAND_RIGHT
+          - MEX_EARLY_DIALOG_PLAN_NOTIFICATION
+          - MEX_PROTECTIVE_HUNTING
+          - MEX_LAND_INSTRUCTION
+          - MEX_OTHER
+          - MEX_LAND_SURVEYING_OFFICE
+          - MEX_REFERRAL_BUILDING_PERMIT_EARLY_DIALOUGE_PLANNING_NOTICE
+          - MEX_INVOICE
+          - MEX_REQUEST_FOR_PUBLIC_DOCUMENT
+          - MEX_TERMINATION_OF_LEASE
+          - MEX_TERMINATION_OF_HUNTING_LEASE
         description:
           type: string
           example: Some description of the case.
@@ -840,7 +850,7 @@ components:
       description: ByggR-cases
     PlanningPermissionFacilityDTO:
       required:
-        - address
+      - address
       type: object
       properties:
         facilityType:
@@ -855,46 +865,46 @@ components:
             \ with CaseType=ENVIRONMENTAL:<li>FOOD(Livsmedelsanläggning)</li><li>HEAT_PUMP(Vä\
             rmepumpsanläggning)</li>"
           enum:
-            - ONE_FAMILY_HOUSE
-            - APARTMENT_BLOCK
-            - WEEKEND_COTTAGE
-            - OFFICE_BUILDING
-            - INDUSTRIAL_BUILDING
-            - GARAGE
-            - CARPORT
-            - STOREHOUSE
-            - GREENHOUSE
-            - GUEST_HOUSE
-            - WAREHOUSE
-            - WORKSHOP_BUILDING
-            - RESTAURANT
-            - SCHOOL
-            - PRESCHOOL
-            - BUSINESS_PREMISES
-            - TRANSFORMER_STATION
-            - COMPLEMENT_BUILDING
-            - DEPARTMENT_STORE
-            - BUILDING
-            - BRIDGE_PIER
-            - SIGN
-            - PARKING
-            - DEPOT
-            - MARINA
-            - WALL
-            - PALING
-            - RECYCLING_STATION
-            - OTHER
-            - FURNISHING_OF_ADDITIONAL_DWELLING
-            - ANCILLARY_BUILDING
-            - ANCILLARY_HOUSING_BUILDING
-            - DORMER
-            - EXTENSION
-            - FIREPLACE
-            - FIREPLACE_SMOKECHANNEL
-            - RECONSTRUCTION
-            - FACADE_CHANGE
-            - GLAZING_BALCONY
-            - USAGE_CHANGE
+          - ONE_FAMILY_HOUSE
+          - APARTMENT_BLOCK
+          - WEEKEND_COTTAGE
+          - OFFICE_BUILDING
+          - INDUSTRIAL_BUILDING
+          - GARAGE
+          - CARPORT
+          - STOREHOUSE
+          - GREENHOUSE
+          - GUEST_HOUSE
+          - WAREHOUSE
+          - WORKSHOP_BUILDING
+          - RESTAURANT
+          - SCHOOL
+          - PRESCHOOL
+          - BUSINESS_PREMISES
+          - TRANSFORMER_STATION
+          - COMPLEMENT_BUILDING
+          - DEPARTMENT_STORE
+          - BUILDING
+          - BRIDGE_PIER
+          - SIGN
+          - PARKING
+          - DEPOT
+          - MARINA
+          - WALL
+          - PALING
+          - RECYCLING_STATION
+          - OTHER
+          - FURNISHING_OF_ADDITIONAL_DWELLING
+          - ANCILLARY_BUILDING
+          - ANCILLARY_HOUSING_BUILDING
+          - DORMER
+          - EXTENSION
+          - FIREPLACE
+          - FIREPLACE_SMOKECHANNEL
+          - RECONSTRUCTION
+          - FACADE_CHANGE
+          - GLAZING_BALCONY
+          - USAGE_CHANGE
         description:
           type: string
           example: En fritextbeskrivning av facility.
@@ -908,15 +918,15 @@ components:
           type: boolean
     StakeholderDTO:
       required:
-        - roles
-        - type
+      - roles
+      - type
       type: object
       properties:
         type:
           type: string
           enum:
-            - PERSON
-            - ORGANIZATION
+          - PERSON
+          - ORGANIZATION
         roles:
           type: array
           description: An stakeholder can have one or more roles.
@@ -924,27 +934,27 @@ components:
             type: string
             description: <h3>General roles:</h3><li>APPLICANT(Sökande)</li><li>CONTACT_PERSON(Kontaktperson)</li><br><br><h3>ByggR-roles:</h3><li>CONTROL_OFFICIAL(Kontrollansvarig)</li><li>PROPERTY_OWNER(Fastighetsägare)</li><li>PAYMENT_PERSON(Betalningsansvarig)</li><br><br><h3>Ecos2-roles:</h3><li>INVOICE_RECIPENT(Fakturamottagare)</li><li>OPERATOR(Verksamhetsutövare)</li><li>INSTALLER(Installatör)</li>
             enum:
-              - CONTROL_OFFICIAL
-              - PROPERTY_OWNER
-              - PAYMENT_PERSON
-              - INVOICE_RECIPENT
-              - OPERATOR
-              - INSTALLER
-              - APPLICANT
-              - CONTACT_PERSON
-              - ADMINISTRATOR
-              - FELLOW_APPLICANT
-              - DRIVER
-              - PASSENGER
-              - DOCTOR
-              - GRANTOR
-              - SELLER
-              - BUYER
-              - LEASEHOLDER
-              - COMPANY_SIGNATORY
-              - ASSOCIATION_REPRESENTATIVE
-              - CASHIER
-              - CHAIRMAN
+            - CONTROL_OFFICIAL
+            - PROPERTY_OWNER
+            - PAYMENT_PERSON
+            - INVOICE_RECIPENT
+            - OPERATOR
+            - INSTALLER
+            - APPLICANT
+            - CONTACT_PERSON
+            - ADMINISTRATOR
+            - FELLOW_APPLICANT
+            - DRIVER
+            - PASSENGER
+            - DOCTOR
+            - GRANTOR
+            - SELLER
+            - BUYER
+            - LEASEHOLDER
+            - COMPANY_SIGNATORY
+            - ASSOCIATION_REPRESENTATIVE
+            - CASHIER
+            - CHAIRMAN
         phoneNumber:
           type: string
           example: "060123456"
@@ -968,11 +978,11 @@ components:
         propertyName: type
     EnvironmentalCaseDTO:
       required:
-        - attachments
-        - caseType
-        - externalCaseId
-        - facilities
-        - stakeholders
+      - attachments
+      - caseType
+      - externalCaseId
+      - facilities
+      - stakeholders
       type: object
       properties:
         externalCaseId:
@@ -983,62 +993,62 @@ components:
           type: string
           example: NYBYGGNAD_ANSOKAN_OM_BYGGLOV
           enum:
-            - NYBYGGNAD_ANSOKAN_OM_BYGGLOV
-            - TILLBYGGNAD_ANSOKAN_OM_BYGGLOV
-            - UPPSATTANDE_SKYLT
-            - ANDRING_ANSOKAN_OM_BYGGLOV
-            - NYBYGGNAD_FORHANDSBESKED
-            - STRANDSKYDD_NYBYGGNAD
-            - STRANDSKYDD_ANLAGGANDE
-            - STRANDSKYDD_ANORDNANDE
-            - STRANDSKYDD_ANDRAD_ANVANDNING
-            - STRANDSKYDD_OVRIGT
-            - ANDRING_VENTILATION
-            - INSTALLATION_VENTILATION
-            - ANDRING_VA
-            - INSTALLATION_VA
-            - ANDRING_PLANLOSNING
-            - ANDRING_BARANDE_KONSTRUKTION
-            - ANDRING_BRANDSKYDD
-            - INSTALLLATION_HISS
-            - MARKLOV_SCHAKTNING
-            - MARKLOV_FYLL
-            - MARKLOV_TRADFALLNING
-            - MARKLOV_OVRIGT
-            - ANMALAN_ATTEFALL
-            - ANMALAN_ELDSTAD
-            - REGISTRERING_AV_LIVSMEDEL
-            - ANMALAN_INSTALLATION_VARMEPUMP
-            - ANSOKAN_TILLSTAND_VARMEPUMP
-            - ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP
-            - ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC
-            - ANMALAN_ANDRING_AVLOPPSANLAGGNING
-            - ANMALAN_ANDRING_AVLOPPSANORDNING
-            - ANMALAN_HALSOSKYDDSVERKSAMHET
-            - UPPDATERING_RISKKLASSNING
-            - ANMALAN_KOMPOSTERING
-            - ANMALAN_AVHJALPANDEATGARD_FORORENING
-            - PARKING_PERMIT
-            - PARKING_PERMIT_RENEWAL
-            - LOST_PARKING_PERMIT
-            - MEX_LEASE_REQUEST
-            - MEX_BUY_LAND_FROM_THE_MUNICIPALITY
-            - MEX_SELL_LAND_TO_THE_MUNICIPALITY
-            - MEX_APPLICATION_SQUARE_PLACE
-            - MEX_BUY_SMALL_HOUSE_PLOT
-            - MEX_APPLICATION_FOR_ROAD_ALLOWANCE
-            - MEX_UNAUTHORIZED_RESIDENCE
-            - MEX_LAND_RIGHT
-            - MEX_EARLY_DIALOG_PLAN_NOTIFICATION
-            - MEX_PROTECTIVE_HUNTING
-            - MEX_LAND_INSTRUCTION
-            - MEX_OTHER
-            - MEX_LAND_SURVEYING_OFFICE
-            - MEX_REFERRAL_BUILDING_PERMIT_EARLY_DIALOUGE_PLANNING_NOTICE
-            - MEX_INVOICE
-            - MEX_REQUEST_FOR_PUBLIC_DOCUMENT
-            - MEX_TERMINATION_OF_LEASE
-            - MEX_TERMINATION_OF_HUNTING_LEASE
+          - NYBYGGNAD_ANSOKAN_OM_BYGGLOV
+          - TILLBYGGNAD_ANSOKAN_OM_BYGGLOV
+          - UPPSATTANDE_SKYLT
+          - ANDRING_ANSOKAN_OM_BYGGLOV
+          - NYBYGGNAD_FORHANDSBESKED
+          - STRANDSKYDD_NYBYGGNAD
+          - STRANDSKYDD_ANLAGGANDE
+          - STRANDSKYDD_ANORDNANDE
+          - STRANDSKYDD_ANDRAD_ANVANDNING
+          - STRANDSKYDD_OVRIGT
+          - ANDRING_VENTILATION
+          - INSTALLATION_VENTILATION
+          - ANDRING_VA
+          - INSTALLATION_VA
+          - ANDRING_PLANLOSNING
+          - ANDRING_BARANDE_KONSTRUKTION
+          - ANDRING_BRANDSKYDD
+          - INSTALLLATION_HISS
+          - MARKLOV_SCHAKTNING
+          - MARKLOV_FYLL
+          - MARKLOV_TRADFALLNING
+          - MARKLOV_OVRIGT
+          - ANMALAN_ATTEFALL
+          - ANMALAN_ELDSTAD
+          - REGISTRERING_AV_LIVSMEDEL
+          - ANMALAN_INSTALLATION_VARMEPUMP
+          - ANSOKAN_TILLSTAND_VARMEPUMP
+          - ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP
+          - ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC
+          - ANMALAN_ANDRING_AVLOPPSANLAGGNING
+          - ANMALAN_ANDRING_AVLOPPSANORDNING
+          - ANMALAN_HALSOSKYDDSVERKSAMHET
+          - UPPDATERING_RISKKLASSNING
+          - ANMALAN_KOMPOSTERING
+          - ANMALAN_AVHJALPANDEATGARD_FORORENING
+          - PARKING_PERMIT
+          - PARKING_PERMIT_RENEWAL
+          - LOST_PARKING_PERMIT
+          - MEX_LEASE_REQUEST
+          - MEX_BUY_LAND_FROM_THE_MUNICIPALITY
+          - MEX_SELL_LAND_TO_THE_MUNICIPALITY
+          - MEX_APPLICATION_SQUARE_PLACE
+          - MEX_BUY_SMALL_HOUSE_PLOT
+          - MEX_APPLICATION_FOR_ROAD_ALLOWANCE
+          - MEX_UNAUTHORIZED_RESIDENCE
+          - MEX_LAND_RIGHT
+          - MEX_EARLY_DIALOG_PLAN_NOTIFICATION
+          - MEX_PROTECTIVE_HUNTING
+          - MEX_LAND_INSTRUCTION
+          - MEX_OTHER
+          - MEX_LAND_SURVEYING_OFFICE
+          - MEX_REFERRAL_BUILDING_PERMIT_EARLY_DIALOUGE_PLANNING_NOTICE
+          - MEX_INVOICE
+          - MEX_REQUEST_FOR_PUBLIC_DOCUMENT
+          - MEX_TERMINATION_OF_LEASE
+          - MEX_TERMINATION_OF_HUNTING_LEASE
         description:
           type: string
           example: Some description of the case.
@@ -1078,7 +1088,7 @@ components:
       description: Ecos2-cases
     EnvironmentalFacilityDTO:
       required:
-        - address
+      - address
       type: object
       properties:
         description:
@@ -1096,10 +1106,10 @@ components:
           example: Sundsvalls testfabrik
     OtherCaseDTO:
       required:
-        - attachments
-        - caseType
-        - externalCaseId
-        - stakeholders
+      - attachments
+      - caseType
+      - externalCaseId
+      - stakeholders
       type: object
       properties:
         externalCaseId:
@@ -1110,62 +1120,62 @@ components:
           type: string
           example: NYBYGGNAD_ANSOKAN_OM_BYGGLOV
           enum:
-            - NYBYGGNAD_ANSOKAN_OM_BYGGLOV
-            - TILLBYGGNAD_ANSOKAN_OM_BYGGLOV
-            - UPPSATTANDE_SKYLT
-            - ANDRING_ANSOKAN_OM_BYGGLOV
-            - NYBYGGNAD_FORHANDSBESKED
-            - STRANDSKYDD_NYBYGGNAD
-            - STRANDSKYDD_ANLAGGANDE
-            - STRANDSKYDD_ANORDNANDE
-            - STRANDSKYDD_ANDRAD_ANVANDNING
-            - STRANDSKYDD_OVRIGT
-            - ANDRING_VENTILATION
-            - INSTALLATION_VENTILATION
-            - ANDRING_VA
-            - INSTALLATION_VA
-            - ANDRING_PLANLOSNING
-            - ANDRING_BARANDE_KONSTRUKTION
-            - ANDRING_BRANDSKYDD
-            - INSTALLLATION_HISS
-            - MARKLOV_SCHAKTNING
-            - MARKLOV_FYLL
-            - MARKLOV_TRADFALLNING
-            - MARKLOV_OVRIGT
-            - ANMALAN_ATTEFALL
-            - ANMALAN_ELDSTAD
-            - REGISTRERING_AV_LIVSMEDEL
-            - ANMALAN_INSTALLATION_VARMEPUMP
-            - ANSOKAN_TILLSTAND_VARMEPUMP
-            - ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP
-            - ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC
-            - ANMALAN_ANDRING_AVLOPPSANLAGGNING
-            - ANMALAN_ANDRING_AVLOPPSANORDNING
-            - ANMALAN_HALSOSKYDDSVERKSAMHET
-            - UPPDATERING_RISKKLASSNING
-            - ANMALAN_KOMPOSTERING
-            - ANMALAN_AVHJALPANDEATGARD_FORORENING
-            - PARKING_PERMIT
-            - PARKING_PERMIT_RENEWAL
-            - LOST_PARKING_PERMIT
-            - MEX_LEASE_REQUEST
-            - MEX_BUY_LAND_FROM_THE_MUNICIPALITY
-            - MEX_SELL_LAND_TO_THE_MUNICIPALITY
-            - MEX_APPLICATION_SQUARE_PLACE
-            - MEX_BUY_SMALL_HOUSE_PLOT
-            - MEX_APPLICATION_FOR_ROAD_ALLOWANCE
-            - MEX_UNAUTHORIZED_RESIDENCE
-            - MEX_LAND_RIGHT
-            - MEX_EARLY_DIALOG_PLAN_NOTIFICATION
-            - MEX_PROTECTIVE_HUNTING
-            - MEX_LAND_INSTRUCTION
-            - MEX_OTHER
-            - MEX_LAND_SURVEYING_OFFICE
-            - MEX_REFERRAL_BUILDING_PERMIT_EARLY_DIALOUGE_PLANNING_NOTICE
-            - MEX_INVOICE
-            - MEX_REQUEST_FOR_PUBLIC_DOCUMENT
-            - MEX_TERMINATION_OF_LEASE
-            - MEX_TERMINATION_OF_HUNTING_LEASE
+          - NYBYGGNAD_ANSOKAN_OM_BYGGLOV
+          - TILLBYGGNAD_ANSOKAN_OM_BYGGLOV
+          - UPPSATTANDE_SKYLT
+          - ANDRING_ANSOKAN_OM_BYGGLOV
+          - NYBYGGNAD_FORHANDSBESKED
+          - STRANDSKYDD_NYBYGGNAD
+          - STRANDSKYDD_ANLAGGANDE
+          - STRANDSKYDD_ANORDNANDE
+          - STRANDSKYDD_ANDRAD_ANVANDNING
+          - STRANDSKYDD_OVRIGT
+          - ANDRING_VENTILATION
+          - INSTALLATION_VENTILATION
+          - ANDRING_VA
+          - INSTALLATION_VA
+          - ANDRING_PLANLOSNING
+          - ANDRING_BARANDE_KONSTRUKTION
+          - ANDRING_BRANDSKYDD
+          - INSTALLLATION_HISS
+          - MARKLOV_SCHAKTNING
+          - MARKLOV_FYLL
+          - MARKLOV_TRADFALLNING
+          - MARKLOV_OVRIGT
+          - ANMALAN_ATTEFALL
+          - ANMALAN_ELDSTAD
+          - REGISTRERING_AV_LIVSMEDEL
+          - ANMALAN_INSTALLATION_VARMEPUMP
+          - ANSOKAN_TILLSTAND_VARMEPUMP
+          - ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP
+          - ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC
+          - ANMALAN_ANDRING_AVLOPPSANLAGGNING
+          - ANMALAN_ANDRING_AVLOPPSANORDNING
+          - ANMALAN_HALSOSKYDDSVERKSAMHET
+          - UPPDATERING_RISKKLASSNING
+          - ANMALAN_KOMPOSTERING
+          - ANMALAN_AVHJALPANDEATGARD_FORORENING
+          - PARKING_PERMIT
+          - PARKING_PERMIT_RENEWAL
+          - LOST_PARKING_PERMIT
+          - MEX_LEASE_REQUEST
+          - MEX_BUY_LAND_FROM_THE_MUNICIPALITY
+          - MEX_SELL_LAND_TO_THE_MUNICIPALITY
+          - MEX_APPLICATION_SQUARE_PLACE
+          - MEX_BUY_SMALL_HOUSE_PLOT
+          - MEX_APPLICATION_FOR_ROAD_ALLOWANCE
+          - MEX_UNAUTHORIZED_RESIDENCE
+          - MEX_LAND_RIGHT
+          - MEX_EARLY_DIALOG_PLAN_NOTIFICATION
+          - MEX_PROTECTIVE_HUNTING
+          - MEX_LAND_INSTRUCTION
+          - MEX_OTHER
+          - MEX_LAND_SURVEYING_OFFICE
+          - MEX_REFERRAL_BUILDING_PERMIT_EARLY_DIALOUGE_PLANNING_NOTICE
+          - MEX_INVOICE
+          - MEX_REQUEST_FOR_PUBLIC_DOCUMENT
+          - MEX_TERMINATION_OF_LEASE
+          - MEX_TERMINATION_OF_HUNTING_LEASE
         description:
           type: string
           example: Some description of the case.
@@ -1224,69 +1234,69 @@ components:
         system:
           type: string
           enum:
-            - BYGGR
-            - ECOS
-            - CASE_DATA
+          - BYGGR
+          - ECOS
+          - CASE_DATA
         caseType:
           type: string
           example: NYBYGGNAD_ANSOKAN_OM_BYGGLOV
           enum:
-            - NYBYGGNAD_ANSOKAN_OM_BYGGLOV
-            - TILLBYGGNAD_ANSOKAN_OM_BYGGLOV
-            - UPPSATTANDE_SKYLT
-            - ANDRING_ANSOKAN_OM_BYGGLOV
-            - NYBYGGNAD_FORHANDSBESKED
-            - STRANDSKYDD_NYBYGGNAD
-            - STRANDSKYDD_ANLAGGANDE
-            - STRANDSKYDD_ANORDNANDE
-            - STRANDSKYDD_ANDRAD_ANVANDNING
-            - STRANDSKYDD_OVRIGT
-            - ANDRING_VENTILATION
-            - INSTALLATION_VENTILATION
-            - ANDRING_VA
-            - INSTALLATION_VA
-            - ANDRING_PLANLOSNING
-            - ANDRING_BARANDE_KONSTRUKTION
-            - ANDRING_BRANDSKYDD
-            - INSTALLLATION_HISS
-            - MARKLOV_SCHAKTNING
-            - MARKLOV_FYLL
-            - MARKLOV_TRADFALLNING
-            - MARKLOV_OVRIGT
-            - ANMALAN_ATTEFALL
-            - ANMALAN_ELDSTAD
-            - REGISTRERING_AV_LIVSMEDEL
-            - ANMALAN_INSTALLATION_VARMEPUMP
-            - ANSOKAN_TILLSTAND_VARMEPUMP
-            - ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP
-            - ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC
-            - ANMALAN_ANDRING_AVLOPPSANLAGGNING
-            - ANMALAN_ANDRING_AVLOPPSANORDNING
-            - ANMALAN_HALSOSKYDDSVERKSAMHET
-            - UPPDATERING_RISKKLASSNING
-            - ANMALAN_KOMPOSTERING
-            - ANMALAN_AVHJALPANDEATGARD_FORORENING
-            - PARKING_PERMIT
-            - PARKING_PERMIT_RENEWAL
-            - LOST_PARKING_PERMIT
-            - MEX_LEASE_REQUEST
-            - MEX_BUY_LAND_FROM_THE_MUNICIPALITY
-            - MEX_SELL_LAND_TO_THE_MUNICIPALITY
-            - MEX_APPLICATION_SQUARE_PLACE
-            - MEX_BUY_SMALL_HOUSE_PLOT
-            - MEX_APPLICATION_FOR_ROAD_ALLOWANCE
-            - MEX_UNAUTHORIZED_RESIDENCE
-            - MEX_LAND_RIGHT
-            - MEX_EARLY_DIALOG_PLAN_NOTIFICATION
-            - MEX_PROTECTIVE_HUNTING
-            - MEX_LAND_INSTRUCTION
-            - MEX_OTHER
-            - MEX_LAND_SURVEYING_OFFICE
-            - MEX_REFERRAL_BUILDING_PERMIT_EARLY_DIALOUGE_PLANNING_NOTICE
-            - MEX_INVOICE
-            - MEX_REQUEST_FOR_PUBLIC_DOCUMENT
-            - MEX_TERMINATION_OF_LEASE
-            - MEX_TERMINATION_OF_HUNTING_LEASE
+          - NYBYGGNAD_ANSOKAN_OM_BYGGLOV
+          - TILLBYGGNAD_ANSOKAN_OM_BYGGLOV
+          - UPPSATTANDE_SKYLT
+          - ANDRING_ANSOKAN_OM_BYGGLOV
+          - NYBYGGNAD_FORHANDSBESKED
+          - STRANDSKYDD_NYBYGGNAD
+          - STRANDSKYDD_ANLAGGANDE
+          - STRANDSKYDD_ANORDNANDE
+          - STRANDSKYDD_ANDRAD_ANVANDNING
+          - STRANDSKYDD_OVRIGT
+          - ANDRING_VENTILATION
+          - INSTALLATION_VENTILATION
+          - ANDRING_VA
+          - INSTALLATION_VA
+          - ANDRING_PLANLOSNING
+          - ANDRING_BARANDE_KONSTRUKTION
+          - ANDRING_BRANDSKYDD
+          - INSTALLLATION_HISS
+          - MARKLOV_SCHAKTNING
+          - MARKLOV_FYLL
+          - MARKLOV_TRADFALLNING
+          - MARKLOV_OVRIGT
+          - ANMALAN_ATTEFALL
+          - ANMALAN_ELDSTAD
+          - REGISTRERING_AV_LIVSMEDEL
+          - ANMALAN_INSTALLATION_VARMEPUMP
+          - ANSOKAN_TILLSTAND_VARMEPUMP
+          - ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP
+          - ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC
+          - ANMALAN_ANDRING_AVLOPPSANLAGGNING
+          - ANMALAN_ANDRING_AVLOPPSANORDNING
+          - ANMALAN_HALSOSKYDDSVERKSAMHET
+          - UPPDATERING_RISKKLASSNING
+          - ANMALAN_KOMPOSTERING
+          - ANMALAN_AVHJALPANDEATGARD_FORORENING
+          - PARKING_PERMIT
+          - PARKING_PERMIT_RENEWAL
+          - LOST_PARKING_PERMIT
+          - MEX_LEASE_REQUEST
+          - MEX_BUY_LAND_FROM_THE_MUNICIPALITY
+          - MEX_SELL_LAND_TO_THE_MUNICIPALITY
+          - MEX_APPLICATION_SQUARE_PLACE
+          - MEX_BUY_SMALL_HOUSE_PLOT
+          - MEX_APPLICATION_FOR_ROAD_ALLOWANCE
+          - MEX_UNAUTHORIZED_RESIDENCE
+          - MEX_LAND_RIGHT
+          - MEX_EARLY_DIALOG_PLAN_NOTIFICATION
+          - MEX_PROTECTIVE_HUNTING
+          - MEX_LAND_INSTRUCTION
+          - MEX_OTHER
+          - MEX_LAND_SURVEYING_OFFICE
+          - MEX_REFERRAL_BUILDING_PERMIT_EARLY_DIALOUGE_PLANNING_NOTICE
+          - MEX_INVOICE
+          - MEX_REQUEST_FOR_PUBLIC_DOCUMENT
+          - MEX_TERMINATION_OF_LEASE
+          - MEX_TERMINATION_OF_HUNTING_LEASE
         externalCaseId:
           type: string
           example: caa230c6-abb4-4592-ad9a-34e263c2787d
@@ -1304,8 +1314,8 @@ components:
           format: date-time
     CaseMapping:
       required:
-        - caseType
-        - system
+      - caseType
+      - system
       type: object
       properties:
         externalCaseId:
@@ -1315,69 +1325,69 @@ components:
         system:
           type: string
           enum:
-            - BYGGR
-            - ECOS
-            - CASE_DATA
+          - BYGGR
+          - ECOS
+          - CASE_DATA
         caseType:
           type: string
           example: NYBYGGNAD_ANSOKAN_OM_BYGGLOV
           enum:
-            - NYBYGGNAD_ANSOKAN_OM_BYGGLOV
-            - TILLBYGGNAD_ANSOKAN_OM_BYGGLOV
-            - UPPSATTANDE_SKYLT
-            - ANDRING_ANSOKAN_OM_BYGGLOV
-            - NYBYGGNAD_FORHANDSBESKED
-            - STRANDSKYDD_NYBYGGNAD
-            - STRANDSKYDD_ANLAGGANDE
-            - STRANDSKYDD_ANORDNANDE
-            - STRANDSKYDD_ANDRAD_ANVANDNING
-            - STRANDSKYDD_OVRIGT
-            - ANDRING_VENTILATION
-            - INSTALLATION_VENTILATION
-            - ANDRING_VA
-            - INSTALLATION_VA
-            - ANDRING_PLANLOSNING
-            - ANDRING_BARANDE_KONSTRUKTION
-            - ANDRING_BRANDSKYDD
-            - INSTALLLATION_HISS
-            - MARKLOV_SCHAKTNING
-            - MARKLOV_FYLL
-            - MARKLOV_TRADFALLNING
-            - MARKLOV_OVRIGT
-            - ANMALAN_ATTEFALL
-            - ANMALAN_ELDSTAD
-            - REGISTRERING_AV_LIVSMEDEL
-            - ANMALAN_INSTALLATION_VARMEPUMP
-            - ANSOKAN_TILLSTAND_VARMEPUMP
-            - ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP
-            - ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC
-            - ANMALAN_ANDRING_AVLOPPSANLAGGNING
-            - ANMALAN_ANDRING_AVLOPPSANORDNING
-            - ANMALAN_HALSOSKYDDSVERKSAMHET
-            - UPPDATERING_RISKKLASSNING
-            - ANMALAN_KOMPOSTERING
-            - ANMALAN_AVHJALPANDEATGARD_FORORENING
-            - PARKING_PERMIT
-            - PARKING_PERMIT_RENEWAL
-            - LOST_PARKING_PERMIT
-            - MEX_LEASE_REQUEST
-            - MEX_BUY_LAND_FROM_THE_MUNICIPALITY
-            - MEX_SELL_LAND_TO_THE_MUNICIPALITY
-            - MEX_APPLICATION_SQUARE_PLACE
-            - MEX_BUY_SMALL_HOUSE_PLOT
-            - MEX_APPLICATION_FOR_ROAD_ALLOWANCE
-            - MEX_UNAUTHORIZED_RESIDENCE
-            - MEX_LAND_RIGHT
-            - MEX_EARLY_DIALOG_PLAN_NOTIFICATION
-            - MEX_PROTECTIVE_HUNTING
-            - MEX_LAND_INSTRUCTION
-            - MEX_OTHER
-            - MEX_LAND_SURVEYING_OFFICE
-            - MEX_REFERRAL_BUILDING_PERMIT_EARLY_DIALOUGE_PLANNING_NOTICE
-            - MEX_INVOICE
-            - MEX_REQUEST_FOR_PUBLIC_DOCUMENT
-            - MEX_TERMINATION_OF_LEASE
-            - MEX_TERMINATION_OF_HUNTING_LEASE
+          - NYBYGGNAD_ANSOKAN_OM_BYGGLOV
+          - TILLBYGGNAD_ANSOKAN_OM_BYGGLOV
+          - UPPSATTANDE_SKYLT
+          - ANDRING_ANSOKAN_OM_BYGGLOV
+          - NYBYGGNAD_FORHANDSBESKED
+          - STRANDSKYDD_NYBYGGNAD
+          - STRANDSKYDD_ANLAGGANDE
+          - STRANDSKYDD_ANORDNANDE
+          - STRANDSKYDD_ANDRAD_ANVANDNING
+          - STRANDSKYDD_OVRIGT
+          - ANDRING_VENTILATION
+          - INSTALLATION_VENTILATION
+          - ANDRING_VA
+          - INSTALLATION_VA
+          - ANDRING_PLANLOSNING
+          - ANDRING_BARANDE_KONSTRUKTION
+          - ANDRING_BRANDSKYDD
+          - INSTALLLATION_HISS
+          - MARKLOV_SCHAKTNING
+          - MARKLOV_FYLL
+          - MARKLOV_TRADFALLNING
+          - MARKLOV_OVRIGT
+          - ANMALAN_ATTEFALL
+          - ANMALAN_ELDSTAD
+          - REGISTRERING_AV_LIVSMEDEL
+          - ANMALAN_INSTALLATION_VARMEPUMP
+          - ANSOKAN_TILLSTAND_VARMEPUMP
+          - ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP
+          - ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC
+          - ANMALAN_ANDRING_AVLOPPSANLAGGNING
+          - ANMALAN_ANDRING_AVLOPPSANORDNING
+          - ANMALAN_HALSOSKYDDSVERKSAMHET
+          - UPPDATERING_RISKKLASSNING
+          - ANMALAN_KOMPOSTERING
+          - ANMALAN_AVHJALPANDEATGARD_FORORENING
+          - PARKING_PERMIT
+          - PARKING_PERMIT_RENEWAL
+          - LOST_PARKING_PERMIT
+          - MEX_LEASE_REQUEST
+          - MEX_BUY_LAND_FROM_THE_MUNICIPALITY
+          - MEX_SELL_LAND_TO_THE_MUNICIPALITY
+          - MEX_APPLICATION_SQUARE_PLACE
+          - MEX_BUY_SMALL_HOUSE_PLOT
+          - MEX_APPLICATION_FOR_ROAD_ALLOWANCE
+          - MEX_UNAUTHORIZED_RESIDENCE
+          - MEX_LAND_RIGHT
+          - MEX_EARLY_DIALOG_PLAN_NOTIFICATION
+          - MEX_PROTECTIVE_HUNTING
+          - MEX_LAND_INSTRUCTION
+          - MEX_OTHER
+          - MEX_LAND_SURVEYING_OFFICE
+          - MEX_REFERRAL_BUILDING_PERMIT_EARLY_DIALOUGE_PLANNING_NOTICE
+          - MEX_INVOICE
+          - MEX_REQUEST_FOR_PUBLIC_DOCUMENT
+          - MEX_TERMINATION_OF_LEASE
+          - MEX_TERMINATION_OF_HUNTING_LEASE
         serviceName:
           type: string
         timestamp:
