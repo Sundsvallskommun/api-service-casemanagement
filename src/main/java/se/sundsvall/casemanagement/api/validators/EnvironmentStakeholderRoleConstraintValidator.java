@@ -20,7 +20,7 @@ public class EnvironmentStakeholderRoleConstraintValidator implements Constraint
         // Valid roles
         final Set<StakeholderRole> validRoles = EnumSet.of(
             StakeholderRole.CONTACT_PERSON,
-            StakeholderRole.INVOICE_RECIPENT,
+            StakeholderRole.INVOICE_RECIPIENT,
             StakeholderRole.OPERATOR,
             StakeholderRole.APPLICANT,
             StakeholderRole.INSTALLER);
