@@ -63,7 +63,9 @@ class RiskClassMapperTest {
 		// Act
 		final var result = RiskClassMapper.mapThirdPartyCertifications(null);
 		// Assert
-		assertThat(result).isNull();
+		assertThat(result).isNotNull();
+		assertThat(result.getSaveRiskClass2024CertificationDto()).hasSize(1);
+		assertThat(result.getSaveRiskClass2024CertificationDto().getFirst()).hasAllNullFieldsOrProperties();
 	}
 
 }

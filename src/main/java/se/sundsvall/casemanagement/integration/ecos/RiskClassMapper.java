@@ -51,7 +51,7 @@ public final class RiskClassMapper {
 		final var thirdPartyCertifications = splitString(thirdPartyCertString);
 		if (thirdPartyCertifications.isEmpty())
 		{
-			return null;
+			return new ArrayOfSaveRiskClass2024CertificationDto().withSaveRiskClass2024CertificationDto(new SaveRiskClass2024CertificationDto());
 		}
 		return new ArrayOfSaveRiskClass2024CertificationDto()
 			.withSaveRiskClass2024CertificationDto(
