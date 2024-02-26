@@ -245,7 +245,7 @@ class CaseDataServiceTest {
 
 		otherCase.setStakeholders(List.of(
 			TestUtil.createStakeholder(StakeholderType.ORGANIZATION, List.of(StakeholderRole.APPLICANT, StakeholderRole.CONTACT_PERSON)),
-			TestUtil.createStakeholder(StakeholderType.PERSON, List.of(StakeholderRole.PAYMENT_PERSON, StakeholderRole.INVOICE_RECIPENT))));
+			TestUtil.createStakeholder(StakeholderType.PERSON, List.of(StakeholderRole.PAYMENT_PERSON, StakeholderRole.INVOICE_RECIPIENT))));
 
 		otherCase.setAttachments(List.of(
 			TestUtil.createAttachment(AttachmentCategory.ANS),

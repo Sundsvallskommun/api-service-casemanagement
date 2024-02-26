@@ -28,7 +28,7 @@ public enum StakeholderRole {
     PAYMENT_PERSON("BETA"),
 
     ////////// Ecos2 //////////
-    INVOICE_RECIPENT("Fakturamottagare"),
+    INVOICE_RECIPIENT("Fakturamottagare"),
     OPERATOR("Verksamhetsutövare"),
     INSTALLER("Installatör"),
 
@@ -54,7 +54,10 @@ public enum StakeholderRole {
     COMPANY_SIGNATORY("Firmatecknare"),
     ASSOCIATION_REPRESENTATIVE("Föreningsrepresentant"),
     CASHIER("Kassör"),
-    CHAIRMAN("Ordförande");
+    CHAIRMAN("Ordförande"),
+    LAND_RIGHT_OWNER("Tomträttshavare"),
+    DELEGATE("Ombud"),
+    USUFRUCTUARY("Nyttjanderättshavare");
 
     private final String text;
 

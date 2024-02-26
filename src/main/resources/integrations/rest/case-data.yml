@@ -5,9 +5,9 @@ info:
   license:
     name: MIT License
     url: https://opensource.org/licenses/MIT
-  version: "4.0"
+  version: "5.0"
 servers:
-  - url: http://localhost:8080
+  - url: http://localhost:63246
     description: Generated server url
 tags:
   - name: MessageAttachments
@@ -49,12 +49,6 @@ paths:
               $ref: '#/components/schemas/StakeholderDTO'
         required: true
       responses:
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "400":
           description: Bad request
           content:
@@ -65,6 +59,12 @@ paths:
                   - $ref: '#/components/schemas/ConstraintViolationProblem'
         "404":
           description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "500":
+          description: Internal Server error
           content:
             application/problem+json:
               schema:
@@ -90,12 +90,6 @@ paths:
               $ref: '#/components/schemas/StakeholderDTO'
         required: true
       responses:
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "400":
           description: Bad request
           content:
@@ -106,6 +100,12 @@ paths:
                   - $ref: '#/components/schemas/ConstraintViolationProblem'
         "404":
           description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "500":
+          description: Internal Server error
           content:
             application/problem+json:
               schema:
@@ -130,12 +130,6 @@ paths:
           schema:
             type: boolean
       responses:
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "400":
           description: Bad request
           content:
@@ -144,6 +138,12 @@ paths:
                 oneOf:
                   - $ref: '#/components/schemas/Problem'
                   - $ref: '#/components/schemas/ConstraintViolationProblem'
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
         "204":
           description: No content - Successful operation
   /errands/{id}/statuses:
@@ -168,12 +168,6 @@ paths:
                 $ref: '#/components/schemas/StatusDTO'
         required: true
       responses:
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "400":
           description: Bad request
           content:
@@ -184,6 +178,12 @@ paths:
                   - $ref: '#/components/schemas/ConstraintViolationProblem'
         "404":
           description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "500":
+          description: Internal Server error
           content:
             application/problem+json:
               schema:
@@ -209,12 +209,6 @@ paths:
               $ref: '#/components/schemas/StatusDTO'
         required: true
       responses:
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "400":
           description: Bad request
           content:
@@ -225,6 +219,12 @@ paths:
                   - $ref: '#/components/schemas/ConstraintViolationProblem'
         "404":
           description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "500":
+          description: Internal Server error
           content:
             application/problem+json:
               schema:
@@ -253,12 +253,6 @@ paths:
                 $ref: '#/components/schemas/StakeholderDTO'
         required: true
       responses:
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "400":
           description: Bad request
           content:
@@ -269,6 +263,12 @@ paths:
                   - $ref: '#/components/schemas/ConstraintViolationProblem'
         "404":
           description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "500":
+          description: Internal Server error
           content:
             application/problem+json:
               schema:
@@ -302,12 +302,6 @@ paths:
               style: simple
               schema:
                 type: string
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "400":
           description: Bad request
           content:
@@ -318,6 +312,12 @@ paths:
                   - $ref: '#/components/schemas/ConstraintViolationProblem'
         "404":
           description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "500":
+          description: Internal Server error
           content:
             application/problem+json:
               schema:
@@ -344,12 +344,6 @@ paths:
       responses:
         "204":
           description: No content - Successful operation
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "400":
           description: Bad request
           content:
@@ -360,6 +354,12 @@ paths:
                   - $ref: '#/components/schemas/ConstraintViolationProblem'
         "404":
           description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "500":
+          description: Internal Server error
           content:
             application/problem+json:
               schema:
@@ -385,12 +385,6 @@ paths:
       responses:
         "204":
           description: No content - Successful operation
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "400":
           description: Bad request
           content:
@@ -401,6 +395,12 @@ paths:
                   - $ref: '#/components/schemas/ConstraintViolationProblem'
         "404":
           description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "500":
+          description: Internal Server error
           content:
             application/problem+json:
               schema:
@@ -425,12 +425,6 @@ paths:
               $ref: '#/components/schemas/AttachmentDTO'
         required: true
       responses:
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "400":
           description: Bad request
           content:
@@ -441,6 +435,12 @@ paths:
                   - $ref: '#/components/schemas/ConstraintViolationProblem'
         "404":
           description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "500":
+          description: Internal Server error
           content:
             application/problem+json:
               schema:
@@ -459,12 +459,6 @@ paths:
             type: integer
             format: int64
       responses:
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "400":
           description: Bad request
           content:
@@ -475,6 +469,12 @@ paths:
                   - $ref: '#/components/schemas/ConstraintViolationProblem'
         "404":
           description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "500":
+          description: Internal Server error
           content:
             application/problem+json:
               schema:
@@ -499,12 +499,6 @@ paths:
               $ref: '#/components/schemas/AttachmentDTO'
         required: true
       responses:
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "400":
           description: Bad request
           content:
@@ -515,6 +509,12 @@ paths:
                   - $ref: '#/components/schemas/ConstraintViolationProblem'
         "404":
           description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "500":
+          description: Internal Server error
           content:
             application/problem+json:
               schema:
@@ -534,12 +534,6 @@ paths:
               $ref: '#/components/schemas/MessageRequest'
         required: true
       responses:
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "400":
           description: Bad request
           content:
@@ -548,6 +542,12 @@ paths:
                 oneOf:
                   - $ref: '#/components/schemas/Problem'
                   - $ref: '#/components/schemas/ConstraintViolationProblem'
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
         "204":
           description: No content - Successful operation
   /errands:
@@ -598,12 +598,6 @@ paths:
             items:
               type: string
       responses:
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "400":
           description: Bad request
           content:
@@ -614,6 +608,12 @@ paths:
                   - $ref: '#/components/schemas/ConstraintViolationProblem'
         "404":
           description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "500":
+          description: Internal Server error
           content:
             application/problem+json:
               schema:
@@ -647,12 +647,6 @@ paths:
               style: simple
               schema:
                 type: string
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "400":
           description: Bad request
           content:
@@ -663,6 +657,12 @@ paths:
                   - $ref: '#/components/schemas/ConstraintViolationProblem'
         "404":
           description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "500":
+          description: Internal Server error
           content:
             application/problem+json:
               schema:
@@ -680,12 +680,6 @@ paths:
               $ref: '#/components/schemas/AttachmentDTO'
         required: true
       responses:
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "400":
           description: Bad request
           content:
@@ -696,6 +690,12 @@ paths:
                   - $ref: '#/components/schemas/ConstraintViolationProblem'
         "404":
           description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "500":
+          description: Internal Server error
           content:
             application/problem+json:
               schema:
@@ -724,12 +724,6 @@ paths:
           description: No content - Successful operation
         "403":
           description: Forbidden
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "400":
           description: Bad request
           content:
@@ -740,6 +734,12 @@ paths:
                   - $ref: '#/components/schemas/ConstraintViolationProblem'
         "404":
           description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "500":
+          description: Internal Server error
           content:
             application/problem+json:
               schema:
@@ -765,12 +765,6 @@ paths:
       responses:
         "204":
           description: No content - Successful operation
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "400":
           description: Bad request
           content:
@@ -781,6 +775,12 @@ paths:
                   - $ref: '#/components/schemas/ConstraintViolationProblem'
         "404":
           description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "500":
+          description: Internal Server error
           content:
             application/problem+json:
               schema:
@@ -799,12 +799,6 @@ paths:
             type: integer
             format: int64
       responses:
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "400":
           description: Bad request
           content:
@@ -815,6 +809,12 @@ paths:
                   - $ref: '#/components/schemas/ConstraintViolationProblem'
         "404":
           description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "500":
+          description: Internal Server error
           content:
             application/problem+json:
               schema:
@@ -847,12 +847,6 @@ paths:
               $ref: '#/components/schemas/PatchErrandDTO'
         required: true
       responses:
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "400":
           description: Bad request
           content:
@@ -863,6 +857,12 @@ paths:
                   - $ref: '#/components/schemas/ConstraintViolationProblem'
         "404":
           description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "500":
+          description: Internal Server error
           content:
             application/problem+json:
               schema:
@@ -897,12 +897,6 @@ paths:
               style: simple
               schema:
                 type: string
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "400":
           description: Bad request
           content:
@@ -913,6 +907,12 @@ paths:
                   - $ref: '#/components/schemas/ConstraintViolationProblem'
         "404":
           description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "500":
+          description: Internal Server error
           content:
             application/problem+json:
               schema:
@@ -931,12 +931,6 @@ paths:
             type: integer
             format: int64
       responses:
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "400":
           description: Bad request
           content:
@@ -947,6 +941,12 @@ paths:
                   - $ref: '#/components/schemas/ConstraintViolationProblem'
         "404":
           description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "500":
+          description: Internal Server error
           content:
             application/problem+json:
               schema:
@@ -991,12 +991,6 @@ paths:
               style: simple
               schema:
                 type: string
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "400":
           description: Bad request
           content:
@@ -1007,6 +1001,12 @@ paths:
                   - $ref: '#/components/schemas/ConstraintViolationProblem'
         "404":
           description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "500":
+          description: Internal Server error
           content:
             application/problem+json:
               schema:
@@ -1027,7 +1027,7 @@ paths:
               - APPLICANT
               - PROPERTY_OWNER
               - PAYMENT_PERSON
-              - INVOICE_RECIPENT
+              - INVOICE_RECIPIENT
               - OPERATOR
               - CONTACT_PERSON
               - ADMINISTRATOR
@@ -1043,13 +1043,10 @@ paths:
               - ASSOCIATION_REPRESENTATIVE
               - CASHIER
               - CHAIRMAN
+              - LAND_RIGHT_OWNER
+              - DELEGATE
+              - USUFRUCTUARY
       responses:
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "400":
           description: Bad request
           content:
@@ -1060,6 +1057,12 @@ paths:
                   - $ref: '#/components/schemas/ConstraintViolationProblem'
         "404":
           description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "500":
+          description: Internal Server error
           content:
             application/problem+json:
               schema:
@@ -1091,12 +1094,6 @@ paths:
             type: integer
             format: int64
       responses:
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "400":
           description: Bad request
           content:
@@ -1107,6 +1104,12 @@ paths:
                   - $ref: '#/components/schemas/ConstraintViolationProblem'
         "404":
           description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "500":
+          description: Internal Server error
           content:
             application/problem+json:
               schema:
@@ -1134,6 +1137,20 @@ paths:
             type: integer
             format: int64
       responses:
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/Problem'
+                  - $ref: '#/components/schemas/ConstraintViolationProblem'
+        "404":
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
         "500":
           description: Internal Server error
           content:
@@ -1148,20 +1165,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/HistoryDTO'
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                oneOf:
-                  - $ref: '#/components/schemas/Problem'
-                  - $ref: '#/components/schemas/ConstraintViolationProblem'
-        "404":
-          description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
   /parking-permits:
     get:
       tags:
@@ -1176,12 +1179,6 @@ paths:
           schema:
             type: string
       responses:
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "400":
           description: Bad request
           content:
@@ -1192,6 +1189,12 @@ paths:
                   - $ref: '#/components/schemas/ConstraintViolationProblem'
         "404":
           description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "500":
+          description: Internal Server error
           content:
             application/problem+json:
               schema:
@@ -1232,12 +1235,6 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/NoteDTO'
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "400":
           description: Bad request
           content:
@@ -1248,6 +1245,12 @@ paths:
                   - $ref: '#/components/schemas/ConstraintViolationProblem'
         "404":
           description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "500":
+          description: Internal Server error
           content:
             application/problem+json:
               schema:
@@ -1266,20 +1269,6 @@ paths:
             type: integer
             format: int64
       responses:
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        "200":
-          description: OK - Successful operation
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/HistoryDTO'
         "400":
           description: Bad request
           content:
@@ -1294,6 +1283,20 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "200":
+          description: OK - Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/HistoryDTO'
   /notes/errand/{errandId}:
     get:
       tags:
@@ -1326,12 +1329,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/NoteDTO'
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "400":
           description: Bad request
           content:
@@ -1342,6 +1339,12 @@ paths:
                   - $ref: '#/components/schemas/ConstraintViolationProblem'
         "404":
           description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "500":
+          description: Internal Server error
           content:
             application/problem+json:
               schema:
@@ -1359,12 +1362,6 @@ paths:
           schema:
             type: string
       responses:
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "400":
           description: Bad request
           content:
@@ -1373,6 +1370,12 @@ paths:
                 oneOf:
                   - $ref: '#/components/schemas/Problem'
                   - $ref: '#/components/schemas/ConstraintViolationProblem'
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
         "200":
           description: OK - Successful operation
           content:
@@ -1451,8 +1454,6 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        "200":
-          description: OK - Successful operation
         "400":
           description: Bad Request
           content:
@@ -1461,6 +1462,8 @@ paths:
                 oneOf:
                   - $ref: '#/components/schemas/Problem'
                   - $ref: '#/components/schemas/ConstraintViolationProblem'
+        "200":
+          description: OK - Successful operation
   /facilities/{id}/history:
     get:
       tags:
@@ -1475,20 +1478,6 @@ paths:
             type: integer
             format: int64
       responses:
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        "200":
-          description: OK - Successful operation
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/HistoryDTO'
         "400":
           description: Bad request
           content:
@@ -1503,6 +1492,20 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "200":
+          description: OK - Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/HistoryDTO'
   /errands/{id}/history:
     get:
       tags:
@@ -1517,6 +1520,20 @@ paths:
             type: integer
             format: int64
       responses:
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/Problem'
+                  - $ref: '#/components/schemas/ConstraintViolationProblem'
+        "404":
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
         "500":
           description: Internal Server error
           content:
@@ -1531,20 +1548,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/HistoryDTO'
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                oneOf:
-                  - $ref: '#/components/schemas/Problem'
-                  - $ref: '#/components/schemas/ConstraintViolationProblem'
-        "404":
-          description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
   /decisions/{id}:
     get:
       tags:
@@ -1559,12 +1562,6 @@ paths:
             type: integer
             format: int64
       responses:
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "400":
           description: Bad request
           content:
@@ -1575,6 +1572,12 @@ paths:
                   - $ref: '#/components/schemas/ConstraintViolationProblem'
         "404":
           description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "500":
+          description: Internal Server error
           content:
             application/problem+json:
               schema:
@@ -1602,6 +1605,20 @@ paths:
             type: integer
             format: int64
       responses:
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/Problem'
+                  - $ref: '#/components/schemas/ConstraintViolationProblem'
+        "404":
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
         "500":
           description: Internal Server error
           content:
@@ -1616,20 +1633,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/HistoryDTO'
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                oneOf:
-                  - $ref: '#/components/schemas/Problem'
-                  - $ref: '#/components/schemas/ConstraintViolationProblem'
-        "404":
-          description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
   /attachments/{id}:
     get:
       tags:
@@ -1644,12 +1647,6 @@ paths:
             type: integer
             format: int64
       responses:
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "400":
           description: Bad request
           content:
@@ -1660,6 +1657,12 @@ paths:
                   - $ref: '#/components/schemas/ConstraintViolationProblem'
         "404":
           description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "500":
+          description: Internal Server error
           content:
             application/problem+json:
               schema:
@@ -1687,6 +1690,20 @@ paths:
             type: integer
             format: int64
       responses:
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/Problem'
+                  - $ref: '#/components/schemas/ConstraintViolationProblem'
+        "404":
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
         "500":
           description: Internal Server error
           content:
@@ -1701,20 +1718,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/HistoryDTO'
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                oneOf:
-                  - $ref: '#/components/schemas/Problem'
-                  - $ref: '#/components/schemas/ConstraintViolationProblem'
-        "404":
-          description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
   /attachments/errand/{errand_number}:
     get:
       tags:
@@ -1728,12 +1731,6 @@ paths:
           schema:
             type: string
       responses:
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "400":
           description: Bad request
           content:
@@ -1744,6 +1741,12 @@ paths:
                   - $ref: '#/components/schemas/ConstraintViolationProblem'
         "404":
           description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "500":
+          description: Internal Server error
           content:
             application/problem+json:
               schema:
@@ -1797,12 +1800,6 @@ paths:
             type: integer
             format: int64
       responses:
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "400":
           description: Bad request
           content:
@@ -1813,6 +1810,12 @@ paths:
                   - $ref: '#/components/schemas/ConstraintViolationProblem'
         "404":
           description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "500":
+          description: Internal Server error
           content:
             application/problem+json:
               schema:
@@ -1839,12 +1842,6 @@ paths:
             type: integer
             format: int64
       responses:
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "400":
           description: Bad request
           content:
@@ -1855,6 +1852,12 @@ paths:
                   - $ref: '#/components/schemas/ConstraintViolationProblem'
         "404":
           description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "500":
+          description: Internal Server error
           content:
             application/problem+json:
               schema:
@@ -1881,12 +1884,6 @@ paths:
             type: integer
             format: int64
       responses:
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "400":
           description: Bad request
           content:
@@ -1897,6 +1894,12 @@ paths:
                   - $ref: '#/components/schemas/ConstraintViolationProblem'
         "404":
           description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "500":
+          description: Internal Server error
           content:
             application/problem+json:
               schema:
@@ -2070,7 +2073,7 @@ components:
               - APPLICANT
               - PROPERTY_OWNER
               - PAYMENT_PERSON
-              - INVOICE_RECIPENT
+              - INVOICE_RECIPIENT
               - OPERATOR
               - CONTACT_PERSON
               - ADMINISTRATOR
@@ -2086,6 +2089,9 @@ components:
               - ASSOCIATION_REPRESENTATIVE
               - CASHIER
               - CHAIRMAN
+              - LAND_RIGHT_OWNER
+              - DELEGATE
+              - USUFRUCTUARY
         addresses:
           type: array
           description: An stakeholder may have one or more addresses. For example
@@ -2113,20 +2119,20 @@ components:
           type: object
           additionalProperties:
             type: object
-        status:
-          $ref: '#/components/schemas/StatusType'
         title:
           type: string
         detail:
           type: string
+        status:
+          $ref: '#/components/schemas/StatusType'
     StatusType:
       type: object
       properties:
+        reasonPhrase:
+          type: string
         statusCode:
           type: integer
           format: int32
-        reasonPhrase:
-          type: string
     ConstraintViolationProblem:
       type: object
       properties:
@@ -2248,12 +2254,12 @@ components:
           type: object
           additionalProperties:
             type: object
-        status:
-          $ref: '#/components/schemas/StatusType'
         title:
           type: string
         detail:
           type: string
+        status:
+          $ref: '#/components/schemas/StatusType'
         suppressed:
           type: array
           items:
@@ -3533,6 +3539,10 @@ components:
         totalPages:
           type: integer
           format: int32
+        first:
+          type: boolean
+        last:
+          type: boolean
         size:
           type: integer
           format: int32
@@ -3548,10 +3558,6 @@ components:
         numberOfElements:
           type: integer
           format: int32
-        first:
-          type: boolean
-        last:
-          type: boolean
         pageable:
           $ref: '#/components/schemas/PageableObject'
         empty:
@@ -3564,16 +3570,16 @@ components:
           format: int64
         sort:
           $ref: '#/components/schemas/SortObject'
+        paged:
+          type: boolean
+        unpaged:
+          type: boolean
         pageNumber:
           type: integer
           format: int32
         pageSize:
           type: integer
           format: int32
-        paged:
-          type: boolean
-        unpaged:
-          type: boolean
     SortObject:
       type: object
       properties:
