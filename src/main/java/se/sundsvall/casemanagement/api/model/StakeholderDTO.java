@@ -36,7 +36,7 @@ public abstract class StakeholderDTO {
     private StakeholderType type;
 
     @NotNull
-    @Schema(description = "An stakeholder can have one or more roles.")
+    @Schema(description = "An stakeholder can have one or more roles. Please note that INVOICE_RECIPENT is deprecated and should not be used. Use INVOICE_RECIPIENT instead.", enumAsRef = true)
     @EnvironmentStakeholderRole(groups = EnvironmentalConstraints.class)
     @PlanningStakeholderRole(groups = PlanningConstraints.class)
     private List<StakeholderRole> roles;

@@ -55,7 +55,7 @@
       "type": "PERSON",
       "roles": [
         "PAYMENT_PERSON",
-        "INVOICE_RECIPIENT"
+        "INVOICE_RECIPENT"
       ],
       "firstName": "PeRRnaLRro",
       "lastName": "ACerBugnuP",

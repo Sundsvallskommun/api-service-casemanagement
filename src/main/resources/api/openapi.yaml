@@ -5,9 +5,9 @@ info:
   license:
     name: MIT License
     url: https://opensource.org/licenses/MIT
-  version: "6.0"
+  version: "6.1"
 servers:
-  - url: http://localhost:50740
+  - url: http://localhost:51001
     description: Generated server url
 tags:
   - name: Status
@@ -932,12 +932,13 @@ components:
           description: An stakeholder can have one or more roles.
           items:
             type: string
-            description: <h3>General roles:</h3><li>APPLICANT(Sökande)</li><li>CONTACT_PERSON(Kontaktperson)</li><br><br><h3>ByggR-roles:</h3><li>CONTROL_OFFICIAL(Kontrollansvarig)</li><li>PROPERTY_OWNER(Fastighetsägare)</li><li>PAYMENT_PERSON(Betalningsansvarig)</li><br><br><h3>Ecos2-roles:</h3><li>INVOICE_RECIPENT(Fakturamottagare)</li><li>OPERATOR(Verksamhetsutövare)</li><li>INSTALLER(Installatör)</li>
+            description: Stakeholder roles
             enum:
               - CONTROL_OFFICIAL
               - PROPERTY_OWNER
               - PAYMENT_PERSON
               - INVOICE_RECIPIENT
+              - INVOICE_RECIPENT
               - OPERATOR
               - INSTALLER
               - APPLICANT
@@ -1221,11 +1222,11 @@ components:
     StatusType:
       type: object
       properties:
-        reasonPhrase:
-          type: string
         statusCode:
           type: integer
           format: int32
+        reasonPhrase:
+          type: string
     CaseResourceResponseDTO:
       type: object
       properties:

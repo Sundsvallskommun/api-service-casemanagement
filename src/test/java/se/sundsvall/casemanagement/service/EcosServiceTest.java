@@ -184,7 +184,7 @@ class EcosServiceTest {
 		final PersonDTO person = new PersonDTO();
 		person.setType(StakeholderType.PERSON);
 		final List<StakeholderRole> srList2 = new ArrayList<>();
-		srList2.add(StakeholderRole.INVOICE_RECIPIENT);
+		srList2.add(StakeholderRole.INVOICE_RECIPENT);
 		person.setRoles(srList2);
 		person.setFirstName("Förnamn");
 		person.setLastName("Efternamn");
