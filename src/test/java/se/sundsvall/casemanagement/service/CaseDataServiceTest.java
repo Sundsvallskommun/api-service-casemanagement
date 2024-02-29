@@ -8,6 +8,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.LOST_PARKING_PERMIT;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARKING_PERMIT;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARKING_PERMIT_RENEWAL;
 
 import java.net.URI;
@@ -75,7 +76,7 @@ class CaseDataServiceTest {
 	private ArgumentCaptor<AttachmentDTO> attachmentDTOArgumentCaptor;
 
 	@ParameterizedTest
-	@EnumSource(value = CaseType.class, mode = EnumSource.Mode.INCLUDE, names = {CaseType.Value.PARKING_PERMIT, LOST_PARKING_PERMIT, PARKING_PERMIT_RENEWAL})
+	@EnumSource(value = CaseType.class, names = {PARKING_PERMIT, LOST_PARKING_PERMIT, PARKING_PERMIT_RENEWAL})
 	void testPostCases(final CaseType caseType) throws URISyntaxException {
 		// Arrange
 		final var errandId = new Random().nextLong();

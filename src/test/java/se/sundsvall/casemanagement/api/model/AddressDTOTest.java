@@ -30,7 +30,7 @@ class AddressDTOTest {
 	}
 
 	@Test
-	void testBuilder() {
+	void testFields() {
 		// Arrange
 		final var addressCategories = List.of(AddressCategory.VISITING_ADDRESS);
 		final var city = "someCity";

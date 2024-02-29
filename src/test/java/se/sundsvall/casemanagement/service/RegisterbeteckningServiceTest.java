@@ -1,5 +1,6 @@
 package se.sundsvall.casemanagement.service;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -48,7 +49,7 @@ class RegisterbeteckningServiceTest {
 		// Arrange
 		final String propertyDesignation = "TEST 1:1";
 		//Mock
-		when(registerbeteckningClient.getRegisterbeteckningsreferenser(propertyDesignation, Constants.LANTMATERIET_REFERENS_STATUS_GALLANDE, 1)).thenReturn(new ArrayList<>());
+		when(registerbeteckningClient.getRegisterbeteckningsreferenser(propertyDesignation, Constants.LANTMATERIET_REFERENS_STATUS_GALLANDE, 1)).thenReturn(emptyList());
 		// Act
 		final var result = registerbeteckningService.getRegisterbeteckningsreferens(propertyDesignation);
 		// Assert

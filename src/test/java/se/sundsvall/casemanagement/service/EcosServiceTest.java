@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -111,8 +110,7 @@ class EcosServiceTest {
 	@Mock
 	private PartyService partyServiceMock;
 
-	@NotNull
-	private static Map<String, String> getStringMap() {
+	private static Map<String, String> getGeoExtraParametersMap() {
 		final Map<String, String> extraParameters = new HashMap<>();
 		extraParameters.put("CreateGeothermalHeatingFacilitySvcDto_Manufacturer", "Mitsubishi");
 		extraParameters.put("CreateGeothermalHeatingFacilitySvcDto_Model", "SuperHeater 2000");
@@ -123,8 +121,7 @@ class EcosServiceTest {
 		return extraParameters;
 	}
 
-	@NotNull
-	private static Map<String, String> getStringStringMap() {
+	private static Map<String, String> getSoilExtraParametersMap() {
 		final Map<String, String> extraParameters = new HashMap<>();
 		extraParameters.put("CreateSoilHeatingFacilitySvcDto_Manufacturer", "Mitsubishi");
 		extraParameters.put("CreateSoilHeatingFacilitySvcDto_Model", "SuperHeater 2000");
@@ -135,8 +132,7 @@ class EcosServiceTest {
 		return extraParameters;
 	}
 
-	@NotNull
-	private static Map<String, String> getExtraParameters() {
+	private static Map<String, String> getMarineExtraParameters() {
 		final Map<String, String> extraParameters = new HashMap<>();
 		extraParameters.put("CreateMarineHeatingFacilitySvcDto_Manufacturer", "Mitsubishi");
 		extraParameters.put("CreateMarineHeatingFacilitySvcDto_Model", "SuperHeater 2000");
@@ -290,7 +286,7 @@ class EcosServiceTest {
 	@Test
 	void testGeothermalHeating() {
 		final EnvironmentalCaseDTO eCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP, AttachmentCategory.ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
-		final var extraParameters = getStringMap();
+		final var extraParameters = getGeoExtraParametersMap();
 		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
 
 		ecosService.postCase(eCase);
@@ -305,7 +301,7 @@ class EcosServiceTest {
 	@Test
 	void testSoilHeating() {
 		final EnvironmentalCaseDTO eCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP, AttachmentCategory.ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
-		final var extraParameters = getStringStringMap();
+		final var extraParameters = getSoilExtraParametersMap();
 		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
 
 		ecosService.postCase(eCase);
@@ -343,7 +339,7 @@ class EcosServiceTest {
 	@Test
 	void testMarineHeating() {
 		final EnvironmentalCaseDTO eCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP, AttachmentCategory.ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
-		final var extraParameters = getExtraParameters();
+		final var extraParameters = getMarineExtraParameters();
 		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
 
 		ecosService.postCase(eCase);

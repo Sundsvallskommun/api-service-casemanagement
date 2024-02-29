@@ -6,7 +6,6 @@ import java.util.Arrays;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -14,7 +13,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import se.sundsvall.casemanagement.api.model.CaseStatusDTO;
 import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
-import se.sundsvall.casemanagement.integration.db.CaseMappingRepository;
 import se.sundsvall.dept44.test.AbstractAppTest;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 
@@ -22,13 +20,8 @@ import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 @WireMockAppTestSuite(files = "classpath:/CaseStatusIT/", classes = Application.class)
 class CaseStatusIT extends AbstractAppTest {
 
-	@Autowired
-	private CaseMappingRepository caseMappingRepository;
-
 	@Test
 	void test1_GetEcosStatusByExternalCaseId() throws JsonProcessingException, ClassNotFoundException {
-		caseMappingRepository.findAll().forEach(System.out::println);
-
 		final var ECOS_NUMBER = "MK-2021-837";
 
 		final var result = setupCall()
