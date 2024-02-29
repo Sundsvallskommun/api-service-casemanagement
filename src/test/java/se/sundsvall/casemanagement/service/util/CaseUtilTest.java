@@ -1,11 +1,8 @@
 package se.sundsvall.casemanagement.service.util;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -19,146 +16,167 @@ import se.sundsvall.casemanagement.util.CaseUtil;
 
 class CaseUtilTest {
 
-    @Test
-    void testGetSokigoFormattedOrganizationNumber() {
-        String organizationNumber = TestUtil.generateRandomOrganizationNumber();
-        String result = CaseUtil.getSokigoFormattedOrganizationNumber(organizationNumber);
-        assertTrue(result.startsWith("16"));
-        assertEquals(13, result.length());
-        assertEquals("16" + organizationNumber, result);
-    }
+	@Test
+	void testGetSokigoFormattedOrganizationNumber() {
+		// Arrange
+		final var organizationNumber = TestUtil.generateRandomOrganizationNumber();
+		// Act
+		final String result = CaseUtil.getSokigoFormattedOrganizationNumber(organizationNumber);
+		// Assert
+		assertThat(result)
+			.startsWith("16")
+			.hasSize(13)
+			.isEqualTo("16" + organizationNumber);
+	}
 
-    @Test
-    void testGetSokigoFormattedOrganizationNumberNoDifference() {
-        String organizationNumber = TestUtil.generateRandomOrganizationNumber();
-        organizationNumber = "10" + organizationNumber;
-        String result = CaseUtil.getSokigoFormattedOrganizationNumber(organizationNumber);
-        assertEquals(organizationNumber, result);
-    }
+	@Test
+	void testGetSokigoFormattedOrganizationNumberNoDifference() {
+		// Arrange
+		var organizationNumber = TestUtil.generateRandomOrganizationNumber();
+		organizationNumber = "10" + organizationNumber;
+		// Act
+		final String result = CaseUtil.getSokigoFormattedOrganizationNumber(organizationNumber);
+		// Assert
+		assertThat(result).isEqualTo(organizationNumber);
+	}
 
-    @Test
-    void testGetSokigoFormattedOrganizationNumberWrongNumberOfDigits() {
-        String organizationNumber = "123456-123";
-        var problem = assertThrows(ThrowableProblem.class, () -> CaseUtil.getSokigoFormattedOrganizationNumber(organizationNumber));
-        assertEquals(Status.BAD_REQUEST, problem.getStatus());
-        assertEquals("Invalid organizationNumber format: 123456-123", problem.getDetail());
-    }
+	@Test
+	void testGetSokigoFormattedOrganizationNumberWrongNumberOfDigits() {
 
-    @Test
-    void testParseBoolean() {
-        assertTrue(CaseUtil.parseBoolean("true"));
-        assertFalse(CaseUtil.parseBoolean("false"));
-        assertTrue(CaseUtil.parseBoolean(true));
-        assertFalse(CaseUtil.parseBoolean(false));
-    }
+		assertThatThrownBy(() -> CaseUtil.getSokigoFormattedOrganizationNumber("123456-123"))
+			.isInstanceOf(ThrowableProblem.class)
+			.hasMessage("Bad Request: Invalid organizationNumber format: 123456-123")
+			.hasFieldOrPropertyWithValue("status", Status.BAD_REQUEST);
+	}
 
-    @Test
-    void testGetSokigoFormattedPersonalNumberFromNonHyphenatedPersonalNumber() {
-        var personalNumber = TestUtil.generateRandomPersonalNumber();
-        var result = CaseUtil.getSokigoFormattedPersonalNumber(personalNumber);
+	@Test
+	void testParseBoolean() {
+		assertThat(CaseUtil.parseBoolean("true")).isTrue();
+		assertThat(CaseUtil.parseBoolean("false")).isFalse();
+		assertThat(CaseUtil.parseBoolean(true)).isTrue();
+		assertThat(CaseUtil.parseBoolean(false)).isFalse();
+	}
 
-        var expected = new StringBuilder(personalNumber).insert(8, "-").toString();
+	@Test
+	void testGetSokigoFormattedPersonalNumberFromNonHyphenatedPersonalNumber() {
+		final var personalNumber = TestUtil.generateRandomPersonalNumber();
+		final var result = CaseUtil.getSokigoFormattedPersonalNumber(personalNumber);
 
-        assertNotEquals(personalNumber, result);
-        assertEquals(expected, result);
-    }
+		final var expected = new StringBuilder(personalNumber).insert(8, "-").toString();
 
-    @Test
-    void testGetSokigoFormattedPersonalNumberFromProperlyFormattedPersonalNumber() {
-        var personalNumber = new StringBuilder(TestUtil.generateRandomPersonalNumber()).insert(8, "-").toString();
-        var result = CaseUtil.getSokigoFormattedPersonalNumber(personalNumber);
-        assertEquals(personalNumber, result);
-    }
+		assertThat(result)
+			.isNotEqualTo(personalNumber)
+			.isEqualTo(expected);
+	}
 
-
-    @Test
-    void testGetSokigoFormattedPersonalNumberFromNull() {
-        assertThrows(ThrowableProblem.class, () -> CaseUtil.getSokigoFormattedPersonalNumber(null));
-    }
-
-    @Test
-    void testGetSokigoFormattedPersonalNumberFromWronglyFormattedPersonalNumber() {
-        assertThrows(ThrowableProblem.class, () -> CaseUtil.getSokigoFormattedPersonalNumber("19000101"));
-    }
-
-    @Test
-    void testParseBooleanWierdText() {
-        assertFalse(CaseUtil.parseBoolean("wierd text"));
-    }
+	@Test
+	void testGetSokigoFormattedPersonalNumberFromProperlyFormattedPersonalNumber() {
+		final var personalNumber = new StringBuilder(TestUtil.generateRandomPersonalNumber()).insert(8, "-").toString();
+		final var result = CaseUtil.getSokigoFormattedPersonalNumber(personalNumber);
+		assertThat(result).isEqualTo(personalNumber);
+	}
 
 
-    @Test
-    void testParseBooleanNull() {
-        assertFalse(CaseUtil.parseBoolean(null));
-    }
+	@Test
+	void testGetSokigoFormattedPersonalNumberFromNull() {
+		assertThatThrownBy(() -> CaseUtil.getSokigoFormattedPersonalNumber("null"))
+			.isInstanceOf(ThrowableProblem.class)
+			.hasMessage("Bad Request: personalNumber must be 12 digits");
+	}
 
-    @Test
-    void testParseInteger() {
-        assertEquals(Integer.valueOf(100), CaseUtil.parseInteger("100"));
-        assertEquals(Integer.valueOf(100), CaseUtil.parseInteger(100));
-    }
+	@Test
+	void testGetSokigoFormattedPersonalNumberFromWronglyFormattedPersonalNumber() {
 
-    @Test
-    void testParseIntegerNull() {
-        assertNull(CaseUtil.parseInteger(null));
-    }
+		assertThatThrownBy(() -> CaseUtil.getSokigoFormattedPersonalNumber("19000101"))
+			.isInstanceOf(ThrowableProblem.class)
+			.hasMessage("Bad Request: personalNumber must be 12 digits");
+	}
 
-    @Test
-    void testParseIntegerWierdText() {
-        assertThrows(NumberFormatException.class, () -> CaseUtil.parseInteger("wierd text"));
-    }
+	@Test
+	void testParseBooleanWierdText() {
+		assertThat(CaseUtil.parseBoolean("wierd text")).isFalse();
+	}
 
-    @Test
-    void testParseDouble() {
-        assertEquals(Double.valueOf(100.0), CaseUtil.parseDouble("100.0"));
-        assertEquals(Double.valueOf(100.0), CaseUtil.parseDouble(100.0));
-    }
 
-    @Test
-    void testParseDoubleNull() {
-        assertNull(CaseUtil.parseDouble(null));
-    }
+	@Test
+	void testParseBooleanNull() {
+		assertThat(CaseUtil.parseBoolean(null)).isFalse();
+	}
 
-    @Test
-    void testParseDoubleWierdText() {
-        assertThrows(NumberFormatException.class, () -> CaseUtil.parseDouble("wierd text"));
-    }
+	@Test
+	void testParseInteger() {
+		assertThat(CaseUtil.parseInteger("100")).isEqualTo(100);
+		assertThat(CaseUtil.parseInteger(100)).isEqualTo(100);
+	}
 
-    @Test
-    void testParseLocalDateTime() {
-        LocalDate localDate = LocalDate.now();
-        assertEquals(localDate.atStartOfDay(), CaseUtil.parseLocalDateTime(localDate.toString()));
-    }
+	@Test
+	void testParseIntegerNull() {
+		assertThat(CaseUtil.parseInteger(null)).isNull();
+	}
 
-    @Test
-    void testParseLocalDateTimeNull() {
-        assertNull(CaseUtil.parseLocalDateTime(null));
-    }
+	@Test
+	void testParseIntegerWierdText() {
+		assertThatThrownBy(() -> CaseUtil.parseInteger("wierd text"))
+			.isInstanceOf(NumberFormatException.class)
+			.hasMessage("For input string: \"wierd text\"");
+	}
 
-    @Test
-    void testParseLocalDateTimeWierdText() {
-        assertThrows(DateTimeParseException.class, () -> CaseUtil.parseLocalDateTime("wierd text"));
-    }
+	@Test
+	void testParseDouble() {
+		assertThat(CaseUtil.parseDouble("100.0")).isEqualTo(Double.valueOf(100.0));
+		assertThat(CaseUtil.parseDouble(100.0)).isEqualTo(Double.valueOf(100.0));
+	}
 
-    @Test
-    void testParseString() {
-        assertEquals("test", CaseUtil.parseString("test"));
-    }
+	@Test
+	void testParseDoubleNull() {
+		assertThat(CaseUtil.parseDouble(null)).isNull();
+	}
 
-    @Test
-    void testParseStringNull() {
-        assertNull(CaseUtil.parseString(null));
-    }
+	@Test
+	void testParseDoubleWierdText() {
+		assertThatThrownBy(() -> CaseUtil.parseDouble("wierd text"))
+			.isInstanceOf(NumberFormatException.class)
+			.hasMessage("For input string: \"wierd text\"");
+	}
 
-    @Test
-    void testParseStringEmpty() {
-        assertEquals("", CaseUtil.parseString(""));
-    }
 
-    @Test
-    void testParseStringBlank() {
-        assertEquals(" ", CaseUtil.parseString(" "));
-    }
+	@Test
+	void testParseLocalDateTime() {
+		final LocalDate localDate = LocalDate.now();
+		assertThat(CaseUtil.parseLocalDateTime(localDate.toString())).isEqualTo(localDate.atStartOfDay());
+	}
+
+	@Test
+	void testParseLocalDateTimeNull() {
+		assertThat(CaseUtil.parseLocalDateTime(null)).isNull();
+	}
+
+	@Test
+	void testParseLocalDateTimeWierdText() {
+
+		assertThatThrownBy(() -> CaseUtil.parseLocalDateTime("wierd text"))
+			.isInstanceOf(DateTimeParseException.class)
+			.hasMessage("Text 'wierd text' could not be parsed at index 0");
+	}
+
+	@Test
+	void testParseString() {
+		assertThat(CaseUtil.parseString("test")).isEqualTo("test");
+	}
+
+	@Test
+	void testParseStringNull() {
+		assertThat(CaseUtil.parseString(null)).isNull();
+	}
+
+	@Test
+	void testParseStringEmpty() {
+		assertThat(CaseUtil.parseString("")).isEmpty();
+	}
+
+	@Test
+	void testParseStringBlank() {
+		assertThat(CaseUtil.parseString(" ")).isEqualTo(" ");
+	}
+
 }
-
-

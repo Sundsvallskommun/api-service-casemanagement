@@ -1,8 +1,7 @@
 package se.sundsvall.casemanagement.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.Mockito.doReturn;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,53 +21,59 @@ import se.sundsvall.casemanagement.util.Constants;
 @ExtendWith(MockitoExtension.class)
 class RegisterbeteckningServiceTest {
 
-    @InjectMocks
-    private RegisterbeteckningService registerbeteckningService;
+	@InjectMocks
+	private RegisterbeteckningService registerbeteckningService;
 
-    @Mock
-    private RegisterbeteckningClient registerbeteckningClient;
+	@Mock
+	private RegisterbeteckningClient registerbeteckningClient;
 
-    @Test
-    void testGetRegisterbeteckningsreferens() {
-        String propertyDesignation = "TEST 1:1";
+	@Test
+	void testGetRegisterbeteckningsreferens() {
+		// Arrange
+		final var propertyDesignation = "TEST 1:1";
+		final var registerbeteckningsreferens = new Registerbeteckningsreferens();
+		registerbeteckningsreferens.setBeteckningsid(UUID.randomUUID().toString());
+		registerbeteckningsreferens.setBeteckning(propertyDesignation);
+		registerbeteckningsreferens.setRegisterenhet(RandomStringUtils.random(10, true, false));
+		//Mock
+		when(registerbeteckningClient.getRegisterbeteckningsreferenser(propertyDesignation, Constants.LANTMATERIET_REFERENS_STATUS_GALLANDE, 1)).thenReturn(List.of(registerbeteckningsreferens));
+		// Act
+		final var result = registerbeteckningService.getRegisterbeteckningsreferens(propertyDesignation);
+		// Assert
+		assertThat(result).isEqualTo(registerbeteckningsreferens);
+	}
 
-        List<Registerbeteckningsreferens> registerbeteckningsreferenser = new ArrayList<>();
-        Registerbeteckningsreferens registerbeteckningsreferens = new Registerbeteckningsreferens();
-        registerbeteckningsreferens.setBeteckningsid(UUID.randomUUID().toString());
-        registerbeteckningsreferens.setBeteckning(propertyDesignation);
-        registerbeteckningsreferens.setRegisterenhet(RandomStringUtils.random(10, true, false));
-        registerbeteckningsreferenser.add(registerbeteckningsreferens);
-        doReturn(registerbeteckningsreferenser).when(registerbeteckningClient).getRegisterbeteckningsreferenser(propertyDesignation, Constants.LANTMATERIET_REFERENS_STATUS_GALLANDE, 1);
+	@Test
+	void testGetRegisterbeteckningsreferensEmptyList() {
+		// Arrange
+		final String propertyDesignation = "TEST 1:1";
+		//Mock
+		when(registerbeteckningClient.getRegisterbeteckningsreferenser(propertyDesignation, Constants.LANTMATERIET_REFERENS_STATUS_GALLANDE, 1)).thenReturn(new ArrayList<>());
+		// Act
+		final var result = registerbeteckningService.getRegisterbeteckningsreferens(propertyDesignation);
+		// Assert
+		assertThat(result).isNull();
+	}
 
-        var result = registerbeteckningService.getRegisterbeteckningsreferens(propertyDesignation);
-        assertEquals(registerbeteckningsreferens, result);
-    }
+	@Test
+	void testGetRegisterbeteckningsreferensUnexpectedResponse() {
+		// Arrange
+		final var propertyDesignation = "TEST 1:1";
 
-    @Test
-    void testGetRegisterbeteckningsreferensEmptyList() {
-        String propertyDesignation = "TEST 1:1";
+		final var registerbeteckningsreferenser = new ArrayList<Registerbeteckningsreferens>();
+		final var registerbeteckningsreferens = new Registerbeteckningsreferens();
+		registerbeteckningsreferens.setBeteckningsid(UUID.randomUUID().toString());
+		// This is not the same as propertyDesignation - Therefore it should return null
+		registerbeteckningsreferens.setBeteckning("SOME RANDOM PROPERTY DESIGNATION");
+		registerbeteckningsreferens.setRegisterenhet(RandomStringUtils.random(10, true, false));
+		registerbeteckningsreferenser.add(registerbeteckningsreferens);
+		when(registerbeteckningClient.getRegisterbeteckningsreferenser(propertyDesignation, Constants.LANTMATERIET_REFERENS_STATUS_GALLANDE, 1)).thenReturn(registerbeteckningsreferenser);
 
-        doReturn(new ArrayList<>()).when(registerbeteckningClient).getRegisterbeteckningsreferenser(propertyDesignation, Constants.LANTMATERIET_REFERENS_STATUS_GALLANDE, 1);
+		// Act
+		final var result = registerbeteckningService.getRegisterbeteckningsreferens(propertyDesignation);
 
-        var result = registerbeteckningService.getRegisterbeteckningsreferens(propertyDesignation);
-        assertNull(result);
-    }
-
-    @Test
-    void testGetRegisterbeteckningsreferensUnexpectedResponse() {
-        String propertyDesignation = "TEST 1:1";
-
-        List<Registerbeteckningsreferens> registerbeteckningsreferenser = new ArrayList<>();
-        Registerbeteckningsreferens registerbeteckningsreferens = new Registerbeteckningsreferens();
-        registerbeteckningsreferens.setBeteckningsid(UUID.randomUUID().toString());
-        // This is not the same as propertyDesignation - Therefor it should return null
-        registerbeteckningsreferens.setBeteckning("SOME RANDOM PROPERTY DESIGNATION");
-        registerbeteckningsreferens.setRegisterenhet(RandomStringUtils.random(10, true, false));
-        registerbeteckningsreferenser.add(registerbeteckningsreferens);
-        doReturn(registerbeteckningsreferenser).when(registerbeteckningClient).getRegisterbeteckningsreferenser(propertyDesignation, Constants.LANTMATERIET_REFERENS_STATUS_GALLANDE, 1);
-
-        var result = registerbeteckningService.getRegisterbeteckningsreferens(propertyDesignation);
-        assertNull(result);
-    }
+		// Assert
+		assertThat(result).isNull();
+	}
 
 }

@@ -1,7 +1,7 @@
 package se.sundsvall.casemanagement.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -42,6 +42,7 @@ class CaseServiceTest {
 
 	@Mock
 	private CaseRepository caseRepository;
+
 	@Mock
 	private ApplicationEventPublisher eventPublisher;
 
@@ -59,64 +60,71 @@ class CaseServiceTest {
 
 	@Test
 	void testHandleByggRCase() {
+		// Arrange
 		final var pCase = new PlanningPermissionCaseDTO();
 		pCase.setStakeholders(List.of());
 		pCase.setFacilities(List.of());
-		pCase.setCaseType(CaseType.ANDRING_ANSOKAN_OM_BYGGLOV);
+		pCase.setCaseType(CaseType.ANDRING_ANSOKAN_OM_BYGGLOV.toString());
+		// Act
 		caseService.handleCase(pCase);
-
+		// Assert
 		verify(validator, times(1)).validateByggrErrand(pCase);
 		verify(eventPublisher, times(1)).publishEvent(byggrCaseCaptor.capture());
 		verify(caseRepository, times(1)).save(any());
-
 		final var incomingByggrCase = byggrCaseCaptor.getValue();
-		assertSame(caseService, incomingByggrCase.getSource());
-		assertSame(pCase, incomingByggrCase.getPayload());
+		assertThat(incomingByggrCase.getSource()).isEqualTo(caseService);
+		assertThat(incomingByggrCase.getPayload()).isEqualTo(pCase);
 	}
 
 	@ParameterizedTest
 	@EnumSource(value = CaseType.class,
-		names = { "MARKLOV_FYLL",
+		names = {"MARKLOV_FYLL",
 			"MARKLOV_SCHAKTNING", "MARKLOV_TRADFALLNING", "MARKLOV_OVRIGT",
-			"STRANDSKYDD_OVRIGT" })
-	void testHandleByggRCaseNoFacilityTypeAllowed(CaseType caseType) {
-		final var pCase = new PlanningPermissionCaseDTO();
-
-		final var facility = new PlanningPermissionFacilityDTO();
+			"STRANDSKYDD_OVRIGT"})
+	void testHandleByggRCaseNoFacilityTypeAllowed(final CaseType caseType) {
+		// Arrange
 		final var adress = new AddressDTO();
 		adress.setPropertyDesignation("propertyDesignation");
 		adress.setAddressCategories(List.of());
+
+		final var facility = new PlanningPermissionFacilityDTO();
 		facility.setAddress(adress);
+
+		final var pCase = new PlanningPermissionCaseDTO();
 		pCase.setStakeholders(List.of());
 		pCase.setFacilities(List.of(facility));
-		pCase.setCaseType(caseType);
-		caseService.handleCase(pCase);
+		pCase.setCaseType(caseType.toString());
 
+		// Act
+		caseService.handleCase(pCase);
+		// Assert
 		verify(validator, times(1)).validateByggrErrand(pCase);
 		verify(eventPublisher, times(1)).publishEvent(byggrCaseCaptor.capture());
 		verify(caseRepository, times(1)).save(any());
 
 		final var incomingByggrCase = byggrCaseCaptor.getValue();
-		assertSame(caseService, incomingByggrCase.getSource());
-		assertSame(pCase, incomingByggrCase.getPayload());
+		assertThat(incomingByggrCase.getSource()).isEqualTo(caseService);
+		assertThat(incomingByggrCase.getPayload()).isEqualTo(pCase);
 	}
 
 	@ParameterizedTest
 	@EnumSource(value = CaseType.class,
-		names = { "NYBYGGNAD_ANSOKAN_OM_BYGGLOV",
-			"TILLBYGGNAD_ANSOKAN_OM_BYGGLOV", "STRANDSKYDD_ANDRAD_ANVANDNING" })
-	void testHandleByggRCaseNoFacilityType_notAllowed(CaseType caseType) {
-		final var pCase = new PlanningPermissionCaseDTO();
-
-		final var facility = new PlanningPermissionFacilityDTO();
+		names = {"NYBYGGNAD_ANSOKAN_OM_BYGGLOV",
+			"TILLBYGGNAD_ANSOKAN_OM_BYGGLOV", "STRANDSKYDD_ANDRAD_ANVANDNING"})
+	void testHandleByggRCaseNoFacilityType_notAllowed(final CaseType caseType) {
+		// Arrange
 		final var adress = new AddressDTO();
 		adress.setPropertyDesignation("propertyDesignation");
 		adress.setAddressCategories(List.of());
+
+		final var facility = new PlanningPermissionFacilityDTO();
 		facility.setAddress(adress);
+
+		final var pCase = new PlanningPermissionCaseDTO();
 		pCase.setStakeholders(List.of());
 		pCase.setFacilities(List.of(facility));
-		pCase.setCaseType(caseType);
-
+		pCase.setCaseType(caseType.toString());
+		// Act && assert
 		assertThatExceptionOfType(ThrowableProblem.class)
 			.isThrownBy(() -> caseService.handleCase(pCase))
 			.withMessage("Bad Request: FacilityType is not allowed to be null for CaseType " + caseType);
@@ -128,31 +136,35 @@ class CaseServiceTest {
 
 	@Test
 	void testHandleEcosCase() {
+		// Arrange
 		final var eCase = new EnvironmentalCaseDTO();
 		eCase.setStakeholders(List.of());
-		eCase.setCaseType(CaseType.REGISTRERING_AV_LIVSMEDEL);
+		eCase.setCaseType(CaseType.REGISTRERING_AV_LIVSMEDEL.toString());
 		eCase.setFacilities(List.of());
+		// Act
 		caseService.handleCase(eCase);
-
+		// Assert
 		verify(validator, times(1)).validateEcosErrand(eCase);
 		verify(eventPublisher, times(1)).publishEvent(ecosCaseCaptor.capture());
 		verify(caseRepository, times(1)).save(any());
 
 		final var incomingEcosCase = ecosCaseCaptor.getValue();
-		assertSame(caseService, incomingEcosCase.getSource());
-		assertSame(eCase, incomingEcosCase.getPayload());
+		assertThat(incomingEcosCase.getSource()).isEqualTo(caseService);
+		assertThat(incomingEcosCase.getPayload()).isEqualTo(eCase);
 	}
 
 	@Test
 	void testHandleOtherCase() {
 		final var oCase = new OtherCaseDTO();
+		// Act
 		caseService.handleCase(oCase);
-
+		// Assert
 		verify(eventPublisher, times(1)).publishEvent(otherCaseCaptor.capture());
 		verify(caseRepository, times(1)).save(any());
 
 		final var incomingOtherCase = otherCaseCaptor.getValue();
-		assertSame(caseService, incomingOtherCase.getSource());
-		assertSame(oCase, incomingOtherCase.getPayload());
+		assertThat(incomingOtherCase.getSource()).isEqualTo(caseService);
+		assertThat(incomingOtherCase.getPayload()).isEqualTo(oCase);
 	}
+
 }

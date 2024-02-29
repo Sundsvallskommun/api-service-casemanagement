@@ -1,13 +1,11 @@
 package se.sundsvall.casemanagement.api.model.enums;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Getter;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.NYBYGGNAD_ANSOKAN_OM_BYGGLOV;
 
-import java.util.EnumSet;
 import java.util.Set;
 
-import static java.util.Collections.unmodifiableSet;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.NYBYGGNAD_ANSOKAN_OM_BYGGLOV;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Getter;
 
 @Getter
 @Schema(example = NYBYGGNAD_ANSOKAN_OM_BYGGLOV)
@@ -88,14 +86,14 @@ public enum CaseType {
 	MEX_TERMINATION_OF_HUNTING_LEASE(Value.MEX_TERMINATION_OF_HUNTING_LEASE);
 
 
-	public static final Set<CaseType> WITH_NULLABLE_FACILITY_TYPE = unmodifiableSet(EnumSet.of(
-		MARKLOV_SCHAKTNING,
-		MARKLOV_FYLL,
-		MARKLOV_TRADFALLNING,
-		MARKLOV_OVRIGT,
-		STRANDSKYDD_OVRIGT,
-		ANMALAN_KOMPOSTERING,
-		ANMALAN_AVHJALPANDEATGARD_FORORENING));
+	public static final Set<String> WITH_NULLABLE_FACILITY_TYPE = Set.of(
+		MARKLOV_SCHAKTNING.toString(),
+		MARKLOV_FYLL.toString(),
+		MARKLOV_TRADFALLNING.toString(),
+		MARKLOV_OVRIGT.toString(),
+		STRANDSKYDD_OVRIGT.toString(),
+		ANMALAN_KOMPOSTERING.toString(),
+		ANMALAN_AVHJALPANDEATGARD_FORORENING.toString());
 
 	private final String value;
 

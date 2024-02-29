@@ -2,13 +2,12 @@ package se.sundsvall.casemanagement.byggr;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.testcontainers.junit.jupiter.Testcontainers;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 import se.sundsvall.casemanagement.Application;
 import se.sundsvall.casemanagement.api.model.CaseResourceResponseDTO;
@@ -55,8 +54,9 @@ class ByggrCreateCaseIT extends AbstractAppTest {
 			.allSatisfy(caseMapping -> {
 				assertThat(caseMapping.getExternalCaseId()).isEqualTo(EXTERNAL_CASE_ID);
 				assertThat(caseMapping.getCaseId()).isEqualTo("BYGG 2021-000200");
-				assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV);
+				assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV.toString());
 				assertThat(caseMapping.getSystem()).isEqualTo(SystemType.BYGGR);
 			});
 	}
+
 }

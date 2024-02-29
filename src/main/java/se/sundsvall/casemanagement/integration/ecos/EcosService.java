@@ -1,6 +1,30 @@
 package se.sundsvall.casemanagement.integration.ecos;
 
 import static java.util.Objects.isNull;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_ANDRING_AVLOPPSANLAGGNING;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_ANDRING_AVLOPPSANORDNING;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_AVHJALPANDEATGARD_FORORENING;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_HALSOSKYDDSVERKSAMHET;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_INSTALLATION_VARMEPUMP;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_KOMPOSTERING;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANSOKAN_TILLSTAND_VARMEPUMP;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.REGISTRERING_AV_LIVSMEDEL;
+import static se.sundsvall.casemanagement.util.Constants.BIOLOGICAL_STEP_SVC_DTO;
+import static se.sundsvall.casemanagement.util.Constants.CHEMICAL_PRETREATMENT_SVC_DTO;
+import static se.sundsvall.casemanagement.util.Constants.CLOSED_TANK_SVC_DTO;
+import static se.sundsvall.casemanagement.util.Constants.CREATE_AIR_HEATING_FACILITY_SVC_DTO_PREFIX;
+import static se.sundsvall.casemanagement.util.Constants.CREATE_GEOTHERMAL_HEATING_FACILITY_SVC_DTO_PREFIX;
+import static se.sundsvall.casemanagement.util.Constants.CREATE_MARINE_HEATING_FACILITY_SVC_DTO_PREFIX;
+import static se.sundsvall.casemanagement.util.Constants.CREATE_SOIL_HEATING_FACILITY_SVC_DTO_PREFIX;
+import static se.sundsvall.casemanagement.util.Constants.DRY_SOLUTION_SVC_DTO;
+import static se.sundsvall.casemanagement.util.Constants.FILTER_BED_SVC_DTO;
+import static se.sundsvall.casemanagement.util.Constants.INFILTRATION_PLANT_SVC_DTO;
+import static se.sundsvall.casemanagement.util.Constants.MINI_SEWAGE_SVC_DTO;
+import static se.sundsvall.casemanagement.util.Constants.PHOSPHORUS_TRAP_SVC_DTO;
+import static se.sundsvall.casemanagement.util.Constants.SAND_FILTER_SVC_DTO;
+import static se.sundsvall.casemanagement.util.Constants.SEPTIC_TANK_SVC_DTO;
 import static se.sundsvall.casemanagement.util.Constants.SERVICE_NAME;
 
 import java.text.MessageFormat;
@@ -25,6 +49,7 @@ import se.sundsvall.casemanagement.api.model.AttachmentDTO;
 import se.sundsvall.casemanagement.api.model.CaseStatusDTO;
 import se.sundsvall.casemanagement.api.model.EnvironmentalCaseDTO;
 import se.sundsvall.casemanagement.api.model.EnvironmentalFacilityDTO;
+import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
 import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
@@ -48,7 +73,6 @@ import minutmiljo.ArrayOfSearchCaseResultSvcDto;
 import minutmiljo.ArrayOfguid;
 import minutmiljo.BiologicalStepSvcDto;
 import minutmiljo.BoreholeSvcDto;
-import minutmiljo.CaseSvcDto;
 import minutmiljo.ChemicalPretreatmentSvcDto;
 import minutmiljo.ClosedTankSvcDto;
 import minutmiljo.CreateAirHeatingFacilitySvcDto;
@@ -90,6 +114,8 @@ import minutmiljoV2.RegisterDocumentCaseSvcDtoV2;
 
 @Service
 public class EcosService {
+
+	private static final String VOLUME = "Volume";
 
 	private static final Logger log = LoggerFactory.getLogger(EcosService.class);
 
@@ -163,7 +189,7 @@ public class EcosService {
 			}
 
 		} else {
-			if (CaseType.UPPDATERING_RISKKLASSNING.equals(caseInput.getCaseType())) {
+			if (CaseType.UPPDATERING_RISKKLASSNING.toString().equals(caseInput.getCaseType())) {
 				try {
 					riskClassService.updateRiskClass(caseInput, registerDocumentResult.getCaseId());
 				} catch (final Exception e) {
@@ -216,8 +242,8 @@ public class EcosService {
 			log.debug("FoodFacility created: {}", foodFacilityGuid);
 			return foodFacilityGuid;
 		}
-			throw Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "FoodFacility could not be created.");
-		}
+		throw Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "FoodFacility could not be created.");
+	}
 
 
 	private String createHeatPumpFacility(final Map<String, String> facilityExtraParameters, final FbPropertyInfo propertyInfo, final RegisterDocumentCaseResultSvcDto registerDocumentResult) {
@@ -225,26 +251,26 @@ public class EcosService {
 		final CreateHeatPumpFacility createHeatPumpFacility = new CreateHeatPumpFacility();
 		final CreateHeatPumpFacilitySvcDto createHeatPumpFacilitySvcDto;
 
-		final String airPrefix = "CreateAirHeatingFacilitySvcDto_";
-		final String geoThermalPrefix = "CreateGeothermalHeatingFacilitySvcDto_";
-		final String soilPrefix = "CreateSoilHeatingFacilitySvcDto_";
-		final String marinePrefix = "CreateMarineHeatingFacilitySvcDto_";
+		final String airPrefix = CREATE_AIR_HEATING_FACILITY_SVC_DTO_PREFIX;
+		final String geoThermalPrefix = CREATE_GEOTHERMAL_HEATING_FACILITY_SVC_DTO_PREFIX;
+		final String soilPrefix = CREATE_SOIL_HEATING_FACILITY_SVC_DTO_PREFIX;
+		final String marinePrefix = CREATE_MARINE_HEATING_FACILITY_SVC_DTO_PREFIX;
 
 		if ((facilityExtraParameters == null) || facilityExtraParameters.isEmpty()) {
 			log.info("facilityExtraParameters was null or empty, do not create facility. Return null.");
 			return null;
 		}
-        if (facilityExtraParameters.keySet().stream().anyMatch(s -> s.startsWith(airPrefix))) {
-			createHeatPumpFacilitySvcDto = getAirHeatingFacility(facilityExtraParameters, propertyInfo, registerDocumentResult, airPrefix);
+		if (facilityExtraParameters.keySet().stream().anyMatch(s -> s.startsWith(airPrefix))) {
+			createHeatPumpFacilitySvcDto = getAirHeatingFacility(facilityExtraParameters, propertyInfo, registerDocumentResult);
 		} else if (facilityExtraParameters.keySet().stream().anyMatch(s -> s.startsWith(geoThermalPrefix))) {
-			createHeatPumpFacilitySvcDto = getGeoThermalHeatingFacility(facilityExtraParameters, propertyInfo, registerDocumentResult, geoThermalPrefix);
+			createHeatPumpFacilitySvcDto = getGeoThermalHeatingFacility(facilityExtraParameters, propertyInfo, registerDocumentResult);
 		} else if (facilityExtraParameters.keySet().stream().anyMatch(s -> s.startsWith(soilPrefix))) {
-			createHeatPumpFacilitySvcDto = getSoilHeatingFacility(facilityExtraParameters, propertyInfo, registerDocumentResult, soilPrefix);
+			createHeatPumpFacilitySvcDto = getSoilHeatingFacility(facilityExtraParameters, propertyInfo, registerDocumentResult);
 		} else if (facilityExtraParameters.keySet().stream().anyMatch(s -> s.startsWith(marinePrefix))) {
-			createHeatPumpFacilitySvcDto = getMarineHeatingFacility(facilityExtraParameters, propertyInfo, registerDocumentResult, marinePrefix);
+			createHeatPumpFacilitySvcDto = getMarineHeatingFacility(facilityExtraParameters, propertyInfo, registerDocumentResult);
 		} else {
 			throw Problem.valueOf(Status.BAD_REQUEST, MessageFormat.format("The request does not contain any extraParameters on the facility-object with prefix: \"{0}\", \"{1}\"\", \"{2}\"\" or \"{3}\"", airPrefix, geoThermalPrefix, soilPrefix,
-                marinePrefix));
+				marinePrefix));
 		}
 
 		createHeatPumpFacility.setCreateIndividualSewageSvcDto(createHeatPumpFacilitySvcDto);
@@ -254,15 +280,15 @@ public class EcosService {
 			log.debug("HeatPumpFacility created: {}", facilityGuid);
 			return facilityGuid;
 		}
-			throw Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "HeatPumpFacility could not be created");
-		}
+		throw Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "HeatPumpFacility could not be created");
+	}
 
 
-	private CreateHeatPumpFacilityWithHeatTransferFluidSvcDto getGeoThermalHeatingFacility(final Map<String, String> extraParameters, final FbPropertyInfo propertyInfo, final RegisterDocumentCaseResultSvcDto registerDocumentResult, final String prefix) {
+	private CreateHeatPumpFacilityWithHeatTransferFluidSvcDto getGeoThermalHeatingFacility(final Map<String, String> extraParameters, final FbPropertyInfo propertyInfo, final RegisterDocumentCaseResultSvcDto registerDocumentResult) {
 		final CreateGeothermalHeatingFacilitySvcDto createHeatPumpFacilityWithHeatTransferFluidSvcDto = new CreateGeothermalHeatingFacilitySvcDto();
 
-		setHeatPumpStandardParams(extraParameters, propertyInfo, registerDocumentResult, createHeatPumpFacilityWithHeatTransferFluidSvcDto, prefix);
-		setHeatPumpFluidStandardParams(extraParameters, prefix, createHeatPumpFacilityWithHeatTransferFluidSvcDto);
+		setHeatPumpStandardParams(extraParameters, propertyInfo, registerDocumentResult, createHeatPumpFacilityWithHeatTransferFluidSvcDto, "CreateGeothermalHeatingFacilitySvcDto_");
+		setHeatPumpFluidStandardParams(extraParameters, "CreateGeothermalHeatingFacilitySvcDto_", createHeatPumpFacilityWithHeatTransferFluidSvcDto);
 
 		createHeatPumpFacilityWithHeatTransferFluidSvcDto.setBoreholes(getBoreHoles(extraParameters));
 
@@ -301,11 +327,11 @@ public class EcosService {
 		return locationSvcDto;
 	}
 
-	private CreateSoilHeatingFacilitySvcDto getSoilHeatingFacility(final Map<String, String> extraParameters, final FbPropertyInfo propertyInfo, final RegisterDocumentCaseResultSvcDto registerDocumentResult, final String prefix) {
+	private CreateSoilHeatingFacilitySvcDto getSoilHeatingFacility(final Map<String, String> extraParameters, final FbPropertyInfo propertyInfo, final RegisterDocumentCaseResultSvcDto registerDocumentResult) {
 		final CreateSoilHeatingFacilitySvcDto createSoilHeatingFacilitySvcDto = new CreateSoilHeatingFacilitySvcDto();
 
-		setHeatPumpStandardParams(extraParameters, propertyInfo, registerDocumentResult, createSoilHeatingFacilitySvcDto, prefix);
-		setHeatPumpFluidStandardParams(extraParameters, prefix, createSoilHeatingFacilitySvcDto);
+		setHeatPumpStandardParams(extraParameters, propertyInfo, registerDocumentResult, createSoilHeatingFacilitySvcDto, "CreateSoilHeatingFacilitySvcDto_");
+		setHeatPumpFluidStandardParams(extraParameters, "CreateSoilHeatingFacilitySvcDto_", createSoilHeatingFacilitySvcDto);
 
 		createSoilHeatingFacilitySvcDto.setHeatCollectorTubes(getHeatCollectorTubes(extraParameters));
 
@@ -332,20 +358,20 @@ public class EcosService {
 		return arrayOfHeatCollectorTubeSvcDto;
 	}
 
-	private CreateMarineHeatingFacilitySvcDto getMarineHeatingFacility(final Map<String, String> extraParameters, final FbPropertyInfo propertyInfo, final RegisterDocumentCaseResultSvcDto registerDocumentResult, final String prefix) {
+	private CreateMarineHeatingFacilitySvcDto getMarineHeatingFacility(final Map<String, String> extraParameters, final FbPropertyInfo propertyInfo, final RegisterDocumentCaseResultSvcDto registerDocumentResult) {
 		final CreateMarineHeatingFacilitySvcDto createMarineHeatingFacilitySvcDto = new CreateMarineHeatingFacilitySvcDto();
 
-		setHeatPumpStandardParams(extraParameters, propertyInfo, registerDocumentResult, createMarineHeatingFacilitySvcDto, prefix);
-		setHeatPumpFluidStandardParams(extraParameters, prefix, createMarineHeatingFacilitySvcDto);
+		setHeatPumpStandardParams(extraParameters, propertyInfo, registerDocumentResult, createMarineHeatingFacilitySvcDto, "CreateMarineHeatingFacilitySvcDto_");
+		setHeatPumpFluidStandardParams(extraParameters, "CreateMarineHeatingFacilitySvcDto_", createMarineHeatingFacilitySvcDto);
 		createMarineHeatingFacilitySvcDto.setHeatCollectorTubes(getHeatCollectorTubes(extraParameters));
 
 		return createMarineHeatingFacilitySvcDto;
 	}
 
-	private CreateAirHeatingFacilitySvcDto getAirHeatingFacility(final Map<String, String> extraParameters, final FbPropertyInfo propertyInfo, final RegisterDocumentCaseResultSvcDto registerDocumentResult, final String prefix) {
+	private CreateAirHeatingFacilitySvcDto getAirHeatingFacility(final Map<String, String> extraParameters, final FbPropertyInfo propertyInfo, final RegisterDocumentCaseResultSvcDto registerDocumentResult) {
 		final CreateAirHeatingFacilitySvcDto createAirHeatingFacilitySvcDto = new CreateAirHeatingFacilitySvcDto();
 
-		setHeatPumpStandardParams(extraParameters, propertyInfo, registerDocumentResult, createAirHeatingFacilitySvcDto, prefix);
+		setHeatPumpStandardParams(extraParameters, propertyInfo, registerDocumentResult, createAirHeatingFacilitySvcDto, "CreateAirHeatingFacilitySvcDto_");
 
 		return createAirHeatingFacilitySvcDto;
 	}
@@ -396,8 +422,8 @@ public class EcosService {
 			log.debug("Individual Sewage created: {}", facilityGuid);
 			return facilityGuid;
 		}
-			throw Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "Individual Sewage could not be created");
-		}
+		throw Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "Individual Sewage could not be created");
+	}
 
 
 	private FacilityAddressSvcDto getAddress(final FbPropertyInfo propertyInfo) {
@@ -413,158 +439,148 @@ public class EcosService {
 
 		final ArrayOfPurificationStepSvcDto arrayOfPurificationStepSvcDto = new ArrayOfPurificationStepSvcDto();
 
-		final String septicTankPrefix = "SepticTankSvcDto_";
-		if (extraParameters.keySet().stream().anyMatch(s -> s.startsWith(septicTankPrefix))) {
-			arrayOfPurificationStepSvcDto.getPurificationStepSvcDto().add(getSepticTankSvcDto(extraParameters, septicTankPrefix));
+		if (extraParameters.keySet().stream().anyMatch(s -> s.startsWith(SEPTIC_TANK_SVC_DTO))) {
+			arrayOfPurificationStepSvcDto.getPurificationStepSvcDto().add(getSepticTankSvcDto(extraParameters));
 		}
-		final String infiltrationPrefix = "InfiltrationPlantSvcDto_";
-		if (extraParameters.keySet().stream().anyMatch(s -> s.startsWith(infiltrationPrefix))) {
-			arrayOfPurificationStepSvcDto.getPurificationStepSvcDto().add(getInfiltrationPlantSvcDto(extraParameters, infiltrationPrefix));
+		if (extraParameters.keySet().stream().anyMatch(s -> s.startsWith(INFILTRATION_PLANT_SVC_DTO))) {
+			arrayOfPurificationStepSvcDto.getPurificationStepSvcDto().add(getInfiltrationPlantSvcDto(extraParameters));
 		}
-		final String closedTankPrefix = "ClosedTankSvcDto_";
-		if (extraParameters.keySet().stream().anyMatch(s -> s.startsWith(closedTankPrefix))) {
-			arrayOfPurificationStepSvcDto.getPurificationStepSvcDto().add(getClosedTankSvcDto(extraParameters, closedTankPrefix));
+		if (extraParameters.keySet().stream().anyMatch(s -> s.startsWith(CLOSED_TANK_SVC_DTO))) {
+			arrayOfPurificationStepSvcDto.getPurificationStepSvcDto().add(getClosedTankSvcDto(extraParameters));
 		}
-		final String drySolutionPrefix = "DrySolutionSvcDto_";
-		if (extraParameters.keySet().stream().anyMatch(s -> s.startsWith(drySolutionPrefix))) {
-			arrayOfPurificationStepSvcDto.getPurificationStepSvcDto().add(getDrySolutionSvcDto(extraParameters, drySolutionPrefix));
+		if (extraParameters.keySet().stream().anyMatch(s -> s.startsWith(DRY_SOLUTION_SVC_DTO))) {
+			arrayOfPurificationStepSvcDto.getPurificationStepSvcDto().add(getDrySolutionSvcDto(extraParameters));
 		}
-		final String miniSewagePrefix = "MiniSewageSvcDto_";
-		if (extraParameters.keySet().stream().anyMatch(s -> s.startsWith(miniSewagePrefix))) {
-			arrayOfPurificationStepSvcDto.getPurificationStepSvcDto().add(getMiniSewageSvcDto(extraParameters, miniSewagePrefix));
+		if (extraParameters.keySet().stream().anyMatch(s -> s.startsWith(MINI_SEWAGE_SVC_DTO))) {
+			arrayOfPurificationStepSvcDto.getPurificationStepSvcDto().add(getMiniSewageSvcDto(extraParameters));
 		}
-		final String filterBedPrefix = "FilterBedSvcDto_";
-		if (extraParameters.keySet().stream().anyMatch(s -> s.startsWith(filterBedPrefix))) {
-			arrayOfPurificationStepSvcDto.getPurificationStepSvcDto().add(getFilterBedSvcDto(extraParameters, filterBedPrefix));
+		if (extraParameters.keySet().stream().anyMatch(s -> s.startsWith(FILTER_BED_SVC_DTO))) {
+			arrayOfPurificationStepSvcDto.getPurificationStepSvcDto().add(getFilterBedSvcDto(extraParameters));
 		}
-		final String sandFilterPrefix = "SandFilterSvcDto_";
-		if (extraParameters.keySet().stream().anyMatch(s -> s.startsWith(sandFilterPrefix))) {
-			arrayOfPurificationStepSvcDto.getPurificationStepSvcDto().add(getSandFilterSvcDto(extraParameters, sandFilterPrefix));
+		if (extraParameters.keySet().stream().anyMatch(s -> s.startsWith(SAND_FILTER_SVC_DTO))) {
+			arrayOfPurificationStepSvcDto.getPurificationStepSvcDto().add(getSandFilterSvcDto(extraParameters));
 		}
-		final String biologicalStepPrefix = "BiologicalStepSvcDto_";
-		if (extraParameters.keySet().stream().anyMatch(s -> s.startsWith(biologicalStepPrefix))) {
-			arrayOfPurificationStepSvcDto.getPurificationStepSvcDto().add(getBiologicalStepSvcDto(extraParameters, biologicalStepPrefix));
+		if (extraParameters.keySet().stream().anyMatch(s -> s.startsWith(BIOLOGICAL_STEP_SVC_DTO))) {
+			arrayOfPurificationStepSvcDto.getPurificationStepSvcDto().add(getBiologicalStepSvcDto(extraParameters));
 		}
-		final String phosphorusTrapPrefix = "PhosphorusTrapSvcDto_";
-		if (extraParameters.keySet().stream().anyMatch(s -> s.startsWith(phosphorusTrapPrefix))) {
-			arrayOfPurificationStepSvcDto.getPurificationStepSvcDto().add(getPhosphorusTrapSvcDto(extraParameters, phosphorusTrapPrefix));
+		if (extraParameters.keySet().stream().anyMatch(s -> s.startsWith(PHOSPHORUS_TRAP_SVC_DTO))) {
+			arrayOfPurificationStepSvcDto.getPurificationStepSvcDto().add(getPhosphorusTrapSvcDto(extraParameters));
 		}
-		final String chemicalPretreatmentPrefix = "ChemicalPretreatmentSvcDto_";
-		if (extraParameters.keySet().stream().anyMatch(s -> s.startsWith(chemicalPretreatmentPrefix))) {
-			arrayOfPurificationStepSvcDto.getPurificationStepSvcDto().add(getChemicalPretreatmentSvcDto(extraParameters, chemicalPretreatmentPrefix));
+		if (extraParameters.keySet().stream().anyMatch(s -> s.startsWith(CHEMICAL_PRETREATMENT_SVC_DTO))) {
+			arrayOfPurificationStepSvcDto.getPurificationStepSvcDto().add(getChemicalPretreatmentSvcDto(extraParameters));
 		}
 
 		return arrayOfPurificationStepSvcDto;
 	}
 
-	private SepticTankSvcDto getSepticTankSvcDto(final Map<String, String> extraParameters, final String prefix) {
+	private SepticTankSvcDto getSepticTankSvcDto(final Map<String, String> extraParameters) {
 		final SepticTankSvcDto svcDto = new SepticTankSvcDto();
 
-		setStandardParams(extraParameters, prefix, svcDto);
+		setStandardParams(extraParameters, Constants.SEPTIC_TANK_SVC_DTO, svcDto);
 
-		svcDto.setEmptyingInterval(CaseUtil.parseInteger(extraParameters.get(prefix + "EmptyingInterval")));
-		svcDto.setHasCeMarking(CaseUtil.parseBoolean(extraParameters.get(prefix + "HasCeMarking")));
-		svcDto.setHasTPipe(CaseUtil.parseBoolean(extraParameters.get(prefix + "HasTPipe")));
-		svcDto.setVolume(CaseUtil.parseDouble(extraParameters.get(prefix + "Volume")));
+		svcDto.setEmptyingInterval(CaseUtil.parseInteger(extraParameters.get(Constants.SEPTIC_TANK_SVC_DTO + "EmptyingInterval")));
+		svcDto.setHasCeMarking(CaseUtil.parseBoolean(extraParameters.get(Constants.SEPTIC_TANK_SVC_DTO + "HasCeMarking")));
+		svcDto.setHasTPipe(CaseUtil.parseBoolean(extraParameters.get(Constants.SEPTIC_TANK_SVC_DTO + "HasTPipe")));
+		svcDto.setVolume(CaseUtil.parseDouble(extraParameters.get(Constants.SEPTIC_TANK_SVC_DTO + VOLUME)));
 
 		return svcDto;
 	}
 
-	private ClosedTankSvcDto getClosedTankSvcDto(final Map<String, String> extraParameters, final String prefix) {
+	private ClosedTankSvcDto getClosedTankSvcDto(final Map<String, String> extraParameters) {
 		final ClosedTankSvcDto svcDto = new ClosedTankSvcDto();
 
-		setStandardParams(extraParameters, prefix, svcDto);
+		setStandardParams(extraParameters, CLOSED_TANK_SVC_DTO, svcDto);
 
-		svcDto.setEmptyingInterval(CaseUtil.parseInteger(extraParameters.get(prefix + "EmptyingInterval")));
-		svcDto.setHasCeMarking(CaseUtil.parseBoolean(extraParameters.get(prefix + "HasCeMarking")));
-		svcDto.setVolume(CaseUtil.parseDouble(extraParameters.get(prefix + "Volume")));
+		svcDto.setEmptyingInterval(CaseUtil.parseInteger(extraParameters.get(CLOSED_TANK_SVC_DTO + "EmptyingInterval")));
+		svcDto.setHasCeMarking(CaseUtil.parseBoolean(extraParameters.get(CLOSED_TANK_SVC_DTO + "HasCeMarking")));
+		svcDto.setVolume(CaseUtil.parseDouble(extraParameters.get(CLOSED_TANK_SVC_DTO + VOLUME)));
 
 		return svcDto;
 	}
 
-	private MiniSewageSvcDto getMiniSewageSvcDto(final Map<String, String> extraParameters, final String prefix) {
+	private MiniSewageSvcDto getMiniSewageSvcDto(final Map<String, String> extraParameters) {
 		final MiniSewageSvcDto svcDto = new MiniSewageSvcDto();
 
-		setStandardParams(extraParameters, prefix, svcDto);
+		setStandardParams(extraParameters, MINI_SEWAGE_SVC_DTO, svcDto);
 
-		svcDto.setCeMarking(CaseUtil.parseBoolean(extraParameters.get(prefix + "CeMarking")));
-		svcDto.setManufacturer(CaseUtil.parseString(extraParameters.get(prefix + "Manufacturer")));
-		svcDto.setModel(CaseUtil.parseString(extraParameters.get(prefix + "Model")));
+		svcDto.setCeMarking(CaseUtil.parseBoolean(extraParameters.get(MINI_SEWAGE_SVC_DTO + "CeMarking")));
+		svcDto.setManufacturer(CaseUtil.parseString(extraParameters.get(MINI_SEWAGE_SVC_DTO + "Manufacturer")));
+		svcDto.setModel(CaseUtil.parseString(extraParameters.get(MINI_SEWAGE_SVC_DTO + "Model")));
 
 		return svcDto;
 	}
 
-	private FilterBedSvcDto getFilterBedSvcDto(final Map<String, String> extraParameters, final String prefix) {
+	private FilterBedSvcDto getFilterBedSvcDto(final Map<String, String> extraParameters) {
 		final FilterBedSvcDto svcDto = new FilterBedSvcDto();
 
-		setStandardParams(extraParameters, prefix, svcDto);
-		svcDto.setVolume(CaseUtil.parseDouble(extraParameters.get(prefix + "Volume")));
+		setStandardParams(extraParameters, FILTER_BED_SVC_DTO, svcDto);
+		svcDto.setVolume(CaseUtil.parseDouble(extraParameters.get(FILTER_BED_SVC_DTO + VOLUME)));
 
 		return svcDto;
 	}
 
-	private SandFilterSvcDto getSandFilterSvcDto(final Map<String, String> extraParameters, final String prefix) {
+	private SandFilterSvcDto getSandFilterSvcDto(final Map<String, String> extraParameters) {
 		final SandFilterSvcDto svcDto = new SandFilterSvcDto();
 
-		setStandardParams(extraParameters, prefix, svcDto);
+		setStandardParams(extraParameters, SAND_FILTER_SVC_DTO, svcDto);
 
-		svcDto.setArea(CaseUtil.parseInteger(extraParameters.get(prefix + "Area")));
-		svcDto.setElevated(CaseUtil.parseBoolean(extraParameters.get(prefix + "Elevated")));
-		svcDto.setWaterTight(CaseUtil.parseBoolean(extraParameters.get(prefix + "WaterTight")));
+		svcDto.setArea(CaseUtil.parseInteger(extraParameters.get(SAND_FILTER_SVC_DTO + "Area")));
+		svcDto.setElevated(CaseUtil.parseBoolean(extraParameters.get(SAND_FILTER_SVC_DTO + "Elevated")));
+		svcDto.setWaterTight(CaseUtil.parseBoolean(extraParameters.get(SAND_FILTER_SVC_DTO + "WaterTight")));
 
 		return svcDto;
 	}
 
-	private BiologicalStepSvcDto getBiologicalStepSvcDto(final Map<String, String> extraParameters, final String prefix) {
+	private BiologicalStepSvcDto getBiologicalStepSvcDto(final Map<String, String> extraParameters) {
 		final BiologicalStepSvcDto svcDto = new BiologicalStepSvcDto();
 
-		setStandardParams(extraParameters, prefix, svcDto);
+		setStandardParams(extraParameters, BIOLOGICAL_STEP_SVC_DTO, svcDto);
 
-		svcDto.setArea(CaseUtil.parseInteger(extraParameters.get(prefix + "Area")));
-		svcDto.setBiologicalStepTypeId(CaseUtil.parseString(extraParameters.get(prefix + "BiologicalStepTypeId")));
+		svcDto.setArea(CaseUtil.parseInteger(extraParameters.get(BIOLOGICAL_STEP_SVC_DTO + "Area")));
+		svcDto.setBiologicalStepTypeId(CaseUtil.parseString(extraParameters.get(BIOLOGICAL_STEP_SVC_DTO + "BiologicalStepTypeId")));
 
 		return svcDto;
 	}
 
-	private DrySolutionSvcDto getDrySolutionSvcDto(final Map<String, String> extraParameters, final String prefix) {
+	private DrySolutionSvcDto getDrySolutionSvcDto(final Map<String, String> extraParameters) {
 		final DrySolutionSvcDto svcDto = new DrySolutionSvcDto();
 
-		setStandardParams(extraParameters, prefix, svcDto);
+		setStandardParams(extraParameters, DRY_SOLUTION_SVC_DTO, svcDto);
 
-		svcDto.setCompostProductName(CaseUtil.parseString(extraParameters.get(prefix + "CompostProductName")));
-		svcDto.setDrySolutionCompostTypeId(CaseUtil.parseString(extraParameters.get(prefix + "DrySolutionCompostTypeId")));
-		svcDto.setDrySolutionTypeId(CaseUtil.parseString(extraParameters.get(prefix + "DrySolutionTypeId")));
-		svcDto.setNoContOrCompt(CaseUtil.parseString(extraParameters.get(prefix + "NoContOrCompt")));
-		svcDto.setNoLPerContOrCompt(CaseUtil.parseString(extraParameters.get(prefix + "NoLPerContOrCompt")));
-		svcDto.setToiletProductName(CaseUtil.parseString(extraParameters.get(prefix + "ToiletProductName")));
-		svcDto.setVolume(CaseUtil.parseDouble(extraParameters.get(prefix + "Volume")));
+		svcDto.setCompostProductName(CaseUtil.parseString(extraParameters.get(DRY_SOLUTION_SVC_DTO + "CompostProductName")));
+		svcDto.setDrySolutionCompostTypeId(CaseUtil.parseString(extraParameters.get(DRY_SOLUTION_SVC_DTO + "DrySolutionCompostTypeId")));
+		svcDto.setDrySolutionTypeId(CaseUtil.parseString(extraParameters.get(DRY_SOLUTION_SVC_DTO + "DrySolutionTypeId")));
+		svcDto.setNoContOrCompt(CaseUtil.parseString(extraParameters.get(DRY_SOLUTION_SVC_DTO + "NoContOrCompt")));
+		svcDto.setNoLPerContOrCompt(CaseUtil.parseString(extraParameters.get(DRY_SOLUTION_SVC_DTO + "NoLPerContOrCompt")));
+		svcDto.setToiletProductName(CaseUtil.parseString(extraParameters.get(DRY_SOLUTION_SVC_DTO + "ToiletProductName")));
+		svcDto.setVolume(CaseUtil.parseDouble(extraParameters.get(DRY_SOLUTION_SVC_DTO + VOLUME)));
 
 		return svcDto;
 	}
 
-	private InfiltrationPlantSvcDto getInfiltrationPlantSvcDto(final Map<String, String> extraParameters, final String prefix) {
+	private InfiltrationPlantSvcDto getInfiltrationPlantSvcDto(final Map<String, String> extraParameters) {
 		final InfiltrationPlantSvcDto svcDto = new InfiltrationPlantSvcDto();
 
-		setStandardParams(extraParameters, prefix, svcDto);
+		setStandardParams(extraParameters, INFILTRATION_PLANT_SVC_DTO, svcDto);
 
-		svcDto.setElevated(CaseUtil.parseBoolean(extraParameters.get(prefix + "Elevated")));
-		svcDto.setReinforced(CaseUtil.parseBoolean(extraParameters.get(prefix + "Reinforced")));
-		svcDto.setIsModuleSystem(CaseUtil.parseBoolean(extraParameters.get(prefix + "IsModuleSystem")));
-		svcDto.setSpreadLinesCount(CaseUtil.parseInteger(extraParameters.get(prefix + "SpreadLinesCount")));
-		svcDto.setSpreadLinesLength(CaseUtil.parseInteger(extraParameters.get(prefix + "SpreadLinesLength")));
+		svcDto.setElevated(CaseUtil.parseBoolean(extraParameters.get(INFILTRATION_PLANT_SVC_DTO + "Elevated")));
+		svcDto.setReinforced(CaseUtil.parseBoolean(extraParameters.get(INFILTRATION_PLANT_SVC_DTO + "Reinforced")));
+		svcDto.setIsModuleSystem(CaseUtil.parseBoolean(extraParameters.get(INFILTRATION_PLANT_SVC_DTO + "IsModuleSystem")));
+		svcDto.setSpreadLinesCount(CaseUtil.parseInteger(extraParameters.get(INFILTRATION_PLANT_SVC_DTO + "SpreadLinesCount")));
+		svcDto.setSpreadLinesLength(CaseUtil.parseInteger(extraParameters.get(INFILTRATION_PLANT_SVC_DTO + "SpreadLinesLength")));
 
 		return svcDto;
 	}
 
-	private PhosphorusTrapSvcDto getPhosphorusTrapSvcDto(final Map<String, String> extraParameters, final String prefix) {
+	private PhosphorusTrapSvcDto getPhosphorusTrapSvcDto(final Map<String, String> extraParameters) {
 		final PhosphorusTrapSvcDto svcDto = new PhosphorusTrapSvcDto();
-		setStandardParams(extraParameters, prefix, svcDto);
+		setStandardParams(extraParameters, PHOSPHORUS_TRAP_SVC_DTO, svcDto);
 		return svcDto;
 	}
 
-	private ChemicalPretreatmentSvcDto getChemicalPretreatmentSvcDto(final Map<String, String> extraParameters, final String prefix) {
+	private ChemicalPretreatmentSvcDto getChemicalPretreatmentSvcDto(final Map<String, String> extraParameters) {
 		final ChemicalPretreatmentSvcDto svcDto = new ChemicalPretreatmentSvcDto();
-		setStandardParams(extraParameters, prefix, svcDto);
+		setStandardParams(extraParameters, CHEMICAL_PRETREATMENT_SVC_DTO, svcDto);
 		return svcDto;
 	}
 
@@ -598,9 +614,10 @@ public class EcosService {
 			registerDocumentCaseSvcDtoV2.setCaseSubtitleFree(propertyDesignation);
 		} else {
 			var freeSubtitle = Optional.ofNullable(eFacility.getFacilityCollectionName()).orElse("").trim();
-			if (!propertyDesignation.isEmpty()) {if (freeSubtitle.isEmpty()) {
-                    freeSubtitle = propertyDesignation;
-                }
+			if (!propertyDesignation.isEmpty()) {
+				if (freeSubtitle.isEmpty()) {
+					freeSubtitle = propertyDesignation;
+				}
 				freeSubtitle = String.join(", ", freeSubtitle, propertyDesignation);
 			}
 			registerDocumentCaseSvcDtoV2.setCaseSubtitleFree(freeSubtitle);
@@ -611,12 +628,12 @@ public class EcosService {
 		if (registerDocumentResult == null) {
 			throw Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "Case could not be created.");
 		}
-		log.debug("Case created with Byggr case number: {}", registerDocumentResult.getCaseNumber());
+		log.debug("Case created with ByggR case number: {}", registerDocumentResult.getCaseNumber());
 		return registerDocumentResult;
 	}
 
-	private String getDiaryPlanId(final CaseType caseType) {
-		return switch (caseType) {
+	private String getDiaryPlanId(final String caseType) {
+		return switch (CaseType.valueOf(caseType)) {
 			case REGISTRERING_AV_LIVSMEDEL, UPPDATERING_RISKKLASSNING ->
 				Constants.ECOS_DIARY_PLAN_LIVSMEDEL;
 			case ANMALAN_ANDRING_AVLOPPSANLAGGNING, ANMALAN_ANDRING_AVLOPPSANORDNING, ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC,
@@ -628,8 +645,9 @@ public class EcosService {
 		};
 	}
 
-	private String getProcessTypeId(final CaseType caseType) {
-		return switch (caseType) {
+	private String getProcessTypeId(final String caseType) {
+
+		return switch (CaseType.valueOf(caseType)) {
 			case REGISTRERING_AV_LIVSMEDEL -> Constants.ECOS_PROCESS_TYPE_ID_REGISTRERING_AV_LIVSMEDEL;
 			case ANMALAN_INSTALLATION_VARMEPUMP ->
 				Constants.ECOS_PROCESS_TYPE_ID_ANMALAN_INSTALLATION_VARMEPUMP;
@@ -657,12 +675,12 @@ public class EcosService {
 	private ArrayOfDocumentSvcDto getArrayOfDocumentSvcDto(final List<AttachmentDTO> attachmentDTOList) {
 		final ArrayOfDocumentSvcDto arrayOfDocumentSvcDto = new ArrayOfDocumentSvcDto();
 		for (final AttachmentDTO a : attachmentDTOList) {
-			final DocumentSvcDto documentSvcDto = new DocumentSvcDto();
-			documentSvcDto.setContentType(a.getMimeType() != null ? a.getMimeType().toLowerCase() : null);
-			documentSvcDto.setData(Base64.getDecoder().decode(a.getFile().getBytes()));
-			documentSvcDto.setDocumentTypeId(a.getCategory().getDescription());
-			documentSvcDto.setFilename(getFilename(a));
-			documentSvcDto.setNote(a.getNote());
+			final var documentSvcDto = new DocumentSvcDto()
+				.withContentType(a.getMimeType() != null ? a.getMimeType().toLowerCase() : null)
+				.withData(Base64.getDecoder().decode(a.getFile().getBytes()))
+				.withDocumentTypeId(AttachmentCategory.fromCode(a.getCategory()).getDescription())
+				.withFilename(getFilename(a))
+				.withNote(a.getNote());
 			arrayOfDocumentSvcDto.getDocumentSvcDto().add(documentSvcDto);
 		}
 		return arrayOfDocumentSvcDto;
@@ -671,12 +689,14 @@ public class EcosService {
 	private minutmiljoV2.ArrayOfDocumentSvcDto getArrayOfDocumentSvcDtoV2(final List<AttachmentDTO> attachmentDTOList) {
 		final minutmiljoV2.ArrayOfDocumentSvcDto arrayOfDocumentSvcDto = new minutmiljoV2.ArrayOfDocumentSvcDto();
 		for (final AttachmentDTO a : attachmentDTOList) {
-			final minutmiljoV2.DocumentSvcDto documentSvcDto = new minutmiljoV2.DocumentSvcDto();
-			documentSvcDto.setContentType(a.getMimeType() != null ? a.getMimeType().toLowerCase() : null);
-			documentSvcDto.setData(Base64.getDecoder().decode(a.getFile().getBytes()));
-			documentSvcDto.setDocumentTypeId(a.getCategory().getDescription());
-			documentSvcDto.setFilename(getFilename(a));
-			documentSvcDto.setNote(a.getNote());
+
+			final var documentSvcDto = new minutmiljoV2.DocumentSvcDto()
+				.withContentType(a.getMimeType() != null ? a.getMimeType().toLowerCase() : null)
+				.withData(Base64.getDecoder().decode(a.getFile().getBytes()))
+				.withDocumentTypeId(AttachmentCategory.fromCode(a.getCategory()).getDescription())
+				.withFilename(getFilename(a))
+				.withNote(a.getNote());
+
 			arrayOfDocumentSvcDto.getDocumentSvcDto().add(documentSvcDto);
 		}
 		return arrayOfDocumentSvcDto;
@@ -703,35 +723,37 @@ public class EcosService {
 
 		final var getCase = new GetCase().withCaseId(caseId);
 
-		final CaseSvcDto ecosCase = minutMiljoClient.getCase(getCase).getGetCaseResult();
+		final var ecosCaseOptional = Optional.ofNullable(minutMiljoClient.getCase(getCase));
 
+		if (ecosCaseOptional.isPresent()) {
+			final var ecosCase = ecosCaseOptional.get().getGetCaseResult();
 
-		if (Optional.ofNullable(ecosCase)
-			.flatMap(caseObj -> Optional.ofNullable(caseObj.getOccurrences()))
-			.flatMap(occurrences -> Optional.ofNullable(occurrences.getOccurrenceListItemSvcDto()))
-			.filter(list -> !list.isEmpty())
-			.isPresent()) {
+			if (Optional.ofNullable(ecosCase.getOccurrences())
+				.flatMap(occurrences -> Optional.ofNullable(occurrences.getOccurrenceListItemSvcDto()))
+				.filter(list -> !list.isEmpty())
+				.isPresent()) {
 
-			final var caseMapping = Optional.ofNullable(caseMappingService.getCaseMapping(externalCaseId, caseId).getFirst()).orElse(new CaseMapping());
+				final var caseMapping = Optional.ofNullable(caseMappingService.getCaseMapping(externalCaseId, caseId).getFirst()).orElse(new CaseMapping());
 
-			final var latestOccurrence = ecosCase.getOccurrences()
-				.getOccurrenceListItemSvcDto()
-				.stream()
-				.max(Comparator.comparing(OccurrenceListItemSvcDto::getOccurrenceDate))
-				.orElse(new OccurrenceListItemSvcDto());
+				final var latestOccurrence = ecosCase.getOccurrences()
+					.getOccurrenceListItemSvcDto()
+					.stream()
+					.max(Comparator.comparing(OccurrenceListItemSvcDto::getOccurrenceDate))
+					.orElse(new OccurrenceListItemSvcDto());
 
-			if (latestOccurrence.getOccurrenceDescription() == null) {
-				return null;
+				if (latestOccurrence.getOccurrenceDescription() == null) {
+					return null;
+				}
+
+				return CaseStatusDTO.builder()
+					.withSystem(SystemType.ECOS)
+					.withExternalCaseId(externalCaseId)
+					.withCaseId(ecosCase.getCaseNumber())
+					.withCaseType(caseMapping.getCaseType())
+					.withServiceName(caseMapping.getServiceName())
+					.withStatus(latestOccurrence.getOccurrenceDescription())
+					.withTimestamp(latestOccurrence.getOccurrenceDate()).build();
 			}
-
-			return CaseStatusDTO.builder()
-				.withSystem(SystemType.ECOS)
-				.withExternalCaseId(externalCaseId)
-				.withCaseId(ecosCase.getCaseNumber())
-				.withCaseType(caseMapping.getCaseType())
-				.withServiceName(caseMapping.getServiceName())
-				.withStatus(latestOccurrence.getOccurrenceDescription())
-				.withTimestamp(latestOccurrence.getOccurrenceDate()).build();
 		}
 		throw Problem.valueOf(Status.NOT_FOUND, Constants.ERR_MSG_STATUS_NOT_FOUND);
 	}
@@ -811,8 +833,8 @@ public class EcosService {
 			log.debug("Health Protection Facility created: {}", facilityGuid);
 			return facilityGuid;
 		}
-			throw Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "Health Protection Facility could not be created");
-		}
+		throw Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "Health Protection Facility could not be created");
+	}
 
 
 	private EstateSvcDto getEstateSvcDto(final FbPropertyInfo propertyInfo) {

@@ -26,7 +26,6 @@ import se.sundsvall.casemanagement.api.model.OrganizationDTO;
 import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
 import se.sundsvall.casemanagement.api.model.PersonDTO;
 import se.sundsvall.casemanagement.api.model.StakeholderDTO;
-import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.service.CaseMappingService;
@@ -82,12 +81,14 @@ public class CaseDataService {
 					attachment -> mapAttachment(attachment, errandNumber))
 				.forEach(caseDataClient::postAttachment);
 		}
-		caseMappingService.postCaseMapping(new CaseMapping(
-			otherCase.getExternalCaseId(),
-			String.valueOf(id),
-			SystemType.CASE_DATA,
-			otherCase.getCaseType(),
-			isNull(otherCase.getExtraParameters()) ? null : otherCase.getExtraParameters().get(SERVICE_NAME)));
+		caseMappingService.postCaseMapping(
+			CaseMapping.builder()
+				.withExternalCaseId(otherCase.getExternalCaseId())
+				.withCaseId(String.valueOf(id))
+				.withSystem(SystemType.CASE_DATA)
+				.withCaseType(otherCase.getCaseType())
+				.withServiceName(isNull(otherCase.getExtraParameters()) ? null : otherCase.getExtraParameters().get(SERVICE_NAME))
+				.build());
 
 		return errandNumber;
 	}
@@ -117,8 +118,10 @@ public class CaseDataService {
 	}
 
 	public CaseStatusDTO getStatus(final CaseMapping caseMapping) {
-		final ErrandDTO errandDTO = getErrand(Long.valueOf(caseMapping.getCaseId()));
-		final var latestStatus = Optional.ofNullable(errandDTO
+		final var errandDTO = getErrand(Long.valueOf(caseMapping.getCaseId()));
+
+		final var latestStatus = Optional.ofNullable(Optional.ofNullable(errandDTO)
+				.orElse(new ErrandDTO())
 				.getStatuses())
 			.orElse(List.of())
 			.stream()
@@ -138,7 +141,7 @@ public class CaseDataService {
 
 	private generated.client.casedata.AttachmentDTO mapAttachment(final AttachmentDTO attachment, final String errandNumber) {
 		final generated.client.casedata.AttachmentDTO attachmentDTO = new generated.client.casedata.AttachmentDTO();
-		attachmentDTO.setCategory(generated.client.casedata.AttachmentDTO.CategoryEnum.fromValue(attachment.getCategory().toString()));
+		attachmentDTO.setCategory(attachment.getCategory());
 		attachmentDTO.setName(attachment.getName());
 		attachmentDTO.setExtension(attachment.getExtension());
 		attachmentDTO.setMimeType(attachment.getMimeType());
@@ -151,7 +154,7 @@ public class CaseDataService {
 
 	private ErrandDTO mapToErrandDTO(final OtherCaseDTO otherCase) {
 		final ErrandDTO errandDTO = new ErrandDTO();
-		errandDTO.setCaseType(ErrandDTO.CaseTypeEnum.fromValue(otherCase.getCaseType().toString()));
+		errandDTO.setCaseType(otherCase.getCaseType());
 		errandDTO.setExternalCaseId(otherCase.getExternalCaseId());
 		errandDTO.setDescription(otherCase.getDescription());
 		errandDTO.setCaseTitleAddition(otherCase.getCaseTitleAddition());
@@ -170,7 +173,7 @@ public class CaseDataService {
 
 	private PatchErrandDTO mapToPatchErrandDTO(final OtherCaseDTO otherCaseDTO) {
 		final PatchErrandDTO patchErrandDTO = new PatchErrandDTO();
-		patchErrandDTO.setCaseType(PatchErrandDTO.CaseTypeEnum.fromValue(otherCaseDTO.getCaseType().toString()));
+		patchErrandDTO.setCaseType(PatchErrandDTO.CaseTypeEnum.fromValue(otherCaseDTO.getCaseType()));
 		patchErrandDTO.setExternalCaseId(otherCaseDTO.getExternalCaseId());
 		patchErrandDTO.setDescription(otherCaseDTO.getDescription());
 		patchErrandDTO.setCaseTitleAddition(otherCaseDTO.getCaseTitleAddition());
@@ -190,7 +193,7 @@ public class CaseDataService {
 		stakeholderDTOS.forEach(stakeholder -> {
 			final generated.client.casedata.StakeholderDTO stakeholderDTO = new generated.client.casedata.StakeholderDTO();
 
-			stakeholderDTO.setRoles(mapStakeholderRoles(stakeholder.getRoles()));
+			stakeholderDTO.setRoles(stakeholder.getRoles());
 			stakeholderDTO.setContactInformation(mapContactInformation(stakeholder));
 			stakeholderDTO.setAddresses(mapAddresses(stakeholder.getAddresses()));
 			stakeholderDTO.setExtraParameters(stakeholder.getExtraParameters());
@@ -273,12 +276,6 @@ public class CaseDataService {
 			contactInformationDTOList.add(contactInformationDTO);
 		}
 		return contactInformationDTOList;
-	}
-
-	private List<generated.client.casedata.StakeholderDTO.RolesEnum> mapStakeholderRoles(final List<StakeholderRole> roles) {
-		final List<generated.client.casedata.StakeholderDTO.RolesEnum> rolesEnumList = new ArrayList<>();
-		roles.forEach(role -> rolesEnumList.add(generated.client.casedata.StakeholderDTO.RolesEnum.fromValue(role.toString())));
-		return rolesEnumList;
 	}
 
 	/**
