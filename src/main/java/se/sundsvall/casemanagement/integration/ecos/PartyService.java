@@ -14,6 +14,7 @@ import se.sundsvall.casemanagement.api.model.EnvironmentalCaseDTO;
 import se.sundsvall.casemanagement.api.model.OrganizationDTO;
 import se.sundsvall.casemanagement.api.model.PersonDTO;
 import se.sundsvall.casemanagement.api.model.StakeholderDTO;
+import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
 import se.sundsvall.casemanagement.service.CitizenService;
 import se.sundsvall.casemanagement.util.CaseUtil;
 import se.sundsvall.casemanagement.util.Constants;
@@ -159,16 +160,19 @@ public class PartyService {
 
 		return new ArrayOfguid()
 			.withGuid(s.getRoles().stream()
-				.map(role ->
-					switch (role) {
-						case INVOICE_RECIPIENT -> Constants.ECOS_ROLE_ID_FAKTURAMOTTAGARE;
+				.map(roleString ->
+				{
+					final var r	= StakeholderRole.valueOf(roleString);
+					return switch (r) {
+						case INVOICE_RECIPENT, INVOICE_RECIPIENT -> Constants.ECOS_ROLE_ID_FAKTURAMOTTAGARE;
 						case OPERATOR -> Constants.ECOS_ROLE_ID_VERKSAMHETSUTOVARE;
 						case CONTACT_PERSON -> Constants.ECOS_ROLE_ID_KONTAKTPERSON;
 						case APPLICANT -> Constants.ECOS_ROLE_ID_SOKANDE;
 						case INSTALLER -> Constants.ECOS_ROLE_ID_INSTALLATOR;
 						default ->
 							throw Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "The request contained a stakeholder role that was not expected. This should be discovered in the validation of the input. Something in the validation is wrong.");
-					})
+					};
+				})
 				.toList());
 	}
 

@@ -148,7 +148,7 @@ public class FbService {
 			}
 		}
 
-		propertyOwners.forEach(propertyOwner -> propertyOwner.setRoles(List.of(StakeholderRole.PROPERTY_OWNER)));
+		propertyOwners.forEach(propertyOwner -> propertyOwner.setRoles(List.of(StakeholderRole.PROPERTY_OWNER.toString())));
 
 		return propertyOwners;
 	}

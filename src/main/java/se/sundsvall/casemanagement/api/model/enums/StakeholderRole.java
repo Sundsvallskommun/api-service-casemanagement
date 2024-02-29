@@ -3,19 +3,7 @@ package se.sundsvall.casemanagement.api.model.enums;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 
-@Schema(description = "<h3>General roles:</h3>" +
-        "<li>APPLICANT(Sökande)</li>"+
-        "<li>CONTACT_PERSON(Kontaktperson)</li>" +
-
-        "<br><br><h3>ByggR-roles:</h3>" +
-        "<li>CONTROL_OFFICIAL(Kontrollansvarig)</li>" +
-        "<li>PROPERTY_OWNER(Fastighetsägare)</li>" +
-        "<li>PAYMENT_PERSON(Betalningsansvarig)</li>" +
-
-        "<br><br><h3>Ecos2-roles:</h3>" +
-        "<li>INVOICE_RECIPENT(Fakturamottagare)</li>" +
-        "<li>OPERATOR(Verksamhetsutövare)</li>" +
-        "<li>INSTALLER(Installatör)</li>")
+@Schema(description = "Stakeholder roles")
 @Getter
 public enum StakeholderRole {
 
@@ -29,6 +17,9 @@ public enum StakeholderRole {
 
     ////////// Ecos2 //////////
     INVOICE_RECIPIENT("Fakturamottagare"),
+    // "Fakturamottagare" Remove when Open-E platform is ready
+    @Deprecated(since = "2024-02-27")
+    INVOICE_RECIPENT("Fakturamottagare"),
     OPERATOR("Verksamhetsutövare"),
     INSTALLER("Installatör"),
 
@@ -61,7 +52,7 @@ public enum StakeholderRole {
 
     private final String text;
 
-    StakeholderRole(String text) {
+    StakeholderRole(final String text) {
         this.text = text;
     }
 

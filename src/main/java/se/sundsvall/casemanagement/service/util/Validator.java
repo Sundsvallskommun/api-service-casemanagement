@@ -5,6 +5,7 @@ import static se.sundsvall.casemanagement.api.model.enums.CaseType.NYBYGGNAD_ANS
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.WITH_NULLABLE_FACILITY_TYPE;
 
 import java.text.MessageFormat;
+import java.util.Objects;
 import java.util.Set;
 
 import jakarta.validation.ConstraintViolation;
@@ -31,81 +32,83 @@ import se.sundsvall.casemanagement.api.validators.PlanningConstraints;
 @Component
 public class Validator {
 
-    public void validateByggrErrand(PlanningPermissionCaseDTO pCase) {
-        try (var factory = Validation.buildDefaultValidatorFactory()) {
-            final jakarta.validation.Validator validator = factory.getValidator();
+	public void validateByggrErrand(PlanningPermissionCaseDTO pCase) {
+		try (var factory = Validation.buildDefaultValidatorFactory()) {
+			final jakarta.validation.Validator validator = factory.getValidator();
 
-            final Set<ConstraintViolation<PlanningPermissionCaseDTO>> caseViolations = validator.validate(pCase, PlanningConstraints.class);
+			final Set<ConstraintViolation<PlanningPermissionCaseDTO>> caseViolations = validator.validate(pCase, PlanningConstraints.class);
 
-            if (!caseViolations.isEmpty()) {
-                throw new ConstraintViolationException(caseViolations);
-            }
+			if (!caseViolations.isEmpty()) {
+				throw new ConstraintViolationException(caseViolations);
+			}
 
-            // Validation for person. This is necessary because the role CONTROL_OFFICIAL doesn't have the same validation
-            // as the other roles.
-            for (final StakeholderDTO stakeholderDTO : pCase.getStakeholders()) {
-                if (stakeholderDTO instanceof final PersonDTO personDTO
-                    && !stakeholderDTO.getRoles().contains(StakeholderRole.CONTROL_OFFICIAL)) {
-                    final Set<ConstraintViolation<PersonDTO>> personViolations = validator.validate(personDTO, PersonConstraints.class);
+			// Validation for person. This is necessary because the role CONTROL_OFFICIAL doesn't have the same validation
+			// as the other roles.
+			for (final StakeholderDTO stakeholderDTO : pCase.getStakeholders()) {
+				if (stakeholderDTO instanceof final PersonDTO personDTO
+					&& !stakeholderDTO.getRoles().contains(StakeholderRole.CONTROL_OFFICIAL.toString())) {
+					final Set<ConstraintViolation<PersonDTO>> personViolations = validator.validate(personDTO, PersonConstraints.class);
 
-                    if (!personViolations.isEmpty()) {
-                        throw new ConstraintViolationException(personViolations);
-                    }
-                }
-            }
-        }
-        // Validates that FacilityTypes is compatible with the CaseType
-        validateFacilityTypes(pCase);
-    }
+					if (!personViolations.isEmpty()) {
+						throw new ConstraintViolationException(personViolations);
+					}
+				}
+			}
+		}
+		// Validates that FacilityTypes is compatible with the CaseType
+		validateFacilityTypes(pCase);
+	}
 
-    /**
-     * Validates that the FacilityTypes are compatible with the CaseType.
-     */
-    private void validateFacilityTypes(PlanningPermissionCaseDTO pCase) {
-        boolean anmmalanAttefallFacilityType = false;
-        FacilityType facilityType = null;
+	/**
+	 * Validates that the FacilityTypes are compatible with the CaseType.
+	 */
+	private void validateFacilityTypes(PlanningPermissionCaseDTO pCase) {
+		boolean attefallFacilityType = false;
+		String facilityType = null;
 
-        for (final PlanningPermissionFacilityDTO facility : pCase.getFacilities()) {
+		for (final PlanningPermissionFacilityDTO facility : pCase.getFacilities()) {
 
-            facilityType = facility.getFacilityType();
+			facilityType = facility.getFacilityType();
 
-            if ((facilityType == null) && WITH_NULLABLE_FACILITY_TYPE.contains(pCase.getCaseType())) {
-                return;
-            }
-            if (facilityType == null) {
-                throw Problem.valueOf(Status.BAD_REQUEST, MessageFormat.format("FacilityType is not allowed to be null for CaseType {0}", pCase.getCaseType()));
-            }
-            anmmalanAttefallFacilityType = switch (facility.getFacilityType()) {
-                case FURNISHING_OF_ADDITIONAL_DWELLING, ANCILLARY_BUILDING, ANCILLARY_HOUSING_BUILDING, DORMER, EXTENSION ->
-                    true;
-                default -> false;
-            };
-        }
+			if ((facilityType == null) && WITH_NULLABLE_FACILITY_TYPE.contains(pCase.getCaseType())) {
+				return;
+			}
+			if (facilityType == null) {
+				throw Problem.valueOf(Status.BAD_REQUEST, MessageFormat.format("FacilityType is not allowed to be null for CaseType {0}", pCase.getCaseType()));
+			}
 
-        if (((pCase.getCaseType() == ANMALAN_ATTEFALL) && !anmmalanAttefallFacilityType) || ((pCase.getCaseType() == NYBYGGNAD_ANSOKAN_OM_BYGGLOV) && anmmalanAttefallFacilityType)) {
-            throw Problem.valueOf(Status.BAD_REQUEST, MessageFormat.format("FacilityType {0} is not compatible with CaseType {1}", facilityType, pCase.getCaseType()));
-        }
-    }
+			attefallFacilityType = switch (FacilityType.valueOf(facilityType)) {
+				case FURNISHING_OF_ADDITIONAL_DWELLING, ANCILLARY_BUILDING, ANCILLARY_HOUSING_BUILDING, DORMER, EXTENSION ->
+					true;
+				default -> false;
+			};
+		}
 
-    public void validateEcosErrand(EnvironmentalCaseDTO eCase) {
-        try (var factory = Validation.buildDefaultValidatorFactory()) {
-            final jakarta.validation.Validator validator = factory.getValidator();
+		if (((Objects.equals(pCase.getCaseType(), ANMALAN_ATTEFALL.toString())) && !attefallFacilityType) || ((Objects.equals(pCase.getCaseType(), NYBYGGNAD_ANSOKAN_OM_BYGGLOV.toString())) && attefallFacilityType)) {
+			throw Problem.valueOf(Status.BAD_REQUEST, MessageFormat.format("FacilityType {0} is not compatible with CaseType {1}", facilityType, pCase.getCaseType()));
+		}
+	}
 
-            if (CaseType.UPPDATERING_RISKKLASSNING.equals(eCase.getCaseType())) {
-                return;
-            }
+	public void validateEcosErrand(EnvironmentalCaseDTO eCase) {
+		try (var factory = Validation.buildDefaultValidatorFactory()) {
+			final var validator = factory.getValidator();
 
-            final Set<ConstraintViolation<EnvironmentalCaseDTO>> violations = validator.validate(eCase, EnvironmentalConstraints.class);
+			if (CaseType.UPPDATERING_RISKKLASSNING.toString().equals(eCase.getCaseType())) {
+				return;
+			}
 
-            if (!violations.isEmpty()) {
-                throw new ConstraintViolationException(violations);
-            }
+			final Set<ConstraintViolation<EnvironmentalCaseDTO>> violations = validator.validate(eCase, EnvironmentalConstraints.class);
 
-            for (final EnvironmentalFacilityDTO facilityDTO : eCase.getFacilities()) {
-                if ((facilityDTO.getFacilityCollectionName() == null) && !WITH_NULLABLE_FACILITY_TYPE.contains(eCase.getCaseType())) {
-                    throw Problem.valueOf(Status.BAD_REQUEST, MessageFormat.format("FacilityType is not allowed to be null for CaseType {0}", eCase.getCaseType()));
-                }
-            }
-        }
-    }
+			if (!violations.isEmpty()) {
+				throw new ConstraintViolationException(violations);
+			}
+
+			for (final EnvironmentalFacilityDTO facilityDTO : eCase.getFacilities()) {
+				if ((facilityDTO.getFacilityCollectionName() == null) && !WITH_NULLABLE_FACILITY_TYPE.contains(eCase.getCaseType())) {
+					throw Problem.valueOf(Status.BAD_REQUEST, MessageFormat.format("FacilityType is not allowed to be null for CaseType {0}", eCase.getCaseType()));
+				}
+			}
+		}
+	}
+
 }

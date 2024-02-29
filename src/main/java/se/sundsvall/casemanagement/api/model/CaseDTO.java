@@ -1,19 +1,5 @@
 package se.sundsvall.casemanagement.api.model;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import lombok.Data;
-import se.sundsvall.casemanagement.api.model.enums.CaseType;
-
-import java.util.List;
-import java.util.Map;
-
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANDRING_ANSOKAN_OM_BYGGLOV;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANDRING_BARANDE_KONSTRUKTION;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANDRING_BRANDSKYDD;
@@ -71,6 +57,20 @@ import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.TILLBYG
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.UPPDATERING_RISKKLASSNING;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.UPPSATTANDE_SKYLT;
 
+import java.util.List;
+import java.util.Map;
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
 
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "caseType", include = JsonTypeInfo.As.EXISTING_PROPERTY, visible = true)
@@ -145,7 +145,7 @@ public abstract class CaseDTO {
 	private String externalCaseId;
 
 	@NotNull
-	private CaseType caseType;
+	private String caseType;
 
 	@Schema(example = "Some description of the case.")
 	private String description;

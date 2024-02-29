@@ -8,5 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CaseResourceResponseDTO {
-    private String caseId;
+
+	private String caseId;
+
 }

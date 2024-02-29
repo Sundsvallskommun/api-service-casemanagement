@@ -2,6 +2,7 @@ package se.sundsvall.casemanagement.ecos;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
@@ -9,8 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.zalando.problem.violations.ConstraintViolationProblem;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 import se.sundsvall.casemanagement.Application;
 import se.sundsvall.casemanagement.api.model.CaseResourceResponseDTO;
@@ -62,7 +61,7 @@ public class EcosCreateCaseFailuresIT extends AbstractAppTest {
 			.hasSize(1)
 			.allSatisfy(caseMapping -> {
 				assertThat(caseMapping.getExternalCaseId()).isEqualTo("1256239125");
-				assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.REGISTRERING_AV_LIVSMEDEL);
+				assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.REGISTRERING_AV_LIVSMEDEL.toString());
 				assertThat(caseMapping.getCaseId()).isEqualTo(ECOS_CASE_ID);
 				assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
 			});
@@ -141,4 +140,5 @@ public class EcosCreateCaseFailuresIT extends AbstractAppTest {
 			.isNotNull()
 			.isEmpty();
 	}
+
 }

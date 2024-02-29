@@ -2,13 +2,12 @@ package se.sundsvall.casemanagement.casedata;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.testcontainers.junit.jupiter.Testcontainers;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 import se.sundsvall.casemanagement.Application;
 import se.sundsvall.casemanagement.api.model.CaseResourceResponseDTO;
@@ -56,7 +55,7 @@ public class CaseDataIT extends AbstractAppTest {
 			.allSatisfy(caseMapping -> {
 				assertThat(caseMapping.getExternalCaseId()).isEqualTo(EXTERNAL_CASE_ID);
 				assertThat(caseMapping.getCaseId()).isEqualTo(CASE_DATA_ID);
-				assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.PARKING_PERMIT);
+				assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.PARKING_PERMIT.toString());
 				assertThat(caseMapping.getSystem()).isEqualTo(SystemType.CASE_DATA);
 			});
 	}
@@ -92,4 +91,5 @@ public class CaseDataIT extends AbstractAppTest {
 			.withExpectedResponseStatus(HttpStatus.NO_CONTENT)
 			.sendRequestAndVerifyResponse();
 	}
+
 }

@@ -2,13 +2,12 @@ package se.sundsvall.casemanagement.ecos;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.testcontainers.junit.jupiter.Testcontainers;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 import se.sundsvall.casemanagement.Application;
 import se.sundsvall.casemanagement.api.model.CaseResourceResponseDTO;
@@ -56,7 +55,7 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 			.hasSize(1)
 			.allSatisfy(caseMapping -> {
 				assertThat(caseMapping.getExternalCaseId()).isEqualTo("874407364");
-				assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.ANMALAN_INSTALLATION_VARMEPUMP);
+				assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.ANMALAN_INSTALLATION_VARMEPUMP.toString());
 				assertThat(caseMapping.getCaseId()).isEqualTo(ECOS_CASE_ID);
 				assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
 			});
@@ -90,7 +89,7 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 			.allSatisfy(caseMapping -> {
 				assertThat(caseMapping.getExternalCaseId()).isEqualTo(EXTERNAL_CASE_ID);
 				assertThat(caseMapping.getCaseId()).isEqualTo(ECOS_CASE_ID);
-				assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP);
+				assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP.toString());
 				assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
 			});
 
@@ -123,7 +122,7 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 			.allSatisfy(caseMapping -> {
 				assertThat(caseMapping.getExternalCaseId()).isEqualTo(EXTERNAL_CASE_ID);
 				assertThat(caseMapping.getCaseId()).isEqualTo(ECOS_CASE_ID);
-				assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP);
+				assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP.toString());
 				assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
 			});
 
@@ -156,7 +155,7 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 			.allSatisfy(caseMapping -> {
 				assertThat(caseMapping.getExternalCaseId()).isEqualTo(EXTERNAL_CASE_ID);
 				assertThat(caseMapping.getCaseId()).isEqualTo(ECOS_CASE_ID);
-				assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC);
+				assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC.toString());
 				assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
 			});
 
@@ -189,7 +188,7 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 			.allSatisfy(caseMapping -> {
 				assertThat(caseMapping.getExternalCaseId()).isEqualTo(EXTERNAL_CASE_ID);
 				assertThat(caseMapping.getCaseId()).isEqualTo(ECOS_CASE_ID);
-				assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.ANMALAN_ANDRING_AVLOPPSANLAGGNING);
+				assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.ANMALAN_ANDRING_AVLOPPSANLAGGNING.toString());
 				assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
 			});
 
@@ -222,7 +221,7 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 			.allSatisfy(caseMapping -> {
 				assertThat(caseMapping.getExternalCaseId()).isEqualTo(EXTERNAL_CASE_ID);
 				assertThat(caseMapping.getCaseId()).isEqualTo(ECOS_CASE_ID);
-				assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.ANMALAN_ANDRING_AVLOPPSANORDNING);
+				assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.ANMALAN_ANDRING_AVLOPPSANORDNING.toString());
 				assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
 			});
 
@@ -256,7 +255,7 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 			.allSatisfy(caseMapping -> {
 				assertThat(caseMapping.getExternalCaseId()).isEqualTo(EXTERNAL_CASE_ID);
 				assertThat(caseMapping.getCaseId()).isEqualTo(ECOS_CASE_ID);
-				assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.ANMALAN_HALSOSKYDDSVERKSAMHET);
+				assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.ANMALAN_HALSOSKYDDSVERKSAMHET.toString());
 				assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
 			});
 
@@ -289,7 +288,7 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 			.allSatisfy(caseMapping -> {
 				assertThat(caseMapping.getExternalCaseId()).isEqualTo(EXTERNAL_CASE_ID);
 				assertThat(caseMapping.getCaseId()).isEqualTo(ECOS_CASE_ID);
-				assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.REGISTRERING_AV_LIVSMEDEL);
+				assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.REGISTRERING_AV_LIVSMEDEL.toString());
 				assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
 			});
 

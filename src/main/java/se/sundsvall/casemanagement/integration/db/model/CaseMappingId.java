@@ -1,5 +1,6 @@
 package se.sundsvall.casemanagement.integration.db.model;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -8,12 +9,15 @@ import lombok.Data;
 @Data
 public class CaseMappingId implements Serializable {
 
+	@Serial
 	private static final long serialVersionUID = -6931529624351524472L;
+
 	private String externalCaseId;
+
 	private String caseId;
 
 	@Override
-	public boolean equals(Object o) {
+	public boolean equals(final Object o) {
 		if (this == o) {
 			return true;
 		}
@@ -28,4 +32,5 @@ public class CaseMappingId implements Serializable {
 	public int hashCode() {
 		return Objects.hash(externalCaseId, caseId);
 	}
+
 }

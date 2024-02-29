@@ -24,7 +24,6 @@ import se.sundsvall.casemanagement.api.model.CoordinatesDTO;
 import se.sundsvall.casemanagement.api.model.EnvironmentalCaseDTO;
 import se.sundsvall.casemanagement.api.model.EnvironmentalFacilityDTO;
 import se.sundsvall.casemanagement.api.model.OrganizationDTO;
-import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
 import se.sundsvall.casemanagement.api.model.PersonDTO;
 import se.sundsvall.casemanagement.api.model.PlanningPermissionCaseDTO;
 import se.sundsvall.casemanagement.api.model.PlanningPermissionFacilityDTO;
@@ -62,7 +61,7 @@ import minutmiljo.SearchPartyResponse;
 import minutmiljoV2.RegisterDocumentCaseResultSvcDto;
 import minutmiljoV2.RegisterDocumentResponse;
 
-public class TestUtil {
+public final class TestUtil {
 
 	public static final Integer FNR = 22045604;
 
@@ -121,15 +120,15 @@ public class TestUtil {
 		eCase.setStartDate(LocalDate.now());
 
 		final List<StakeholderDTO> sList = new ArrayList<>();
-		sList.add(createStakeholder(StakeholderType.ORGANIZATION, List.of(StakeholderRole.APPLICANT, StakeholderRole.OPERATOR)));
-		sList.add(createStakeholder(StakeholderType.PERSON, List.of(StakeholderRole.CONTACT_PERSON)));
-		sList.add(createStakeholder(StakeholderType.PERSON, List.of(StakeholderRole.CONTACT_PERSON)));
+		sList.add(createStakeholder(StakeholderType.ORGANIZATION, List.of(StakeholderRole.APPLICANT.toString(), StakeholderRole.OPERATOR.toString())));
+		sList.add(createStakeholder(StakeholderType.PERSON, List.of(StakeholderRole.CONTACT_PERSON.toString())));
+		sList.add(createStakeholder(StakeholderType.PERSON, List.of(StakeholderRole.CONTACT_PERSON.toString())));
 
 		eCase.setStakeholders(sList);
 
 		eCase.setFacilities(List.of(createEnvironmentalFacilityDTO(caseType)));
 
-		eCase.setCaseType(caseType);
+		eCase.setCaseType(caseType.toString());
 		eCase.setCaseTitleAddition("Some case title addition");
 		eCase.setDescription(RandomStringUtils.random(10, true, false));
 		eCase.setStartDate(LocalDate.now().plusDays(10));
@@ -142,7 +141,7 @@ public class TestUtil {
 
 	public static AttachmentDTO createAttachmentDTO(final AttachmentCategory attachmentCategory) {
 		final AttachmentDTO attachmentDTO = new AttachmentDTO();
-		attachmentDTO.setCategory(attachmentCategory);
+		attachmentDTO.setCategory(attachmentCategory.toString());
 		attachmentDTO.setExtension(".pdf");
 		attachmentDTO.setMimeType("application/pdf");
 		attachmentDTO.setName(RandomStringUtils.random(10, true, false));
@@ -173,15 +172,15 @@ public class TestUtil {
 		pCase.setAttachments(aList);
 
 		final List<StakeholderDTO> sList = new ArrayList<>();
-		sList.add(createStakeholder(StakeholderType.ORGANIZATION, List.of(StakeholderRole.APPLICANT, StakeholderRole.PAYMENT_PERSON)));
-		sList.add(createStakeholder(StakeholderType.PERSON, List.of(StakeholderRole.CONTACT_PERSON)));
-		sList.add(createStakeholder(StakeholderType.PERSON, List.of(StakeholderRole.CONTACT_PERSON)));
+		sList.add(createStakeholder(StakeholderType.ORGANIZATION, List.of(StakeholderRole.APPLICANT.toString(), StakeholderRole.PAYMENT_PERSON.toString())));
+		sList.add(createStakeholder(StakeholderType.PERSON, List.of(StakeholderRole.CONTACT_PERSON.toString())));
+		sList.add(createStakeholder(StakeholderType.PERSON, List.of(StakeholderRole.CONTACT_PERSON.toString())));
 
 		pCase.setStakeholders(sList);
 
 		pCase.setFacilities(List.of(createPlanningPermissionFacilityDTO(false)));
 
-		pCase.setCaseType(caseType);
+		pCase.setCaseType(caseType.toString());
 		pCase.setCaseTitleAddition(RandomStringUtils.random(10, true, false));
 		pCase.setDescription(RandomStringUtils.random(10, true, false));
 		pCase.setExternalCaseId(String.valueOf(new Random().nextLong()));
@@ -197,36 +196,14 @@ public class TestUtil {
 		addressDTO.setAddressCategories(List.of(AddressCategory.VISITING_ADDRESS));
 		addressDTO.setPropertyDesignation("SUNDSVALL BALDER 2");
 		facility.setAddress(addressDTO);
-		facility.setFacilityType(FacilityType.ONE_FAMILY_HOUSE);
+		facility.setFacilityType(FacilityType.ONE_FAMILY_HOUSE.toString());
 		facility.setDescription(RandomStringUtils.random(10, true, false));
 		facility.setExtraParameters(createExtraParameters());
 		facility.setMainFacility(mainFacility);
 		return facility;
 	}
 
-	public static OtherCaseDTO createOtherCase(final CaseType caseType, final AttachmentCategory attachmentCategory) {
-		final OtherCaseDTO oCase = new OtherCaseDTO();
-		final List<AttachmentDTO> aList = new ArrayList<>();
-		aList.add(createAttachmentDTO(attachmentCategory));
-		oCase.setAttachments(aList);
-
-		final List<StakeholderDTO> sList = new ArrayList<>();
-		sList.add(createStakeholder(StakeholderType.ORGANIZATION, List.of(StakeholderRole.APPLICANT, StakeholderRole.OPERATOR)));
-		sList.add(createStakeholder(StakeholderType.PERSON, List.of(StakeholderRole.CONTACT_PERSON)));
-		sList.add(createStakeholder(StakeholderType.PERSON, List.of(StakeholderRole.CONTACT_PERSON)));
-
-		oCase.setStakeholders(sList);
-
-		oCase.setCaseType(caseType);
-		oCase.setCaseTitleAddition(RandomStringUtils.random(10, true, false));
-		oCase.setDescription(RandomStringUtils.random(10, true, false));
-		oCase.setExternalCaseId(String.valueOf(new Random().nextLong()));
-		oCase.setExtraParameters(createExtraParameters());
-
-		return oCase;
-	}
-
-	public static StakeholderDTO createStakeholder(final StakeholderType stakeholderType, final List<StakeholderRole> stakeholderRoles) {
+	public static StakeholderDTO createStakeholder(final StakeholderType stakeholderType, final List<String> stakeholderRoles) {
 		if (stakeholderType.equals(StakeholderType.PERSON)) {
 			final PersonDTO personDTO = new PersonDTO();
 			personDTO.setType(StakeholderType.PERSON);
@@ -388,7 +365,7 @@ public class TestUtil {
 
 	public static AttachmentDTO createAttachment(final AttachmentCategory attachmentCategory) {
 		final AttachmentDTO attachmentDTO = new AttachmentDTO();
-		attachmentDTO.setCategory(attachmentCategory);
+		attachmentDTO.setCategory(attachmentCategory.toString());
 		attachmentDTO.setName("Some attachment name.pdf");
 		attachmentDTO.setNote("Some attachment note");
 		attachmentDTO.setExtension(".pdf");
