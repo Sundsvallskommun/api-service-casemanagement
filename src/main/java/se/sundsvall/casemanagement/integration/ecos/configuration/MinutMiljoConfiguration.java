@@ -100,7 +100,7 @@ public class MinutMiljoConfiguration {
 			}
 			String ntlmMsg3 = null;
 			try {
-				final var type3Message = new Type3Message(new Type2Message(Base64.decode(wwwAuthenticate.getFirst().substring(5))), password, null, username, null, Type3Message.getDefaultFlags());
+				final var type3Message = new Type3Message(new Type2Message(Base64.decode(wwwAuthenticate.getFirst().substring(5))), password, "", username, null, Type3Message.getDefaultFlags());
 				ntlmMsg3 = Base64.encode(type3Message.toByteArray());
 			} catch (final Exception e) {
 				log.error("Error generating NTLM type 3 message", e);
