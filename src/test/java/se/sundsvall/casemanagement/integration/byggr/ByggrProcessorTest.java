@@ -1,16 +1,28 @@
 package se.sundsvall.casemanagement.integration.byggr;
 
-import arendeexport.SaveNewArendeResponse2;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+import static se.sundsvall.casemanagement.TestUtil.createPlanningPermissionCaseDTO;
+
+import java.sql.SQLException;
+
+import javax.sql.rowset.serial.SerialClob;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import dev.failsafe.RetryPolicy;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+
 import se.sundsvall.casemanagement.api.model.PlanningPermissionCaseDTO;
 import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
 import se.sundsvall.casemanagement.api.model.enums.CaseType;
@@ -19,78 +31,77 @@ import se.sundsvall.casemanagement.integration.db.CaseRepository;
 import se.sundsvall.casemanagement.integration.db.model.CaseEntity;
 import se.sundsvall.casemanagement.service.event.IncomingByggrCase;
 
-import javax.sql.rowset.serial.SerialClob;
-import java.sql.SQLException;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-import static se.sundsvall.casemanagement.TestUtil.createPlanningPermissionCaseDTO;
+import arendeexport.SaveNewArendeResponse2;
+import dev.failsafe.RetryPolicy;
 
 @ExtendWith(MockitoExtension.class)
 class ByggrProcessorTest {
-    @InjectMocks
-    ByggrProcessor byggrProcessor;
-    @Spy
-    RetryProperties properties;
-    @Mock
-    private ByggrService service;
-    @Mock
-    private RetryPolicy<SaveNewArendeResponse2> retryPolicy;
 
-    @Spy
-    private CaseRepository caseRepository;
+	@InjectMocks
+	ByggrProcessor byggrProcessor;
 
-    @Test
-    void testHandleIncomingErrand() throws SQLException, JsonProcessingException {
-        final var event = new IncomingByggrCase(ByggrProcessorTest.class, createPlanningPermissionCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION));
+	@Spy
+	RetryProperties properties;
 
-        final var objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
-        final String jsonString = objectMapper.writeValueAsString(event.getPayload());
+	@Mock
+	private ByggrService service;
 
-        when(caseRepository.findById(any(String.class)))
-                .thenReturn(java.util.Optional.of(CaseEntity.builder().withId("id").withDto(new SerialClob(jsonString.toCharArray())).build()));
+	@Mock
+	private RetryPolicy<SaveNewArendeResponse2> retryPolicy;
 
-        byggrProcessor.handleIncomingErrand(event);
+	@Spy
+	private CaseRepository caseRepository;
 
-        verify(caseRepository, times(1)).findById(any(String.class));
-        verifyNoMoreInteractions(caseRepository);
-        verify(service, times(1)).postCase(any(PlanningPermissionCaseDTO.class));
+	@Test
+	void testHandleIncomingErrand() throws SQLException, JsonProcessingException {
+		final var event = new IncomingByggrCase(ByggrProcessorTest.class, createPlanningPermissionCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION));
 
-        assertThat(caseRepository.findAll()).isEmpty();
-    }
+		final var objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+		final String jsonString = objectMapper.writeValueAsString(event.getPayload());
 
-    @Test
-    void testHandleIncomingErrand_NoErrandFound() throws SQLException, JsonProcessingException {
-        final var event = new IncomingByggrCase(ByggrProcessorTest.class, new PlanningPermissionCaseDTO());
+		when(caseRepository.findById(any(String.class)))
+			.thenReturn(java.util.Optional.of(CaseEntity.builder().withId("id").withDto(new SerialClob(jsonString.toCharArray())).build()));
 
-        byggrProcessor.handleIncomingErrand(event);
+		byggrProcessor.handleIncomingErrand(event);
 
-        verify(caseRepository, times(1)).findById(any());
-        verifyNoMoreInteractions(caseRepository);
-        verifyNoInteractions(service);
+		verify(caseRepository, times(1)).findById(any(String.class));
+		verifyNoMoreInteractions(caseRepository);
+		verify(service, times(1)).saveNewCase(any(PlanningPermissionCaseDTO.class));
 
-    }
+		assertThat(caseRepository.findAll()).isEmpty();
+	}
 
-    @Test
-    void testHandleIncomingErrand_maximumFound() throws SQLException, JsonProcessingException {
-        final var event = new IncomingByggrCase(ByggrProcessorTest.class, createPlanningPermissionCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION));
+	@Test
+	void testHandleIncomingErrand_NoErrandFound() throws SQLException, JsonProcessingException {
+		final var event = new IncomingByggrCase(ByggrProcessorTest.class, new PlanningPermissionCaseDTO());
 
-        final var objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
-        final String jsonString = objectMapper.writeValueAsString(event.getPayload());
+		byggrProcessor.handleIncomingErrand(event);
 
-        when(caseRepository.findById(any(String.class)))
-                .thenReturn(java.util.Optional.of(CaseEntity.builder().withId("id").withDto(new SerialClob(jsonString.toCharArray())).build()));
+		verify(caseRepository, times(1)).findById(any());
+		verifyNoMoreInteractions(caseRepository);
+		verifyNoInteractions(service);
 
-        when(service.postCase(any(PlanningPermissionCaseDTO.class))).thenThrow(new RuntimeException("test"));
+	}
 
-        byggrProcessor.handleIncomingErrand(event);
+	@Test
+	void testHandleIncomingErrand_maximumFound() throws SQLException, JsonProcessingException {
+		final var event = new IncomingByggrCase(ByggrProcessorTest.class, createPlanningPermissionCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION));
 
-        verify(caseRepository, times(1)).findById(any());
-        verify(caseRepository, times(1)).save(any());
-        verifyNoMoreInteractions(caseRepository);
-        verify(service, times(3)).postCase(any(PlanningPermissionCaseDTO.class));
+		final var objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+		final String jsonString = objectMapper.writeValueAsString(event.getPayload());
 
-    }
+		when(caseRepository.findById(any(String.class)))
+			.thenReturn(java.util.Optional.of(CaseEntity.builder().withId("id").withDto(new SerialClob(jsonString.toCharArray())).build()));
+
+		when(service.saveNewCase(any(PlanningPermissionCaseDTO.class))).thenThrow(new RuntimeException("test"));
+
+		byggrProcessor.handleIncomingErrand(event);
+
+		verify(caseRepository, times(1)).findById(any());
+		verify(caseRepository, times(1)).save(any());
+		verifyNoMoreInteractions(caseRepository);
+		verify(service, times(3)).saveNewCase(any(PlanningPermissionCaseDTO.class));
+
+	}
 
 }

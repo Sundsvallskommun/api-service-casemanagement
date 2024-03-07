@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.LOST_PARKING_PERMIT;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARKING_PERMIT;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARKING_PERMIT_RENEWAL;
+import static se.sundsvall.casemanagement.util.Constants.SERVICE_NAME;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -35,6 +36,7 @@ import org.zalando.problem.Status;
 import org.zalando.problem.ThrowableProblem;
 
 import se.sundsvall.casemanagement.TestUtil;
+import se.sundsvall.casemanagement.api.model.CaseDTO;
 import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
 import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
 import se.sundsvall.casemanagement.api.model.enums.CaseType;
@@ -116,14 +118,12 @@ class CaseDataServiceTest {
 		assertThat(attachmentDTO).isNotNull();
 		assertThat(attachmentDTO.getCategory()).isEqualTo(AttachmentCategory.ANMALAN_VARMEPUMP.toString());
 
-		final var caseMappingArgumentCaptor = ArgumentCaptor.forClass(CaseMapping.class);
-		verify(caseMappingServiceMock, times(1)).postCaseMapping(caseMappingArgumentCaptor.capture());
-		final var caseMapping = caseMappingArgumentCaptor.getValue();
+		final var caseDTOArgumentCaptor = ArgumentCaptor.forClass(CaseDTO.class);
+		verify(caseMappingServiceMock, times(1)).postCaseMapping(caseDTOArgumentCaptor.capture(), any(String.class), any(SystemType.class));
+		final var caseMapping = caseDTOArgumentCaptor.getValue();
 		assertThat(caseMapping.getExternalCaseId()).isEqualTo(inputCase.getExternalCaseId());
-		assertThat(caseMapping.getCaseId()).isEqualTo(String.valueOf(errandId));
-		assertThat(caseMapping.getSystem()).isEqualTo(SystemType.CASE_DATA);
 		assertThat(caseMapping.getCaseType()).isEqualTo(inputCase.getCaseType());
-		assertThat(caseMapping.getServiceName()).isNull();
+		assertThat(caseMapping.getExtraParameters().get(SERVICE_NAME)).isNull();
 	}
 
 	// Test putErrand

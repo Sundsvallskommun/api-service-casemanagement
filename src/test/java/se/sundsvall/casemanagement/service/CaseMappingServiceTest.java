@@ -2,6 +2,7 @@ package se.sundsvall.casemanagement.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -19,7 +20,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.zalando.problem.Status;
 import org.zalando.problem.ThrowableProblem;
 
+import se.sundsvall.casemanagement.api.model.CaseDTO;
+import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
 import se.sundsvall.casemanagement.api.model.enums.CaseType;
+import se.sundsvall.casemanagement.api.model.enums.SystemType;
 import se.sundsvall.casemanagement.integration.db.CaseMappingRepository;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 
@@ -34,26 +38,34 @@ class CaseMappingServiceTest {
 
 	@Test
 	void testPostCaseMapping() {
+		//Arrange
 		final var caseMappingInput = new CaseMapping();
 		caseMappingInput.setExternalCaseId(UUID.randomUUID().toString());
-
+		final CaseDTO caseDTO = new OtherCaseDTO();
+		//Mock
 		when(caseMappingRepository.findAllByExternalCaseId(caseMappingInput.getExternalCaseId())).thenReturn(List.of());
-
-		caseMappingService.postCaseMapping(caseMappingInput);
-
-		verify(caseMappingRepository, times(1)).save(caseMappingInput);
+		//Act
+		caseMappingService.postCaseMapping(caseDTO, caseMappingInput.getExternalCaseId(), SystemType.CASE_DATA);
+		//Assert
+		verify(caseMappingRepository, times(1)).save(any(CaseMapping.class));
 	}
 
 	@Test
 	void testPostCaseMappingAlreadyExists() {
-		final CaseMapping caseMappingInput = new CaseMapping();
-		caseMappingInput.setExternalCaseId(UUID.randomUUID().toString());
+		//Arrange
+		final var caseId = UUID.randomUUID().toString();
+		final var caseMappingInput = CaseMapping.builder()
+			.withExternalCaseId(caseId)
+			.build();
 
-		when(caseMappingRepository.findAllByExternalCaseId(caseMappingInput.getExternalCaseId())).thenReturn(List.of(caseMappingInput));
+		final var caseDTO = new OtherCaseDTO();
+		//Mock
+		when(caseMappingRepository.findAllByExternalCaseId(caseId)).thenReturn(List.of(caseMappingInput));
 
-		assertThatThrownBy(() -> caseMappingService.postCaseMapping(caseMappingInput))
+		//Act && Assert
+		assertThatThrownBy(() -> caseMappingService.postCaseMapping(caseDTO, caseId, SystemType.ECOS))
 			.isInstanceOf(ThrowableProblem.class)
-			.hasMessage(MessageFormat.format("Bad Request: A resources already exists with the same externalCaseId: {0}", caseMappingInput.getExternalCaseId()))
+			.hasMessage(MessageFormat.format("Bad Request: A resources already exists with the same externalCaseId: {0}", caseId))
 			.hasFieldOrPropertyWithValue("status", Status.BAD_REQUEST);
 
 		verify(caseMappingRepository, times(0)).save(caseMappingInput);

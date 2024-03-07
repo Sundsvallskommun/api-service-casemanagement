@@ -2,7 +2,6 @@ package se.sundsvall.casemanagement.integration.casedata;
 
 import static java.util.Objects.isNull;
 import static org.zalando.problem.Status.NOT_FOUND;
-import static se.sundsvall.casemanagement.util.Constants.SERVICE_NAME;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -81,14 +80,7 @@ public class CaseDataService {
 					attachment -> mapAttachment(attachment, errandNumber))
 				.forEach(caseDataClient::postAttachment);
 		}
-		caseMappingService.postCaseMapping(
-			CaseMapping.builder()
-				.withExternalCaseId(otherCase.getExternalCaseId())
-				.withCaseId(String.valueOf(id))
-				.withSystem(SystemType.CASE_DATA)
-				.withCaseType(otherCase.getCaseType())
-				.withServiceName(isNull(otherCase.getExtraParameters()) ? null : otherCase.getExtraParameters().get(SERVICE_NAME))
-				.build());
+		caseMappingService.postCaseMapping(otherCase, String.valueOf(id), SystemType.CASE_DATA);
 
 		return errandNumber;
 	}

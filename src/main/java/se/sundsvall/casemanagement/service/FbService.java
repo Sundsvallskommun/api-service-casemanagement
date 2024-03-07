@@ -1,8 +1,14 @@
 package se.sundsvall.casemanagement.service;
 
-import java.util.ArrayList;
-import java.util.List;
+import static java.util.Collections.emptyList;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Stream;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
@@ -26,6 +32,10 @@ import se.sundsvall.casemanagement.util.Constants;
 @Service
 public class FbService {
 
+	private final FbClient fbClient;
+
+	private final RegisterbeteckningService registerbeteckningService;
+
 	@Value("${integration.fb.username}")
 	private String fbUsername;
 
@@ -35,161 +45,165 @@ public class FbService {
 	@Value("${integration.fb.database}")
 	private String fbDatabase;
 
-	private final FbClient fbClient;
-	private final RegisterbeteckningService registerbeteckningService;
-
-	public FbService(FbClient fbClient, RegisterbeteckningService registerbeteckningService) {
+	public FbService(final FbClient fbClient, final RegisterbeteckningService registerbeteckningService) {
 		this.fbClient = fbClient;
 		this.registerbeteckningService = registerbeteckningService;
 	}
 
-	public FbPropertyInfo getPropertyInfoByPropertyDesignation(String propertyDesignation) {
-		propertyDesignation = propertyDesignation.trim().toUpperCase();
+	public FbPropertyInfo getPropertyInfoByPropertyDesignation(final String propertyDesignation) {
 
-		final FbPropertyInfo propertyInfo = new FbPropertyInfo();
+		final var trimmedPropertyDesignation = propertyDesignation.trim().toUpperCase();
 
-		final Registerbeteckningsreferens registerbeteckningsreferens = registerbeteckningService
-			.getRegisterbeteckningsreferens(propertyDesignation);
+		final var registerbeteckningsreferens = Optional.ofNullable(registerbeteckningService.getRegisterbeteckningsreferens(trimmedPropertyDesignation))
+			.orElseThrow(() -> Problem.valueOf(Status.BAD_REQUEST, String.format(Constants.ERR_MSG_PROPERTY_DESIGNATION_NOT_FOUND, trimmedPropertyDesignation)));
 
-		// Set FNR if the propertyDesignation in the response matches the request
-		if (registerbeteckningsreferens != null) {
+		return Optional.ofNullable(getFbPropertyInfo(registerbeteckningsreferens))
+			.orElseThrow(() -> Problem.valueOf(Status.BAD_REQUEST, String.format(Constants.ERR_MSG_PROPERTY_DESIGNATION_NOT_FOUND, trimmedPropertyDesignation)));
 
-			final ResponseDto fnrResponse = fbClient.getPropertyInfoByUuid(
-				List.of(registerbeteckningsreferens.getRegisterenhet()),
-				fbDatabase,
-				fbUsername,
-				fbPassword);
+	}
 
-			if ((fnrResponse != null)
-				&& CaseUtil.notNullOrEmpty(fnrResponse.getData())) {
+	private FbPropertyInfo getFbPropertyInfo(final Registerbeteckningsreferens registerbeteckningsreferens) {
 
-				propertyInfo.setFnr(fnrResponse.getData().getFirst().getFnr());
+		final var propertyInfoResponse = fbClient.getPropertyInfoByUuid(
+			List.of(registerbeteckningsreferens.getRegisterenhet()),
+			fbDatabase,
+			fbUsername,
+			fbPassword
+		);
 
-				final ResponseDto addressResponse = fbClient.getAddressInfoByUuid(
-					List.of(registerbeteckningsreferens.getRegisterenhet()),
-					fbDatabase,
-					fbUsername,
-					fbPassword);
+		final var fnr = Optional.ofNullable(propertyInfoResponse)
+			.map(ResponseDto::getData)
+			.filter(CaseUtil::notNullOrEmpty)
+			.map(data -> data.getFirst().getFnr())
+			.orElse(null);
 
-				if ((addressResponse != null)
-					&& CaseUtil.notNullOrEmpty(addressResponse.getData())
-					&& CaseUtil.notNullOrEmpty(addressResponse.getData().getFirst().getGrupp())) {
-					propertyInfo.setAdressplatsId(addressResponse.getData().getFirst().getGrupp().getFirst().getAdressplatsId());
-				}
-
-				if (propertyInfo.getFnr() != null) {
-					return propertyInfo;
-				}
-
-			}
+		if (fnr == null) {
+			return null;
 		}
 
-		// If we reach this code, we did not find the right property
-		throw Problem.valueOf(Status.BAD_REQUEST, String.format(Constants.ERR_MSG_PROPERTY_DESIGNATION_NOT_FOUND, propertyDesignation));
+		final var addressInfoResponse = fbClient.getAddressInfoByUuid(
+			List.of(registerbeteckningsreferens.getRegisterenhet()),
+			fbDatabase,
+			fbUsername,
+			fbPassword
+		);
+
+		final var adressPlatsId = Optional.ofNullable(addressInfoResponse)
+			.map(ResponseDto::getData)
+			.filter(CaseUtil::notNullOrEmpty)
+			.map(data -> data.getFirst().getGrupp())
+			.filter(CaseUtil::notNullOrEmpty)
+			.map(grupp -> grupp.getFirst().getAdressplatsId())
+			.orElse(null);
+
+		return new FbPropertyInfo().withFnr(fnr).withAdressplatsId(adressPlatsId);
 	}
 
 	/**
 	 * Get propertyOwners of specified property
 	 *
-	 * @param  propertyDesignation the specified property
-	 * @return                     List of propertyOwners
+	 * @param propertyDesignation the specified property
+	 * @return List of propertyOwners
 	 */
-	public List<StakeholderDTO> getPropertyOwnerByPropertyDesignation(String propertyDesignation) {
-		final List<StakeholderDTO> propertyOwners = new ArrayList<>();
+	public List<StakeholderDTO> getPropertyOwnerByPropertyDesignation(final String propertyDesignation) {
 
-		final FbPropertyInfo propertyInfo = getPropertyInfoByPropertyDesignation(propertyDesignation);
-		final ResponseDto lagfarenAgareResponse = fbClient.getPropertyOwnerByFnr(
+		final var propertyInfo = getPropertyInfoByPropertyDesignation(propertyDesignation);
+		final var propertyOwnerByFnr = fbClient.getPropertyOwnerByFnr(
 			List.of(propertyInfo.getFnr()),
 			fbDatabase,
 			fbUsername,
 			fbPassword);
 
-		if ((lagfarenAgareResponse != null)
-			&& CaseUtil.notNullOrEmpty(lagfarenAgareResponse.getData())
-			&& CaseUtil.notNullOrEmpty(lagfarenAgareResponse.getData().getFirst().getGrupp())) {
+		final var uuidList = Optional.ofNullable(propertyOwnerByFnr)
+			.map(ResponseDto::getData)
+			.filter(CaseUtil::notNullOrEmpty)
+			.map(data -> data.getFirst().getGrupp())
+			.filter(CaseUtil::notNullOrEmpty)
+			.map(grupp -> grupp.stream().map(GruppItem::getUuid).toList())
+			.filter(CaseUtil::notNullOrEmpty)
+			.orElse(emptyList());
 
-			final List<String> uuidList = lagfarenAgareResponse.getData().getFirst().getGrupp().stream().map(GruppItem::getUuid).toList();
+		final var propertyOwnerInfoByUuidList = fbClient.getPropertyOwnerInfoByUuid(uuidList, fbDatabase, fbUsername, fbPassword);
 
-			if (CaseUtil.notNullOrEmpty(uuidList)) {
-				final ResponseDto agareInfoResponse = fbClient.getPropertyOwnerInfoByUuid(uuidList,
-					fbDatabase,
-					fbUsername,
-					fbPassword);
+		return propertyOwnerInfoByUuidList.getData().stream()
+			.filter(data -> StringUtils.isNotEmpty(data.getIdentitetsnummer()))
+			.map(data -> {
+				final var addressDTO = getAddressForPropertyOwnerByUuid(data.getIdentitetsnummer());
+				if (isPropertyOwnerPerson(data)) {
+					return createPersonDTO(data, addressDTO);
+				} else if (isNotEmpty(data.getGallandeOrganisationsnamn())) {
+					return createOrganizationDTO(data, addressDTO);
+				}
+				return null;
+			})
+			.filter(Objects::nonNull)
+			.toList();
 
-				agareInfoResponse.getData().forEach(data -> {
-					if (data.getIdentitetsnummer() == null) {
-						return;
-					}
-
-					final AddressDTO addressDTO = getAddressForPropertyOwnerByUuid(data.getIdentitetsnummer());
-
-					if ((data.getJuridiskForm() != null) && Constants.FB_JURIDISK_FORM_PRIVATPERSON.equals(data.getJuridiskForm())) {
-						if ((data.getGallandeFornamn() != null)
-							&& (data.getGallandeEfternamn() != null)) {
-							final PersonDTO personDTO = new PersonDTO();
-							personDTO.setPersonalNumber(data.getIdentitetsnummer());
-							personDTO.setFirstName(data.getGallandeFornamn());
-							personDTO.setLastName(data.getGallandeEfternamn());
-							if (addressDTO != null) {
-								personDTO.setAddresses(List.of(addressDTO));
-							}
-							propertyOwners.add(personDTO);
-						}
-					} else if (data.getGallandeOrganisationsnamn() != null) {
-						final OrganizationDTO organizationDTO = new OrganizationDTO();
-						organizationDTO.setOrganizationNumber(data.getIdentitetsnummer());
-						organizationDTO.setOrganizationName(data.getGallandeOrganisationsnamn());
-						if (addressDTO != null) {
-							organizationDTO.setAddresses(List.of(addressDTO));
-						}
-						propertyOwners.add(organizationDTO);
-					}
-				});
-			}
-		}
-
-		propertyOwners.forEach(propertyOwner -> propertyOwner.setRoles(List.of(StakeholderRole.PROPERTY_OWNER.toString())));
-
-		return propertyOwners;
 	}
 
-	private AddressDTO getAddressForPropertyOwnerByUuid(String persOrgNr) {
+	private boolean isPropertyOwnerPerson(final DataItem data) {
+		return Constants.FB_JURIDISK_FORM_PRIVATPERSON.equals(data.getJuridiskForm())
+			&& data.getGallandeFornamn() != null
+			&& data.getGallandeEfternamn() != null;
+	}
 
-		final ResponseDto response = fbClient.getPropertyOwnerAddressByPersOrgNr(List.of(persOrgNr),
+	private PersonDTO createPersonDTO(final DataItem data, final AddressDTO addressDTO) {
+		return PersonDTO.builder()
+			.withPersonalNumber(data.getIdentitetsnummer())
+			.withFirstName(data.getGallandeFornamn())
+			.withLastName(data.getGallandeEfternamn())
+			.withRoles(List.of(StakeholderRole.PROPERTY_OWNER.toString()))
+			.withAddresses(Optional.ofNullable(addressDTO).map(List::of).orElse(emptyList()))
+			.build();
+	}
+
+	private OrganizationDTO createOrganizationDTO(final DataItem data, final AddressDTO addressDTO) {
+		return OrganizationDTO.builder()
+			.withOrganizationNumber(data.getIdentitetsnummer())
+			.withOrganizationName(data.getGallandeOrganisationsnamn())
+			.withRoles(List.of(StakeholderRole.PROPERTY_OWNER.toString()))
+			.withAddresses(Optional.ofNullable(addressDTO).map(List::of).orElse(emptyList()))
+			.build();
+	}
+
+
+	private AddressDTO getAddressForPropertyOwnerByUuid(final String persOrgNr) {
+
+		// Get the response from the client
+		final ResponseDto response = fbClient.getPropertyOwnerAddressByPersOrgNr(
+			List.of(persOrgNr),
 			fbDatabase,
 			fbUsername,
-			fbPassword);
+			fbPassword
+		);
 
-		if ((response != null)
-			&& CaseUtil.notNullOrEmpty(response.getData())) {
-			final AddressDTO addressDTO = new AddressDTO();
+		final var dataItem = Optional.ofNullable(response.getData())
+			.orElse(emptyList())
+			.stream()
+			.findFirst()
+			.orElse(null);
 
-			final DataItem dataItem = response.getData().getFirst();
+		if (dataItem != null) {
 
-			addressDTO.setAddressCategories(List.of(AddressCategory.POSTAL_ADDRESS));
-			addressDTO.setCountry(dataItem.getLand() != null ? dataItem.getLand() : Constants.SWEDEN);
-			addressDTO.setCity(dataItem.getPostort());
-			addressDTO.setPostalCode(dataItem.getPostnummer());
-			addressDTO.setCareOf(dataItem.getCoAdress());
-
-			String streetAddress;
-			if (dataItem.getUtdelningsadress1() != null) {
-				streetAddress = dataItem.getUtdelningsadress1();
-			} else if (dataItem.getUtdelningsadress2() != null) {
-				streetAddress = dataItem.getUtdelningsadress2();
-			} else if (dataItem.getUtdelningsadress3() != null) {
-				streetAddress = dataItem.getUtdelningsadress3();
-			} else if (dataItem.getUtdelningsadress4() != null) {
-				streetAddress = dataItem.getUtdelningsadress4();
-			} else {
-				streetAddress = null;
-			}
-			addressDTO.setStreet(streetAddress);
-
-			return addressDTO;
+			return AddressDTO.builder()
+				.withAddressCategories(List.of(AddressCategory.POSTAL_ADDRESS))
+				.withCountry(dataItem.getLand() != null ? dataItem.getLand() : Constants.SWEDEN)
+				.withCity(dataItem.getPostort())
+				.withPostalCode(dataItem.getPostnummer())
+				.withCareOf(dataItem.getCoAdress())
+				.withStreet(getFirstNonNullUtdelningsadress(dataItem))
+				.build();
 		}
 
 		return null;
+	}
+
+	private String getFirstNonNullUtdelningsadress(final DataItem dataItem) {
+		// Get the first non-null utdelningsadress
+		return Stream.of(dataItem.getUtdelningsadress1(), dataItem.getUtdelningsadress2(), dataItem.getUtdelningsadress3(), dataItem.getUtdelningsadress4())
+			.filter(Objects::nonNull)
+			.findFirst()
+			.orElse(null);
 	}
 
 }

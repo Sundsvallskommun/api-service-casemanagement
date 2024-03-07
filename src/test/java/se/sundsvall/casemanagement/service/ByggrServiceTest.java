@@ -263,7 +263,7 @@ class ByggrServiceTest {
 		final var input = TestUtil.createPlanningPermissionCaseDTO(caseType, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		final var inputFacility = input.getFacilities().getFirst();
 		final var inputAttachment = input.getAttachments().getFirst();
-		final var response = byggrService.postCase(input);
+		final var response = byggrService.saveNewCase(input);
 
 		assertThat(response.getDnr()).isEqualTo(BYGG_CASE_ID);
 
@@ -326,7 +326,7 @@ class ByggrServiceTest {
 		final var inputAttachment = input.getAttachments().getFirst();
 
 		// Act
-		final var response = byggrService.postCase(input);
+		final var response = byggrService.saveNewCase(input);
 
 		// Assert
 		assertThat(response.getDnr()).isEqualTo(BYGG_CASE_ID);
@@ -387,7 +387,7 @@ class ByggrServiceTest {
 		input.getStakeholders().getFirst().getAddresses().getFirst().setAddressCategories(List.of(AddressCategory.POSTAL_ADDRESS));
 		final PlanningPermissionFacilityDTO inputFacility = input.getFacilities().getFirst();
 		final AttachmentDTO inputAttachment = input.getAttachments().getFirst();
-		final SaveNewArendeResponse2 response = byggrService.postCase(input);
+		final SaveNewArendeResponse2 response = byggrService.saveNewCase(input);
 
 		assertThat(response.getDnr()).isEqualTo(BYGG_CASE_ID);
 
@@ -437,7 +437,7 @@ class ByggrServiceTest {
 		input.getStakeholders().getFirst().getAddresses().getFirst().setAddressCategories(List.of(AddressCategory.POSTAL_ADDRESS));
 		final PlanningPermissionFacilityDTO inputFacility = input.getFacilities().getFirst();
 		final AttachmentDTO inputAttachment = input.getAttachments().getFirst();
-		final SaveNewArendeResponse2 response = byggrService.postCase(input);
+		final SaveNewArendeResponse2 response = byggrService.saveNewCase(input);
 
 		assertThat(response.getDnr()).isEqualTo(BYGG_CASE_ID);
 
@@ -490,7 +490,7 @@ class ByggrServiceTest {
 		final var inputAttachment = input.getAttachments().getFirst();
 
 		// Act
-		final SaveNewArendeResponse2 response = byggrService.postCase(input);
+		final SaveNewArendeResponse2 response = byggrService.saveNewCase(input);
 
 		// Assert
 		assertThat(response.getDnr()).isEqualTo(BYGG_CASE_ID);
@@ -537,7 +537,7 @@ class ByggrServiceTest {
 		final PersonDTO applicant = (PersonDTO) TestUtil.createStakeholder(StakeholderType.PERSON, List.of(StakeholderRole.APPLICANT.toString()));
 		input.setStakeholders(List.of(applicant));
 
-		final var postResult = byggrService.postCase(input);
+		final var postResult = byggrService.saveNewCase(input);
 
 		final CaseMapping caseMapping = CaseMapping.builder().withExternalCaseId(input.getExternalCaseId())
 			.withCaseId(postResult.getDnr())
@@ -546,7 +546,7 @@ class ByggrServiceTest {
 			.withServiceName(input.getExtraParameters().get(Constants.SERVICE_NAME))
 			.build();
 
-		verify(caseMappingServiceMock, times(1)).postCaseMapping(caseMapping);
+		verify(caseMappingServiceMock, times(1)).postCaseMapping(input, postResult.getDnr(), SystemType.BYGGR);
 	}
 
 	// Test no duplicates of arendeFastighet
@@ -564,7 +564,7 @@ class ByggrServiceTest {
 		// Add some facilities
 		input.setFacilities(List.of(facility1, facility2, facility3));
 
-		byggrService.postCase(input);
+		byggrService.saveNewCase(input);
 
 		final ArgumentCaptor<SaveNewArende> saveNewArendeRequestCaptor = ArgumentCaptor.forClass(SaveNewArende.class);
 		verify(arendeExportClientMock).saveNewArende(saveNewArendeRequestCaptor.capture());
@@ -590,7 +590,7 @@ class ByggrServiceTest {
 		// Add some facilities
 		input.setFacilities(List.of(randomFacility_1, mainFacility, randomFacility_2));
 
-		byggrService.postCase(input);
+		byggrService.saveNewCase(input);
 
 		final ArgumentCaptor<SaveNewArende> saveNewArendeRequestCaptor = ArgumentCaptor.forClass(SaveNewArende.class);
 		verify(arendeExportClientMock).saveNewArende(saveNewArendeRequestCaptor.capture());
@@ -618,7 +618,7 @@ class ByggrServiceTest {
 		input.setStakeholders(List.of(applicant));
 
 		assertThatThrownBy(
-			() -> byggrService.postCase(input))
+			() -> byggrService.saveNewCase(input))
 			.isInstanceOf(ThrowableProblem.class)
 			.hasFieldOrPropertyWithValue("status", Status.BAD_REQUEST)
 			.hasFieldOrPropertyWithValue("detail", Constants.ERR_MSG_PERSON_INVOICE_ADDRESS);
@@ -632,7 +632,7 @@ class ByggrServiceTest {
 		final PersonDTO applicant = (PersonDTO) TestUtil.createStakeholder(StakeholderType.PERSON, List.of(StakeholderRole.APPLICANT.toString()));
 		input.setStakeholders(List.of(applicant));
 
-		byggrService.postCase(input);
+		byggrService.saveNewCase(input);
 
 		final ArgumentCaptor<SaveNewArende> saveNewArendeRequestCaptor = ArgumentCaptor.forClass(SaveNewArende.class);
 
@@ -657,7 +657,7 @@ class ByggrServiceTest {
 		final OrganizationDTO applicant = (OrganizationDTO) TestUtil.createStakeholder(StakeholderType.ORGANIZATION, List.of(StakeholderRole.APPLICANT.toString()));
 		input.setStakeholders(List.of(applicant));
 
-		byggrService.postCase(input);
+		byggrService.saveNewCase(input);
 
 		final ArgumentCaptor<SaveNewArende> saveNewArendeRequestCaptor = ArgumentCaptor.forClass(SaveNewArende.class);
 		verify(arendeExportClientMock).saveNewArende(saveNewArendeRequestCaptor.capture());
@@ -681,7 +681,7 @@ class ByggrServiceTest {
 
 		when(fbServiceMock.getPropertyOwnerByPropertyDesignation(anyString())).thenReturn(List.of(propertyOwner));
 
-		byggrService.postCase(input);
+		byggrService.saveNewCase(input);
 
 		final ArgumentCaptor<SaveNewArende> saveNewArendeRequestCaptor = ArgumentCaptor.forClass(SaveNewArende.class);
 		verify(arendeExportClientMock).saveNewArende(saveNewArendeRequestCaptor.capture());
@@ -710,7 +710,7 @@ class ByggrServiceTest {
 
 		when(fbServiceMock.getPropertyOwnerByPropertyDesignation(anyString())).thenReturn(List.of(propertyOwner));
 
-		byggrService.postCase(input);
+		byggrService.saveNewCase(input);
 
 		final ArgumentCaptor<SaveNewArende> saveNewArendeRequestCaptor = ArgumentCaptor.forClass(SaveNewArende.class);
 		verify(arendeExportClientMock).saveNewArende(saveNewArendeRequestCaptor.capture());
@@ -740,7 +740,7 @@ class ByggrServiceTest {
 
 		when(fbServiceMock.getPropertyOwnerByPropertyDesignation(anyString())).thenReturn(List.of(applicant, propertyOwner));
 
-		byggrService.postCase(input);
+		byggrService.saveNewCase(input);
 
 		final ArgumentCaptor<SaveNewArende> saveNewArendeRequestCaptor = ArgumentCaptor.forClass(SaveNewArende.class);
 		verify(arendeExportClientMock).saveNewArende(saveNewArendeRequestCaptor.capture());
@@ -766,7 +766,7 @@ class ByggrServiceTest {
 
 		when(fbServiceMock.getPropertyOwnerByPropertyDesignation(anyString())).thenReturn(Collections.emptyList());
 
-		final var postResult = byggrService.postCase(input);
+		final var postResult = byggrService.saveNewCase(input);
 		final ArgumentCaptor<SaveNewArende> saveNewArendeRequestCaptor = ArgumentCaptor.forClass(SaveNewArende.class);
 		verify(arendeExportClientMock).saveNewArende(saveNewArendeRequestCaptor.capture());
 		final SaveNewArendeMessage saveNewArendeMessage = saveNewArendeRequestCaptor.getValue().getMessage();
@@ -795,7 +795,7 @@ class ByggrServiceTest {
 		final PersonDTO applicant = (PersonDTO) TestUtil.createStakeholder(StakeholderType.PERSON, List.of(StakeholderRole.APPLICANT.toString()));
 		input.setStakeholders(List.of(applicant, controlOfficial));
 
-		final var postResult = byggrService.postCase(input);
+		final var postResult = byggrService.saveNewCase(input);
 
 		final ArgumentCaptor<SaveNewArende> saveNewArendeRequestCaptor = ArgumentCaptor.forClass(SaveNewArende.class);
 		verify(arendeExportClientMock).saveNewArende(saveNewArendeRequestCaptor.capture());
@@ -830,7 +830,7 @@ class ByggrServiceTest {
 		applicant.setPersonId(personId);
 		input.setStakeholders(List.of(applicant, paymentPerson));
 
-		final var postResult = byggrService.postCase(input);
+		final var postResult = byggrService.saveNewCase(input);
 
 		final ArgumentCaptor<SaveNewArende> saveNewArendeRequestCaptor = ArgumentCaptor.forClass(SaveNewArende.class);
 		verify(arendeExportClientMock).saveNewArende(saveNewArendeRequestCaptor.capture());
@@ -890,8 +890,6 @@ class ByggrServiceTest {
 			.withServiceName("Test service")
 			.build());
 
-		when(caseMappingServiceMock.getCaseMapping(externalCaseID, caseId)).thenReturn(caseMappingList);
-
 		// Mock arendeExportClientMock
 		final GetArendeResponse getArendeResponse = new GetArendeResponse();
 		final Arende arende = new Arende();
@@ -920,8 +918,8 @@ class ByggrServiceTest {
 		getArendeResponse.setGetArendeResult(arende);
 		when(arendeExportClientMock.getArende(any())).thenReturn(getArendeResponse);
 
-		// Let's go
-		final var getStatusResult = byggrService.getByggrStatus(caseId, externalCaseID);
+		// Act
+		final var getStatusResult = byggrService.toByggrStatus(caseMappingList.getFirst());
 
 		assertCaseStatus(caseId, externalCaseID, CaseType.valueOf(caseMappingList.getFirst().getCaseType()), caseMappingList.getFirst().getServiceName(), handelse_2.getHandelseslag(), handelse_2.getStartDatum(), getStatusResult);
 
