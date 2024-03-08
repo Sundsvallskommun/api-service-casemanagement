@@ -7,6 +7,7 @@ import static se.sundsvall.casemanagement.integration.byggr.ByggrUtil.isCaseClos
 import static se.sundsvall.casemanagement.util.Constants.HANDELSETYP_ANMALAN;
 import static se.sundsvall.casemanagement.util.Constants.HANDELSETYP_ANSOKAN;
 
+import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Base64;
@@ -15,7 +16,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.IntStream;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
@@ -61,6 +62,7 @@ public final class ByggrMapper {
 
 	private static final Logger log = LoggerFactory.getLogger(ByggrMapper.class);
 
+	private static final String REGEX_LAST_COMMA = ",(?=[^,]*$)";
 
 	private ByggrMapper() {
 		// Intentionally empty
@@ -343,36 +345,19 @@ public final class ByggrMapper {
 			return null;
 		}
 
-		final var caseDescriptionBuilder = new StringBuilder(caseDescription);
-
-		final var facilityList = pCase.getFacilities().stream()
+		final var descriptions = pCase.getFacilities().stream()
 			.filter(facility -> facility.getFacilityType() != null)
 			.sorted(Comparator.comparing(PlanningPermissionFacilityDTO::isMainFacility, Comparator.reverseOrder()))
-			.toList();
+			.map(facility -> FacilityType.valueOf(facility.getFacilityType()).getDescription().trim().toLowerCase())
+			.collect(Collectors.joining(", "))
+			.replaceAll(REGEX_LAST_COMMA, " &");
 
-		IntStream.range(0, facilityList.size())
-			.forEach(i -> {
-				if (facilityList.size() > 1) {
-					if (i == (facilityList.size() - 1)) {
-						caseDescriptionBuilder.append(" &");
-					} else if (i != 0) {
-						caseDescriptionBuilder.append(",");
-					}
-				}
-				caseDescriptionBuilder
-					.append(" ")
-					.append(
-						FacilityType.valueOf(facilityList.get(i).getFacilityType())
-							.getDescription()
-							.trim()
-							.toLowerCase());
-			});
+		final var caseDescriptionAddition = Optional.ofNullable(pCase.getCaseTitleAddition())
+			.filter(string -> !string.isBlank())
+			.map(string -> " samt " + string.trim().toLowerCase())
+			.orElse("");
 
-		if ((pCase.getCaseTitleAddition() != null) && !pCase.getCaseTitleAddition().isBlank()) {
-			caseDescriptionBuilder.append(" samt ").append(pCase.getCaseTitleAddition().trim().toLowerCase());
-		}
-
-		return caseDescriptionBuilder.toString();
+		return MessageFormat.format("{0} {1}{2}", caseDescription, descriptions, caseDescriptionAddition);
 	}
 
 	static List<String> filterPersonId(final List<StakeholderDTO> stakeholderDTOList) {
