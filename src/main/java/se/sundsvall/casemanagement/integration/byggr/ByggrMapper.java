@@ -2,8 +2,6 @@ package se.sundsvall.casemanagement.integration.byggr;
 
 import static java.util.function.Predicate.not;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static se.sundsvall.casemanagement.api.model.enums.FacilityType.FIREPLACE;
-import static se.sundsvall.casemanagement.api.model.enums.FacilityType.FIREPLACE_SMOKECHANNEL;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrUtil.hasHandelseList;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrUtil.isCaseClosed;
 import static se.sundsvall.casemanagement.util.Constants.HANDELSETYP_ANMALAN;
@@ -99,7 +97,6 @@ public final class ByggrMapper {
 	}
 
 	static Handelse toHandelse(final PlanningPermissionCaseDTO dto, final CaseTypeData caseType) {
-
 		final var handelse = new Handelse()
 			.withStartDatum(LocalDateTime.now())
 			.withRiktning(Constants.BYGGR_HANDELSE_RIKTNING_IN)
@@ -107,17 +104,21 @@ public final class ByggrMapper {
 			.withHandelsetyp(caseType.getHandelseTyp())
 			.withHandelseslag(caseType.getHandelseSlag());
 
-		if (dto.getFacilities().getFirst().getFacilityType() != null) {
-			if (FIREPLACE.equals(FacilityType.valueOf(dto.getFacilities().getFirst().getFacilityType()))) {
-				handelse
-					.withRubrik(Constants.BYGGR_HANDELSE_RUBRIK_ELDSTAD)
-					.withHandelseslag(Constants.BYGGR_HANDELSESLAG_ELDSTAD);
-			} else if (FIREPLACE_SMOKECHANNEL.equals(FacilityType.valueOf(dto.getFacilities().getFirst().getFacilityType()))) {
-				handelse
-					.withRubrik(Constants.BYGGR_HANDELSE_RUBRIK_ELDSTAD_ROKKANAL)
-					.withHandelseslag(Constants.BYGGR_HANDELSESLAG_ELDSTAD_ROKKANAL);
-			}
-		}
+		Optional.ofNullable(dto.getFacilities().getFirst().getFacilityType())
+			.map(FacilityType::valueOf)
+			.ifPresent(facilityType -> {
+				switch (facilityType) {
+					case FIREPLACE -> handelse
+						.withRubrik(Constants.BYGGR_HANDELSE_RUBRIK_ELDSTAD)
+						.withHandelseslag(Constants.BYGGR_HANDELSESLAG_ELDSTAD);
+					case FIREPLACE_SMOKECHANNEL -> handelse
+						.withRubrik(Constants.BYGGR_HANDELSE_RUBRIK_ELDSTAD_ROKKANAL)
+						.withHandelseslag(Constants.BYGGR_HANDELSESLAG_ELDSTAD_ROKKANAL);
+					default -> {
+						// Do nothing
+					}
+				}
+			});
 		return handelse;
 	}
 
@@ -167,20 +168,15 @@ public final class ByggrMapper {
 	}
 
 	static String getInvoiceMarking(final PlanningPermissionCaseDTO pCase) {
-
-		String invoiceMarking = null;
-
-		for (final var stakeholderDTO : pCase.getStakeholders()) {
-			if (stakeholderDTO.getAddresses() != null) {
-				for (final var addressDTO : stakeholderDTO.getAddresses()) {
-					if (addressDTO.getAddressCategories().contains(AddressCategory.INVOICE_ADDRESS)
-						&& (StringUtils.isNotBlank(addressDTO.getInvoiceMarking()))) {
-						invoiceMarking = addressDTO.getInvoiceMarking();
-					}
-				}
-			}
-		}
-		return invoiceMarking;
+		return pCase.getStakeholders().stream()
+			.filter(Objects::nonNull)
+			.filter(stakeholder -> stakeholder.getAddresses() != null)
+			.flatMap(stakeholder -> stakeholder.getAddresses().stream())
+			.filter(address -> address.getAddressCategories().contains(AddressCategory.INVOICE_ADDRESS))
+			.map(AddressDTO::getInvoiceMarking)
+			.filter(StringUtils::isNotBlank)
+			.findFirst()
+			.orElse(null);
 	}
 
 	static String getArendeKlass(final List<PlanningPermissionFacilityDTO> facilityList) {

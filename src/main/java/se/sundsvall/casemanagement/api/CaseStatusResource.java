@@ -2,7 +2,6 @@ package se.sundsvall.casemanagement.api;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
-import static org.zalando.problem.Status.NOT_FOUND;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,7 +68,7 @@ public class CaseStatusResource {
 		caseStatusDTOList.addAll(ecosService.getEcosStatusByOrgNr(organizationNumber));
 
 		if (caseStatusDTOList.isEmpty()) {
-			throw Problem.valueOf(NOT_FOUND, Constants.ERR_MSG_STATUS_NOT_FOUND);
+			return ResponseEntity.notFound().build();
 		}
 
 		return ResponseEntity.ok(caseStatusDTOList);
