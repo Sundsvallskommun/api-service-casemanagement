@@ -16,15 +16,17 @@ import jakarta.validation.constraints.NotNull;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 
 @Entity(name = "CaseMapping")
 @IdClass(CaseMappingId.class)
 @Data
 @NoArgsConstructor
-@SuperBuilder(setterPrefix = "with")
+@AllArgsConstructor
+@Builder(setterPrefix = "with")
 public class CaseMapping {
 
 	@Id

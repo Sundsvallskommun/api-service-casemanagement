@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
 
+import se.sundsvall.casemanagement.api.model.CaseDTO;
+import se.sundsvall.casemanagement.api.model.enums.SystemType;
 import se.sundsvall.casemanagement.integration.db.CaseMappingRepository;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.util.Constants;
@@ -18,20 +20,20 @@ public class CaseMappingService {
 
 	private final CaseMappingRepository caseMappingRepository;
 
-	public CaseMappingService(CaseMappingRepository caseMappingRepository) {
+	public CaseMappingService(final CaseMappingRepository caseMappingRepository) {
 		this.caseMappingRepository = caseMappingRepository;
 	}
 
-	public void postCaseMapping(CaseMapping caseMapping) {
-		validateUniqueCase(caseMapping.getExternalCaseId());
-		caseMappingRepository.save(caseMapping);
+	public void postCaseMapping(final CaseDTO caseInput, final String caseId, final SystemType systemType) {
+		validateUniqueCase(caseId);
+		caseMappingRepository.save(CaseMappingMapper.toCaseMapping(caseInput, caseId, systemType));
 	}
 
-	public List<CaseMapping> getCaseMapping(String externalCaseId, String caseId) {
+	public List<CaseMapping> getCaseMapping(final String externalCaseId, final String caseId) {
 		return caseMappingRepository.findAllByExternalCaseIdOrCaseId(externalCaseId, caseId);
 	}
 
-	public CaseMapping getCaseMapping(String externalCaseId) {
+	public CaseMapping getCaseMapping(final String externalCaseId) {
 		final List<CaseMapping> caseMappingList = getCaseMapping(externalCaseId, null);
 
 		if (caseMappingList.isEmpty()) {
@@ -52,7 +54,7 @@ public class CaseMappingService {
 		return caseMappingList;
 	}
 
-	public void validateUniqueCase(String externalCaseId) {
+	public void validateUniqueCase(final String externalCaseId) {
 		if (externalCaseId != null) {
 
 			final List<CaseMapping> caseMappingList = caseMappingRepository.findAllByExternalCaseId(externalCaseId);
@@ -62,4 +64,6 @@ public class CaseMappingService {
 			}
 		}
 	}
+
+
 }

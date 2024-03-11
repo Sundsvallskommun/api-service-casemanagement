@@ -1,6 +1,5 @@
 package se.sundsvall.casemanagement.integration.ecos;
 
-import static java.util.Objects.isNull;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_ANDRING_AVLOPPSANLAGGNING;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_ANDRING_AVLOPPSANORDNING;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_AVHJALPANDEATGARD_FORORENING;
@@ -25,7 +24,6 @@ import static se.sundsvall.casemanagement.util.Constants.MINI_SEWAGE_SVC_DTO;
 import static se.sundsvall.casemanagement.util.Constants.PHOSPHORUS_TRAP_SVC_DTO;
 import static se.sundsvall.casemanagement.util.Constants.SAND_FILTER_SVC_DTO;
 import static se.sundsvall.casemanagement.util.Constants.SEPTIC_TANK_SVC_DTO;
-import static se.sundsvall.casemanagement.util.Constants.SERVICE_NAME;
 
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
@@ -201,12 +199,7 @@ public class EcosService {
 		}
 
 		// Persist the connection between OeP-case and Ecos-case
-		caseMappingService.postCaseMapping(CaseMapping.builder()
-			.withExternalCaseId(caseInput.getExternalCaseId())
-			.withCaseId(registerDocumentResult.getCaseId())
-			.withSystem(SystemType.ECOS)
-			.withCaseType(caseInput.getCaseType())
-			.withServiceName(isNull(caseInput.getExtraParameters()) ? null : caseInput.getExtraParameters().get(SERVICE_NAME)).build());
+		caseMappingService.postCaseMapping(caseInput, registerDocumentResult.getCaseId(), SystemType.ECOS);
 		return registerDocumentResult;
 	}
 

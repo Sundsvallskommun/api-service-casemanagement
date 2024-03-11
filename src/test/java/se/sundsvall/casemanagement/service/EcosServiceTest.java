@@ -32,6 +32,7 @@ import org.zalando.problem.Problem;
 import se.sundsvall.casemanagement.TestUtil;
 import se.sundsvall.casemanagement.api.model.AddressDTO;
 import se.sundsvall.casemanagement.api.model.AttachmentDTO;
+import se.sundsvall.casemanagement.api.model.CaseDTO;
 import se.sundsvall.casemanagement.api.model.EnvironmentalCaseDTO;
 import se.sundsvall.casemanagement.api.model.EnvironmentalFacilityDTO;
 import se.sundsvall.casemanagement.api.model.OrganizationDTO;
@@ -188,7 +189,7 @@ class EcosServiceTest {
 		assertThat(registerDocumentCaseSvcDtoV2.getDiaryPlanId()).isEqualTo(Constants.ECOS_DIARY_PLAN_LIVSMEDEL);
 		assertThat(registerDocumentCaseSvcDtoV2.getProcessTypeId()).isEqualTo(Constants.ECOS_PROCESS_TYPE_ID_REGISTRERING_AV_LIVSMEDEL);
 
-		verify(caseMappingServiceMock, times(1)).postCaseMapping(any(CaseMapping.class));
+		verify(caseMappingServiceMock, times(1)).postCaseMapping(any(CaseDTO.class), any(String.class), any(SystemType.class));
 	}
 
 	@Test
@@ -232,7 +233,7 @@ class EcosServiceTest {
 		// Assert
 		verify(minutMiljoClientMock, times(1)).createFoodFacility(any());
 		verify(minutMiljoClientV2Mock, times(1)).registerDocumentV2(any());
-		verify(caseMappingServiceMock, times(1)).postCaseMapping(any(CaseMapping.class));
+		verify(caseMappingServiceMock, times(1)).postCaseMapping(any(CaseDTO.class), any(String.class), any(SystemType.class));
 	}
 
 	@Test
@@ -699,7 +700,7 @@ class EcosServiceTest {
 		verify(minutMiljoClientMock, times(0)).createFoodFacility(any());
 		verify(minutMiljoClientMock, times(0)).addPartyToFacility(any());
 
-		verify(caseMappingServiceMock, times(1)).postCaseMapping(any(CaseMapping.class));
+		verify(caseMappingServiceMock, times(1)).postCaseMapping(any(CaseDTO.class), any(String.class), any(SystemType.class));
 	}
 
 	@Test

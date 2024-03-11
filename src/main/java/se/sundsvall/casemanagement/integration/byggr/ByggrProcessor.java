@@ -4,17 +4,13 @@ import java.io.BufferedReader;
 import java.sql.SQLException;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
-import arendeexport.SaveNewArendeResponse2;
-import dev.failsafe.Failsafe;
-import dev.failsafe.RetryPolicy;
 import se.sundsvall.casemanagement.api.model.PlanningPermissionCaseDTO;
 import se.sundsvall.casemanagement.configuration.RetryProperties;
 import se.sundsvall.casemanagement.integration.db.CaseMappingRepository;
@@ -24,10 +20,15 @@ import se.sundsvall.casemanagement.integration.opene.OpeneClient;
 import se.sundsvall.casemanagement.service.event.IncomingByggrCase;
 import se.sundsvall.casemanagement.util.Processor;
 
+import arendeexport.SaveNewArendeResponse2;
+import dev.failsafe.Failsafe;
+import dev.failsafe.RetryPolicy;
+
 @Component
 class ByggrProcessor extends Processor {
 
 	private final ByggrService service;
+
 	private final RetryPolicy<SaveNewArendeResponse2> retryPolicy;
 
 	ByggrProcessor(final OpeneClient openeClient, final CaseRepository caseRepository,
@@ -47,7 +48,7 @@ class ByggrProcessor extends Processor {
 
 	@Transactional
 	@EventListener(IncomingByggrCase.class)
-	public void handleIncomingErrand(IncomingByggrCase event) throws JsonProcessingException, SQLException {
+	public void handleIncomingErrand(final IncomingByggrCase event) throws JsonProcessingException, SQLException {
 
 		final var caseEntity = caseRepository.findById(event.getPayload().getExternalCaseId()).orElse(null);
 
@@ -65,10 +66,11 @@ class ByggrProcessor extends Processor {
 				.with(retryPolicy)
 				.onSuccess(successEvent -> handleSuccessfulDelivery(caseEntity.getId(), "BYGGR", successEvent.getResult().getDnr()))
 				.onFailure(failureEvent -> handleMaximumDeliveryAttemptsExceeded(failureEvent.getException(), caseEntity, "BYGGR"))
-				.get(() -> service.postCase(planningPermissionCaseDTO));
+				.get(() -> service.saveNewCase(planningPermissionCaseDTO));
 		} catch (final Exception e) {
 			cleanAttachmentBase64(event);
 			log.warn("Unable to create byggR errand {}: {}", event.getPayload(), e.getMessage());
 		}
 	}
+
 }
