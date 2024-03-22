@@ -23,10 +23,10 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.zalando.problem.ThrowableProblem;
 
 import se.sundsvall.casemanagement.api.model.AddressDTO;
-import se.sundsvall.casemanagement.api.model.EnvironmentalCaseDTO;
+import se.sundsvall.casemanagement.api.model.EcosCaseDTO;
+import se.sundsvall.casemanagement.api.model.FacilityDTO;
 import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
-import se.sundsvall.casemanagement.api.model.PlanningPermissionCaseDTO;
-import se.sundsvall.casemanagement.api.model.PlanningPermissionFacilityDTO;
+import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
 import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.integration.db.CaseRepository;
 import se.sundsvall.casemanagement.service.event.IncomingByggrCase;
@@ -61,7 +61,7 @@ class CaseServiceTest {
 	@Test
 	void testHandleByggRCase() {
 		// Arrange
-		final var pCase = new PlanningPermissionCaseDTO();
+		final var pCase = new ByggRCaseDTO();
 		pCase.setStakeholders(List.of());
 		pCase.setFacilities(List.of());
 		pCase.setCaseType(CaseType.ANDRING_ANSOKAN_OM_BYGGLOV.toString());
@@ -87,10 +87,10 @@ class CaseServiceTest {
 		adress.setPropertyDesignation("propertyDesignation");
 		adress.setAddressCategories(List.of());
 
-		final var facility = new PlanningPermissionFacilityDTO();
+		final var facility = new FacilityDTO();
 		facility.setAddress(adress);
 
-		final var pCase = new PlanningPermissionCaseDTO();
+		final var pCase = new ByggRCaseDTO();
 		pCase.setStakeholders(List.of());
 		pCase.setFacilities(List.of(facility));
 		pCase.setCaseType(caseType.toString());
@@ -117,10 +117,10 @@ class CaseServiceTest {
 		adress.setPropertyDesignation("propertyDesignation");
 		adress.setAddressCategories(List.of());
 
-		final var facility = new PlanningPermissionFacilityDTO();
+		final var facility = new FacilityDTO();
 		facility.setAddress(adress);
 
-		final var pCase = new PlanningPermissionCaseDTO();
+		final var pCase = new ByggRCaseDTO();
 		pCase.setStakeholders(List.of());
 		pCase.setFacilities(List.of(facility));
 		pCase.setCaseType(caseType.toString());
@@ -137,7 +137,7 @@ class CaseServiceTest {
 	@Test
 	void testHandleEcosCase() {
 		// Arrange
-		final var eCase = new EnvironmentalCaseDTO();
+		final var eCase = new EcosCaseDTO();
 		eCase.setStakeholders(List.of());
 		eCase.setCaseType(CaseType.REGISTRERING_AV_LIVSMEDEL.toString());
 		eCase.setFacilities(List.of());

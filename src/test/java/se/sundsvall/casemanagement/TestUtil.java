@@ -21,12 +21,11 @@ import org.mockito.Mockito;
 import se.sundsvall.casemanagement.api.model.AddressDTO;
 import se.sundsvall.casemanagement.api.model.AttachmentDTO;
 import se.sundsvall.casemanagement.api.model.CoordinatesDTO;
-import se.sundsvall.casemanagement.api.model.EnvironmentalCaseDTO;
-import se.sundsvall.casemanagement.api.model.EnvironmentalFacilityDTO;
+import se.sundsvall.casemanagement.api.model.EcosCaseDTO;
+import se.sundsvall.casemanagement.api.model.FacilityDTO;
 import se.sundsvall.casemanagement.api.model.OrganizationDTO;
 import se.sundsvall.casemanagement.api.model.PersonDTO;
-import se.sundsvall.casemanagement.api.model.PlanningPermissionCaseDTO;
-import se.sundsvall.casemanagement.api.model.PlanningPermissionFacilityDTO;
+import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
 import se.sundsvall.casemanagement.api.model.StakeholderDTO;
 import se.sundsvall.casemanagement.api.model.enums.AddressCategory;
 import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
@@ -112,8 +111,8 @@ public final class TestUtil {
 		Mockito.doReturn(agareInfoResponse).when(fbClientMock).getPropertyOwnerInfoByUuid(any(), any(), any(), any());
 	}
 
-	public static EnvironmentalCaseDTO createEnvironmentalCase(final CaseType caseType, final AttachmentCategory attachmentCategory) {
-		final EnvironmentalCaseDTO eCase = new EnvironmentalCaseDTO();
+	public static EcosCaseDTO createEnvironmentalCase(final CaseType caseType, final AttachmentCategory attachmentCategory) {
+		final EcosCaseDTO eCase = new EcosCaseDTO();
 		final List<AttachmentDTO> aList = new ArrayList<>();
 		aList.add(createAttachmentDTO(attachmentCategory));
 		eCase.setAttachments(aList);
@@ -126,7 +125,7 @@ public final class TestUtil {
 
 		eCase.setStakeholders(sList);
 
-		eCase.setFacilities(List.of(createEnvironmentalFacilityDTO(caseType)));
+		eCase.setFacilities(List.of(createNewFacilityDTO(caseType)));
 
 		eCase.setCaseType(caseType.toString());
 		eCase.setCaseTitleAddition("Some case title addition");
@@ -150,8 +149,8 @@ public final class TestUtil {
 		return attachmentDTO;
 	}
 
-	public static EnvironmentalFacilityDTO createEnvironmentalFacilityDTO(final CaseType caseType) {
-		final EnvironmentalFacilityDTO facility = new EnvironmentalFacilityDTO();
+	public static FacilityDTO createNewFacilityDTO(final CaseType caseType) {
+		final var facility = new FacilityDTO();
 		facility.setFacilityCollectionName(RandomStringUtils.random(10, true, false));
 		final AddressDTO addressDTO = new AddressDTO();
 		addressDTO.setAddressCategories(List.of(AddressCategory.VISITING_ADDRESS));
@@ -159,14 +158,15 @@ public final class TestUtil {
 		facility.setAddress(addressDTO);
 		facility.setDescription(RandomStringUtils.random(10, true, false));
 		facility.setExtraParameters(switch (caseType) {
-			case ANSOKAN_TILLSTAND_VARMEPUMP, ANMALAN_INSTALLATION_VARMEPUMP -> getHeatPumpExtraParams();
+			case ANSOKAN_TILLSTAND_VARMEPUMP, ANMALAN_INSTALLATION_VARMEPUMP ->
+				getHeatPumpExtraParams();
 			default -> createExtraParameters();
 		});
 		return facility;
 	}
 
-	public static PlanningPermissionCaseDTO createPlanningPermissionCaseDTO(final CaseType caseType, final AttachmentCategory attachmentCategory) {
-		final PlanningPermissionCaseDTO pCase = new PlanningPermissionCaseDTO();
+	public static ByggRCaseDTO createPlanningPermissionCaseDTO(final CaseType caseType, final AttachmentCategory attachmentCategory) {
+		final ByggRCaseDTO pCase = new ByggRCaseDTO();
 		final List<AttachmentDTO> aList = new ArrayList<>();
 		aList.add(createAttachmentDTO(attachmentCategory));
 		pCase.setAttachments(aList);
@@ -178,7 +178,7 @@ public final class TestUtil {
 
 		pCase.setStakeholders(sList);
 
-		pCase.setFacilities(List.of(createPlanningPermissionFacilityDTO(false)));
+		pCase.setFacilities(List.of(createNewFacilityDto(false)));
 
 		pCase.setCaseType(caseType.toString());
 		pCase.setCaseTitleAddition(RandomStringUtils.random(10, true, false));
@@ -190,8 +190,8 @@ public final class TestUtil {
 		return pCase;
 	}
 
-	public static PlanningPermissionFacilityDTO createPlanningPermissionFacilityDTO(final boolean mainFacility) {
-		final PlanningPermissionFacilityDTO facility = new PlanningPermissionFacilityDTO();
+	public static FacilityDTO createNewFacilityDto(final boolean mainFacility) {
+		final var facility = new FacilityDTO();
 		final AddressDTO addressDTO = new AddressDTO();
 		addressDTO.setAddressCategories(List.of(AddressCategory.VISITING_ADDRESS));
 		addressDTO.setPropertyDesignation("SUNDSVALL BALDER 2");
@@ -274,7 +274,7 @@ public final class TestUtil {
 				"id2", new ArrayOfguid().withGuid("123as"),
 				"id3", new ArrayOfguid().withGuid("1235"))))
 			.when(mock)
-			.findAndAddPartyToCase(any(EnvironmentalCaseDTO.class), any(String.class));
+			.findAndAddPartyToCase(any(EcosCaseDTO.class), any(String.class));
 
 	}
 

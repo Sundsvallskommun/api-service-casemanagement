@@ -1,4 +1,4 @@
-package se.sundsvall.casemanagement.api.validators;
+package se.sundsvall.casemanagement.api.validation.impl;
 
 import java.util.Arrays;
 
@@ -6,6 +6,7 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
 import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
+import se.sundsvall.casemanagement.api.validation.ValidAttachmentCategory;
 
 
 public class ValidAttachmentCategoryConstraintValidator implements ConstraintValidator<ValidAttachmentCategory, String> {

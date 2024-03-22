@@ -7,8 +7,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 
 import se.sundsvall.casemanagement.api.model.enums.AddressCategory;
-import se.sundsvall.casemanagement.api.validators.EnvironmentalConstraints;
-import se.sundsvall.casemanagement.api.validators.PlanningConstraints;
+import se.sundsvall.casemanagement.api.validation.EnvironmentalConstraints;
+import se.sundsvall.casemanagement.api.validation.PlanningConstraints;
 import se.sundsvall.casemanagement.util.Constants;
 
 import io.swagger.v3.oas.annotations.media.Schema;

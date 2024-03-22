@@ -9,15 +9,14 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import java.util.Map;
 
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import se.sundsvall.casemanagement.api.model.EnvironmentalCaseDTO;
-import se.sundsvall.casemanagement.api.model.EnvironmentalFacilityDTO;
+import se.sundsvall.casemanagement.api.model.EcosCaseDTO;
+import se.sundsvall.casemanagement.api.model.FacilityDTO;
 import se.sundsvall.casemanagement.api.model.OrganizationDTO;
 import se.sundsvall.casemanagement.integration.ecos.MinutMiljoClient;
 import se.sundsvall.casemanagement.integration.ecos.RiskClassService;
@@ -38,7 +37,7 @@ class RiskClassServiceTest {
 	@Test
 	void updateRiskClass() {
 
-		final var facility = new EnvironmentalFacilityDTO();
+		final var facility = new FacilityDTO();
 		facility.setFacilityCollectionName("someFacilityName");
 
 		when(minutMiljoClient.searchFacility(any()))
@@ -65,8 +64,8 @@ class RiskClassServiceTest {
 		verifyNoMoreInteractions(minutMiljoClient);
 	}
 
-	private static EnvironmentalCaseDTO getEnvironmentalCaseDTO(final EnvironmentalFacilityDTO facility, final Map<String, String> extraParam) {
-		final var dto = new EnvironmentalCaseDTO();
+	private static EcosCaseDTO getEnvironmentalCaseDTO(final FacilityDTO facility, final Map<String, String> extraParam) {
+		final var dto = new EcosCaseDTO();
 		final var stakeholder = new OrganizationDTO();
 		stakeholder.setOrganizationNumber("123456-7890");
 		dto.setFacilities(List.of(facility));
@@ -79,7 +78,7 @@ class RiskClassServiceTest {
 	@Test
 	void updateRiskClass_empty_activites() {
 
-		final var facility = new EnvironmentalFacilityDTO();
+		final var facility = new FacilityDTO();
 		facility.setFacilityCollectionName("someFacilityName");
 
 		when(minutMiljoClient.searchFacility(any()))

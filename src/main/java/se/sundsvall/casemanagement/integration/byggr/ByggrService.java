@@ -38,7 +38,7 @@ import se.sundsvall.casemanagement.api.model.AttachmentDTO;
 import se.sundsvall.casemanagement.api.model.CaseStatusDTO;
 import se.sundsvall.casemanagement.api.model.OrganizationDTO;
 import se.sundsvall.casemanagement.api.model.PersonDTO;
-import se.sundsvall.casemanagement.api.model.PlanningPermissionCaseDTO;
+import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
 import se.sundsvall.casemanagement.api.model.StakeholderDTO;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
@@ -89,7 +89,7 @@ public class ByggrService {
 		this.caseTypeRepository = caseTypeRepository;
 	}
 
-	public SaveNewArendeResponse2 saveNewCase(final PlanningPermissionCaseDTO caseInput) {
+	public SaveNewArendeResponse2 saveNewCase(final ByggRCaseDTO caseInput) {
 
 		caseTypeRepository.findAll().forEach(caseTypeData -> caseTypeMap.put(caseTypeData.getValue(), caseTypeData));
 
@@ -103,7 +103,7 @@ public class ByggrService {
 		return response;
 	}
 
-	private void createOccurrence(final PlanningPermissionCaseDTO caseInput, final SaveNewArende saveNewArende, final SaveNewArendeResponse2 response) {
+	private void createOccurrence(final ByggRCaseDTO caseInput, final SaveNewArende saveNewArende, final SaveNewArendeResponse2 response) {
 		final var byggrAdminMessageSb = new StringBuilder();
 		// If it's something that we should inform the administrator about, we create a new occurrence in the case.
 		if (containsControlOfficial(caseInput.getStakeholders())) {
@@ -168,7 +168,7 @@ public class ByggrService {
 			.toList();
 	}
 
-	public ArrayOfArendeIntressent2 getByggrIntressenter(final PlanningPermissionCaseDTO pCase) {
+	public ArrayOfArendeIntressent2 getByggrIntressenter(final ByggRCaseDTO pCase) {
 
 		// Add all stakeholders from case to the list
 		final var stakeholderDTOList = new ArrayList<>(pCase.getStakeholders());
@@ -194,7 +194,7 @@ public class ByggrService {
 
 	}
 
-	public void populateStakeholderListWithPropertyOwners(final PlanningPermissionCaseDTO pCase, final List<StakeholderDTO> stakeholderDTOList) {
+	public void populateStakeholderListWithPropertyOwners(final ByggRCaseDTO pCase, final List<StakeholderDTO> stakeholderDTOList) {
 		// Filter all persons
 		final var personDTOStakeholders = stakeholderDTOList.stream()
 			.filter(PersonDTO.class::isInstance)
@@ -230,7 +230,7 @@ public class ByggrService {
 		return pnr;
 	}
 
-	public ArrayOfAbstractArendeObjekt2 getByggrArendeObjektLista(final PlanningPermissionCaseDTO pCase) {
+	public ArrayOfAbstractArendeObjekt2 getByggrArendeObjektLista(final ByggRCaseDTO pCase) {
 
 		final var arendeObjektLista = new ArrayOfAbstractArendeObjekt2();
 
@@ -254,7 +254,7 @@ public class ByggrService {
 		return arendeObjektLista;
 	}
 
-	Arende2 toArende2(final PlanningPermissionCaseDTO pCase) {
+	Arende2 toArende2(final ByggRCaseDTO pCase) {
 
 		final var caseType = caseTypeMap.get(pCase.getCaseType());
 		final var arende = new Arende2();

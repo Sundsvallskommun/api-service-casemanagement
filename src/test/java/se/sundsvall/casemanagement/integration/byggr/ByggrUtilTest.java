@@ -9,8 +9,8 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import se.sundsvall.casemanagement.api.model.AddressDTO;
+import se.sundsvall.casemanagement.api.model.FacilityDTO;
 import se.sundsvall.casemanagement.api.model.PersonDTO;
-import se.sundsvall.casemanagement.api.model.PlanningPermissionFacilityDTO;
 import se.sundsvall.casemanagement.api.model.StakeholderDTO;
 
 import arendeexport.Arende;
@@ -100,7 +100,7 @@ class ByggrUtilTest {
 	@Test
 	void getPropertyDesignation() {
 		// Arrange
-		final var facility = new PlanningPermissionFacilityDTO();
+		final var facility = new FacilityDTO();
 		facility.setAddress(AddressDTO.builder().withPropertyDesignation("Some-Property-Designation").build());
 		final var facilityList = List.of(facility);
 		// Act
@@ -120,7 +120,7 @@ class ByggrUtilTest {
 	@Test
 	void isWithinPlan() {
 		// Arrange
-		final var facility = new PlanningPermissionFacilityDTO();
+		final var facility = new FacilityDTO();
 		facility.setAddress(AddressDTO.builder().withIsZoningPlanArea(true).build());
 		final var facilityList = List.of(facility);
 		// Act
@@ -132,7 +132,7 @@ class ByggrUtilTest {
 	@Test
 	void isWithinPlan_IsNotTrue() {
 		// Arrange
-		final var facility = new PlanningPermissionFacilityDTO();
+		final var facility = new FacilityDTO();
 		facility.setAddress(AddressDTO.builder().withIsZoningPlanArea(false).build());
 		final var facilityList = List.of(facility);
 		// Act
@@ -144,7 +144,7 @@ class ByggrUtilTest {
 	@Test
 	void parsePropertyDesignation() {
 		// Arrange
-		final var facility = new PlanningPermissionFacilityDTO();
+		final var facility = new FacilityDTO();
 		facility.setAddress(AddressDTO.builder().withPropertyDesignation("Sundsvall Some-Property-Designation").build());
 		final var facilityList = List.of(facility);
 		// Act
@@ -157,7 +157,7 @@ class ByggrUtilTest {
 	@Test
 	void parsePropertyDesignation_NotStartingWithSundsvall() {
 		// Arrange
-		final var facility = new PlanningPermissionFacilityDTO();
+		final var facility = new FacilityDTO();
 		facility.setAddress(AddressDTO.builder().withPropertyDesignation("Some-Property-Designation").build());
 		final var facilityList = List.of(facility);
 		// Act
@@ -178,7 +178,7 @@ class ByggrUtilTest {
 	void getMainOrTheOnlyFacility() {
 
 		// Arrange
-		final var facility = new PlanningPermissionFacilityDTO();
+		final var facility = new FacilityDTO();
 		facility.setMainFacility(true);
 		final var facilityList = List.of(facility);
 		// Act
@@ -198,8 +198,8 @@ class ByggrUtilTest {
 	@Test
 	void getMainOrTheOnlyFacility_TwoFacilities() {
 		// Arrange
-		final var facility = new PlanningPermissionFacilityDTO();
-		final var facility2 = new PlanningPermissionFacilityDTO();
+		final var facility = new FacilityDTO();
+		final var facility2 = new FacilityDTO();
 		facility2.setMainFacility(true);
 		final var facilityList = List.of(facility, facility2);
 		// Act

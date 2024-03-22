@@ -2,7 +2,7 @@ package se.sundsvall.casemanagement.api.model;
 
 import jakarta.validation.constraints.NotBlank;
 
-import se.sundsvall.casemanagement.api.validators.PersonConstraints;
+import se.sundsvall.casemanagement.api.validation.PersonConstraints;
 import se.sundsvall.dept44.common.validators.annotation.ValidUuid;
 
 import io.swagger.v3.oas.annotations.media.Schema;

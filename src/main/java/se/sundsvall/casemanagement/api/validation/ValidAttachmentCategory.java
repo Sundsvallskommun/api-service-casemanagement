@@ -1,4 +1,4 @@
-package se.sundsvall.casemanagement.api.validators;
+package se.sundsvall.casemanagement.api.validation;
 
 
 import static java.lang.annotation.ElementType.CONSTRUCTOR;
@@ -14,6 +14,7 @@ import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
 import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
+import se.sundsvall.casemanagement.api.validation.impl.ValidAttachmentCategoryConstraintValidator;
 
 
 /**

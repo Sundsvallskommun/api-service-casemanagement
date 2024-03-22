@@ -45,8 +45,8 @@ import org.zalando.problem.ThrowableProblem;
 import se.sundsvall.casemanagement.api.model.AddressDTO;
 import se.sundsvall.casemanagement.api.model.AttachmentDTO;
 import se.sundsvall.casemanagement.api.model.CaseStatusDTO;
-import se.sundsvall.casemanagement.api.model.EnvironmentalCaseDTO;
-import se.sundsvall.casemanagement.api.model.EnvironmentalFacilityDTO;
+import se.sundsvall.casemanagement.api.model.EcosCaseDTO;
+import se.sundsvall.casemanagement.api.model.FacilityDTO;
 import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
 import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
@@ -149,7 +149,7 @@ public class EcosService {
 		return filename;
 	}
 
-	public RegisterDocumentCaseResultSvcDto postCase(final EnvironmentalCaseDTO caseInput) {
+	public RegisterDocumentCaseResultSvcDto postCase(final EcosCaseDTO caseInput) {
 
 		final var eFacility = caseInput.getFacilities().getFirst();
 
@@ -215,7 +215,7 @@ public class EcosService {
 		});
 	}
 
-	private String createFoodFacility(final EnvironmentalCaseDTO eCase, final FbPropertyInfo propertyInfo, final RegisterDocumentCaseResultSvcDto registerDocumentResult) {
+	private String createFoodFacility(final EcosCaseDTO eCase, final FbPropertyInfo propertyInfo, final RegisterDocumentCaseResultSvcDto registerDocumentResult) {
 
 		final CreateFoodFacility createFoodFacility = new CreateFoodFacility();
 		final CreateFoodFacilitySvcDto createFoodFacilitySvcDto = new CreateFoodFacilitySvcDto();
@@ -386,7 +386,7 @@ public class EcosService {
 		svcDto.setPowerOutput(CaseUtil.parseDouble(extraParameters.get(prefix + "PowerOutput")));
 	}
 
-	private String createIndividualSewage(final EnvironmentalFacilityDTO eFacility, final FbPropertyInfo propertyInfo, final RegisterDocumentCaseResultSvcDto registerDocumentResult) {
+	private String createIndividualSewage(final FacilityDTO eFacility, final FbPropertyInfo propertyInfo, final RegisterDocumentCaseResultSvcDto registerDocumentResult) {
 
 		final CreateIndividualSewageFacility createIndividualSewageFacility = new CreateIndividualSewageFacility();
 		final CreateIndividualSewageFacilitySvcDto createIndividualSewageFacilitySvcDto = new CreateIndividualSewageFacilitySvcDto();
@@ -587,7 +587,7 @@ public class EcosService {
 		svcDto.setPurificationStepLocation(null);
 	}
 
-	public RegisterDocumentCaseResultSvcDto registerDocument(final EnvironmentalCaseDTO eCase) {
+	public RegisterDocumentCaseResultSvcDto registerDocument(final EcosCaseDTO eCase) {
 		final var registerDocumentCaseSvcDtoV2 = new RegisterDocumentCaseSvcDtoV2();
 		final var registerDocument = new RegisterDocument();
 		registerDocumentCaseSvcDtoV2.setOccurrenceTypeId(Constants.ECOS_OCCURENCE_TYPE_ID_ANMALAN);
@@ -641,7 +641,8 @@ public class EcosService {
 	private String getProcessTypeId(final String caseType) {
 
 		return switch (CaseType.valueOf(caseType)) {
-			case REGISTRERING_AV_LIVSMEDEL -> Constants.ECOS_PROCESS_TYPE_ID_REGISTRERING_AV_LIVSMEDEL;
+			case REGISTRERING_AV_LIVSMEDEL ->
+				Constants.ECOS_PROCESS_TYPE_ID_REGISTRERING_AV_LIVSMEDEL;
 			case ANMALAN_INSTALLATION_VARMEPUMP ->
 				Constants.ECOS_PROCESS_TYPE_ID_ANMALAN_INSTALLATION_VARMEPUMP;
 			case ANSOKAN_TILLSTAND_VARMEPUMP ->
@@ -809,7 +810,7 @@ public class EcosService {
 		return minutMiljoClient.searchCase(searchCase).getSearchCaseResult();
 	}
 
-	private String createHealthProtectionFacility(final EnvironmentalFacilityDTO eFacility, final FbPropertyInfo propertyInfo, final RegisterDocumentCaseResultSvcDto registerDocumentResult) {
+	private String createHealthProtectionFacility(final FacilityDTO eFacility, final FbPropertyInfo propertyInfo, final RegisterDocumentCaseResultSvcDto registerDocumentResult) {
 
 		final CreateHealthProtectionFacility createHealthProtectionFacility = new CreateHealthProtectionFacility();
 		final CreateHealthProtectionFacilitySvcDto createHealthProtectionFacilitySvcDto = new CreateHealthProtectionFacilitySvcDto();

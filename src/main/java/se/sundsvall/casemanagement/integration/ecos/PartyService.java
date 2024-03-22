@@ -10,7 +10,7 @@ import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
 
 import se.sundsvall.casemanagement.api.model.AddressDTO;
-import se.sundsvall.casemanagement.api.model.EnvironmentalCaseDTO;
+import se.sundsvall.casemanagement.api.model.EcosCaseDTO;
 import se.sundsvall.casemanagement.api.model.OrganizationDTO;
 import se.sundsvall.casemanagement.api.model.PersonDTO;
 import se.sundsvall.casemanagement.api.model.StakeholderDTO;
@@ -52,7 +52,7 @@ public class PartyService {
 	}
 
 
-	public List<Map<String, ArrayOfguid>> findAndAddPartyToCase(final EnvironmentalCaseDTO eCase, final String caseId) {
+	public List<Map<String, ArrayOfguid>> findAndAddPartyToCase(final EcosCaseDTO eCase, final String caseId) {
 
 		final var organizationDTOs = eCase.getStakeholders().stream()
 			.filter(OrganizationDTO.class::isInstance)
@@ -162,9 +162,10 @@ public class PartyService {
 			.withGuid(s.getRoles().stream()
 				.map(roleString ->
 				{
-					final var r	= StakeholderRole.valueOf(roleString);
+					final var r = StakeholderRole.valueOf(roleString);
 					return switch (r) {
-						case INVOICE_RECIPENT, INVOICE_RECIPIENT -> Constants.ECOS_ROLE_ID_FAKTURAMOTTAGARE;
+						case INVOICE_RECIPENT, INVOICE_RECIPIENT ->
+							Constants.ECOS_ROLE_ID_FAKTURAMOTTAGARE;
 						case OPERATOR -> Constants.ECOS_ROLE_ID_VERKSAMHETSUTOVARE;
 						case CONTACT_PERSON -> Constants.ECOS_ROLE_ID_KONTAKTPERSON;
 						case APPLICANT -> Constants.ECOS_ROLE_ID_SOKANDE;
@@ -269,9 +270,12 @@ public class PartyService {
 									.map(adressType -> new AddressTypeSvcDto()
 										.withId(
 											switch (adressType) {
-												case INVOICE_ADDRESS -> Constants.ECOS_ADDRESS_TYPE_ID_FAKTURAADRESS;
-												case POSTAL_ADDRESS -> Constants.ECOS_ADDRESS_TYPE_ID_POSTADRESS;
-												case VISITING_ADDRESS -> Constants.ECOS_ADDRESS_TYPE_ID_BESOKSADRESS;
+												case INVOICE_ADDRESS ->
+													Constants.ECOS_ADDRESS_TYPE_ID_FAKTURAADRESS;
+												case POSTAL_ADDRESS ->
+													Constants.ECOS_ADDRESS_TYPE_ID_POSTADRESS;
+												case VISITING_ADDRESS ->
+													Constants.ECOS_ADDRESS_TYPE_ID_BESOKSADRESS;
 											}))
 									.toList())))
 					.toList());

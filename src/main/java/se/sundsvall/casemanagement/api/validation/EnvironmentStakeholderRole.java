@@ -1,5 +1,6 @@
-package se.sundsvall.casemanagement.api.validators;
+package se.sundsvall.casemanagement.api.validation;
 
+import se.sundsvall.casemanagement.api.validation.impl.EnvironmentStakeholderRoleConstraintValidator;
 import se.sundsvall.casemanagement.util.Constants;
 
 import jakarta.validation.Constraint;
@@ -15,9 +16,9 @@ import java.lang.annotation.Target;
 @Constraint(validatedBy = EnvironmentStakeholderRoleConstraintValidator.class)
 public @interface EnvironmentStakeholderRole {
 
-    String message() default Constants.ERR_MSG_WRONG_ROLE_ENV_CASE;
+	String message() default Constants.ERR_MSG_WRONG_ROLE_ENV_CASE;
 
-    Class<?>[] groups() default {};
+	Class<?>[] groups() default {};
 
-    Class<? extends Payload>[] payload() default {};
+	Class<? extends Payload>[] payload() default {};
 }

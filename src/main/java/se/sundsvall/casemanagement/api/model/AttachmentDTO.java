@@ -4,7 +4,7 @@ import java.util.Map;
 
 import jakarta.validation.constraints.NotBlank;
 
-import se.sundsvall.casemanagement.api.validators.ValidAttachmentCategory;
+import se.sundsvall.casemanagement.api.validation.ValidAttachmentCategory;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;

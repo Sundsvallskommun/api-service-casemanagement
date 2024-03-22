@@ -1,4 +1,4 @@
-package se.sundsvall.casemanagement.api.validators;
+package se.sundsvall.casemanagement.api.validation;
 
 /**
  * Used for default validation

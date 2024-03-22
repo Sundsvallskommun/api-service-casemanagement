@@ -28,10 +28,10 @@ import org.zalando.problem.Status;
 import se.sundsvall.casemanagement.api.model.AddressDTO;
 import se.sundsvall.casemanagement.api.model.AttachmentDTO;
 import se.sundsvall.casemanagement.api.model.CaseStatusDTO;
+import se.sundsvall.casemanagement.api.model.FacilityDTO;
 import se.sundsvall.casemanagement.api.model.OrganizationDTO;
 import se.sundsvall.casemanagement.api.model.PersonDTO;
-import se.sundsvall.casemanagement.api.model.PlanningPermissionCaseDTO;
-import se.sundsvall.casemanagement.api.model.PlanningPermissionFacilityDTO;
+import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
 import se.sundsvall.casemanagement.api.model.StakeholderDTO;
 import se.sundsvall.casemanagement.api.model.enums.AddressCategory;
 import se.sundsvall.casemanagement.api.model.enums.FacilityType;
@@ -98,7 +98,7 @@ public final class ByggrMapper {
 					.withAnteckning(note)));
 	}
 
-	static Handelse toHandelse(final PlanningPermissionCaseDTO dto, final CaseTypeData caseType) {
+	static Handelse toHandelse(final ByggRCaseDTO dto, final CaseTypeData caseType) {
 		final var handelse = new Handelse()
 			.withStartDatum(LocalDateTime.now())
 			.withRiktning(Constants.BYGGR_HANDELSE_RIKTNING_IN)
@@ -145,7 +145,7 @@ public final class ByggrMapper {
 			.withTyp(file.getCategory());
 	}
 
-	static SaveNewArende toSaveNewArende(final PlanningPermissionCaseDTO caseInput, final CaseTypeData caseType) {
+	static SaveNewArende toSaveNewArende(final ByggRCaseDTO caseInput, final CaseTypeData caseType) {
 		return new SaveNewArende()
 			.withMessage(new SaveNewArendeMessage()
 				.withAnkomststamplaHandlingar(true)
@@ -169,7 +169,7 @@ public final class ByggrMapper {
 				.withAnteckning(Constants.BYGGR_HANDELSE_ANTECKNING));
 	}
 
-	static String getInvoiceMarking(final PlanningPermissionCaseDTO pCase) {
+	static String getInvoiceMarking(final ByggRCaseDTO pCase) {
 		return pCase.getStakeholders().stream()
 			.filter(Objects::nonNull)
 			.filter(stakeholder -> stakeholder.getAddresses() != null)
@@ -181,15 +181,15 @@ public final class ByggrMapper {
 			.orElse(null);
 	}
 
-	static String getArendeKlass(final List<PlanningPermissionFacilityDTO> facilityList) {
+	static String getArendeKlass(final List<FacilityDTO> facilityList) {
 		return facilityList.stream()
 			.findFirst()
-			.map(PlanningPermissionFacilityDTO::getFacilityType)
+			.map(FacilityDTO::getFacilityType)
 			.map((String t) -> FacilityType.valueOf(t).getValue())
 			.orElse(FacilityType.OTHER.getValue());
 	}
 
-	static String getMainOrOnlyArendeslag(final List<PlanningPermissionFacilityDTO> facilityList) {
+	static String getMainOrOnlyArendeslag(final List<FacilityDTO> facilityList) {
 		return FacilityType.valueOf(facilityList.stream()
 				.filter(facility -> FacilityType.USAGE_CHANGE.equals(FacilityType.valueOf(facility.getFacilityType())))
 				.findFirst()
@@ -339,7 +339,7 @@ public final class ByggrMapper {
 	 * @param pCase PlanningPermissionCase
 	 * @return ärendemening or null
 	 */
-	static String getArendeBeskrivning(final PlanningPermissionCaseDTO pCase, final String caseDescription) {
+	static String getArendeBeskrivning(final ByggRCaseDTO pCase, final String caseDescription) {
 
 		if ((caseDescription == null) || pCase.getFacilities().isEmpty()) {
 			return null;
@@ -347,7 +347,7 @@ public final class ByggrMapper {
 
 		final var descriptions = pCase.getFacilities().stream()
 			.filter(facility -> facility.getFacilityType() != null)
-			.sorted(Comparator.comparing(PlanningPermissionFacilityDTO::isMainFacility, Comparator.reverseOrder()))
+			.sorted(Comparator.comparing(FacilityDTO::isMainFacility, Comparator.reverseOrder()))
 			.map(facility -> FacilityType.valueOf(facility.getFacilityType()).getDescription().trim().toLowerCase())
 			.collect(Collectors.joining(", "))
 			.replaceAll(REGEX_LAST_COMMA, " &");
