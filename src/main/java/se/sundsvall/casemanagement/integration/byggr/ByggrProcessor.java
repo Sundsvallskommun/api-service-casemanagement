@@ -11,7 +11,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import se.sundsvall.casemanagement.api.model.PlanningPermissionCaseDTO;
+import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
 import se.sundsvall.casemanagement.configuration.RetryProperties;
 import se.sundsvall.casemanagement.integration.db.CaseMappingRepository;
 import se.sundsvall.casemanagement.integration.db.CaseRepository;
@@ -59,7 +59,7 @@ class ByggrProcessor extends Processor {
 		}
 		final String json = new BufferedReader(caseEntity.getDto().getCharacterStream()).lines().collect(Collectors.joining());
 		final var objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
-		final var planningPermissionCaseDTO = objectMapper.readValue(json, PlanningPermissionCaseDTO.class);
+		final var planningPermissionCaseDTO = objectMapper.readValue(json, ByggRCaseDTO.class);
 
 		try {
 			Failsafe

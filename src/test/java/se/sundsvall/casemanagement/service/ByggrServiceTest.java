@@ -79,10 +79,10 @@ import arendeexport.SaveNewHandelseMessage;
 import se.sundsvall.casemanagement.TestUtil;
 import se.sundsvall.casemanagement.api.model.AttachmentDTO;
 import se.sundsvall.casemanagement.api.model.CaseStatusDTO;
+import se.sundsvall.casemanagement.api.model.FacilityDTO;
 import se.sundsvall.casemanagement.api.model.OrganizationDTO;
 import se.sundsvall.casemanagement.api.model.PersonDTO;
-import se.sundsvall.casemanagement.api.model.PlanningPermissionCaseDTO;
-import se.sundsvall.casemanagement.api.model.PlanningPermissionFacilityDTO;
+import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
 import se.sundsvall.casemanagement.api.model.StakeholderDTO;
 import se.sundsvall.casemanagement.api.model.enums.AddressCategory;
 import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
@@ -209,7 +209,7 @@ class ByggrServiceTest {
 		}
 	}
 
-	private static void assertThatArendeIsEqual(final Arende2 arende, final String arendeTyp, final PlanningPermissionFacilityDTO inputFacility) {
+	private static void assertThatArendeIsEqual(final Arende2 arende, final String arendeTyp, final FacilityDTO inputFacility) {
 		assertThat(arende.getArendetyp()).isEqualTo(arendeTyp);
 
 		if (arendeTyp.equals(STRANDSKYDD)) {
@@ -379,12 +379,12 @@ class ByggrServiceTest {
 	@Test
 	void testPostAttefall() {
 
-		final PlanningPermissionCaseDTO input = TestUtil.createPlanningPermissionCase(CaseType.ANMALAN_ATTEFALL, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		final ByggRCaseDTO input = TestUtil.createPlanningPermissionCase(CaseType.ANMALAN_ATTEFALL, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		// Set facilityType to a compatible value
 		input.getFacilities().getFirst().setFacilityType(FacilityType.EXTENSION.toString());
 		// Set addressCategory to not be INVOICE_ADDRESS, so we can test projektnummer to be propertyDesignation
 		input.getStakeholders().getFirst().getAddresses().getFirst().setAddressCategories(List.of(AddressCategory.POSTAL_ADDRESS));
-		final PlanningPermissionFacilityDTO inputFacility = input.getFacilities().getFirst();
+		final var inputFacility = input.getFacilities().getFirst();
 		final AttachmentDTO inputAttachment = input.getAttachments().getFirst();
 		final SaveNewArendeResponse2 response = byggrService.saveNewCase(input);
 
@@ -428,13 +428,13 @@ class ByggrServiceTest {
 	@Test
 	void testPostEldstad() {
 
-		final PlanningPermissionCaseDTO input = TestUtil.createPlanningPermissionCase(CaseType.ANMALAN_ELDSTAD,
+		final ByggRCaseDTO input = TestUtil.createPlanningPermissionCase(CaseType.ANMALAN_ELDSTAD,
 			AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		// Set facilityType to a compatible value
 		input.getFacilities().getFirst().setFacilityType(FacilityType.FIREPLACE.toString());
 		// Set addressCategory to not be INVOICE_ADDRESS, so we can test projektnummer to be propertyDesignation
 		input.getStakeholders().getFirst().getAddresses().getFirst().setAddressCategories(List.of(AddressCategory.POSTAL_ADDRESS));
-		final PlanningPermissionFacilityDTO inputFacility = input.getFacilities().getFirst();
+		final var inputFacility = input.getFacilities().getFirst();
 		final AttachmentDTO inputAttachment = input.getAttachments().getFirst();
 		final SaveNewArendeResponse2 response = byggrService.saveNewCase(input);
 
@@ -531,7 +531,7 @@ class ByggrServiceTest {
 
 	@Test
 	void testCallToCaseMapping() {
-		final PlanningPermissionCaseDTO input = TestUtil.createPlanningPermissionCase(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		final ByggRCaseDTO input = TestUtil.createPlanningPermissionCase(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		input.getExtraParameters().put(Constants.SERVICE_NAME, "Test service name");
 		final PersonDTO applicant = (PersonDTO) TestUtil.createStakeholder(StakeholderType.PERSON, List.of(StakeholderRole.APPLICANT.toString()));
 		input.setStakeholders(List.of(applicant));
@@ -544,12 +544,12 @@ class ByggrServiceTest {
 	// Test no duplicates of arendeFastighet
 	@Test
 	void testNoDuplicateFacilities() {
-		final PlanningPermissionCaseDTO input = TestUtil.createPlanningPermissionCase(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		final ByggRCaseDTO input = TestUtil.createPlanningPermissionCase(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 
 		final String propertyDesignation = "Sundsvall test 123:123";
-		final var facility1 = TestUtil.createPlanningPermissionFacilityDTO(true);
-		final var facility2 = TestUtil.createPlanningPermissionFacilityDTO(false);
-		final var facility3 = TestUtil.createPlanningPermissionFacilityDTO(false);
+		final var facility1 = TestUtil.createNewFacilityDto(true);
+		final var facility2 = TestUtil.createNewFacilityDto(false);
+		final var facility3 = TestUtil.createNewFacilityDto(false);
 		facility1.getAddress().setPropertyDesignation(propertyDesignation);
 		facility2.getAddress().setPropertyDesignation(propertyDesignation);
 		facility3.getAddress().setPropertyDesignation(propertyDesignation);
@@ -570,14 +570,14 @@ class ByggrServiceTest {
 	// Test getMainOrTheOnlyFacility
 	@Test
 	void testGetMainOrTheOnlyFacility() {
-		final PlanningPermissionCaseDTO input = TestUtil.createPlanningPermissionCase(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		final ByggRCaseDTO input = TestUtil.createPlanningPermissionCase(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		// Set addressCategory to not be INVOICE_ADDRESS, so we can test projektnummer to be propertyDesignation
 		input.getStakeholders().getFirst().getAddresses().getFirst().setAddressCategories(List.of(AddressCategory.POSTAL_ADDRESS));
 
-		final var mainFacility = TestUtil.createPlanningPermissionFacilityDTO(true);
-		final var randomFacility_1 = TestUtil.createPlanningPermissionFacilityDTO(false);
+		final var mainFacility = TestUtil.createNewFacilityDto(true);
+		final var randomFacility_1 = TestUtil.createNewFacilityDto(false);
 		randomFacility_1.getAddress().setPropertyDesignation("Sundsvall test 1:1");
-		final var randomFacility_2 = TestUtil.createPlanningPermissionFacilityDTO(false);
+		final var randomFacility_2 = TestUtil.createNewFacilityDto(false);
 		randomFacility_2.getAddress().setPropertyDesignation("Sundsvall test 2:2");
 		// Add some facilities
 		input.setFacilities(List.of(randomFacility_1, mainFacility, randomFacility_2));
@@ -604,7 +604,7 @@ class ByggrServiceTest {
 
 	@Test
 	void testSetPersonInvoiceAddressError() {
-		final PlanningPermissionCaseDTO input = TestUtil.createPlanningPermissionCase(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		final ByggRCaseDTO input = TestUtil.createPlanningPermissionCase(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		final PersonDTO applicant = (PersonDTO) TestUtil.createStakeholder(StakeholderType.PERSON, List.of(StakeholderRole.APPLICANT.toString()));
 		applicant.setAddresses(List.of(TestUtil.createAddressDTO(List.of(AddressCategory.INVOICE_ADDRESS))));
 		input.setStakeholders(List.of(applicant));
@@ -620,7 +620,7 @@ class ByggrServiceTest {
 	void testSetPersonFields() {
 
 		//Arrange
-		final PlanningPermissionCaseDTO input = TestUtil.createPlanningPermissionCase(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		final ByggRCaseDTO input = TestUtil.createPlanningPermissionCase(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		final PersonDTO applicant = (PersonDTO) TestUtil.createStakeholder(StakeholderType.PERSON, List.of(StakeholderRole.APPLICANT.toString()));
 		input.setStakeholders(List.of(applicant));
 
@@ -645,7 +645,7 @@ class ByggrServiceTest {
 
 	@Test
 	void testSetOrganisationFields() {
-		final PlanningPermissionCaseDTO input = TestUtil.createPlanningPermissionCase(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		final ByggRCaseDTO input = TestUtil.createPlanningPermissionCase(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		final OrganizationDTO applicant = (OrganizationDTO) TestUtil.createStakeholder(StakeholderType.ORGANIZATION, List.of(StakeholderRole.APPLICANT.toString()));
 		input.setStakeholders(List.of(applicant));
 
@@ -666,7 +666,7 @@ class ByggrServiceTest {
 	// 1 applicant and 1 propertyOwner
 	@Test
 	void testPopulateStakeholderListWithPropertyOwners_1() {
-		final PlanningPermissionCaseDTO input = TestUtil.createPlanningPermissionCase(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		final ByggRCaseDTO input = TestUtil.createPlanningPermissionCase(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		final PersonDTO applicant = (PersonDTO) TestUtil.createStakeholder(StakeholderType.PERSON, List.of(StakeholderRole.APPLICANT.toString()));
 		final PersonDTO propertyOwner = (PersonDTO) TestUtil.createStakeholder(StakeholderType.PERSON, List.of(StakeholderRole.PROPERTY_OWNER.toString()));
 		input.setStakeholders(List.of(applicant));
@@ -695,7 +695,7 @@ class ByggrServiceTest {
 	// same as testPopulateStakeholderListWithPropertyOwners_1 but for organization
 	@Test
 	void testPopulateStakeholderListWithPropertyOwners_1_1() {
-		final PlanningPermissionCaseDTO input = TestUtil.createPlanningPermissionCase(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		final ByggRCaseDTO input = TestUtil.createPlanningPermissionCase(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		final OrganizationDTO applicant = (OrganizationDTO) TestUtil.createStakeholder(StakeholderType.ORGANIZATION, List.of(StakeholderRole.APPLICANT.toString()));
 		final OrganizationDTO propertyOwner = (OrganizationDTO) TestUtil.createStakeholder(StakeholderType.ORGANIZATION, List.of(StakeholderRole.PROPERTY_OWNER.toString()));
 		input.setStakeholders(List.of(applicant));
@@ -752,7 +752,7 @@ class ByggrServiceTest {
 	// Case does not contain PropertyOwner
 	@Test
 	void testContainsPropertyOwner() {
-		final PlanningPermissionCaseDTO input = TestUtil.createPlanningPermissionCase(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		final ByggRCaseDTO input = TestUtil.createPlanningPermissionCase(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		final PersonDTO applicant = (PersonDTO) TestUtil.createStakeholder(StakeholderType.PERSON, List.of(StakeholderRole.APPLICANT.toString()));
 		input.setStakeholders(List.of(applicant));
 
@@ -782,7 +782,7 @@ class ByggrServiceTest {
 
 	@Test
 	void testControlOfficial() {
-		final PlanningPermissionCaseDTO input = TestUtil.createPlanningPermissionCase(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		final ByggRCaseDTO input = TestUtil.createPlanningPermissionCase(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		final PersonDTO controlOfficial = (PersonDTO) TestUtil.createStakeholder(StakeholderType.PERSON, List.of(StakeholderRole.CONTROL_OFFICIAL.toString()));
 		final PersonDTO applicant = (PersonDTO) TestUtil.createStakeholder(StakeholderType.PERSON, List.of(StakeholderRole.APPLICANT.toString()));
 		input.setStakeholders(List.of(applicant, controlOfficial));
@@ -815,7 +815,7 @@ class ByggrServiceTest {
 	@Test
 	void testDoublePersonId() {
 		final String personId = UUID.randomUUID().toString();
-		final PlanningPermissionCaseDTO input = TestUtil.createPlanningPermissionCase(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		final ByggRCaseDTO input = TestUtil.createPlanningPermissionCase(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		final PersonDTO paymentPerson = (PersonDTO) TestUtil.createStakeholder(StakeholderType.PERSON, List.of(StakeholderRole.PAYMENT_PERSON.toString()));
 		paymentPerson.setPersonId(personId);
 		final PersonDTO applicant = (PersonDTO) TestUtil.createStakeholder(StakeholderType.PERSON, List.of(StakeholderRole.APPLICANT.toString()));

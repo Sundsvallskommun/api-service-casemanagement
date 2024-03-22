@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
 
 import se.sundsvall.casemanagement.api.model.enums.CaseType;
 
-class PlanningPermissionCaseDTOTest {
+class ByggRCaseDTOTest {
 
 	@BeforeAll
 	static void setup() {
@@ -31,7 +31,7 @@ class PlanningPermissionCaseDTOTest {
 
 	@Test
 	void testBean() {
-		MatcherAssert.assertThat(PlanningPermissionCaseDTO.class, allOf(
+		MatcherAssert.assertThat(ByggRCaseDTO.class, allOf(
 			hasValidBeanConstructor(),
 			hasValidGettersAndSetters(),
 			hasValidBeanHashCode(),
@@ -44,7 +44,7 @@ class PlanningPermissionCaseDTOTest {
 		// Arrange
 		final var attachments = List.of(new AttachmentDTO());
 		final var stakeholders = List.of(new PersonDTO(), new OrganizationDTO());
-		final var facilities = List.of(new PlanningPermissionFacilityDTO());
+		final var facilities = List.of(new FacilityDTO());
 		final var caseType = CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV.toString();
 		final var caseTitleAddition = "SomeCaseTitleAddition";
 		final var description = "SomeDescription";
@@ -53,7 +53,7 @@ class PlanningPermissionCaseDTOTest {
 		final var extraParameters = Map.of("Key", "Value");
 
 		// Act
-		final var pCase = new PlanningPermissionCaseDTO();
+		final var pCase = new ByggRCaseDTO();
 		pCase.setAttachments(attachments);
 		pCase.setStakeholders(stakeholders);
 		pCase.setFacilities(facilities);
@@ -79,7 +79,7 @@ class PlanningPermissionCaseDTOTest {
 
 	@Test
 	void testNoDirtOnCreatedBean() {
-		assertThat(new PlanningPermissionCaseDTO()).hasAllNullFieldsOrProperties();
+		assertThat(new ByggRCaseDTO()).hasAllNullFieldsOrProperties();
 	}
 
 }

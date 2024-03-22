@@ -4,7 +4,6 @@ import static se.sundsvall.casemanagement.integration.ecos.RiskClassMapper.mapAc
 import static se.sundsvall.casemanagement.integration.ecos.RiskClassMapper.mapProductGroups;
 import static se.sundsvall.casemanagement.integration.ecos.RiskClassMapper.mapThirdPartyCertifications;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,25 +11,19 @@ import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
 
-import se.sundsvall.casemanagement.api.model.EnvironmentalCaseDTO;
+import se.sundsvall.casemanagement.api.model.EcosCaseDTO;
 import se.sundsvall.casemanagement.api.model.OrganizationDTO;
 import se.sundsvall.casemanagement.util.CaseUtil;
 
 import minutmiljo.AddFacilityToCase;
 import minutmiljo.ArrayOfFacilityFilterSvcDto;
-import minutmiljo.ArrayOfSaveRiskClass2024ActivityDto;
-import minutmiljo.ArrayOfSaveRiskClass2024CertificationDto;
-import minutmiljo.ArrayOfSaveRiskClass2024ProductGroupDto;
 import minutmiljo.ArrayOfguid;
 import minutmiljo.FacilityFacilityStatusIdsFilterSvcDto;
 import minutmiljo.FacilityFacilityTypeIdsFilterSvcDto;
 import minutmiljo.FacilityNotFilterSvcDto;
 import minutmiljo.FacilityPartyOrganizationNumberFilterSvcDto;
 import minutmiljo.SaveFoodFacility2024RiskClassData;
-import minutmiljo.SaveRiskClass2024ActivityDto;
-import minutmiljo.SaveRiskClass2024CertificationDto;
 import minutmiljo.SaveRiskClass2024DataDto;
-import minutmiljo.SaveRiskClass2024ProductGroupDto;
 import minutmiljo.SearchFacility;
 import minutmiljo.SearchFacilitySvcDto;
 
@@ -71,14 +64,14 @@ public class RiskClassService {
 		this.minutMiljoClient = minutMiljoClient;
 	}
 
-	public void updateRiskClass(final EnvironmentalCaseDTO caseInput, final String caseId) {
+	public void updateRiskClass(final EcosCaseDTO caseInput, final String caseId) {
 		final var facilityId = searchFacility(extractOrgNr(caseInput), caseInput.getFacilities().getFirst().getFacilityCollectionName());
 		addFacilityToCase(facilityId, caseId);
 		final var data = createSaveRiskClassObject(facilityId, caseId, caseInput);
 		minutMiljoClient.updateRiskClass(data);
 	}
 
-	private String extractOrgNr(final EnvironmentalCaseDTO eCase) {
+	private String extractOrgNr(final EcosCaseDTO eCase) {
 		return CaseUtil.getSokigoFormattedOrganizationNumber(eCase.getStakeholders().stream()
 			.map(stakeholderDTO -> {
 				if (stakeholderDTO instanceof final OrganizationDTO orgDTO) {
@@ -148,7 +141,7 @@ public class RiskClassService {
 	}
 
 	private SaveFoodFacility2024RiskClassData createSaveRiskClassObject(final String facilityId,
-		final String caseId, final EnvironmentalCaseDTO dto) {
+		final String caseId, final EcosCaseDTO dto) {
 
 		return new SaveFoodFacility2024RiskClassData()
 			.withModel(new SaveRiskClass2024DataDto()
@@ -162,7 +155,6 @@ public class RiskClassService {
 				.withProductGroups(mapProductGroups(dto.getExtraParameters().get(PRODUCT_GROUPS)))
 				.withThirdPartyCertifications(mapThirdPartyCertifications(dto.getExtraParameters().get(THIRD_PARTY_CERTS))));
 	}
-
 
 
 }

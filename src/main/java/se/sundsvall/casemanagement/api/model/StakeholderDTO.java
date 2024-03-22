@@ -14,11 +14,11 @@ import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import se.sundsvall.casemanagement.api.model.enums.StakeholderType;
-import se.sundsvall.casemanagement.api.validators.DefaultConstraints;
-import se.sundsvall.casemanagement.api.validators.EnvironmentStakeholderRole;
-import se.sundsvall.casemanagement.api.validators.EnvironmentalConstraints;
-import se.sundsvall.casemanagement.api.validators.PlanningConstraints;
-import se.sundsvall.casemanagement.api.validators.PlanningStakeholderRole;
+import se.sundsvall.casemanagement.api.validation.DefaultConstraints;
+import se.sundsvall.casemanagement.api.validation.EnvironmentStakeholderRole;
+import se.sundsvall.casemanagement.api.validation.EnvironmentalConstraints;
+import se.sundsvall.casemanagement.api.validation.PlanningConstraints;
+import se.sundsvall.casemanagement.api.validation.PlanningStakeholderRole;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

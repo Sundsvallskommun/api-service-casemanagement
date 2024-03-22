@@ -16,27 +16,25 @@ import org.springframework.stereotype.Component;
 import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
 
-import se.sundsvall.casemanagement.api.model.EnvironmentalCaseDTO;
-import se.sundsvall.casemanagement.api.model.EnvironmentalFacilityDTO;
+import se.sundsvall.casemanagement.api.model.EcosCaseDTO;
 import se.sundsvall.casemanagement.api.model.PersonDTO;
-import se.sundsvall.casemanagement.api.model.PlanningPermissionCaseDTO;
-import se.sundsvall.casemanagement.api.model.PlanningPermissionFacilityDTO;
+import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
 import se.sundsvall.casemanagement.api.model.StakeholderDTO;
 import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.api.model.enums.FacilityType;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
-import se.sundsvall.casemanagement.api.validators.EnvironmentalConstraints;
-import se.sundsvall.casemanagement.api.validators.PersonConstraints;
-import se.sundsvall.casemanagement.api.validators.PlanningConstraints;
+import se.sundsvall.casemanagement.api.validation.EnvironmentalConstraints;
+import se.sundsvall.casemanagement.api.validation.PersonConstraints;
+import se.sundsvall.casemanagement.api.validation.PlanningConstraints;
 
 @Component
 public class Validator {
 
-	public void validateByggrErrand(PlanningPermissionCaseDTO pCase) {
+	public void validateByggrErrand(ByggRCaseDTO pCase) {
 		try (var factory = Validation.buildDefaultValidatorFactory()) {
 			final jakarta.validation.Validator validator = factory.getValidator();
 
-			final Set<ConstraintViolation<PlanningPermissionCaseDTO>> caseViolations = validator.validate(pCase, PlanningConstraints.class);
+			final Set<ConstraintViolation<ByggRCaseDTO>> caseViolations = validator.validate(pCase, PlanningConstraints.class);
 
 			if (!caseViolations.isEmpty()) {
 				throw new ConstraintViolationException(caseViolations);
@@ -62,11 +60,11 @@ public class Validator {
 	/**
 	 * Validates that the FacilityTypes are compatible with the CaseType.
 	 */
-	private void validateFacilityTypes(PlanningPermissionCaseDTO pCase) {
+	private void validateFacilityTypes(ByggRCaseDTO pCase) {
 		boolean attefallFacilityType = false;
 		String facilityType = null;
 
-		for (final PlanningPermissionFacilityDTO facility : pCase.getFacilities()) {
+		for (final var facility : pCase.getFacilities()) {
 
 			facilityType = facility.getFacilityType();
 
@@ -89,7 +87,7 @@ public class Validator {
 		}
 	}
 
-	public void validateEcosErrand(EnvironmentalCaseDTO eCase) {
+	public void validateEcosErrand(EcosCaseDTO eCase) {
 		try (var factory = Validation.buildDefaultValidatorFactory()) {
 			final var validator = factory.getValidator();
 
@@ -97,13 +95,13 @@ public class Validator {
 				return;
 			}
 
-			final Set<ConstraintViolation<EnvironmentalCaseDTO>> violations = validator.validate(eCase, EnvironmentalConstraints.class);
+			final Set<ConstraintViolation<EcosCaseDTO>> violations = validator.validate(eCase, EnvironmentalConstraints.class);
 
 			if (!violations.isEmpty()) {
 				throw new ConstraintViolationException(violations);
 			}
 
-			for (final EnvironmentalFacilityDTO facilityDTO : eCase.getFacilities()) {
+			for (final var facilityDTO : eCase.getFacilities()) {
 				if ((facilityDTO.getFacilityCollectionName() == null) && !WITH_NULLABLE_FACILITY_TYPE.contains(eCase.getCaseType())) {
 					throw Problem.valueOf(Status.BAD_REQUEST, MessageFormat.format("FacilityType is not allowed to be null for CaseType {0}", eCase.getCaseType()));
 				}

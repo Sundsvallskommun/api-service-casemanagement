@@ -29,6 +29,28 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.testcontainers.shaded.org.apache.commons.lang3.RandomStringUtils;
 import org.zalando.problem.Problem;
 
+import se.sundsvall.casemanagement.TestUtil;
+import se.sundsvall.casemanagement.api.model.AddressDTO;
+import se.sundsvall.casemanagement.api.model.AttachmentDTO;
+import se.sundsvall.casemanagement.api.model.CaseDTO;
+import se.sundsvall.casemanagement.api.model.EcosCaseDTO;
+import se.sundsvall.casemanagement.api.model.FacilityDTO;
+import se.sundsvall.casemanagement.api.model.OrganizationDTO;
+import se.sundsvall.casemanagement.api.model.PersonDTO;
+import se.sundsvall.casemanagement.api.model.enums.AddressCategory;
+import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
+import se.sundsvall.casemanagement.api.model.enums.CaseType;
+import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
+import se.sundsvall.casemanagement.api.model.enums.StakeholderType;
+import se.sundsvall.casemanagement.api.model.enums.SystemType;
+import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
+import se.sundsvall.casemanagement.integration.ecos.EcosService;
+import se.sundsvall.casemanagement.integration.ecos.MinutMiljoClient;
+import se.sundsvall.casemanagement.integration.ecos.MinutMiljoClientV2;
+import se.sundsvall.casemanagement.integration.ecos.PartyService;
+import se.sundsvall.casemanagement.util.CaseUtil;
+import se.sundsvall.casemanagement.util.Constants;
+
 import minutmiljo.AddDocumentsToCase;
 import minutmiljo.ArrayOfOccurrenceListItemSvcDto;
 import minutmiljo.ArrayOfPartySvcDto;
@@ -60,27 +82,6 @@ import minutmiljo.SearchCaseResultSvcDto;
 import minutmiljo.SepticTankSvcDto;
 import minutmiljoV2.RegisterDocument;
 import minutmiljoV2.RegisterDocumentCaseSvcDtoV2;
-import se.sundsvall.casemanagement.TestUtil;
-import se.sundsvall.casemanagement.api.model.AddressDTO;
-import se.sundsvall.casemanagement.api.model.AttachmentDTO;
-import se.sundsvall.casemanagement.api.model.CaseDTO;
-import se.sundsvall.casemanagement.api.model.EnvironmentalCaseDTO;
-import se.sundsvall.casemanagement.api.model.EnvironmentalFacilityDTO;
-import se.sundsvall.casemanagement.api.model.OrganizationDTO;
-import se.sundsvall.casemanagement.api.model.PersonDTO;
-import se.sundsvall.casemanagement.api.model.enums.AddressCategory;
-import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
-import se.sundsvall.casemanagement.api.model.enums.CaseType;
-import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
-import se.sundsvall.casemanagement.api.model.enums.StakeholderType;
-import se.sundsvall.casemanagement.api.model.enums.SystemType;
-import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
-import se.sundsvall.casemanagement.integration.ecos.EcosService;
-import se.sundsvall.casemanagement.integration.ecos.MinutMiljoClient;
-import se.sundsvall.casemanagement.integration.ecos.MinutMiljoClientV2;
-import se.sundsvall.casemanagement.integration.ecos.PartyService;
-import se.sundsvall.casemanagement.util.CaseUtil;
-import se.sundsvall.casemanagement.util.Constants;
 
 @ExtendWith(MockitoExtension.class)
 class EcosServiceTest {
@@ -194,7 +195,7 @@ class EcosServiceTest {
 	@Test
 	void testMinimalFoodFacilityCase() {
 		// Arrange
-		final var eCase = new EnvironmentalCaseDTO();
+		final var eCase = new EcosCaseDTO();
 		final var attachment = new AttachmentDTO();
 		attachment.setCategory(AttachmentCategory.ANMALAN_LIVSMEDELSANLAGGNING.toString());
 		attachment.setExtension(".pdf");
@@ -215,7 +216,7 @@ class EcosServiceTest {
 		person.setLastName("Efternamn");
 		eCase.setStakeholders(List.of(person, organization));
 
-		final var facility = new EnvironmentalFacilityDTO();
+		final var facility = new FacilityDTO();
 		facility.setFacilityCollectionName("facilityCollectionName");
 		final var facilityAddress = new AddressDTO();
 		facilityAddress.setAddressCategories(List.of(AddressCategory.VISITING_ADDRESS));
@@ -266,7 +267,7 @@ class EcosServiceTest {
 	@Test
 	void testAirHeating() {
 		// Arrange
-		final EnvironmentalCaseDTO eCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP, AttachmentCategory.ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
+		final EcosCaseDTO eCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP, AttachmentCategory.ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
 		final Map<String, String> extraParameters = new HashMap<>();
 		extraParameters.put("CreateAirHeatingFacilitySvcDto_Manufacturer", "Mitsubishi");
 		extraParameters.put("CreateAirHeatingFacilitySvcDto_Model", "SuperHeater 2000");
@@ -285,7 +286,7 @@ class EcosServiceTest {
 
 	@Test
 	void testGeothermalHeating() {
-		final EnvironmentalCaseDTO eCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP, AttachmentCategory.ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
+		final EcosCaseDTO eCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP, AttachmentCategory.ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
 		final var extraParameters = getGeoExtraParametersMap();
 		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
 
@@ -300,7 +301,7 @@ class EcosServiceTest {
 
 	@Test
 	void testSoilHeating() {
-		final EnvironmentalCaseDTO eCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP, AttachmentCategory.ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
+		final EcosCaseDTO eCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP, AttachmentCategory.ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
 		final var extraParameters = getSoilExtraParametersMap();
 		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
 
@@ -315,7 +316,7 @@ class EcosServiceTest {
 
 	@Test
 	void testExtraParamsNull() {
-		final EnvironmentalCaseDTO eCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP, AttachmentCategory.ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
+		final EcosCaseDTO eCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP, AttachmentCategory.ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
 		eCase.getFacilities().getFirst().setExtraParameters(null);
 
 		ecosService.postCase(eCase);
@@ -326,7 +327,7 @@ class EcosServiceTest {
 
 	@Test
 	void testExtraParamsEmpty() {
-		final EnvironmentalCaseDTO eCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP, AttachmentCategory.ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
+		final EcosCaseDTO eCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP, AttachmentCategory.ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
 		final Map<String, String> extraParameters = new HashMap<>();
 		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
 
@@ -338,7 +339,7 @@ class EcosServiceTest {
 
 	@Test
 	void testMarineHeating() {
-		final EnvironmentalCaseDTO eCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP, AttachmentCategory.ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
+		final EcosCaseDTO eCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP, AttachmentCategory.ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
 		final var extraParameters = getMarineExtraParameters();
 		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
 
@@ -364,7 +365,7 @@ class EcosServiceTest {
 	}
 
 	private void verifyMinutMiljoCallsForHeatPumpCase(final ArgumentCaptor<CreateHeatPumpFacility> createHeatPumpFacilityArgumentCaptor) {
-		verify(partyServiceMock, times(1)).findAndAddPartyToCase(any(EnvironmentalCaseDTO.class), any(String.class));
+		verify(partyServiceMock, times(1)).findAndAddPartyToCase(any(EcosCaseDTO.class), any(String.class));
 		verify(minutMiljoClientMock, times(1)).createHeatPumpFacility(createHeatPumpFacilityArgumentCaptor.capture());
 		verify(minutMiljoClientMock, times(3)).addPartyToFacility(any());
 		verify(minutMiljoClientV2Mock, times(1)).registerDocumentV2(any());
@@ -380,8 +381,8 @@ class EcosServiceTest {
 		ecosService.postCase(eCase);
 
 		// Assert
-		verify(partyServiceMock, times(1)).findAndAddPartyToCase(any(EnvironmentalCaseDTO.class), any(String.class));
-		verify(partyServiceMock, times(1)).findAndAddPartyToCase(any(EnvironmentalCaseDTO.class), any(String.class));
+		verify(partyServiceMock, times(1)).findAndAddPartyToCase(any(EcosCaseDTO.class), any(String.class));
+		verify(partyServiceMock, times(1)).findAndAddPartyToCase(any(EcosCaseDTO.class), any(String.class));
 		verify(minutMiljoClientMock, times(1)).createHealthProtectionFacility(createHealthProtectionFacilityArgumentCaptor.capture());
 		verify(minutMiljoClientMock, times(3)).addPartyToFacility(any());
 		verify(minutMiljoClientV2Mock, times(1)).registerDocumentV2(any());
@@ -655,7 +656,7 @@ class EcosServiceTest {
 	private void verifyMinutMiljoCallsForSewageCase(final ArgumentCaptor<CreateIndividualSewageFacility> argumentCaptor) {
 		verify(minutMiljoClientMock, times(1)).createIndividualSewageFacility(argumentCaptor.capture());
 		verify(minutMiljoClientMock, times(3)).addPartyToFacility(any());
-		verify(partyServiceMock, times(1)).findAndAddPartyToCase(any(EnvironmentalCaseDTO.class), any(String.class));
+		verify(partyServiceMock, times(1)).findAndAddPartyToCase(any(EcosCaseDTO.class), any(String.class));
 		verify(minutMiljoClientV2Mock, times(1)).registerDocumentV2(any());
 	}
 
@@ -687,7 +688,7 @@ class EcosServiceTest {
 		// Assert
 		final var createOccurrenceOnCaseArgumentCaptor = ArgumentCaptor.forClass(CreateOccurrenceOnCase.class);
 		verify(minutMiljoClientMock, times(1)).createOccurrenceOnCase(createOccurrenceOnCaseArgumentCaptor.capture());
-		verify(partyServiceMock, times(1)).findAndAddPartyToCase(any(EnvironmentalCaseDTO.class), any(String.class));
+		verify(partyServiceMock, times(1)).findAndAddPartyToCase(any(EcosCaseDTO.class), any(String.class));
 		assertThat(result.getCaseId()).isEqualTo(createOccurrenceOnCaseArgumentCaptor.getValue().getCreateOccurrenceOnCaseSvcDto().getCaseId());
 		assertThat(createOccurrenceOnCaseArgumentCaptor.getValue().getCreateOccurrenceOnCaseSvcDto().getOccurrenceDate()).isNotNull();
 		assertThat(createOccurrenceOnCaseArgumentCaptor.getValue().getCreateOccurrenceOnCaseSvcDto().getOccurrenceTypeId()).isEqualTo(Constants.ECOS_OCCURRENCE_TYPE_ID_INFO_FRAN_ETJANST);

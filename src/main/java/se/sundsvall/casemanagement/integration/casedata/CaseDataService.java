@@ -26,6 +26,7 @@ import se.sundsvall.casemanagement.api.model.AddressDTO;
 import se.sundsvall.casemanagement.api.model.AttachmentDTO;
 import se.sundsvall.casemanagement.api.model.CaseStatusDTO;
 import se.sundsvall.casemanagement.api.model.CoordinatesDTO;
+import se.sundsvall.casemanagement.api.model.FacilityDTO;
 import se.sundsvall.casemanagement.api.model.OrganizationDTO;
 import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
 import se.sundsvall.casemanagement.api.model.PersonDTO;
@@ -165,6 +166,45 @@ public class CaseDataService {
 		}
 
 		return errandDTO;
+	}
+
+	private List<generated.client.casedata.FacilityDTO> mapToFacilities(final List<FacilityDTO> facilityDTOS) {
+		return facilityDTOS.stream()
+			.map(this::mapToFacilityDTO)
+			.toList();
+	}
+
+	private generated.client.casedata.FacilityDTO mapToFacilityDTO(final FacilityDTO newFacilityDTO) {
+		return Optional.ofNullable(newFacilityDTO).map(newFacility -> {
+			final var facilityDTO = new generated.client.casedata.FacilityDTO();
+			Optional.ofNullable(newFacilityDTO.getFacilityType()).ifPresent(facilityDTO::setFacilityType);
+			Optional.ofNullable(newFacilityDTO.getFacilityCollectionName()).ifPresent(facilityDTO::setFacilityCollectionName);
+			Optional.ofNullable(newFacilityDTO.getDescription()).ifPresent(facilityDTO::setDescription);
+			Optional.ofNullable(newFacilityDTO.getExtraParameters()).ifPresent(facilityDTO::setExtraParameters);
+			Optional.ofNullable(newFacilityDTO.getAddress()).ifPresent(facility -> facilityDTO.setAddress(mapToAddressDTO(facility)));
+			return facilityDTO;
+		}).orElse(null);
+	}
+
+	private generated.client.casedata.AddressDTO mapToAddressDTO(final AddressDTO dto) {
+		return Optional.ofNullable(dto).map(address -> {
+			final var addressDTO = new generated.client.casedata.AddressDTO();
+			Optional.ofNullable(dto.getCity()).ifPresent(addressDTO::setCity);
+			Optional.ofNullable(dto.getCountry()).ifPresent(addressDTO::setCountry);
+			Optional.ofNullable(dto.getPostalCode()).ifPresent(addressDTO::setPostalCode);
+			Optional.ofNullable(dto.getStreet()).ifPresent(addressDTO::setStreet);
+			Optional.ofNullable(dto.getHouseNumber()).ifPresent(addressDTO::setHouseNumber);
+			Optional.ofNullable(dto.getCareOf()).ifPresent(addressDTO::setCareOf);
+			Optional.ofNullable(dto.getAttention()).ifPresent(addressDTO::setAttention);
+			Optional.ofNullable(dto.getPropertyDesignation()).ifPresent(addressDTO::setPropertyDesignation);
+			Optional.ofNullable(dto.getAppartmentNumber()).ifPresent(addressDTO::setApartmentNumber);
+			Optional.ofNullable(dto.getLocation()).ifPresent(location -> addressDTO.setLocation(mapCoordinates(Optional.of(location))));
+			Optional.ofNullable(dto.getIsZoningPlanArea()).ifPresent(addressDTO::setIsZoningPlanArea);
+			Optional.ofNullable(dto.getInvoiceMarking()).ifPresent(addressDTO::setInvoiceMarking);
+			Optional.ofNullable(dto.getAddressCategories()).ifPresent(addressCategories ->
+				addressCategories.forEach(addressCategory -> addressDTO.setAddressCategory(generated.client.casedata.AddressDTO.AddressCategoryEnum.fromValue(addressCategory.toString()))));
+			return addressDTO;
+		}).orElse(null);
 	}
 
 	private PatchErrandDTO mapToPatchErrandDTO(final OtherCaseDTO otherCaseDTO) {

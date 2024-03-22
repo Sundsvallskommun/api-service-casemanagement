@@ -19,7 +19,7 @@ import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import se.sundsvall.casemanagement.api.model.EnvironmentalCaseDTO;
+import se.sundsvall.casemanagement.api.model.EcosCaseDTO;
 
 class CaseEntityTest {
 
@@ -44,7 +44,7 @@ class CaseEntityTest {
 		// Arrange
 		final var id = "123";
 		final var deliveryStatus = DeliveryStatus.CREATED;
-		final var environmentalCaseDTO = new EnvironmentalCaseDTO();
+		final var environmentalCaseDTO = new EcosCaseDTO();
 		final var dto = new SerialClob(environmentalCaseDTO.toString().toCharArray());
 
 		// Act

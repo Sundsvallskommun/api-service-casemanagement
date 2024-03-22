@@ -72,10 +72,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "caseType", include = JsonTypeInfo.As.EXISTING_PROPERTY, visible = true)
 @JsonSubTypes({
-	@Type(value = PlanningPermissionCaseDTO.class, names = {
+	@Type(value = ByggRCaseDTO.class, names = {
 		NYBYGGNAD_ANSOKAN_OM_BYGGLOV,
 		NYBYGGNAD_FORHANDSBESKED,
 		ANMALAN_ATTEFALL,
@@ -100,9 +99,8 @@ import lombok.Data;
 		MARKLOV_TRADFALLNING,
 		MARKLOV_OVRIGT,
 		STRANDSKYDD_OVRIGT
-
 	}),
-	@Type(value = EnvironmentalCaseDTO.class, names = {
+	@Type(value = EcosCaseDTO.class, names = {
 		REGISTRERING_AV_LIVSMEDEL,
 		ANMALAN_INSTALLATION_VARMEPUMP,
 		ANSOKAN_TILLSTAND_VARMEPUMP,
@@ -156,6 +154,9 @@ public abstract class CaseDTO {
 	@NotEmpty
 	@Valid
 	private List<StakeholderDTO> stakeholders;
+
+	@Valid
+	private List<FacilityDTO> facilities;
 
 	@NotEmpty
 	@Valid

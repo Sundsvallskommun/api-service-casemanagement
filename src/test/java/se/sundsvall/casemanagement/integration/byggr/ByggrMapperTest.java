@@ -46,10 +46,10 @@ import org.zalando.problem.AbstractThrowableProblem;
 
 import se.sundsvall.casemanagement.api.model.AddressDTO;
 import se.sundsvall.casemanagement.api.model.AttachmentDTO;
+import se.sundsvall.casemanagement.api.model.FacilityDTO;
 import se.sundsvall.casemanagement.api.model.OrganizationDTO;
 import se.sundsvall.casemanagement.api.model.PersonDTO;
-import se.sundsvall.casemanagement.api.model.PlanningPermissionCaseDTO;
-import se.sundsvall.casemanagement.api.model.PlanningPermissionFacilityDTO;
+import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
 import se.sundsvall.casemanagement.api.model.StakeholderDTO;
 import se.sundsvall.casemanagement.api.model.enums.AddressCategory;
 import se.sundsvall.casemanagement.api.model.enums.FacilityType;
@@ -92,7 +92,7 @@ class ByggrMapperTest {
 		assertThat(intressent.getPersOrgNr()).isEqualTo("somePersonalNumber");
 		assertThat(intressent.isArForetag()).isFalse();
 	}
-	
+
 	@Test
 	void toSaveNewManuellHanteringHandelse() {
 
@@ -116,8 +116,8 @@ class ByggrMapperTest {
 
 	@Test
 	void toHandelse() {
-		final var dto = new PlanningPermissionCaseDTO();
-		dto.setFacilities(List.of(new PlanningPermissionFacilityDTO()));
+		final var dto = new ByggRCaseDTO();
+		dto.setFacilities(List.of(new FacilityDTO()));
 		final var caseType = CaseTypeData.builder()
 			.withHandelseRubrik("someHandelseRubrik")
 			.withHandelseSlag("SomeHandelseslag")
@@ -136,8 +136,8 @@ class ByggrMapperTest {
 	@Test
 	void toHandelse_FireplaceFacility() {
 		// Arrange
-		final var dto = new PlanningPermissionCaseDTO();
-		final var facility = new PlanningPermissionFacilityDTO();
+		final var dto = new ByggRCaseDTO();
+		final var facility = new FacilityDTO();
 		facility.setFacilityType(FacilityType.FIREPLACE.toString());
 		dto.setFacilities(List.of(facility));
 		final var caseType = CaseTypeData.builder()
@@ -160,8 +160,8 @@ class ByggrMapperTest {
 	@Test
 	void toHandelse_SmokeChannelFacility() {
 		// Arrange
-		final var dto = new PlanningPermissionCaseDTO();
-		final var facility = new PlanningPermissionFacilityDTO();
+		final var dto = new ByggRCaseDTO();
+		final var facility = new FacilityDTO();
 		facility.setFacilityType(FacilityType.FIREPLACE_SMOKECHANNEL.toString());
 		dto.setFacilities(List.of(facility));
 		final var caseType = CaseTypeData.builder()
@@ -238,9 +238,9 @@ class ByggrMapperTest {
 	@Test
 	void toSaveNewArende() {
 		// Arrange
-		final var dto = new PlanningPermissionCaseDTO();
+		final var dto = new ByggRCaseDTO();
 		dto.setAttachments(List.of());
-		final var facility = new PlanningPermissionFacilityDTO();
+		final var facility = new FacilityDTO();
 		facility.setFacilityType(FacilityType.FIREPLACE_SMOKECHANNEL.toString());
 		dto.setFacilities(List.of(facility));
 		final var caseType = CaseTypeData.builder()
@@ -299,7 +299,7 @@ class ByggrMapperTest {
 			.withAddressCategories(List.of(INVOICE_ADDRESS))
 			.withInvoiceMarking("someInvoiceMarking")
 			.build()));
-		final var dto = new PlanningPermissionCaseDTO();
+		final var dto = new ByggRCaseDTO();
 		dto.setStakeholders(List.of(personDto));
 		//Act
 		final var result = ByggrMapper.getInvoiceMarking(dto);
@@ -316,7 +316,7 @@ class ByggrMapperTest {
 			.withAddressCategories(List.of(INVOICE_ADDRESS))
 			.withInvoiceMarking(" ")
 			.build()));
-		final var dto = new PlanningPermissionCaseDTO();
+		final var dto = new ByggRCaseDTO();
 		dto.setStakeholders(List.of(personDto));
 		//Act
 		final var result = ByggrMapper.getInvoiceMarking(dto);
@@ -333,7 +333,7 @@ class ByggrMapperTest {
 			.withAddressCategories(List.of(INVOICE_ADDRESS))
 			.withInvoiceMarking(null)
 			.build()));
-		final var dto = new PlanningPermissionCaseDTO();
+		final var dto = new ByggRCaseDTO();
 		dto.setStakeholders(List.of(personDto));
 		//Act
 		final var result = ByggrMapper.getInvoiceMarking(dto);
@@ -346,7 +346,7 @@ class ByggrMapperTest {
 
 		// Arrange
 		final var personDto = new PersonDTO("someFirstname", "someLastName", "somePersonId", "somePersonalNumber");
-		final var dto = new PlanningPermissionCaseDTO();
+		final var dto = new ByggRCaseDTO();
 		dto.setStakeholders(List.of(personDto));
 		//Act
 		final var result = ByggrMapper.getInvoiceMarking(dto);
@@ -363,7 +363,7 @@ class ByggrMapperTest {
 			.withAddressCategories(List.of(POSTAL_ADDRESS))
 			.withInvoiceMarking(null)
 			.build()));
-		final var dto = new PlanningPermissionCaseDTO();
+		final var dto = new ByggRCaseDTO();
 		dto.setStakeholders(List.of(personDto));
 		//Act
 		final var result = ByggrMapper.getInvoiceMarking(dto);
@@ -375,7 +375,7 @@ class ByggrMapperTest {
 	@Test
 	void getArendeKlass() {
 
-		final var facility = new PlanningPermissionFacilityDTO();
+		final var facility = new FacilityDTO();
 		facility.setFacilityType(BUSINESS_PREMISES.toString());
 		// Arrange
 		final var facilities = List.of(facility);
@@ -388,7 +388,7 @@ class ByggrMapperTest {
 	@Test
 	void getMainOrOnlyArendeSlag() {
 		// Arrange
-		final var facility = new PlanningPermissionFacilityDTO();
+		final var facility = new FacilityDTO();
 		facility.setFacilityType(BUSINESS_PREMISES.toString());
 		final var facilities = List.of(facility);
 		// Act
@@ -613,12 +613,12 @@ class ByggrMapperTest {
 	void getArendeBeskrivning() {
 
 		// Arrange
-		final var dto = new PlanningPermissionCaseDTO();
-		final var facility = new PlanningPermissionFacilityDTO();
+		final var dto = new ByggRCaseDTO();
+		final var facility = new FacilityDTO();
 		facility.setFacilityType(FacilityType.FIREPLACE.toString());
-		final var facility2 = new PlanningPermissionFacilityDTO();
+		final var facility2 = new FacilityDTO();
 		facility2.setFacilityType(FacilityType.WORKSHOP_BUILDING.toString());
-		final var facility3 = new PlanningPermissionFacilityDTO();
+		final var facility3 = new FacilityDTO();
 		facility3.setFacilityType(FacilityType.WAREHOUSE.toString());
 		dto.setFacilities(List.of(facility, facility2, facility3));
 		dto.setCaseTitleAddition("some case title addition");
@@ -633,7 +633,7 @@ class ByggrMapperTest {
 	void getArendeBeskrivning_NoDescription() {
 
 		// Arrange
-		final var dto = new PlanningPermissionCaseDTO();
+		final var dto = new ByggRCaseDTO();
 		dto.setFacilities(List.of());
 		dto.setCaseTitleAddition("some case title addition");
 		// Act

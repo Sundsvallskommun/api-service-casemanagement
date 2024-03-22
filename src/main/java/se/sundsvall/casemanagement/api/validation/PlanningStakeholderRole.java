@@ -1,5 +1,6 @@
-package se.sundsvall.casemanagement.api.validators;
+package se.sundsvall.casemanagement.api.validation;
 
+import se.sundsvall.casemanagement.api.validation.impl.PlanningStakeholderRoleConstraintValidator;
 import se.sundsvall.casemanagement.util.Constants;
 
 import jakarta.validation.Constraint;
@@ -15,9 +16,9 @@ import java.lang.annotation.Target;
 @Constraint(validatedBy = PlanningStakeholderRoleConstraintValidator.class)
 public @interface PlanningStakeholderRole {
 
-    String message() default Constants.ERR_MSG_WRONG_ROLE_PLANNING_CASE;
+	String message() default Constants.ERR_MSG_WRONG_ROLE_PLANNING_CASE;
 
-    Class<?>[] groups() default {};
+	Class<?>[] groups() default {};
 
-    Class<? extends Payload>[] payload() default {};
+	Class<? extends Payload>[] payload() default {};
 }

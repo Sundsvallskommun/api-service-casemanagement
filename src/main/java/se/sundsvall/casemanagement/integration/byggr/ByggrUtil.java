@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Optional;
 
 import se.sundsvall.casemanagement.api.model.AddressDTO;
+import se.sundsvall.casemanagement.api.model.FacilityDTO;
 import se.sundsvall.casemanagement.api.model.PersonDTO;
-import se.sundsvall.casemanagement.api.model.PlanningPermissionFacilityDTO;
 import se.sundsvall.casemanagement.api.model.StakeholderDTO;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
 import se.sundsvall.casemanagement.util.Constants;
@@ -40,22 +40,22 @@ public final class ByggrUtil {
 			.anyMatch(stakeholder -> stakeholder.getRollLista().getRoll().contains(StakeholderRole.PROPERTY_OWNER.getText()));
 	}
 
-	static String getPropertyDesignation(final List<PlanningPermissionFacilityDTO> facilityList) {
+	static String getPropertyDesignation(final List<FacilityDTO> facilityList) {
 		return Optional.ofNullable(getMainOrTheOnlyFacility(facilityList))
 			.map(planningPermissionFacilityDTO -> planningPermissionFacilityDTO.getAddress()
 				.getPropertyDesignation().trim().toUpperCase())
 			.orElse(null);
 	}
 
-	static Boolean isWithinPlan(final List<PlanningPermissionFacilityDTO> facilityList) {
+	static Boolean isWithinPlan(final List<FacilityDTO> facilityList) {
 		return facilityList.stream()
 			.findFirst()
-			.map(PlanningPermissionFacilityDTO::getAddress)
+			.map(FacilityDTO::getAddress)
 			.map(AddressDTO::getIsZoningPlanArea)
 			.orElse(null);
 	}
 
-	static String parsePropertyDesignation(final List<PlanningPermissionFacilityDTO> facilities) {
+	static String parsePropertyDesignation(final List<FacilityDTO> facilities) {
 		var propertyDesignation = getPropertyDesignation(facilities);
 		if ((propertyDesignation != null) && propertyDesignation.startsWith("SUNDSVALL ")) {
 			propertyDesignation = propertyDesignation.substring(propertyDesignation.indexOf(" ") + 1);
@@ -63,7 +63,7 @@ public final class ByggrUtil {
 		return propertyDesignation;
 	}
 
-	static PlanningPermissionFacilityDTO getMainOrTheOnlyFacility(final List<PlanningPermissionFacilityDTO> facilityList) {
+	static FacilityDTO getMainOrTheOnlyFacility(final List<FacilityDTO> facilityList) {
 		if (facilityList.size() == 1) {
 			// The list only contains one facility, return it.
 			return facilityList.getFirst();
@@ -71,7 +71,7 @@ public final class ByggrUtil {
 
 		// If the list contains more than one facility and mainFacility exists, return it.
 		// If the list doesn't contain a mainFacility, return null.
-		return facilityList.stream().anyMatch(PlanningPermissionFacilityDTO::isMainFacility) ? facilityList.stream().filter(PlanningPermissionFacilityDTO::isMainFacility).toList().getFirst() : null;
+		return facilityList.stream().anyMatch(FacilityDTO::isMainFacility) ? facilityList.stream().filter(FacilityDTO::isMainFacility).toList().getFirst() : null;
 	}
 
 	static void writeEventNote(final String note, final StringBuilder byggrAdminMessageSb) {

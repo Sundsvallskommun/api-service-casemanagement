@@ -19,7 +19,7 @@ import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-class EnvironmentalCaseDTOTest {
+class EcosCaseDTOTest {
 
 	@BeforeAll
 	static void setup() {
@@ -29,7 +29,7 @@ class EnvironmentalCaseDTOTest {
 
 	@Test
 	void testBean() {
-		MatcherAssert.assertThat(EnvironmentalCaseDTO.class, allOf(
+		MatcherAssert.assertThat(EcosCaseDTO.class, allOf(
 			hasValidBeanConstructor(),
 			hasValidGettersAndSetters(),
 			hasValidBeanHashCode(),
@@ -42,7 +42,7 @@ class EnvironmentalCaseDTOTest {
 		// Arrange
 		final var attachments = List.of(new AttachmentDTO());
 		final var stakeholders = List.of(new PersonDTO(), new OrganizationDTO());
-		final var facilities = List.of(new EnvironmentalFacilityDTO());
+		final var facilities = List.of(new FacilityDTO());
 		final var caseType = "SomeCaseType";
 		final var caseTitleAddition = "SomeCaseTitleAddition";
 		final var description = "Some description";
@@ -52,7 +52,7 @@ class EnvironmentalCaseDTOTest {
 		final var extraParameters = Map.of("Key", "Value");
 
 		// Act
-		final var eCase = new EnvironmentalCaseDTO();
+		final var eCase = new EcosCaseDTO();
 		eCase.setAttachments(attachments);
 		eCase.setStakeholders(stakeholders);
 		eCase.setFacilities(facilities);
@@ -80,7 +80,7 @@ class EnvironmentalCaseDTOTest {
 
 	@Test
 	void testNoDirtOnCreatedBean() {
-		assertThat(new EnvironmentalCaseDTO()).hasAllNullFieldsOrProperties();
+		assertThat(new EcosCaseDTO()).hasAllNullFieldsOrProperties();
 	}
 
 }
