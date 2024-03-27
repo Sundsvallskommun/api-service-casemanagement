@@ -1,4 +1,4 @@
-package se.sundsvall.casemanagement.service;
+package se.sundsvall.casemanagement.integration.casedata;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -36,6 +36,7 @@ import org.zalando.problem.Status;
 import org.zalando.problem.ThrowableProblem;
 
 import se.sundsvall.casemanagement.TestUtil;
+import se.sundsvall.casemanagement.api.model.AttachmentDTO;
 import se.sundsvall.casemanagement.api.model.CaseDTO;
 import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
 import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
@@ -43,12 +44,10 @@ import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderType;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
-import se.sundsvall.casemanagement.integration.casedata.CaseDataClient;
-import se.sundsvall.casemanagement.integration.casedata.CaseDataService;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
+import se.sundsvall.casemanagement.service.CaseMappingService;
 import se.sundsvall.casemanagement.util.Constants;
 
-import generated.client.casedata.AttachmentDTO;
 import generated.client.casedata.ErrandDTO;
 import generated.client.casedata.PatchErrandDTO;
 import generated.client.casedata.StatusDTO;
@@ -75,7 +74,7 @@ class CaseDataServiceTest {
 	private ArgumentCaptor<List<generated.client.casedata.StakeholderDTO>> stakeholderDTOListArgumentCaptor;
 
 	@Captor
-	private ArgumentCaptor<AttachmentDTO> attachmentDTOArgumentCaptor;
+	private ArgumentCaptor<generated.client.casedata.AttachmentDTO> attachmentDTOArgumentCaptor;
 
 	@ParameterizedTest
 	@EnumSource(value = CaseType.class, names = {PARKING_PERMIT, LOST_PARKING_PERMIT, PARKING_PERMIT_RENEWAL})
@@ -112,7 +111,7 @@ class CaseDataServiceTest {
 		assertThat(errandDTO.getStatuses().getFirst().getStatusType()).isEqualTo("Ärende inkommit");
 		assertThat(errandDTO.getStatuses().getFirst().getDateTime()).isNotNull();
 
-		final var attachmentDTOArgumentCaptor = ArgumentCaptor.forClass(AttachmentDTO.class);
+		final var attachmentDTOArgumentCaptor = ArgumentCaptor.forClass(generated.client.casedata.AttachmentDTO.class);
 		verify(caseDataClientMock, times(3)).postAttachment(attachmentDTOArgumentCaptor.capture());
 		final var attachmentDTO = attachmentDTOArgumentCaptor.getValue();
 		assertThat(attachmentDTO).isNotNull();
@@ -241,6 +240,17 @@ class CaseDataServiceTest {
 			.hasFieldOrPropertyWithValue("detail", Constants.ERR_MSG_STATUS_NOT_FOUND);
 	}
 
+	@Test
+	void patchErrandWithAttachmentNotFound() {
+		final var id = UUID.randomUUID().toString();
+		when(caseDataClientMock.postAttachment(any())).thenThrow(Problem.valueOf(Status.NOT_FOUND));
+
+		assertThatThrownBy(() -> caseDataService.patchErrandWithAttachment(id, List.of(new AttachmentDTO())))
+			.isInstanceOf(ThrowableProblem.class)
+			.hasFieldOrPropertyWithValue("status", Status.NOT_FOUND)
+			.hasFieldOrPropertyWithValue("detail", "No case was found in CaseData with caseId: " + id);
+	}
+
 	private OtherCaseDTO createCase(final CaseType caseType) {
 		final var otherCase = new OtherCaseDTO();
 		otherCase.setCaseType(caseType.toString());
@@ -249,8 +259,8 @@ class CaseDataServiceTest {
 		otherCase.setDescription("Some random description");
 
 		otherCase.setStakeholders(List.of(
-			TestUtil.createStakeholder(StakeholderType.ORGANIZATION, List.of(StakeholderRole.APPLICANT.toString(), StakeholderRole.CONTACT_PERSON.toString())),
-			TestUtil.createStakeholder(StakeholderType.PERSON, List.of(StakeholderRole.PAYMENT_PERSON.toString(), StakeholderRole.INVOICE_RECIPIENT.toString()))));
+			TestUtil.createStakeholderDTO(StakeholderType.ORGANIZATION, List.of(StakeholderRole.APPLICANT.toString(), StakeholderRole.CONTACT_PERSON.toString())),
+			TestUtil.createStakeholderDTO(StakeholderType.PERSON, List.of(StakeholderRole.PAYMENT_PERSON.toString(), StakeholderRole.INVOICE_RECIPIENT.toString()))));
 
 		otherCase.setAttachments(List.of(
 			TestUtil.createAttachment(AttachmentCategory.BUILDING_PERMIT_APPLICATION),

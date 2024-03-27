@@ -90,7 +90,7 @@
         "extraParameters": null
       },
       "extraParameters": null,
-      "mainFacility": false
+      "mainFacility": true
     }
   ],
   "diaryNumber": null

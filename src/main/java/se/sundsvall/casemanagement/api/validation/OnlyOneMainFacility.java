@@ -1,6 +1,5 @@
 package se.sundsvall.casemanagement.api.validation;
 
-import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -9,15 +8,14 @@ import java.lang.annotation.Target;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
-import se.sundsvall.casemanagement.api.validation.impl.ByggRCaseFacilityConstraintValidator;
+import se.sundsvall.casemanagement.api.validation.impl.OnlyOneMainFacilityConstraintValidator;
+import se.sundsvall.casemanagement.util.Constants;
 
-@Target({ElementType.TYPE, ElementType.FIELD})
+@Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = ByggRCaseFacilityConstraintValidator.class)
-@Documented
-public @interface ByggRCaseFacility {
-
-	String message() default "must be exactly one main facility";
+@Constraint(validatedBy = OnlyOneMainFacilityConstraintValidator.class)
+public @interface OnlyOneMainFacility {
+	String message() default Constants.ERR_MSG_ONLY_ONE_MAIN_FACILITY;
 
 	Class<?>[] groups() default {};
 

@@ -182,7 +182,8 @@
         "extraParameters": null
       },
       "extraParameters": null,
-      "facilityCollectionName": "INTERNAL_SERVER_ERROR"
+      "facilityCollectionName": "INTERNAL_SERVER_ERROR",
+      "mainFacility": "true"
     }
   ],
   "startDate": "2023-01-15",

@@ -7,8 +7,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 
 import se.sundsvall.casemanagement.api.model.enums.AddressCategory;
-import se.sundsvall.casemanagement.api.validation.EnvironmentalConstraints;
-import se.sundsvall.casemanagement.api.validation.PlanningConstraints;
+import se.sundsvall.casemanagement.api.validation.ByggRConstraints;
+import se.sundsvall.casemanagement.api.validation.EcosConstraints;
 import se.sundsvall.casemanagement.util.Constants;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -48,7 +48,7 @@ public class AddressDTO {
 	@Schema(example = "Test Testorsson")
 	private String attention;
 
-	@NotBlank(groups = {EnvironmentalConstraints.class, PlanningConstraints.class})
+	@NotBlank(groups = {EcosConstraints.class, ByggRConstraints.class})
 	@Schema(example = "SUNDSVALL BALDER 7:2")
 	private String propertyDesignation;
 

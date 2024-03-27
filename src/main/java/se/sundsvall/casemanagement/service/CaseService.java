@@ -13,10 +13,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
+import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
 import se.sundsvall.casemanagement.api.model.CaseDTO;
 import se.sundsvall.casemanagement.api.model.EcosCaseDTO;
 import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
-import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
 import se.sundsvall.casemanagement.integration.db.CaseRepository;
 import se.sundsvall.casemanagement.integration.db.model.CaseEntity;
 import se.sundsvall.casemanagement.integration.db.model.DeliveryStatus;
@@ -32,14 +32,17 @@ public class CaseService {
 	private final ApplicationEventPublisher eventPublisher;
 	private final CaseRepository caseRepository;
 	private final Validator validator;
+	private final ObjectMapper objectMapper = new ObjectMapper();
 
-	public CaseService(ApplicationEventPublisher eventPublisher, CaseRepository caseRepository, Validator validator) {
+	public CaseService(final ApplicationEventPublisher eventPublisher,
+		final CaseRepository caseRepository, final Validator validator) {
 		this.eventPublisher = eventPublisher;
 		this.caseRepository = caseRepository;
 		this.validator = validator;
+		this.objectMapper.registerModule(new JavaTimeModule());
 	}
 
-	public void handleCase(CaseDTO dto) {
+	public void handleCase(final CaseDTO dto) {
 
 		if (dto instanceof final ByggRCaseDTO pCase) {
 			validator.validateByggrErrand(pCase);
@@ -55,7 +58,7 @@ public class CaseService {
 		}
 	}
 
-	private void saveCase(CaseDTO dto) {
+	private void saveCase(final CaseDTO dto) {
 		caseRepository.save(CaseEntity.builder()
 			.withId(dto.getExternalCaseId())
 			.withDto(doToClob(dto))
@@ -63,9 +66,8 @@ public class CaseService {
 			.build());
 	}
 
-	private Clob doToClob(CaseDTO dto) {
+	private Clob doToClob(final CaseDTO dto) {
 		try {
-			final var objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 			final String jsonString = objectMapper.writeValueAsString(dto);
 			return new SerialClob(jsonString.toCharArray());
 		} catch (JsonProcessingException | SQLException e) {
