@@ -3,7 +3,7 @@ package se.sundsvall.casemanagement.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -20,7 +20,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.zalando.problem.Status;
 import org.zalando.problem.ThrowableProblem;
 
-import se.sundsvall.casemanagement.api.model.CaseDTO;
 import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
 import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
@@ -30,37 +29,32 @@ import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 @ExtendWith(MockitoExtension.class)
 class CaseMappingServiceTest {
 
-	@InjectMocks
-	private CaseMappingService caseMappingService;
-
 	@Mock
 	private CaseMappingRepository caseMappingRepository;
+
+	@InjectMocks
+	private CaseMappingService caseMappingService;
 
 	@Test
 	void testPostCaseMapping() {
 		//Arrange
-		final var caseMappingInput = new CaseMapping();
-		caseMappingInput.setExternalCaseId(UUID.randomUUID().toString());
-		final CaseDTO caseDTO = new OtherCaseDTO();
+		final var caseId = UUID.randomUUID().toString();
+		final var caseDTO = new OtherCaseDTO();
 		//Mock
-		when(caseMappingRepository.findAllByExternalCaseId(caseMappingInput.getExternalCaseId())).thenReturn(List.of());
+		when(caseMappingRepository.existsByExternalCaseId(caseId)).thenReturn(false);
 		//Act
-		caseMappingService.postCaseMapping(caseDTO, caseMappingInput.getExternalCaseId(), SystemType.CASE_DATA);
+		caseMappingService.postCaseMapping(caseDTO, caseId, SystemType.CASE_DATA);
 		//Assert
-		verify(caseMappingRepository, times(1)).save(any(CaseMapping.class));
+		verify(caseMappingRepository).save(any(CaseMapping.class));
 	}
 
 	@Test
 	void testPostCaseMappingAlreadyExists() {
 		//Arrange
 		final var caseId = UUID.randomUUID().toString();
-		final var caseMappingInput = CaseMapping.builder()
-			.withExternalCaseId(caseId)
-			.build();
-
 		final var caseDTO = new OtherCaseDTO();
 		//Mock
-		when(caseMappingRepository.findAllByExternalCaseId(caseId)).thenReturn(List.of(caseMappingInput));
+		when(caseMappingRepository.existsByExternalCaseId(caseId)).thenReturn(true);
 
 		//Act && Assert
 		assertThatThrownBy(() -> caseMappingService.postCaseMapping(caseDTO, caseId, SystemType.ECOS))
@@ -68,21 +62,20 @@ class CaseMappingServiceTest {
 			.hasMessage(MessageFormat.format("Bad Request: A resources already exists with the same externalCaseId: {0}", caseId))
 			.hasFieldOrPropertyWithValue("status", Status.BAD_REQUEST);
 
-		verify(caseMappingRepository, times(0)).save(caseMappingInput);
+		verify(caseMappingRepository, never()).save(any());
 	}
 
 	@Test
 	void testGetCaseMappingWithExternalCaseId() {
-		final CaseMapping caseMappingInput = new CaseMapping();
-		caseMappingInput.setExternalCaseId(UUID.randomUUID().toString());
+		final var caseMappingInput = CaseMapping.builder()
+			.withExternalCaseId(UUID.randomUUID().toString())
+			.build();
 
-		when(caseMappingRepository.findAllByExternalCaseIdOrCaseId(caseMappingInput.getExternalCaseId(), null))
-			.thenReturn(List.of(caseMappingInput));
+		when(caseMappingRepository.findAllByExternalCaseIdOrCaseId(caseMappingInput.getExternalCaseId(), null)).thenReturn(List.of(caseMappingInput));
 
 		final var result = caseMappingService.getCaseMapping(caseMappingInput.getExternalCaseId());
 		assertThat(result.getExternalCaseId()).isEqualTo(caseMappingInput.getExternalCaseId());
 	}
-
 
 	@Test
 	void getAllCaseMappings() {
@@ -103,7 +96,7 @@ class CaseMappingServiceTest {
 
 		final var result = caseMappingService.getAllCaseMappings();
 
-		verify(caseMappingRepository, times(1)).findAll();
+		verify(caseMappingRepository).findAll();
 
 		assertThat(result).hasSize(2);
 		assertThat(result.getFirst().getCaseId()).isEqualTo("caseId");
@@ -117,19 +110,15 @@ class CaseMappingServiceTest {
 		assertThat(result.get(1).getCaseType()).isEqualTo(CaseType.LOST_PARKING_PERMIT.toString());
 		assertThat(result.get(1).getServiceName()).isEqualTo("serviceName2");
 		assertThat(result.get(1).getTimestamp()).isNotNull();
-
 	}
 
 	@Test
 	void testGetCaseMappingWithExternalCaseIdNotFound() {
-		final CaseMapping caseMappingInput = new CaseMapping();
-		final String externalCaseId = UUID.randomUUID().toString();
-		caseMappingInput.setExternalCaseId(externalCaseId);
+		final var caseId = UUID.randomUUID().toString();
 
-		when(caseMappingRepository.findAllByExternalCaseIdOrCaseId(externalCaseId, null)).thenReturn(List.of());
+		when(caseMappingRepository.findAllByExternalCaseIdOrCaseId(caseId, null)).thenReturn(List.of());
 
-
-		assertThatThrownBy(() -> caseMappingService.getCaseMapping(externalCaseId))
+		assertThatThrownBy(() -> caseMappingService.getCaseMapping(caseId))
 			.isInstanceOf(ThrowableProblem.class)
 			.hasMessage("Not Found: Case not found")
 			.hasFieldOrPropertyWithValue("status", Status.NOT_FOUND);
@@ -137,13 +126,13 @@ class CaseMappingServiceTest {
 
 	@Test
 	void testGetCaseMappingWithExternalCaseIdMoreThanOneCase() {
-		final CaseMapping caseMappingInput = new CaseMapping();
-		caseMappingInput.setExternalCaseId(UUID.randomUUID().toString());
+		final var caseMappingInput = CaseMapping.builder()
+			.withExternalCaseId(UUID.randomUUID().toString())
+			.build();
 
 		when(caseMappingRepository.findAllByExternalCaseIdOrCaseId(caseMappingInput.getExternalCaseId(), null)).thenReturn(List.of(caseMappingInput, caseMappingInput));
 
-		final var externalCaseId = caseMappingInput.getExternalCaseId();
-		assertThatThrownBy(() -> caseMappingService.getCaseMapping(externalCaseId))
+		assertThatThrownBy(() -> caseMappingService.getCaseMapping(caseMappingInput.getExternalCaseId()))
 			.isInstanceOf(ThrowableProblem.class)
 			.hasMessage(MessageFormat.format("Not Found: More than one case was found with the same externalCaseId: \"{0}\". This should not be possible.", caseMappingInput.getExternalCaseId()))
 			.hasFieldOrPropertyWithValue("status", Status.NOT_FOUND);
@@ -151,8 +140,9 @@ class CaseMappingServiceTest {
 
 	@Test
 	void testGetCaseMappingWithCaseId() {
-		final CaseMapping caseMappingInput = new CaseMapping();
-		caseMappingInput.setCaseId(UUID.randomUUID().toString());
+		final var caseMappingInput = CaseMapping.builder()
+			.withExternalCaseId(UUID.randomUUID().toString())
+			.build();
 
 		when(caseMappingRepository.findAllByExternalCaseIdOrCaseId(null, caseMappingInput.getCaseId())).thenReturn(List.of(caseMappingInput));
 
@@ -162,9 +152,10 @@ class CaseMappingServiceTest {
 
 	@Test
 	void testGetCaseMappingWithExternalCaseIdAndCaseId() {
-		final CaseMapping caseMappingInput = new CaseMapping();
-		caseMappingInput.setCaseId(UUID.randomUUID().toString());
-		caseMappingInput.setExternalCaseId(UUID.randomUUID().toString());
+		final var caseMappingInput = CaseMapping.builder()
+			.withCaseId(UUID.randomUUID().toString())
+			.withExternalCaseId(UUID.randomUUID().toString())
+			.build();
 
 		when(caseMappingRepository.findAllByExternalCaseIdOrCaseId(caseMappingInput.getExternalCaseId(), caseMappingInput.getCaseId())).thenReturn(List.of(caseMappingInput));
 
@@ -175,17 +166,17 @@ class CaseMappingServiceTest {
 
 	@Test
 	void testValidateUniqueCase() {
-		final CaseMapping caseMappingInput = new CaseMapping();
-		caseMappingInput.setCaseId(UUID.randomUUID().toString());
-		final String externalCaseId = UUID.randomUUID().toString();
-		caseMappingInput.setExternalCaseId(externalCaseId);
+		final var externalCaseId = UUID.randomUUID().toString();
+		final var caseMappingInput = CaseMapping.builder()
+			.withCaseId(UUID.randomUUID().toString())
+			.withExternalCaseId(externalCaseId)
+			.build();
 
-		when(caseMappingRepository.findAllByExternalCaseId(externalCaseId)).thenReturn(List.of(caseMappingInput));
+		when(caseMappingRepository.existsByExternalCaseId(externalCaseId)).thenReturn(true);
 
 		assertThatThrownBy(() -> caseMappingService.validateUniqueCase(externalCaseId))
 			.isInstanceOf(ThrowableProblem.class)
 			.hasMessage(MessageFormat.format("Bad Request: A resources already exists with the same externalCaseId: {0}", caseMappingInput.getExternalCaseId()))
 			.hasFieldOrPropertyWithValue("status", Status.BAD_REQUEST);
 	}
-
 }

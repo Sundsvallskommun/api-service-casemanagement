@@ -1,7 +1,7 @@
 package se.sundsvall.casemanagement;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.anyString;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.lenient;
 
 import java.text.MessageFormat;
@@ -18,12 +18,25 @@ import java.util.UUID;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.mockito.Mockito;
 
+import arendeexport.SaveNewArendeResponse;
+import arendeexport.SaveNewArendeResponse2;
+import minutmiljo.ArrayOfguid;
+import minutmiljo.CreateFoodFacilityResponse;
+import minutmiljo.CreateHealthProtectionFacilityResponse;
+import minutmiljo.CreateHeatPumpFacilityResponse;
+import minutmiljo.CreateIndividualSewageFacilityResponse;
+import minutmiljo.CreateOrganizationPartyResponse;
+import minutmiljo.CreatePersonPartyResponse;
+import minutmiljo.SearchPartyResponse;
+import minutmiljoV2.RegisterDocumentCaseResultSvcDto;
+import minutmiljoV2.RegisterDocumentResponse;
 import se.sundsvall.casemanagement.api.model.AddressDTO;
 import se.sundsvall.casemanagement.api.model.AttachmentDTO;
 import se.sundsvall.casemanagement.api.model.CoordinatesDTO;
 import se.sundsvall.casemanagement.api.model.EnvironmentalCaseDTO;
 import se.sundsvall.casemanagement.api.model.EnvironmentalFacilityDTO;
 import se.sundsvall.casemanagement.api.model.OrganizationDTO;
+import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
 import se.sundsvall.casemanagement.api.model.PersonDTO;
 import se.sundsvall.casemanagement.api.model.PlanningPermissionCaseDTO;
 import se.sundsvall.casemanagement.api.model.PlanningPermissionFacilityDTO;
@@ -47,19 +60,6 @@ import se.sundsvall.casemanagement.integration.fb.model.ResponseDto;
 import se.sundsvall.casemanagement.service.CitizenService;
 import se.sundsvall.casemanagement.service.FbService;
 import se.sundsvall.casemanagement.util.Constants;
-
-import arendeexport.SaveNewArendeResponse;
-import arendeexport.SaveNewArendeResponse2;
-import minutmiljo.ArrayOfguid;
-import minutmiljo.CreateFoodFacilityResponse;
-import minutmiljo.CreateHealthProtectionFacilityResponse;
-import minutmiljo.CreateHeatPumpFacilityResponse;
-import minutmiljo.CreateIndividualSewageFacilityResponse;
-import minutmiljo.CreateOrganizationPartyResponse;
-import minutmiljo.CreatePersonPartyResponse;
-import minutmiljo.SearchPartyResponse;
-import minutmiljoV2.RegisterDocumentCaseResultSvcDto;
-import minutmiljoV2.RegisterDocumentResponse;
 
 public final class TestUtil {
 
@@ -165,7 +165,28 @@ public final class TestUtil {
 		return facility;
 	}
 
-	public static PlanningPermissionCaseDTO createPlanningPermissionCaseDTO(final CaseType caseType, final AttachmentCategory attachmentCategory) {
+	public static OtherCaseDTO createOtherCase(final CaseType caseType) {
+		final var otherCase = new OtherCaseDTO();
+		otherCase.setCaseType(caseType.toString());
+		otherCase.setExternalCaseId(UUID.randomUUID().toString());
+		otherCase.setCaseTitleAddition("Some case title addition");
+		otherCase.setDescription("Some random description");
+
+		otherCase.setStakeholders(List.of(
+			TestUtil.createStakeholder(StakeholderType.ORGANIZATION, List.of(StakeholderRole.APPLICANT.toString(), StakeholderRole.CONTACT_PERSON.toString())),
+			TestUtil.createStakeholder(StakeholderType.PERSON, List.of(StakeholderRole.PAYMENT_PERSON.toString(), StakeholderRole.INVOICE_RECIPIENT.toString()))));
+
+		otherCase.setAttachments(List.of(
+			TestUtil.createAttachment(AttachmentCategory.BUILDING_PERMIT_APPLICATION),
+			TestUtil.createAttachment(AttachmentCategory.ANMALAN_VARMEPUMP),
+			TestUtil.createAttachment(AttachmentCategory.ANMALAN_VARMEPUMP)));
+
+		otherCase.setExtraParameters(TestUtil.createExtraParameters());
+		otherCase.getExtraParameters().put("application.priority", "HIGH");
+		return otherCase;
+	}
+
+	public static PlanningPermissionCaseDTO createPlanningPermissionCase(final CaseType caseType, final AttachmentCategory attachmentCategory) {
 		final PlanningPermissionCaseDTO pCase = new PlanningPermissionCaseDTO();
 		final List<AttachmentDTO> aList = new ArrayList<>();
 		aList.add(createAttachmentDTO(attachmentCategory));
