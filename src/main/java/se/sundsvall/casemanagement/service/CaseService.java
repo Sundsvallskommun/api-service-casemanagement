@@ -5,10 +5,10 @@ import static se.sundsvall.casemanagement.service.mapper.CaseMapper.toCaseEntity
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
+import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
 import se.sundsvall.casemanagement.api.model.CaseDTO;
 import se.sundsvall.casemanagement.api.model.EcosCaseDTO;
 import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
-import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
 import se.sundsvall.casemanagement.integration.db.CaseRepository;
 import se.sundsvall.casemanagement.service.event.IncomingByggrCase;
 import se.sundsvall.casemanagement.service.event.IncomingEcosCase;
@@ -22,14 +22,17 @@ public class CaseService {
 	private final ApplicationEventPublisher eventPublisher;
 	private final CaseRepository caseRepository;
 	private final Validator validator;
+	private final ObjectMapper objectMapper = new ObjectMapper();
 
-	public CaseService(ApplicationEventPublisher eventPublisher, CaseRepository caseRepository, Validator validator) {
+	public CaseService(final ApplicationEventPublisher eventPublisher,
+		final CaseRepository caseRepository, final Validator validator) {
 		this.eventPublisher = eventPublisher;
 		this.caseRepository = caseRepository;
 		this.validator = validator;
+		this.objectMapper.registerModule(new JavaTimeModule());
 	}
 
-	public void handleCase(CaseDTO dto) {
+	public void handleCase(final CaseDTO dto) {
 
 		if (dto instanceof final ByggRCaseDTO pCase) {
 			validator.validateByggrErrand(pCase);
@@ -45,9 +48,17 @@ public class CaseService {
 		}
 	}
 
-	private void saveCase(CaseDTO dto) {
+	private void saveCase(final CaseDTO dto) {
 		caseRepository.save(toCaseEntity(dto));
 
+	private Clob doToClob(final CaseDTO dto) {
+		try {
+			final String jsonString = objectMapper.writeValueAsString(dto);
+			return new SerialClob(jsonString.toCharArray());
+		} catch (JsonProcessingException | SQLException e) {
+			log.error("Failed to convert to Clob", e);
+			return null;
+		}
 	}
 
 	private void handleByggRCase(final ByggRCaseDTO pCase) {

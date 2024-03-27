@@ -1,15 +1,15 @@
 package se.sundsvall.casemanagement.api.validation.impl;
 
+import java.util.List;
+import java.util.Set;
+
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
 import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
-import se.sundsvall.casemanagement.api.validation.PlanningStakeholderRole;
+import se.sundsvall.casemanagement.api.validation.ByggRStakeholderRole;
 
-import java.util.List;
-import java.util.Set;
-
-public class PlanningStakeholderRoleConstraintValidator implements ConstraintValidator<PlanningStakeholderRole, List<String>> {
+public class ByggRStakeholderRoleConstraintValidator implements ConstraintValidator<ByggRStakeholderRole, List<String>> {
 
 	@Override
 	public boolean isValid(List<String> roles, ConstraintValidatorContext context) {

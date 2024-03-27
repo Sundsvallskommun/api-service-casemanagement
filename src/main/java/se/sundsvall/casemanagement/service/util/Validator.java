@@ -16,16 +16,16 @@ import org.springframework.stereotype.Component;
 import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
 
+import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
 import se.sundsvall.casemanagement.api.model.EcosCaseDTO;
 import se.sundsvall.casemanagement.api.model.PersonDTO;
-import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
 import se.sundsvall.casemanagement.api.model.StakeholderDTO;
 import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.api.model.enums.FacilityType;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
-import se.sundsvall.casemanagement.api.validation.EnvironmentalConstraints;
+import se.sundsvall.casemanagement.api.validation.ByggRConstraints;
+import se.sundsvall.casemanagement.api.validation.EcosConstraints;
 import se.sundsvall.casemanagement.api.validation.PersonConstraints;
-import se.sundsvall.casemanagement.api.validation.PlanningConstraints;
 
 @Component
 public class Validator {
@@ -34,7 +34,7 @@ public class Validator {
 		try (var factory = Validation.buildDefaultValidatorFactory()) {
 			final jakarta.validation.Validator validator = factory.getValidator();
 
-			final Set<ConstraintViolation<ByggRCaseDTO>> caseViolations = validator.validate(pCase, PlanningConstraints.class);
+			final Set<ConstraintViolation<ByggRCaseDTO>> caseViolations = validator.validate(pCase, ByggRConstraints.class);
 
 			if (!caseViolations.isEmpty()) {
 				throw new ConstraintViolationException(caseViolations);
@@ -95,7 +95,7 @@ public class Validator {
 				return;
 			}
 
-			final Set<ConstraintViolation<EcosCaseDTO>> violations = validator.validate(eCase, EnvironmentalConstraints.class);
+			final Set<ConstraintViolation<EcosCaseDTO>> violations = validator.validate(eCase, EcosConstraints.class);
 
 			if (!violations.isEmpty()) {
 				throw new ConstraintViolationException(violations);

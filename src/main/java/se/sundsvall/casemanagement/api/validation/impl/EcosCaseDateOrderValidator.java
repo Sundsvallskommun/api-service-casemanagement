@@ -4,9 +4,9 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
 import se.sundsvall.casemanagement.api.model.EcosCaseDTO;
-import se.sundsvall.casemanagement.api.validation.EnvironmentalCaseDateOrder;
+import se.sundsvall.casemanagement.api.validation.EcosCaseDateOrder;
 
-public class EnvironmentalCaseDateOrderValidator implements ConstraintValidator<EnvironmentalCaseDateOrder, EcosCaseDTO> {
+public class EcosCaseDateOrderValidator implements ConstraintValidator<EcosCaseDateOrder, EcosCaseDTO> {
 	@Override
 	public boolean isValid(EcosCaseDTO environmentalCase, ConstraintValidatorContext context) {
 		if ((environmentalCase.getStartDate() != null) && (environmentalCase.getEndDate() != null)) {

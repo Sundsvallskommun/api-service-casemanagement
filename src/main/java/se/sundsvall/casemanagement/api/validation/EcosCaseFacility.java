@@ -1,5 +1,6 @@
 package se.sundsvall.casemanagement.api.validation;
 
+import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -10,8 +11,9 @@ import jakarta.validation.Payload;
 
 import se.sundsvall.casemanagement.api.validation.impl.EcosCaseFacilityConstraintValidator;
 
-@Target({ElementType.TYPE})
+@Target({ElementType.TYPE, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
+@Documented
 @Constraint(validatedBy = EcosCaseFacilityConstraintValidator.class)
 public @interface EcosCaseFacility {
 

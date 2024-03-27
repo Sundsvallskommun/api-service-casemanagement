@@ -155,9 +155,6 @@ public abstract class CaseDTO {
 	@Valid
 	private List<StakeholderDTO> stakeholders;
 
-	@Valid
-	private List<FacilityDTO> facilities;
-
 	@NotEmpty
 	@Valid
 	private List<AttachmentDTO> attachments;

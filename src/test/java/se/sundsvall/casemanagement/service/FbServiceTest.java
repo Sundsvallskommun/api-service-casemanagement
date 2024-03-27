@@ -96,8 +96,8 @@ class FbServiceTest {
 	@Test
 	void getPropertyOwnerByPropertyDesignation() {
 		// Arrange
-		final var personDTOMock = (PersonDTO) TestUtil.createStakeholder(StakeholderType.PERSON, new ArrayList<>());
-		final var organizationDTOMock = (OrganizationDTO) TestUtil.createStakeholder(StakeholderType.ORGANIZATION, new ArrayList<>());
+		final var personDTOMock = (PersonDTO) TestUtil.createStakeholderDTO(StakeholderType.PERSON, new ArrayList<>());
+		final var organizationDTOMock = (OrganizationDTO) TestUtil.createStakeholderDTO(StakeholderType.ORGANIZATION, new ArrayList<>());
 		final var propertyDesignation = "TEST 1:1";
 		final var propertyOwners = List.of(personDTOMock, organizationDTOMock);
 		final var personDTOMockAddressDTO = personDTOMock.getAddresses().getFirst();
@@ -138,7 +138,7 @@ class FbServiceTest {
 	void getPropertyOwnerByPropertyDesignation_NoValidOrganisationName() {
 
 		// Arrange
-		final var organizationDTOMock = (OrganizationDTO) TestUtil.createStakeholder(StakeholderType.ORGANIZATION, emptyList());
+		final var organizationDTOMock = (OrganizationDTO) TestUtil.createStakeholderDTO(StakeholderType.ORGANIZATION, emptyList());
 
 		final var propertyDesignation = "TEST 1:1";
 		final List<StakeholderDTO> propertyOwners = List.of(organizationDTOMock);
@@ -160,7 +160,7 @@ class FbServiceTest {
 	@Test
 	void getPropertyOwnerByPropertyDesignation_NoAdress() {
 		// Arrange
-		final var personDTOMock = (PersonDTO) TestUtil.createStakeholder(StakeholderType.PERSON, emptyList());
+		final var personDTOMock = (PersonDTO) TestUtil.createStakeholderDTO(StakeholderType.PERSON, emptyList());
 		final var propertyDesignation = "TEST 1:1";
 		final List<StakeholderDTO> propertyOwners = List.of(personDTOMock);
 

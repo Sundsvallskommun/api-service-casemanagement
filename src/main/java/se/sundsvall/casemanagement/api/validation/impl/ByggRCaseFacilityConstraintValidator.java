@@ -1,5 +1,8 @@
 package se.sundsvall.casemanagement.api.validation.impl;
 
+import java.util.Collections;
+import java.util.Optional;
+
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
@@ -11,13 +14,12 @@ public class ByggRCaseFacilityConstraintValidator implements ConstraintValidator
 
 	@Override
 	public boolean isValid(ByggRCaseDTO value, ConstraintValidatorContext context) {
-		final var facilityList = value.getFacilities();
 
-		if (facilityList == null) {
-			return true;
-		}
+		final var mainFacilities = Optional.ofNullable(value.getFacilities()).orElse(Collections.emptyList())
+			.stream().filter(FacilityDTO::isMainFacility)
+			.count();
 
-		return facilityList.stream().filter(FacilityDTO::isMainFacility).count() <= 1;
+		return mainFacilities == 1;
 	}
 
 }

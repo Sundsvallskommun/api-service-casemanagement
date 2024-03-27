@@ -1,10 +1,7 @@
 package se.sundsvall.casemanagement.api.model;
 
 import java.io.Serializable;
-
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
+import java.util.List;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -14,5 +11,7 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @Data
 public class OtherCaseDTO extends CaseDTO implements Serializable {
+
+	private List<FacilityDTO> facilities;
 
 }

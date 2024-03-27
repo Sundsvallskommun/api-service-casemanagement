@@ -1,31 +1,31 @@
 package se.sundsvall.casemanagement.api.validation;
 
-import jakarta.validation.ConstraintValidatorContext;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
-
-import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
-import se.sundsvall.casemanagement.api.validation.impl.ValidAttachmentCategoryConstraintValidator;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import jakarta.validation.ConstraintValidatorContext;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
+import se.sundsvall.casemanagement.api.validation.impl.ValidAttachmentCategoryConstraintValidator;
+
+@ExtendWith(MockitoExtension.class)
 class ValidAttachmentCategoryConstraintValidatorTest {
 
+	@InjectMocks
 	private ValidAttachmentCategoryConstraintValidator validator;
 
+	@Mock
 	private ConstraintValidatorContext context;
-
-	@BeforeEach
-	void setUp() {
-		validator = new ValidAttachmentCategoryConstraintValidator();
-		context = mock(ConstraintValidatorContext.class);
-	}
 
 	@ParameterizedTest
 	@EnumSource(AttachmentCategory.class)
@@ -59,5 +59,4 @@ class ValidAttachmentCategoryConstraintValidatorTest {
 		final var emptyCategory = "";
 		assertThat(validator.isValid(emptyCategory, context)).isFalse();
 	}
-
 }
