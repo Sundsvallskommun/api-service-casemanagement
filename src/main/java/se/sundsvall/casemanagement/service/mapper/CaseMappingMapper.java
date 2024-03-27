@@ -1,4 +1,4 @@
-package se.sundsvall.casemanagement.service;
+package se.sundsvall.casemanagement.service.mapper;
 
 import static se.sundsvall.casemanagement.util.Constants.SERVICE_NAME;
 
@@ -26,6 +26,4 @@ public class CaseMappingMapper {
 				.get(SERVICE_NAME))
 			.build();
 	}
-
-
 }

@@ -1,6 +1,7 @@
 package se.sundsvall.casemanagement.integration.casedata;
 
 import static java.util.Objects.isNull;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.zalando.problem.Status.NOT_FOUND;
 
 import java.time.OffsetDateTime;
@@ -11,12 +12,16 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
 import org.zalando.problem.ThrowableProblem;
 
+import generated.client.casedata.ContactInformationDTO;
+import generated.client.casedata.ErrandDTO;
+import generated.client.casedata.ErrandDTO.ChannelEnum;
+import generated.client.casedata.PatchErrandDTO;
+import generated.client.casedata.StatusDTO;
 import se.sundsvall.casemanagement.api.model.AddressDTO;
 import se.sundsvall.casemanagement.api.model.AttachmentDTO;
 import se.sundsvall.casemanagement.api.model.CaseStatusDTO;
@@ -29,11 +34,6 @@ import se.sundsvall.casemanagement.api.model.enums.SystemType;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.service.CaseMappingService;
 import se.sundsvall.casemanagement.util.Constants;
-
-import generated.client.casedata.ContactInformationDTO;
-import generated.client.casedata.ErrandDTO;
-import generated.client.casedata.PatchErrandDTO;
-import generated.client.casedata.StatusDTO;
 
 @Service
 public class CaseDataService {
@@ -145,17 +145,21 @@ public class CaseDataService {
 	}
 
 	private ErrandDTO mapToErrandDTO(final OtherCaseDTO otherCase) {
-		final ErrandDTO errandDTO = new ErrandDTO();
-		errandDTO.setCaseType(otherCase.getCaseType());
-		errandDTO.setExternalCaseId(otherCase.getExternalCaseId());
-		errandDTO.setDescription(otherCase.getDescription());
-		errandDTO.setCaseTitleAddition(otherCase.getCaseTitleAddition());
-		errandDTO.setStakeholders(mapStakeholders(otherCase.getStakeholders()));
-		errandDTO.setExtraParameters(otherCase.getExtraParameters());
+		final ErrandDTO errandDTO = new ErrandDTO()
+			.caseType(otherCase.getCaseType())
+			.externalCaseId(otherCase.getExternalCaseId())
+			.description(otherCase.getDescription())
+			.caseTitleAddition(otherCase.getCaseTitleAddition())
+			.stakeholders(mapStakeholders(otherCase.getStakeholders()))
+			.extraParameters(otherCase.getExtraParameters());
+
+		if (isNotBlank(otherCase.getExternalCaseId())) { // If case is sent from OeP it has an external caseId and channel will be set to ESERVICE
+			errandDTO.setChannel(ChannelEnum.ESERVICE);
+		}
 
 		if (!isNull(otherCase.getExtraParameters())) {
 			final String priority = otherCase.getExtraParameters().get(APPLICATION_PRIORITY_KEY);
-			if (StringUtils.isNotBlank(priority)) {
+			if (isNotBlank(priority)) {
 				errandDTO.setPriority(ErrandDTO.PriorityEnum.valueOf(priority));
 			}
 		}

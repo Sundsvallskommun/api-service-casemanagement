@@ -12,4 +12,6 @@ public interface CaseMappingRepository extends JpaRepository<CaseMapping, CaseMa
 	List<CaseMapping> findAllByExternalCaseIdOrCaseId(String externalCaseId, String caseId);
 
 	List<CaseMapping> findAllByExternalCaseId(String externalCaseId);
+
+	boolean existsByExternalCaseId(String externalCaseId);
 }

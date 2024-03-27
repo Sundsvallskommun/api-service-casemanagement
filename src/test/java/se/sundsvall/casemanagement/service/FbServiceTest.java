@@ -37,27 +37,14 @@ import se.sundsvall.casemanagement.util.Constants;
 @ExtendWith(MockitoExtension.class)
 class FbServiceTest {
 
-	@InjectMocks
-	private FbService fbService;
-
 	@Mock
 	private FbClient fbClientMock;
 
 	@Mock
 	private RegisterbeteckningService registerbeteckningServiceMock;
 
-	private static ResponseDto getResponseDto(final AddressDTO personDTOMockAddressDTO) {
-		final var dataItem = new DataItem();
-		dataItem.setUtdelningsadress1(personDTOMockAddressDTO.getStreet());
-		dataItem.setLand(personDTOMockAddressDTO.getCountry());
-		dataItem.setPostort(personDTOMockAddressDTO.getCity());
-		dataItem.setPostnummer(personDTOMockAddressDTO.getPostalCode());
-		dataItem.setCoAdress(personDTOMockAddressDTO.getCareOf());
-
-		final var getPropertyOwnerAddressByPersOrgNrMockResponse = new ResponseDto();
-		getPropertyOwnerAddressByPersOrgNrMockResponse.setData(List.of(dataItem));
-		return getPropertyOwnerAddressByPersOrgNrMockResponse;
-	}
+	@InjectMocks
+	private FbService fbService;
 
 	@Test
 	void getPropertyInfoByPropertyDesignation() {
@@ -84,7 +71,6 @@ class FbServiceTest {
 			.hasFieldOrPropertyWithValue("status", Status.BAD_REQUEST);
 	}
 
-
 	@Test
 	void getPropertyInfoByPropertyDesignation_noFnr() {
 		// Arrange
@@ -107,7 +93,6 @@ class FbServiceTest {
 			.hasFieldOrPropertyWithValue("status", Status.BAD_REQUEST);
 	}
 
-
 	@Test
 	void getPropertyOwnerByPropertyDesignation() {
 		// Arrange
@@ -121,7 +106,7 @@ class FbServiceTest {
 		mockFb();
 		when(fbClientMock.getPropertyOwnerByFnr(any(), any(), any(), any())).thenReturn(createPropertyOwnerByFnrResponse(propertyOwners));
 		when(fbClientMock.getPropertyOwnerInfoByUuid(any(), any(), any(), any())).thenReturn(createPropertyOwnerInfoByUuidResponse(propertyOwners));
-		when(fbClientMock.getPropertyOwnerAddressByPersOrgNr(any(), any(), any(), any())).thenReturn(getResponseDto(personDTOMockAddressDTO));
+		when(fbClientMock.getPropertyOwnerAddressByPersOrgNr(any(), any(), any(), any())).thenReturn(createPropertyOwnerAddressByPersOrgNrResponse(personDTOMockAddressDTO));
 
 		// Act
 		final var result = fbService.getPropertyOwnerByPropertyDesignation(propertyDesignation);
@@ -147,7 +132,6 @@ class FbServiceTest {
 		assertThat(addressDTO.getCity()).isEqualTo(personDTOMockAddressDTO.getCity());
 		assertThat(addressDTO.getPostalCode()).isEqualTo(personDTOMockAddressDTO.getPostalCode());
 		assertThat(addressDTO.getCareOf()).isEqualTo(personDTOMockAddressDTO.getCareOf());
-
 	}
 
 	@Test
@@ -160,21 +144,18 @@ class FbServiceTest {
 		final List<StakeholderDTO> propertyOwners = List.of(organizationDTOMock);
 		final var propertyOwnerInfoByUuid = createPropertyOwnerInfoByUuidResponse(propertyOwners);
 		propertyOwnerInfoByUuid.getData().getFirst().setGallandeOrganisationsnamn(null);
-		final var personDTOMockAddressDTO = organizationDTOMock.getAddresses().getFirst();
-
 
 		//Mock
 		mockFb();
 		when(fbClientMock.getPropertyOwnerByFnr(any(), any(), any(), any())).thenReturn(createPropertyOwnerByFnrResponse(propertyOwners));
 		when(fbClientMock.getPropertyOwnerInfoByUuid(any(), any(), any(), any())).thenReturn(propertyOwnerInfoByUuid);
-		when(fbClientMock.getPropertyOwnerAddressByPersOrgNr(any(), any(), any(), any())).thenReturn(getResponseDto(personDTOMockAddressDTO));
+
 		// Act
 		final var result = fbService.getPropertyOwnerByPropertyDesignation(propertyDesignation);
 
 		// Assert
 		assertThat(result).isEmpty();
 	}
-
 
 	@Test
 	void getPropertyOwnerByPropertyDesignation_NoAdress() {
@@ -200,10 +181,7 @@ class FbServiceTest {
 		assertThat(personResult.getFirstName()).isEqualTo(personDTOMock.getFirstName());
 		assertThat(personResult.getLastName()).isEqualTo(personDTOMock.getLastName());
 		assertThat(personResult.getAddresses()).isEmpty();
-
-
 	}
-
 
 	private void mockFb() {
 		final var registerbeteckningsreferensMock = new Registerbeteckningsreferens();
@@ -226,6 +204,18 @@ class FbServiceTest {
 
 	}
 
+	private static ResponseDto createPropertyOwnerAddressByPersOrgNrResponse(final AddressDTO personDTOMockAddressDTO) {
+		final var dataItem = new DataItem();
+		dataItem.setUtdelningsadress1(personDTOMockAddressDTO.getStreet());
+		dataItem.setLand(personDTOMockAddressDTO.getCountry());
+		dataItem.setPostort(personDTOMockAddressDTO.getCity());
+		dataItem.setPostnummer(personDTOMockAddressDTO.getPostalCode());
+		dataItem.setCoAdress(personDTOMockAddressDTO.getCareOf());
+
+		final var getPropertyOwnerAddressByPersOrgNrMockResponse = new ResponseDto();
+		getPropertyOwnerAddressByPersOrgNrMockResponse.setData(List.of(dataItem));
+		return getPropertyOwnerAddressByPersOrgNrMockResponse;
+	}
 
 	private ResponseDto createPropertyOwnerByFnrResponse(final List<StakeholderDTO> propertyOwners) {
 		final var responseDto = new ResponseDto();
@@ -264,5 +254,4 @@ class FbServiceTest {
 		}).toList());
 		return responseDto;
 	}
-
 }
