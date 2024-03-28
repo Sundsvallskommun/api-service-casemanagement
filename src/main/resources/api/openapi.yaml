@@ -5,9 +5,9 @@ info:
   license:
     name: MIT License
     url: https://opensource.org/licenses/MIT
-  version: "7.0"
+  version: "7.1"
 servers:
-  - url: http://localhost:51715
+  - url: http://localhost:63955
     description: Generated server url
 tags:
   - name: Status
@@ -63,21 +63,13 @@ paths:
                     extension: .pdf
                     file: dGVzdA==
               oneOf:
-                - $ref: '#/components/schemas/PlanningPermissionCaseDTO'
-                - $ref: '#/components/schemas/EnvironmentalCaseDTO'
+                - $ref: '#/components/schemas/ByggRCaseDTO'
+                - $ref: '#/components/schemas/EcosCaseDTO'
                 - $ref: '#/components/schemas/OtherCaseDTO'
         required: true
       responses:
-        "204":
-          description: No content
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        "502":
-          description: Bad Gateway
+        "500":
+          description: Internal Server error
           content:
             application/problem+json:
               schema:
@@ -88,8 +80,16 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        "500":
-          description: Internal Server error
+        "204":
+          description: No content
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "502":
+          description: Bad Gateway
           content:
             application/problem+json:
               schema:
@@ -133,20 +133,23 @@ paths:
                     extension: .pdf
                     file: dGVzdA==
               oneOf:
-                - $ref: '#/components/schemas/PlanningPermissionCaseDTO'
-                - $ref: '#/components/schemas/EnvironmentalCaseDTO'
+                - $ref: '#/components/schemas/ByggRCaseDTO'
+                - $ref: '#/components/schemas/EcosCaseDTO'
                 - $ref: '#/components/schemas/OtherCaseDTO'
         required: true
       responses:
-        "200":
-          description: OK
+        "500":
+          description: Internal Server error
           content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CaseResourceResponseDTO'
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/CaseResourceResponseDTO'
+                $ref: '#/components/schemas/Problem'
+        "404":
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
         "400":
           description: Bad request
           content:
@@ -159,18 +162,15 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        "404":
-          description: Not found
+        "200":
+          description: OK
           content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CaseResourceResponseDTO'
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/Problem'
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
+                $ref: '#/components/schemas/CaseResourceResponseDTO'
   /cases/{externalCaseId}/attachments:
     post:
       tags:
@@ -192,6 +192,24 @@ paths:
                 $ref: '#/components/schemas/AttachmentDTO'
         required: true
       responses:
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "404":
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "501":
+          description: Not Implemented
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
         "400":
           description: Bad request
           content:
@@ -204,26 +222,8 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        "404":
-          description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "204":
           description: No content - Successful request.
-        "501":
-          description: Not Implemented
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
   /organization/{organizationNumber}/cases/status:
     get:
       tags:
@@ -243,14 +243,8 @@ paths:
             example: 20220622-2396
           example: 20220622-2396
       responses:
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        "502":
-          description: Bad Gateway
+        "500":
+          description: Internal Server error
           content:
             application/problem+json:
               schema:
@@ -261,8 +255,14 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        "500":
-          description: Internal Server error
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "502":
+          description: Bad Gateway
           content:
             application/problem+json:
               schema:
@@ -294,14 +294,8 @@ paths:
           schema:
             type: string
       responses:
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        "502":
-          description: Bad Gateway
+        "500":
+          description: Internal Server error
           content:
             application/problem+json:
               schema:
@@ -312,8 +306,14 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        "500":
-          description: Internal Server error
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "502":
+          description: Bad Gateway
           content:
             application/problem+json:
               schema:
@@ -341,8 +341,8 @@ paths:
           schema:
             type: string
       responses:
-        "400":
-          description: Bad request
+        "500":
+          description: Internal Server error
           content:
             application/problem+json:
               schema:
@@ -353,8 +353,8 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        "500":
-          description: Internal Server error
+        "400":
+          description: Bad request
           content:
             application/problem+json:
               schema:
@@ -402,9 +402,7 @@ components:
             \ it can be the same address that is to be used for mail and invoices."
           items:
             type: string
-            description: "An address can have one or more address categories. For\
-              \ example, it can be the same address that is to be used for mail and\
-              \ invoices."
+            description: Address category
             enum:
               - POSTAL_ADDRESS
               - INVOICE_ADDRESS
@@ -441,6 +439,7 @@ components:
           $ref: '#/components/schemas/CoordinatesDTO'
         isZoningPlanArea:
           type: boolean
+          description: Is the addres in zoning plan area?
         invoiceMarking:
           type: string
           description: "Only in combination with addressCategory: INVOICE_ADDRESS"
@@ -448,8 +447,9 @@ components:
           type: object
           additionalProperties:
             type: string
-      description: An stakeholder may have one or more addresses. For example one
-        POSTAL_ADDRESS and another INVOICE_ADDRESS.
+            description: Extra parameters for the address.
+          description: Extra parameters for the address.
+      description: Address model
     AttachmentDTO:
       required:
         - extension
@@ -460,17 +460,23 @@ components:
       properties:
         category:
           type: string
+          description: The attachment category
+          example: DOCUMENT
         name:
           type: string
-          example: The attachment name
+          description: The attachment name
+          example: Attachment name
         note:
           type: string
+          description: A note on an attachment
           example: A note on an attachment.
         extension:
           type: string
+          description: The file extension
           example: .pdf
         mimeType:
           type: string
+          description: the mime type of the attahcment
           example: application/pdf
         file:
           type: string
@@ -481,20 +487,10 @@ components:
           type: object
           additionalProperties:
             type: string
-    CoordinatesDTO:
-      type: object
-      properties:
-        latitude:
-          type: number
-          description: Decimal Degrees (DD)
-          format: double
-          example: 62.390205
-        longitude:
-          type: number
-          description: Decimal Degrees (DD)
-          format: double
-          example: 17.306616
-    PlanningPermissionCaseDTO:
+            description: Extra parameters for the attachment
+          description: Extra parameters for the attachment
+      description: Attachment model
+    ByggRCaseDTO:
       required:
         - attachments
         - caseType
@@ -509,9 +505,12 @@ components:
           example: caa230c6-abb4-4592-ad9a-34e263c2787b
         caseType:
           type: string
+          description: The case type
+          example: NYBYGGNAD_ANSOKAN_OM_BYGGLOV
         description:
           type: string
-          example: Some description of the case.
+          description: Some description of the case.
+          example: En fritextbeskrivning av case.
         caseTitleAddition:
           type: string
           description: "Additions to the case title. Right now only applicable to\
@@ -519,41 +518,74 @@ components:
           example: "Eldstad/rökkanal, Skylt"
         stakeholders:
           type: array
+          description: The stakeholders in the case
           items:
             $ref: '#/components/schemas/StakeholderDTO'
         attachments:
           type: array
+          description: The attachments in the case
           items:
             $ref: '#/components/schemas/AttachmentDTO'
         extraParameters:
           type: object
           additionalProperties:
             type: string
-        facilities:
-          type: array
-          items:
-            $ref: '#/components/schemas/PlanningPermissionFacilityDTO'
+            description: Extra parameters for the case.
+          description: Extra parameters for the case.
         diaryNumber:
           type: string
+          description: The case diary number
+          example: 2021-1234
+        facilities:
+          type: array
+          description: The facilities in the case
+          items:
+            $ref: '#/components/schemas/FacilityDTO'
       description: ByggR-cases
-    PlanningPermissionFacilityDTO:
+    CoordinatesDTO:
+      type: object
+      properties:
+        latitude:
+          type: number
+          description: Decimal Degrees (DD)
+          format: double
+          example: 62.390205
+        longitude:
+          type: number
+          description: Decimal Degrees (DD)
+          format: double
+          example: 17.306616
+      description: Coordinates model
+    FacilityDTO:
       required:
         - address
       type: object
       properties:
         facilityType:
           type: string
+          description: The type of facility
+          example: GARAGE
         description:
           type: string
+          description: Description of the facility
           example: En fritextbeskrivning av facility.
         address:
           $ref: '#/components/schemas/AddressDTO'
+        facilityCollectionName:
+          type: string
+          description: The name on the sign.
+          example: Sundsvalls testfabrik
+        mainFacility:
+          type: boolean
+          description: Is it a main facility?
+          example: true
         extraParameters:
           type: object
           additionalProperties:
             type: string
-        mainFacility:
-          type: boolean
+            description: Extra parameters for the facility
+          description: Extra parameters for the facility
+      description: Facility model
     StakeholderDTO:
       required:
         - type
@@ -561,6 +593,8 @@ components:
       properties:
         type:
           type: string
+          description: Stakeholder type
+          example: PERSON
           enum:
             - PERSON
             - ORGANIZATION
@@ -576,12 +610,15 @@ components:
               instead.
         phoneNumber:
           type: string
+          description: Stakeholder phone number
           example: "060123456"
         emailAddress:
           type: string
+          description: Stakeholder emailaddress
           example: test.testorsson@sundsvall.se
         cellphoneNumber:
           type: string
+          description: Stakeholder cellphone number
           example: "0701234567"
         addresses:
           type: array
@@ -593,9 +630,12 @@ components:
           type: object
           additionalProperties:
             type: string
+            description: The stakeholder's billing address
+          description: The stakeholder's billing address
+      description: Stakeholder model
       discriminator:
         propertyName: type
-    EnvironmentalCaseDTO:
+    EcosCaseDTO:
       required:
         - attachments
         - caseType
@@ -610,9 +650,12 @@ components:
           example: caa230c6-abb4-4592-ad9a-34e263c2787b
         caseType:
           type: string
+          description: The case type
+          example: NYBYGGNAD_ANSOKAN_OM_BYGGLOV
         description:
           type: string
-          example: Some description of the case.
+          description: Some description of the case.
+          example: En fritextbeskrivning av case.
         caseTitleAddition:
           type: string
           description: "Additions to the case title. Right now only applicable to\
@@ -620,22 +663,20 @@ components:
           example: "Eldstad/rökkanal, Skylt"
         stakeholders:
           type: array
+          description: The stakeholders in the case
           items:
             $ref: '#/components/schemas/StakeholderDTO'
         attachments:
           type: array
+          description: The attachments in the case
           items:
             $ref: '#/components/schemas/AttachmentDTO'
         extraParameters:
           type: object
           additionalProperties:
             type: string
-        facilities:
-          maxItems: 1
-          minItems: 1
-          type: array
-          items:
-            $ref: '#/components/schemas/EnvironmentalFacilityDTO'
+            description: Extra parameters for the case.
+          description: Extra parameters for the case.
         startDate:
           type: string
           description: Start date for the business.
@@ -646,25 +687,14 @@ components:
           description: End date of the business if it is time-limited.
           format: date
           example: 2022-06-01
-      description: Ecos2-cases
-    EnvironmentalFacilityDTO:
-      required:
-        - address
-      type: object
-      properties:
-        description:
-          type: string
-          example: En fritextbeskrivning av facility.
-        address:
-          $ref: '#/components/schemas/AddressDTO'
-        extraParameters:
-          type: object
-          additionalProperties:
-            type: string
-        facilityCollectionName:
-          type: string
-          description: The name on the sign.
-          example: Sundsvalls testfabrik
+        facilities:
+          maxItems: 1
+          minItems: 1
+          type: array
+          description: The facilities in the case
+          items:
+            $ref: '#/components/schemas/FacilityDTO'
+      description: Ecos2-case model class
     OtherCaseDTO:
       required:
         - attachments
@@ -679,9 +709,12 @@ components:
           example: caa230c6-abb4-4592-ad9a-34e263c2787b
         caseType:
           type: string
+          description: The case type
+          example: NYBYGGNAD_ANSOKAN_OM_BYGGLOV
         description:
           type: string
-          example: Some description of the case.
+          description: Some description of the case.
+          example: En fritextbeskrivning av case.
         caseTitleAddition:
           type: string
           description: "Additions to the case title. Right now only applicable to\
@@ -689,16 +722,26 @@ components:
           example: "Eldstad/rökkanal, Skylt"
         stakeholders:
           type: array
+          description: The stakeholders in the case
           items:
             $ref: '#/components/schemas/StakeholderDTO'
         attachments:
           type: array
+          description: The attachments in the case
           items:
             $ref: '#/components/schemas/AttachmentDTO'
         extraParameters:
           type: object
           additionalProperties:
             type: string
+            description: Extra parameters for the case.
+          description: Extra parameters for the case.
+        facilities:
+          type: array
+          description: The facilities in the case
+          items:
+            $ref: '#/components/schemas/FacilityDTO'
+      description: Other case model
     Problem:
       type: object
       properties:
@@ -721,42 +764,55 @@ components:
     StatusType:
       type: object
       properties:
+        reasonPhrase:
+          type: string
         statusCode:
           type: integer
           format: int32
-        reasonPhrase:
-          type: string
     CaseResourceResponseDTO:
       type: object
       properties:
         caseId:
           type: string
+          description: The case id
+          example: "1234"
+      description: Case resource response
     CaseStatusDTO:
       type: object
       properties:
         system:
           type: string
+          description: System type
+          example: BYGGR
           enum:
             - BYGGR
             - ECOS
             - CASE_DATA
         caseType:
           type: string
+          description: The case type
+          example: BYGGLOV
         externalCaseId:
           type: string
+          description: The external case id
           example: caa230c6-abb4-4592-ad9a-34e263c2787d
         caseId:
           type: string
+          description: The case id
           example: BYGG 2022-000100
         status:
           type: string
+          description: Case status
           example: Pågående
         serviceName:
           type: string
+          description: Service name
           example: Nybyggnad - Ansökan om bygglov
         timestamp:
           type: string
+          description: The timestamp
           format: date-time
+      description: Case status model
     CaseMapping:
       required:
         - caseType
@@ -769,6 +825,7 @@ components:
           type: string
         system:
           type: string
+          description: System type
           enum:
             - BYGGR
             - ECOS

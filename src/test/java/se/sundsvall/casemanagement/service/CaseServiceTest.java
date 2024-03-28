@@ -3,7 +3,6 @@ package se.sundsvall.casemanagement.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
@@ -23,10 +22,10 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.zalando.problem.ThrowableProblem;
 
 import se.sundsvall.casemanagement.api.model.AddressDTO;
-import se.sundsvall.casemanagement.api.model.EnvironmentalCaseDTO;
+import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
+import se.sundsvall.casemanagement.api.model.EcosCaseDTO;
+import se.sundsvall.casemanagement.api.model.FacilityDTO;
 import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
-import se.sundsvall.casemanagement.api.model.PlanningPermissionCaseDTO;
-import se.sundsvall.casemanagement.api.model.PlanningPermissionFacilityDTO;
 import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.integration.db.CaseRepository;
 import se.sundsvall.casemanagement.service.event.IncomingByggrCase;
@@ -61,19 +60,20 @@ class CaseServiceTest {
 	@Test
 	void testHandleByggRCase() {
 		// Arrange
-		final var pCase = new PlanningPermissionCaseDTO();
-		pCase.setStakeholders(List.of());
-		pCase.setFacilities(List.of());
-		pCase.setCaseType(CaseType.ANDRING_ANSOKAN_OM_BYGGLOV.toString());
+		final var byggRCase = ByggRCaseDTO.builder()
+			.withStakeholders(List.of())
+			.withCaseType(CaseType.ANDRING_ANSOKAN_OM_BYGGLOV.toString())
+			.withFacilities(List.of())
+			.build();
 		// Act
-		caseService.handleCase(pCase);
+		caseService.handleCase(byggRCase);
 		// Assert
-		verify(validator, times(1)).validateByggrErrand(pCase);
-		verify(eventPublisher, times(1)).publishEvent(byggrCaseCaptor.capture());
-		verify(caseRepository, times(1)).save(any());
+		verify(validator).validateByggrErrand(byggRCase);
+		verify(eventPublisher).publishEvent(byggrCaseCaptor.capture());
+		verify(caseRepository).save(any());
 		final var incomingByggrCase = byggrCaseCaptor.getValue();
 		assertThat(incomingByggrCase.getSource()).isEqualTo(caseService);
-		assertThat(incomingByggrCase.getPayload()).isEqualTo(pCase);
+		assertThat(incomingByggrCase.getPayload()).isEqualTo(byggRCase);
 	}
 
 	@ParameterizedTest
@@ -83,28 +83,31 @@ class CaseServiceTest {
 			"STRANDSKYDD_OVRIGT"})
 	void testHandleByggRCaseNoFacilityTypeAllowed(final CaseType caseType) {
 		// Arrange
-		final var adress = new AddressDTO();
-		adress.setPropertyDesignation("propertyDesignation");
-		adress.setAddressCategories(List.of());
+		final var address = AddressDTO.builder()
+			.withAddressCategories(List.of())
+			.withPropertyDesignation("propertyDesignation")
+			.build();
 
-		final var facility = new PlanningPermissionFacilityDTO();
-		facility.setAddress(adress);
+		final var facility = FacilityDTO.builder()
+			.withAddress(address)
+			.build();
 
-		final var pCase = new PlanningPermissionCaseDTO();
-		pCase.setStakeholders(List.of());
-		pCase.setFacilities(List.of(facility));
-		pCase.setCaseType(caseType.toString());
+		final var byggRCase = ByggRCaseDTO.builder()
+			.withStakeholders(List.of())
+			.withFacilities(List.of(facility))
+			.withCaseType(caseType.toString())
+			.build();
 
 		// Act
-		caseService.handleCase(pCase);
+		caseService.handleCase(byggRCase);
 		// Assert
-		verify(validator, times(1)).validateByggrErrand(pCase);
-		verify(eventPublisher, times(1)).publishEvent(byggrCaseCaptor.capture());
-		verify(caseRepository, times(1)).save(any());
+		verify(validator).validateByggrErrand(byggRCase);
+		verify(eventPublisher).publishEvent(byggrCaseCaptor.capture());
+		verify(caseRepository).save(any());
 
 		final var incomingByggrCase = byggrCaseCaptor.getValue();
 		assertThat(incomingByggrCase.getSource()).isEqualTo(caseService);
-		assertThat(incomingByggrCase.getPayload()).isEqualTo(pCase);
+		assertThat(incomingByggrCase.getPayload()).isEqualTo(byggRCase);
 	}
 
 	@ParameterizedTest
@@ -113,23 +116,27 @@ class CaseServiceTest {
 			"TILLBYGGNAD_ANSOKAN_OM_BYGGLOV", "STRANDSKYDD_ANDRAD_ANVANDNING"})
 	void testHandleByggRCaseNoFacilityType_notAllowed(final CaseType caseType) {
 		// Arrange
-		final var adress = new AddressDTO();
-		adress.setPropertyDesignation("propertyDesignation");
-		adress.setAddressCategories(List.of());
+		final var address = AddressDTO.builder()
+			.withPropertyDesignation("propertyDesignation")
+			.withAddressCategories(List.of())
+			.build();
 
-		final var facility = new PlanningPermissionFacilityDTO();
-		facility.setAddress(adress);
+		final var facility = FacilityDTO.builder()
+			.withAddress(address)
+			.build();
 
-		final var pCase = new PlanningPermissionCaseDTO();
-		pCase.setStakeholders(List.of());
-		pCase.setFacilities(List.of(facility));
-		pCase.setCaseType(caseType.toString());
+		final var byggRCase = ByggRCaseDTO.builder()
+			.withStakeholders(List.of())
+			.withFacilities(List.of(facility))
+			.withCaseType(caseType.toString())
+			.build();
+
 		// Act && assert
 		assertThatExceptionOfType(ThrowableProblem.class)
-			.isThrownBy(() -> caseService.handleCase(pCase))
+			.isThrownBy(() -> caseService.handleCase(byggRCase))
 			.withMessage("Bad Request: FacilityType is not allowed to be null for CaseType " + caseType);
 
-		verify(validator, times(1)).validateByggrErrand(pCase);
+		verify(validator).validateByggrErrand(byggRCase);
 		verifyNoInteractions(eventPublisher);
 		verifyNoInteractions(caseRepository);
 	}
@@ -137,34 +144,36 @@ class CaseServiceTest {
 	@Test
 	void testHandleEcosCase() {
 		// Arrange
-		final var eCase = new EnvironmentalCaseDTO();
-		eCase.setStakeholders(List.of());
-		eCase.setCaseType(CaseType.REGISTRERING_AV_LIVSMEDEL.toString());
-		eCase.setFacilities(List.of());
+		final var ecosCaseDTO = EcosCaseDTO.builder()
+			.withStakeholders(List.of())
+			.withCaseType(CaseType.REGISTRERING_AV_LIVSMEDEL.toString())
+			.withFacilities(List.of())
+			.build();
+
 		// Act
-		caseService.handleCase(eCase);
+		caseService.handleCase(ecosCaseDTO);
 		// Assert
-		verify(validator, times(1)).validateEcosErrand(eCase);
-		verify(eventPublisher, times(1)).publishEvent(ecosCaseCaptor.capture());
-		verify(caseRepository, times(1)).save(any());
+		verify(validator).validateEcosErrand(ecosCaseDTO);
+		verify(eventPublisher).publishEvent(ecosCaseCaptor.capture());
+		verify(caseRepository).save(any());
 
 		final var incomingEcosCase = ecosCaseCaptor.getValue();
 		assertThat(incomingEcosCase.getSource()).isEqualTo(caseService);
-		assertThat(incomingEcosCase.getPayload()).isEqualTo(eCase);
+		assertThat(incomingEcosCase.getPayload()).isEqualTo(ecosCaseDTO);
 	}
 
 	@Test
 	void testHandleOtherCase() {
-		final var oCase = new OtherCaseDTO();
+		final var otherCaseDTO = OtherCaseDTO.builder().build();
 		// Act
-		caseService.handleCase(oCase);
+		caseService.handleCase(otherCaseDTO);
 		// Assert
-		verify(eventPublisher, times(1)).publishEvent(otherCaseCaptor.capture());
-		verify(caseRepository, times(1)).save(any());
+		verify(eventPublisher).publishEvent(otherCaseCaptor.capture());
+		verify(caseRepository).save(any());
 
 		final var incomingOtherCase = otherCaseCaptor.getValue();
 		assertThat(incomingOtherCase.getSource()).isEqualTo(caseService);
-		assertThat(incomingOtherCase.getPayload()).isEqualTo(oCase);
+		assertThat(incomingOtherCase.getPayload()).isEqualTo(otherCaseDTO);
 	}
 
 }

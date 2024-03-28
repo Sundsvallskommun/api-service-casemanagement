@@ -46,7 +46,7 @@ class PartyServiceTest {
 		when(minutMiljoClient.createOrganizationParty(any(CreateOrganizationParty.class)))
 			.thenReturn(new CreateOrganizationPartyResponse().withCreateOrganizationPartyResult(createdOrganizationPartyID));
 
-		final var result = partyService.findAndAddPartyToCase(TestUtil.createEnvironmentalCase(CaseType.REGISTRERING_AV_LIVSMEDEL, UNDERLAG_RISKKLASSNING), "someCaseId");
+		final var result = partyService.findAndAddPartyToCase(TestUtil.createEcosCaseDTO(CaseType.REGISTRERING_AV_LIVSMEDEL, UNDERLAG_RISKKLASSNING), "someCaseId");
 
 		assertThat(result).isNotNull().isNotEmpty();
 		assertThat(result.getFirst().get(createdOrganizationPartyID)).isNotNull().satisfies(party -> assertThat(party.getGuid()).isNotEmpty());
@@ -65,7 +65,7 @@ class PartyServiceTest {
 
 		final var createdPersonPartyID = UUID.randomUUID().toString();
 
-		final var caseDTO = TestUtil.createEnvironmentalCase(CaseType.REGISTRERING_AV_LIVSMEDEL, UNDERLAG_RISKKLASSNING);
+		final var caseDTO = TestUtil.createEcosCaseDTO(CaseType.REGISTRERING_AV_LIVSMEDEL, UNDERLAG_RISKKLASSNING);
 		caseDTO.getStakeholders().removeFirst();
 
 		when(citizenService.getPersonalNumber(any(String.class))).thenReturn("19800101-1234");

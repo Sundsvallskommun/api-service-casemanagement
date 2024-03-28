@@ -15,7 +15,8 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import dev.failsafe.Failsafe;
 import dev.failsafe.RetryPolicy;
 import minutmiljoV2.RegisterDocumentCaseResultSvcDto;
-import se.sundsvall.casemanagement.api.model.EnvironmentalCaseDTO;
+
+import se.sundsvall.casemanagement.api.model.EcosCaseDTO;
 import se.sundsvall.casemanagement.configuration.RetryProperties;
 import se.sundsvall.casemanagement.integration.db.CaseMappingRepository;
 import se.sundsvall.casemanagement.integration.db.CaseRepository;
@@ -60,7 +61,7 @@ class EcosProcessor extends Processor {
 
 		final String json = new BufferedReader(caseEntity.getDto().getCharacterStream()).lines().collect(Collectors.joining());
 		final var objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
-		final var environmentalCaseDTO = objectMapper.readValue(json, EnvironmentalCaseDTO.class);
+		final var environmentalCaseDTO = objectMapper.readValue(json, EcosCaseDTO.class);
 
 		try {
 			Failsafe

@@ -18,7 +18,6 @@ import org.junit.jupiter.api.Test;
 
 class CaseTypeDataTest {
 
-
 	@BeforeAll
 	static void setup() {
 		registerValueGenerator(() -> LocalDateTime.now().plusDays(new Random().nextInt()), LocalDateTime.class);
@@ -47,7 +46,7 @@ class CaseTypeDataTest {
 		final String arendeMening = "someArendeMening";
 
 		// Use variables to set properties
-		final CaseTypeData object = CaseTypeData.builder()
+		final var caseTypeData = CaseTypeData.builder()
 			.withValue(value)
 			.withArendeSlag(arendeSlag)
 			.withArendeGrupp(arendeGrupp)
@@ -59,15 +58,15 @@ class CaseTypeDataTest {
 			.build();
 
 		// Assert that properties are equal to variables
-		assertThat(object).isNotNull().hasNoNullFieldsOrProperties();
-		assertThat(object.getValue()).isEqualTo(value);
-		assertThat(object.getArendeSlag()).isEqualTo(arendeSlag);
-		assertThat(object.getArendeGrupp()).isEqualTo(arendeGrupp);
-		assertThat(object.getArendeTyp()).isEqualTo(arendeTyp);
-		assertThat(object.getHandelseTyp()).isEqualTo(handelseTyp);
-		assertThat(object.getHandelseRubrik()).isEqualTo(handelseRubrik);
-		assertThat(object.getHandelseSlag()).isEqualTo(handelseSlag);
-		assertThat(object.getArendeMening()).isEqualTo(arendeMening);
+		assertThat(caseTypeData).isNotNull().hasNoNullFieldsOrProperties();
+		assertThat(caseTypeData.getValue()).isEqualTo(value);
+		assertThat(caseTypeData.getArendeSlag()).isEqualTo(arendeSlag);
+		assertThat(caseTypeData.getArendeGrupp()).isEqualTo(arendeGrupp);
+		assertThat(caseTypeData.getArendeTyp()).isEqualTo(arendeTyp);
+		assertThat(caseTypeData.getHandelseTyp()).isEqualTo(handelseTyp);
+		assertThat(caseTypeData.getHandelseRubrik()).isEqualTo(handelseRubrik);
+		assertThat(caseTypeData.getHandelseSlag()).isEqualTo(handelseSlag);
+		assertThat(caseTypeData.getArendeMening()).isEqualTo(arendeMening);
 	}
 
 	@Test

@@ -71,11 +71,12 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "caseType", include = JsonTypeInfo.As.EXISTING_PROPERTY, visible = true)
 @JsonSubTypes({
-	@Type(value = PlanningPermissionCaseDTO.class, names = {
+	@Type(value = ByggRCaseDTO.class, names = {
 		NYBYGGNAD_ANSOKAN_OM_BYGGLOV,
 		NYBYGGNAD_FORHANDSBESKED,
 		ANMALAN_ATTEFALL,
@@ -100,9 +101,8 @@ import lombok.Data;
 		MARKLOV_TRADFALLNING,
 		MARKLOV_OVRIGT,
 		STRANDSKYDD_OVRIGT
-
 	}),
-	@Type(value = EnvironmentalCaseDTO.class, names = {
+	@Type(value = EcosCaseDTO.class, names = {
 		REGISTRERING_AV_LIVSMEDEL,
 		ANMALAN_INSTALLATION_VARMEPUMP,
 		ANSOKAN_TILLSTAND_VARMEPUMP,
@@ -138,6 +138,9 @@ import lombok.Data;
 		MEX_TERMINATION_OF_HUNTING_LEASE
 	})})
 @Data
+@SuperBuilder(setterPrefix = "with")
+@NoArgsConstructor
+@Schema(description = "Base case model")
 public abstract class CaseDTO {
 
 	@NotBlank
@@ -145,9 +148,10 @@ public abstract class CaseDTO {
 	private String externalCaseId;
 
 	@NotNull
+	@Schema(description = "The case type", example = "NYBYGGNAD_ANSOKAN_OM_BYGGLOV")
 	private String caseType;
 
-	@Schema(example = "Some description of the case.")
+	@Schema(description = "Some description of the case.", example = "En fritextbeskrivning av case.")
 	private String description;
 
 	@Schema(description = "Additions to the case title. Right now only applicable to cases of CaseType: NYBYGGNAD_ANSOKAN_OM_BYGGLOV.", example = "Eldstad/rökkanal, Skylt")
@@ -155,12 +159,15 @@ public abstract class CaseDTO {
 
 	@NotEmpty
 	@Valid
+	@Schema(description = "The stakeholders in the case")
 	private List<StakeholderDTO> stakeholders;
 
 	@NotEmpty
 	@Valid
+	@Schema(description = "The attachments in the case")
 	private List<AttachmentDTO> attachments;
 
+	@Schema(description = "Extra parameters for the case.")
 	private Map<String, String> extraParameters;
 
 }

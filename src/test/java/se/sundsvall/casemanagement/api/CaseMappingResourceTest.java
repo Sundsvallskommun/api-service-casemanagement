@@ -105,7 +105,8 @@ class CaseMappingResourceTest {
 			.withStatus(NOT_FOUND)
 			.build());
 
-		assertThatThrownBy(() -> caseMappingResource.getCaseMapping("externalCaseId"), "", Problem.class).hasMessage("No case mapping found");
+		assertThatThrownBy(() -> caseMappingResource.getCaseMapping("externalCaseId"), "", Problem.class)
+			.hasMessage("No case mapping found");
 	}
 
 	@Test
