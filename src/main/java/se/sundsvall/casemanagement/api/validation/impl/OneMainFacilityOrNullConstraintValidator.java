@@ -6,9 +6,9 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
 import se.sundsvall.casemanagement.api.model.FacilityDTO;
-import se.sundsvall.casemanagement.api.validation.OnlyOneMainFacility;
+import se.sundsvall.casemanagement.api.validation.OneMainFacilityOrNull;
 
-public class OnlyOneMainFacilityConstraintValidator implements ConstraintValidator<OnlyOneMainFacility, List<FacilityDTO>> {
+public class OneMainFacilityOrNullConstraintValidator implements ConstraintValidator<OneMainFacilityOrNull, List<FacilityDTO>> {
 
 	@Override
 	public boolean isValid(List<FacilityDTO> planningPermissionFacilityList, ConstraintValidatorContext context) {

@@ -1,12 +1,11 @@
 package se.sundsvall.casemanagement.integration.casedata;
 
-import static java.util.Objects.isNull;
+import static java.util.Collections.emptyList;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import org.apache.commons.lang3.StringUtils;
+import java.util.stream.Stream;
 
 import se.sundsvall.casemanagement.api.model.AddressDTO;
 import se.sundsvall.casemanagement.api.model.AttachmentDTO;
@@ -30,38 +29,32 @@ public final class CaseDataMapper {
 	}
 
 	public static generated.client.casedata.AttachmentDTO toAttachment(final AttachmentDTO attachment, final String errandNumber) {
-		final generated.client.casedata.AttachmentDTO attachmentDTO = new generated.client.casedata.AttachmentDTO();
-		attachmentDTO.setCategory(attachment.getCategory());
-		attachmentDTO.setName(attachment.getName());
-		attachmentDTO.setExtension(attachment.getExtension());
-		attachmentDTO.setMimeType(attachment.getMimeType());
-		attachmentDTO.setFile(attachment.getFile());
-		attachmentDTO.setExtraParameters(attachment.getExtraParameters());
-		attachmentDTO.setNote(attachment.getNote());
-		attachmentDTO.setErrandNumber(errandNumber);
-
-		return attachmentDTO;
+		return new generated.client.casedata.AttachmentDTO()
+			.category(attachment.getCategory())
+			.note(attachment.getNote())
+			.name(attachment.getName())
+			.extension(attachment.getExtension())
+			.mimeType(attachment.getMimeType())
+			.file(attachment.getFile())
+			.extraParameters(attachment.getExtraParameters())
+			.errandNumber(errandNumber);
 	}
 
 	public static ErrandDTO toErrandDTO(final OtherCaseDTO otherCase) {
-		final var errandDTO = new ErrandDTO();
-
-		errandDTO.setCaseType(otherCase.getCaseType());
-		errandDTO.setExternalCaseId(otherCase.getExternalCaseId());
-		errandDTO.setDescription(otherCase.getDescription());
-		errandDTO.setCaseTitleAddition(otherCase.getCaseTitleAddition());
-		errandDTO.setStakeholders(toStakeholderDTOs(otherCase.getStakeholders()));
-		errandDTO.setExtraParameters(otherCase.getExtraParameters());
-		Optional.ofNullable(otherCase.getFacilities()).ifPresent(f -> errandDTO.setFacilities(toFacilityDTOs(f)));
-
-		if (!isNull(otherCase.getExtraParameters())) {
-			final String priority = otherCase.getExtraParameters().get(APPLICATION_PRIORITY_KEY);
-			if (StringUtils.isNotBlank(priority)) {
-				errandDTO.setPriority(ErrandDTO.PriorityEnum.valueOf(priority));
-			}
-		}
-
-		return errandDTO;
+		return new ErrandDTO()
+			.caseType(otherCase.getCaseType())
+			.externalCaseId(otherCase.getExternalCaseId())
+			.description(otherCase.getDescription())
+			.caseTitleAddition(otherCase.getCaseTitleAddition())
+			.stakeholders(toStakeholderDTOs(otherCase.getStakeholders()))
+			.extraParameters(otherCase.getExtraParameters())
+			.priority(Optional.ofNullable(otherCase.getExtraParameters())
+				.map(extraParameters -> extraParameters.get(APPLICATION_PRIORITY_KEY))
+				.map(ErrandDTO.PriorityEnum::valueOf)
+				.orElse(null))
+			.facilities(Optional.ofNullable(otherCase.getFacilities())
+				.map(CaseDataMapper::toFacilityDTOs)
+				.orElse(null));
 	}
 
 	public static List<generated.client.casedata.FacilityDTO> toFacilityDTOs(final List<FacilityDTO> facilityDTOS) {
@@ -71,139 +64,126 @@ public final class CaseDataMapper {
 	}
 
 	public static generated.client.casedata.FacilityDTO toFacilityDTO(final FacilityDTO facilityDTO) {
-		return Optional.ofNullable(facilityDTO).map(f -> {
-			final var newFacility = new generated.client.casedata.FacilityDTO();
-			Optional.of(facilityDTO.isMainFacility()).ifPresent(newFacility::setMainFacility);
-			Optional.ofNullable(facilityDTO.getFacilityType()).ifPresent(newFacility::setFacilityType);
-			Optional.ofNullable(facilityDTO.getFacilityCollectionName()).ifPresent(newFacility::setFacilityCollectionName);
-			Optional.ofNullable(facilityDTO.getDescription()).ifPresent(newFacility::setDescription);
-			Optional.ofNullable(facilityDTO.getExtraParameters()).ifPresent(newFacility::setExtraParameters);
-			Optional.ofNullable(facilityDTO.getAddress()).ifPresent(address -> newFacility.setAddress(toFacilityAddressDTO(address)));
-			return newFacility;
-		}).orElse(null);
+		return Optional.ofNullable(facilityDTO).map(f -> new generated.client.casedata.FacilityDTO()
+				.mainFacility(f.isMainFacility())
+				.facilityType(f.getFacilityType())
+				.facilityCollectionName(f.getFacilityCollectionName())
+				.description(f.getDescription())
+				.extraParameters(f.getExtraParameters())
+				.address(toFacilityAddressDTO(f.getAddress())))
+			.orElse(null);
 	}
 
 	public static generated.client.casedata.AddressDTO toFacilityAddressDTO(final AddressDTO dto) {
-		return Optional.ofNullable(dto).map(address -> {
-			final var addressDTO = new generated.client.casedata.AddressDTO();
-			Optional.ofNullable(dto.getCity()).ifPresent(addressDTO::setCity);
-			Optional.ofNullable(dto.getCountry()).ifPresent(addressDTO::setCountry);
-			Optional.ofNullable(dto.getPostalCode()).ifPresent(addressDTO::setPostalCode);
-			Optional.ofNullable(dto.getStreet()).ifPresent(addressDTO::setStreet);
-			Optional.ofNullable(dto.getHouseNumber()).ifPresent(addressDTO::setHouseNumber);
-			Optional.ofNullable(dto.getCareOf()).ifPresent(addressDTO::setCareOf);
-			Optional.ofNullable(dto.getAttention()).ifPresent(addressDTO::setAttention);
-			Optional.ofNullable(dto.getPropertyDesignation()).ifPresent(addressDTO::setPropertyDesignation);
-			Optional.ofNullable(dto.getAppartmentNumber()).ifPresent(addressDTO::setApartmentNumber);
-			Optional.ofNullable(dto.getLocation()).ifPresent(location -> addressDTO.setLocation(toCoordinatesDTO(location)));
-			Optional.ofNullable(dto.getIsZoningPlanArea()).ifPresent(addressDTO::setIsZoningPlanArea);
-			Optional.ofNullable(dto.getInvoiceMarking()).ifPresent(addressDTO::setInvoiceMarking);
-			//Om det finns en kategori så ska den alltid sättas till VISITING_ADDRESS, om det inte skickas med så ska det vara null.
-			Optional.ofNullable(dto.getAddressCategories()).ifPresent(a -> addressDTO.setAddressCategory(generated.client.casedata.AddressDTO.AddressCategoryEnum.VISITING_ADDRESS));
-			return addressDTO;
-		}).orElse(null);
+		return Optional.ofNullable(dto).map(address -> new generated.client.casedata.AddressDTO()
+				.city(address.getCity())
+				.country(address.getCountry())
+				.postalCode(address.getPostalCode())
+				.street(address.getStreet())
+				.houseNumber(address.getHouseNumber())
+				.careOf(address.getCareOf())
+				.attention(address.getAttention())
+				.propertyDesignation(address.getPropertyDesignation())
+				.apartmentNumber(address.getAppartmentNumber())
+				.location(toCoordinatesDTO(address.getLocation()))
+				.isZoningPlanArea(address.getIsZoningPlanArea())
+				.invoiceMarking(address.getInvoiceMarking())
+				.addressCategory(Optional.ofNullable(dto.getAddressCategories())
+					.map(a -> generated.client.casedata.AddressDTO.AddressCategoryEnum.VISITING_ADDRESS)
+					.orElse(null)))
+			.orElse(null);
 	}
 
 	// Skapar en ny adress för varje AddressCategory som finns i AddressDTO.
 	public static List<generated.client.casedata.AddressDTO> toStakeholderAddressDTOs(final List<AddressDTO> addressDTOs) {
-		final List<generated.client.casedata.AddressDTO> addresses = new ArrayList<>();
-
-		if (addressDTOs != null) {
-			addressDTOs.forEach(address -> address.getAddressCategories().forEach(addressCategory -> {
-				final generated.client.casedata.AddressDTO addressDTO = new generated.client.casedata.AddressDTO();
-
-				addressDTO.setAddressCategory(generated.client.casedata.AddressDTO.AddressCategoryEnum.fromValue(addressCategory.toString()));
-				addressDTO.setStreet(address.getStreet());
-				addressDTO.setHouseNumber(address.getHouseNumber());
-				addressDTO.setPostalCode(address.getPostalCode());
-				addressDTO.setCity(address.getCity());
-				addressDTO.setCountry(address.getCountry());
-				addressDTO.setCareOf(address.getCareOf());
-				addressDTO.setAttention(address.getAttention());
-				addressDTO.setPropertyDesignation(address.getPropertyDesignation());
-				addressDTO.setApartmentNumber(address.getAppartmentNumber());
-				addressDTO.setLocation(toCoordinatesDTO(address.getLocation()));
-				addressDTO.setIsZoningPlanArea(address.getIsZoningPlanArea());
-				addressDTO.setInvoiceMarking(address.getInvoiceMarking());
-
-				addresses.add(addressDTO);
-			}));
-		}
-
-		return addresses;
-	}
-
-	public static PatchErrandDTO toPatchErrandDTO(final OtherCaseDTO otherCaseDTO) {
-		final PatchErrandDTO patchErrandDTO = new PatchErrandDTO();
-		patchErrandDTO.setCaseType(PatchErrandDTO.CaseTypeEnum.fromValue(otherCaseDTO.getCaseType()));
-		patchErrandDTO.setExternalCaseId(otherCaseDTO.getExternalCaseId());
-		patchErrandDTO.setDescription(otherCaseDTO.getDescription());
-		patchErrandDTO.setCaseTitleAddition(otherCaseDTO.getCaseTitleAddition());
-		patchErrandDTO.setExtraParameters(otherCaseDTO.getExtraParameters());
-
-		if (!isNull(otherCaseDTO.getExtraParameters())) {
-			final String priority = otherCaseDTO.getExtraParameters().get(APPLICATION_PRIORITY_KEY);
-			if (!isNull(priority) && !priority.isBlank()) {
-				patchErrandDTO.setPriority(PatchErrandDTO.PriorityEnum.valueOf(priority));
-			}
-		}
-		return patchErrandDTO;
-	}
-
-	public static List<generated.client.casedata.StakeholderDTO> toStakeholderDTOs(final List<StakeholderDTO> stakeholderDTOs) {
-		return stakeholderDTOs.stream()
-			.map(stakeholder -> {
-				final var dto = new generated.client.casedata.StakeholderDTO();
-				dto.setRoles(stakeholder.getRoles());
-				dto.setContactInformation(toContactInformationDTO(stakeholder));
-				dto.setAddresses(toStakeholderAddressDTOs(stakeholder.getAddresses()));
-				dto.setExtraParameters(stakeholder.getExtraParameters());
-
-				if (stakeholder instanceof final PersonDTO personDTO) {
-					dto.setType(generated.client.casedata.StakeholderDTO.TypeEnum.PERSON);
-					dto.setFirstName(personDTO.getFirstName());
-					dto.setLastName(personDTO.getLastName());
-					dto.setPersonId(personDTO.getPersonId());
-
-				} else if (stakeholder instanceof final OrganizationDTO organizationDTO) {
-					dto.setType(generated.client.casedata.StakeholderDTO.TypeEnum.ORGANIZATION);
-					dto.setOrganizationName(organizationDTO.getOrganizationName());
-					dto.setOrganizationNumber(organizationDTO.getOrganizationNumber());
-					dto.setAuthorizedSignatory(organizationDTO.getAuthorizedSignatory());
-				}
-				return dto;
-			})
+		return Optional.ofNullable(addressDTOs).orElse(emptyList()).stream()
+			.flatMap(address -> address.getAddressCategories().stream()
+				.map(addressCategory -> new generated.client.casedata.AddressDTO()
+					.addressCategory(generated.client.casedata.AddressDTO.AddressCategoryEnum.fromValue(addressCategory.toString()))
+					.street(address.getStreet())
+					.houseNumber(address.getHouseNumber())
+					.postalCode(address.getPostalCode())
+					.city(address.getCity())
+					.country(address.getCountry())
+					.careOf(address.getCareOf())
+					.attention(address.getAttention())
+					.propertyDesignation(address.getPropertyDesignation())
+					.apartmentNumber(address.getAppartmentNumber())
+					.location(toCoordinatesDTO(address.getLocation()))
+					.isZoningPlanArea(address.getIsZoningPlanArea())
+					.invoiceMarking(address.getInvoiceMarking())))
 			.toList();
 	}
 
+	public static PatchErrandDTO toPatchErrandDTO(final OtherCaseDTO otherCaseDTO) {
+		return new PatchErrandDTO()
+			.caseType(PatchErrandDTO.CaseTypeEnum.fromValue(otherCaseDTO.getCaseType()))
+			.externalCaseId(otherCaseDTO.getExternalCaseId())
+			.description(otherCaseDTO.getDescription())
+			.caseTitleAddition(otherCaseDTO.getCaseTitleAddition())
+			.extraParameters(otherCaseDTO.getExtraParameters())
+			.priority(Optional.ofNullable(otherCaseDTO.getExtraParameters())
+				.map(extraParameters -> extraParameters.get(APPLICATION_PRIORITY_KEY))
+				.map(PatchErrandDTO.PriorityEnum::valueOf)
+				.orElse(null));
+	}
+
+	public static List<generated.client.casedata.StakeholderDTO> toStakeholderDTOs(final List<StakeholderDTO> stakeholderDTOs) {
+		final var personDTOs = Optional.ofNullable(stakeholderDTOs).orElse(emptyList()).stream()
+			.filter(PersonDTO.class::isInstance)
+			.map(PersonDTO.class::cast)
+			.map(stakeholder -> new generated.client.casedata.StakeholderDTO()
+				.roles(stakeholder.getRoles())
+				.contactInformation(toContactInformationDTO(stakeholder))
+				.addresses(toStakeholderAddressDTOs(stakeholder.getAddresses()))
+				.extraParameters(stakeholder.getExtraParameters())
+				.type(generated.client.casedata.StakeholderDTO.TypeEnum.PERSON)
+				.firstName(stakeholder.getFirstName())
+				.lastName(stakeholder.getLastName())
+				.personId(stakeholder.getPersonId()));
+
+		final var organizationDTOs = Optional.ofNullable(stakeholderDTOs).orElse(emptyList()).stream()
+			.filter(OrganizationDTO.class::isInstance)
+			.map(OrganizationDTO.class::cast)
+			.map(stakeholder -> new generated.client.casedata.StakeholderDTO()
+				.roles(stakeholder.getRoles())
+				.contactInformation(toContactInformationDTO(stakeholder))
+				.addresses(toStakeholderAddressDTOs(stakeholder.getAddresses()))
+				.extraParameters(stakeholder.getExtraParameters())
+				.type(generated.client.casedata.StakeholderDTO.TypeEnum.ORGANIZATION)
+				.organizationName(stakeholder.getOrganizationName())
+				.organizationNumber(stakeholder.getOrganizationNumber())
+				.authorizedSignatory(stakeholder.getAuthorizedSignatory()));
+
+		return Stream.concat(personDTOs, organizationDTOs).toList();
+	}
 
 	public static generated.client.casedata.CoordinatesDTO toCoordinatesDTO(final CoordinatesDTO location) {
-		return Optional.ofNullable(location).map(c -> new generated.client.casedata.CoordinatesDTO()
-			.latitude(location.getLatitude()).longitude(location.getLongitude())).orElse(null);
+		return Optional.ofNullable(location).map(coordinatesDTO -> new generated.client.casedata.CoordinatesDTO()
+				.latitude(location.getLatitude())
+				.longitude(location.getLongitude()))
+			.orElse(null);
 	}
 
 	public static List<ContactInformationDTO> toContactInformationDTO(final StakeholderDTO stakeholderDTO) {
-		final List<ContactInformationDTO> contactInformationDTOList = new ArrayList<>();
+		final var contactInformation = new ArrayList<ContactInformationDTO>();
 
-		if (stakeholderDTO.getCellphoneNumber() != null) {
-			final ContactInformationDTO contactInformationDTO = new ContactInformationDTO();
-			contactInformationDTO.setContactType(ContactInformationDTO.ContactTypeEnum.CELLPHONE);
-			contactInformationDTO.setValue(stakeholderDTO.getCellphoneNumber());
-			contactInformationDTOList.add(contactInformationDTO);
-		}
-		if (stakeholderDTO.getPhoneNumber() != null) {
-			final ContactInformationDTO contactInformationDTO = new ContactInformationDTO();
-			contactInformationDTO.setContactType(ContactInformationDTO.ContactTypeEnum.PHONE);
-			contactInformationDTO.setValue(stakeholderDTO.getPhoneNumber());
-			contactInformationDTOList.add(contactInformationDTO);
-		}
-		if (stakeholderDTO.getEmailAddress() != null) {
-			final ContactInformationDTO contactInformationDTO = new ContactInformationDTO();
-			contactInformationDTO.setContactType(ContactInformationDTO.ContactTypeEnum.EMAIL);
-			contactInformationDTO.setValue(stakeholderDTO.getEmailAddress());
-			contactInformationDTOList.add(contactInformationDTO);
-		}
-		return contactInformationDTOList;
+		Optional.ofNullable(stakeholderDTO.getCellphoneNumber()).ifPresent(cellphoneNumber ->
+			contactInformation.add(new ContactInformationDTO()
+				.contactType(ContactInformationDTO.ContactTypeEnum.CELLPHONE)
+				.value(cellphoneNumber)));
+
+		Optional.ofNullable(stakeholderDTO.getPhoneNumber()).ifPresent(phoneNumber ->
+			contactInformation.add(new ContactInformationDTO()
+				.contactType(ContactInformationDTO.ContactTypeEnum.PHONE)
+				.value(phoneNumber)));
+
+		Optional.ofNullable(stakeholderDTO.getEmailAddress()).ifPresent(emailAddress ->
+			contactInformation.add(new ContactInformationDTO()
+				.contactType(ContactInformationDTO.ContactTypeEnum.EMAIL)
+				.value(emailAddress)));
+
+		return contactInformation;
 	}
 
 }

@@ -38,7 +38,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 @ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 @ApiResponse(responseCode = "502", description = "Bad Gateway", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
-public class CaseStatusResource {
+class CaseStatusResource {
 
 	private final ByggrService byggrService;
 
@@ -48,7 +48,8 @@ public class CaseStatusResource {
 
 	private final CaseMappingService caseMappingService;
 
-	public CaseStatusResource(final ByggrService byggrService, final EcosService ecosService, final CaseDataService caseDataService, final CaseMappingService caseMappingService) {
+	CaseStatusResource(final ByggrService byggrService, final EcosService ecosService,
+		final CaseDataService caseDataService, final CaseMappingService caseMappingService) {
 		this.byggrService = byggrService;
 		this.ecosService = ecosService;
 		this.caseDataService = caseDataService;
@@ -83,7 +84,8 @@ public class CaseStatusResource {
 
 		final CaseStatusDTO caseStatusDTO = switch (caseMapping.getSystem()) {
 			case BYGGR -> byggrService.toByggrStatus(caseMapping);
-			case ECOS -> ecosService.getStatus(caseMapping.getCaseId(), caseMapping.getExternalCaseId());
+			case ECOS ->
+				ecosService.getStatus(caseMapping.getCaseId(), caseMapping.getExternalCaseId());
 			case CASE_DATA -> caseDataService.getStatus(caseMapping);
 		};
 

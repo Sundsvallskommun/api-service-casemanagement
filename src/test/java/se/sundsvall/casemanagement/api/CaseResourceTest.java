@@ -57,7 +57,8 @@ class CaseResourceTest {
 
 	@Test
 	void postCase_Ecos(@Load("/case-resource/ecos-case.json") final String body) {
-		final var result = webTestClient.post().uri(uriBuilder -> uriBuilder.path("/cases").build())
+		final var result = webTestClient.post()
+			.uri(uriBuilder -> uriBuilder.path("/cases").build())
 			.contentType(APPLICATION_JSON)
 			.bodyValue(body)
 			.exchange()
@@ -69,10 +70,10 @@ class CaseResourceTest {
 		assertThat(result.getCaseId()).isEqualTo("Inskickat");
 
 		verify(caseService).handleCase(caseDTOCaptor.capture());
-		assertThat(caseDTOCaptor.getValue()).satisfies(c -> {
-			assertThat(c).isInstanceOf(EcosCaseDTO.class);
-			assertThat(c.getExternalCaseId()).isEqualTo("externalCaseId");
-			assertThat(c.getCaseType()).isEqualTo("REGISTRERING_AV_LIVSMEDEL");
+		assertThat(caseDTOCaptor.getValue()).satisfies(caseDTO -> {
+			assertThat(caseDTO).isInstanceOf(EcosCaseDTO.class);
+			assertThat(caseDTO.getExternalCaseId()).isEqualTo("externalCaseId");
+			assertThat(caseDTO.getCaseType()).isEqualTo("REGISTRERING_AV_LIVSMEDEL");
 		});
 
 		verify(caseMappingService).validateUniqueCase(caseDTOCaptor.getValue().getExternalCaseId());
@@ -82,7 +83,8 @@ class CaseResourceTest {
 
 	@Test
 	void postCase_ByggR(@Load("/case-resource/byggr-case.json") final String body) {
-		final var result = webTestClient.post().uri(uriBuilder -> uriBuilder.path("/cases").build())
+		final var result = webTestClient.post()
+			.uri(uriBuilder -> uriBuilder.path("/cases").build())
 			.contentType(APPLICATION_JSON)
 			.bodyValue(body)
 			.exchange()
@@ -94,10 +96,10 @@ class CaseResourceTest {
 		assertThat(result.getCaseId()).isEqualTo("Inskickat");
 
 		verify(caseService).handleCase(caseDTOCaptor.capture());
-		assertThat(caseDTOCaptor.getValue()).satisfies(c -> {
-			assertThat(c).isInstanceOf(ByggRCaseDTO.class);
-			assertThat(c.getExternalCaseId()).isEqualTo("externalCaseId");
-			assertThat(c.getCaseType()).isEqualTo("ANMALAN_ATTEFALL");
+		assertThat(caseDTOCaptor.getValue()).satisfies(caseDTO -> {
+			assertThat(caseDTO).isInstanceOf(ByggRCaseDTO.class);
+			assertThat(caseDTO.getExternalCaseId()).isEqualTo("externalCaseId");
+			assertThat(caseDTO.getCaseType()).isEqualTo("ANMALAN_ATTEFALL");
 		});
 
 		verify(caseMappingService).validateUniqueCase(caseDTOCaptor.getValue().getExternalCaseId());
@@ -107,7 +109,8 @@ class CaseResourceTest {
 
 	@Test
 	void postCase_Other(@Load("/case-resource/other-case.json") final String body) {
-		final var result = webTestClient.post().uri(uriBuilder -> uriBuilder.path("/cases").build())
+		final var result = webTestClient.post()
+			.uri(uriBuilder -> uriBuilder.path("/cases").build())
 			.contentType(APPLICATION_JSON)
 			.bodyValue(body)
 			.exchange()
@@ -119,10 +122,10 @@ class CaseResourceTest {
 		assertThat(result.getCaseId()).isEqualTo("Inskickat");
 
 		verify(caseService).handleCase(caseDTOCaptor.capture());
-		assertThat(caseDTOCaptor.getValue()).satisfies(c -> {
-			assertThat(c).isInstanceOf(OtherCaseDTO.class);
-			assertThat(c.getExternalCaseId()).isEqualTo("externalCaseId");
-			assertThat(c.getCaseType()).isEqualTo("PARKING_PERMIT");
+		assertThat(caseDTOCaptor.getValue()).satisfies(caseDTO -> {
+			assertThat(caseDTO).isInstanceOf(OtherCaseDTO.class);
+			assertThat(caseDTO.getExternalCaseId()).isEqualTo("externalCaseId");
+			assertThat(caseDTO.getCaseType()).isEqualTo("PARKING_PERMIT");
 		});
 
 		verify(caseMappingService).validateUniqueCase(caseDTOCaptor.getValue().getExternalCaseId());
@@ -136,7 +139,8 @@ class CaseResourceTest {
 			.withCaseId("12345")
 			.build());
 
-		webTestClient.put().uri(uriBuilder -> uriBuilder.path("/cases/{externalCaseId}").build("externalCaseId"))
+		webTestClient.put()
+			.uri(uriBuilder -> uriBuilder.path("/cases/{externalCaseId}").build("externalCaseId"))
 			.contentType(APPLICATION_JSON)
 			.bodyValue(body)
 			.exchange()
@@ -150,7 +154,8 @@ class CaseResourceTest {
 
 	@Test
 	void putCase_WrongCaseType(@Load("/case-resource/put-wrong-case.json") final String body) {
-		final var result = webTestClient.put().uri(uriBuilder -> uriBuilder.path("/cases/{externalCaseId}").build("externalCaseId"))
+		final var result = webTestClient.put()
+			.uri(uriBuilder -> uriBuilder.path("/cases/{externalCaseId}").build("externalCaseId"))
 			.contentType(APPLICATION_JSON)
 			.bodyValue(body)
 			.exchange()

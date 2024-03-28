@@ -35,9 +35,11 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(setterPrefix = "with")
 @NoArgsConstructor
 @AllArgsConstructor
+@Schema(description = "Stakeholder model")
 public abstract class StakeholderDTO {
 
 	@NotNull
+	@Schema(description = "The type of stakeholder", example = "PERSON")
 	private StakeholderType type;
 
 	@Schema(description = "An stakeholder can have one or more roles. Please note that INVOICE_RECIPENT is deprecated and should not be used. Use INVOICE_RECIPIENT instead.", enumAsRef = true)
@@ -45,14 +47,14 @@ public abstract class StakeholderDTO {
 	@ByggRStakeholderRole(groups = ByggRConstraints.class)
 	private List<String> roles;
 
-	@Schema(example = "060123456")
+	@Schema(description = "Stakeholder phone number", example = "060123456")
 	private String phoneNumber;
 
-	@Schema(example = "0701234567")
+	@Schema(description = "Stakeholder cellphone number", example = "0701234567")
 	private String cellphoneNumber;
 
 	@Email
-	@Schema(example = "test.testorsson@sundsvall.se")
+	@Schema(description = "Stakeholder emailaddress", example = "test.testorsson@sundsvall.se")
 	private String emailAddress;
 
 	@Valid
@@ -61,6 +63,7 @@ public abstract class StakeholderDTO {
 	@Schema(description = "An stakeholder may have one or more addresses. For example one POSTAL_ADDRESS and another INVOICE_ADDRESS.")
 	private List<AddressDTO> addresses;
 
+	@Schema(description = "The stakeholder's billing address")
 	private Map<String, String> extraParameters;
 
 }

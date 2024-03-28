@@ -8,9 +8,9 @@ import jakarta.validation.ConstraintValidatorContext;
 
 import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
 import se.sundsvall.casemanagement.api.model.FacilityDTO;
-import se.sundsvall.casemanagement.api.validation.ByggRCaseFacility;
+import se.sundsvall.casemanagement.api.validation.OneMainFacility;
 
-public class ByggRCaseFacilityConstraintValidator implements ConstraintValidator<ByggRCaseFacility, ByggRCaseDTO> {
+public class OneMainFacilityConstraintValidator implements ConstraintValidator<OneMainFacility, ByggRCaseDTO> {
 
 	@Override
 	public boolean isValid(ByggRCaseDTO value, ConstraintValidatorContext context) {

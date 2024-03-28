@@ -66,183 +66,153 @@ public final class TestUtil {
 
 	public static final Integer ADRESSPLATS_ID = 90022392;
 
-	public static EcosCaseDTO createEnvironmentalCase(final CaseType caseType, final AttachmentCategory attachmentCategory) {
-		final EcosCaseDTO eCase = new EcosCaseDTO();
-
+	public static EcosCaseDTO createEcosCaseDTO(final CaseType caseType, final AttachmentCategory attachmentCategory) {
 		final List<StakeholderDTO> stakeholderDTOs = new ArrayList<>();
 		stakeholderDTOs.add(createStakeholderDTO(StakeholderType.ORGANIZATION, List.of(StakeholderRole.APPLICANT.toString(), StakeholderRole.OPERATOR.toString())));
 		stakeholderDTOs.add(createStakeholderDTO(StakeholderType.PERSON, List.of(StakeholderRole.CONTACT_PERSON.toString())));
 		stakeholderDTOs.add(createStakeholderDTO(StakeholderType.PERSON, List.of(StakeholderRole.CONTACT_PERSON.toString())));
 
-		eCase.setAttachments(List.of(createAttachmentDTO(attachmentCategory)));
-		eCase.setStartDate(LocalDate.now());
-		eCase.setStakeholders(stakeholderDTOs);
-		eCase.setFacilities(List.of(createFacilityDTO(caseType)));
-		eCase.setCaseType(caseType.toString());
-		eCase.setStartDate(LocalDate.now().plusDays(10));
-		eCase.setEndDate(LocalDate.now().plusDays(365));
-		eCase.setCaseTitleAddition(RandomStringUtils.random(10, true, false));
-		eCase.setDescription(RandomStringUtils.random(10, true, false));
-		eCase.setExternalCaseId(String.valueOf(new Random().nextInt()));
-		eCase.setExtraParameters(createExtraParameters());
+		return EcosCaseDTO.builder()
+			.withFacilities(List.of(createFacilityDTO(caseType)))
+			.withAttachments(List.of(createAttachmentDTO(attachmentCategory)))
+			.withStakeholders(stakeholderDTOs)
+			.withCaseType(caseType.toString())
+			.withStartDate(LocalDate.now().plusDays(10))
+			.withEndDate(LocalDate.now().plusDays(365))
+			.withCaseTitleAddition(RandomStringUtils.random(10, true, false))
+			.withDescription(RandomStringUtils.random(10, true, false))
+			.withExternalCaseId(String.valueOf(new Random().nextInt()))
+			.withExtraParameters(createExtraParameters())
+			.build();
 
-		return eCase;
 	}
 
 	public static AttachmentDTO createAttachmentDTO(final AttachmentCategory attachmentCategory) {
-		final AttachmentDTO attachmentDTO = new AttachmentDTO();
-		attachmentDTO.setCategory(attachmentCategory.toString());
-		attachmentDTO.setExtension(".pdf");
-		attachmentDTO.setMimeType("application/pdf");
-		attachmentDTO.setName(RandomStringUtils.random(10, true, false));
-		attachmentDTO.setNote(RandomStringUtils.random(10, true, false));
-		attachmentDTO.setFile("dGVzdA==");
-
-		return attachmentDTO;
+		return AttachmentDTO.builder()
+			.withCategory(attachmentCategory.toString())
+			.withExtension(".pdf")
+			.withMimeType("application/pdf")
+			.withName(RandomStringUtils.random(10, true, false))
+			.withNote(RandomStringUtils.random(10, true, false))
+			.withFile("dGVzdA==")
+			.build();
 	}
 
 	public static FacilityDTO createFacilityDTO(final CaseType caseType) {
-		final var facility = new FacilityDTO();
-		facility.setFacilityCollectionName(RandomStringUtils.random(10, true, false));
-		facility.setDescription(RandomStringUtils.random(10, true, false));
-		facility.setMainFacility(true);
-		facility.setAddress(createAddressDTO(List.of(AddressCategory.VISITING_ADDRESS)));
-		facility.setExtraParameters(
-			switch (caseType) {
-				case ANSOKAN_TILLSTAND_VARMEPUMP, ANMALAN_INSTALLATION_VARMEPUMP ->
-					getHeatPumpExtraParams();
-				default -> createExtraParameters();
-			});
-		return facility;
+		final var facility = FacilityDTO.builder()
+			.withFacilityType(FacilityType.ONE_FAMILY_HOUSE.toString())
+			.withDescription(RandomStringUtils.random(10, true, false))
+			.withFacilityCollectionName(RandomStringUtils.random(10, true, false))
+			.withMainFacility(true)
+			.withAddress(createAddressDTO(List.of(AddressCategory.VISITING_ADDRESS)));
+
+		final var extraParameters = switch (caseType) {
+			case ANSOKAN_TILLSTAND_VARMEPUMP, ANMALAN_INSTALLATION_VARMEPUMP ->
+				getHeatPumpExtraParams();
+			default -> createExtraParameters();
+		};
+
+		return facility.withExtraParameters(extraParameters).build();
 	}
 
-	public static OtherCaseDTO createOtherCase(final CaseType caseType) {
-		final var otherCase = new OtherCaseDTO();
-		otherCase.setCaseType(caseType.toString());
-		otherCase.setExternalCaseId(UUID.randomUUID().toString());
-		otherCase.setCaseTitleAddition("Some case title addition");
-		otherCase.setDescription("Some random description");
-
-		otherCase.setStakeholders(List.of(
-			TestUtil.createStakeholder(StakeholderType.ORGANIZATION, List.of(StakeholderRole.APPLICANT.toString(), StakeholderRole.CONTACT_PERSON.toString())),
-			TestUtil.createStakeholder(StakeholderType.PERSON, List.of(StakeholderRole.PAYMENT_PERSON.toString(), StakeholderRole.INVOICE_RECIPIENT.toString()))));
-
-		otherCase.setAttachments(List.of(
-			TestUtil.createAttachment(AttachmentCategory.BUILDING_PERMIT_APPLICATION),
-			TestUtil.createAttachment(AttachmentCategory.ANMALAN_VARMEPUMP),
-			TestUtil.createAttachment(AttachmentCategory.ANMALAN_VARMEPUMP)));
-
-		otherCase.setExtraParameters(TestUtil.createExtraParameters());
-		otherCase.getExtraParameters().put("application.priority", "HIGH");
-		return otherCase;
-	}
-
-	public static PlanningPermissionCaseDTO createPlanningPermissionCase(final CaseType caseType, final AttachmentCategory attachmentCategory) {
-		final PlanningPermissionCaseDTO pCase = new PlanningPermissionCaseDTO();
-		final List<AttachmentDTO> aList = new ArrayList<>();
-		aList.add(createAttachmentDTO(attachmentCategory));
-		pCase.setAttachments(aList);
-
+	public static ByggRCaseDTO createByggRCaseDTO(final CaseType caseType, final AttachmentCategory attachmentCategory) {
 		final List<StakeholderDTO> stakeholderDTOs = new ArrayList<>();
 		stakeholderDTOs.add(createStakeholderDTO(StakeholderType.ORGANIZATION, List.of(StakeholderRole.APPLICANT.toString(), StakeholderRole.PAYMENT_PERSON.toString())));
 		stakeholderDTOs.add(createStakeholderDTO(StakeholderType.PERSON, List.of(StakeholderRole.CONTACT_PERSON.toString())));
 		stakeholderDTOs.add(createStakeholderDTO(StakeholderType.PERSON, List.of(StakeholderRole.CONTACT_PERSON.toString())));
 
-		pCase.setFacilities(List.of(createFacilityDTO(false)));
-		pCase.setStakeholders(stakeholderDTOs);
-
-		pCase.setCaseType(caseType.toString());
-		pCase.setCaseTitleAddition(RandomStringUtils.random(10, true, false));
-		pCase.setDescription(RandomStringUtils.random(10, true, false));
-		pCase.setExternalCaseId(String.valueOf(new Random().nextLong()));
-		pCase.setDiaryNumber(RandomStringUtils.random(5));
-		pCase.setExtraParameters(createExtraParameters());
-
-		return pCase;
+		return ByggRCaseDTO.builder()
+			.withDiaryNumber(RandomStringUtils.random(5))
+			.withFacilities(List.of(createFacilityDTO(true)))
+			.withStakeholders(stakeholderDTOs)
+			.withCaseType(caseType.toString())
+			.withCaseTitleAddition(RandomStringUtils.random(10, true, false))
+			.withDescription(RandomStringUtils.random(10, true, false))
+			.withExternalCaseId(String.valueOf(new Random().nextLong()))
+			.withExtraParameters(createExtraParameters())
+			.withAttachments(List.of(createAttachmentDTO(attachmentCategory)))
+			.build();
 	}
 
 	public static FacilityDTO createFacilityDTO(final boolean mainFacility) {
-		final var facility = new FacilityDTO();
-		facility.setAddress(createAddressDTO(List.of(AddressCategory.VISITING_ADDRESS)));
-		facility.setFacilityType(FacilityType.ONE_FAMILY_HOUSE.toString());
-		facility.setDescription(RandomStringUtils.random(10, true, false));
-		facility.setExtraParameters(createExtraParameters());
-		facility.setMainFacility(mainFacility);
-		return facility;
+		return FacilityDTO.builder()
+			.withAddress(createAddressDTO(List.of(AddressCategory.VISITING_ADDRESS)))
+			.withFacilityType(FacilityType.ONE_FAMILY_HOUSE.toString())
+			.withDescription(RandomStringUtils.random(10, true, false))
+			.withExtraParameters(createExtraParameters())
+			.withMainFacility(mainFacility)
+			.build();
 	}
 
 
 	public static StakeholderDTO createStakeholderDTO(final StakeholderType stakeholderType, final List<String> stakeholderRoles) {
 		if (stakeholderType.equals(StakeholderType.PERSON)) {
-			final PersonDTO personDTO = new PersonDTO();
-			personDTO.setType(StakeholderType.PERSON);
-			personDTO.setPersonId(UUID.randomUUID().toString());
-			personDTO.setPersonalNumber(generateRandomPersonalNumber());
-			personDTO.setFirstName(RandomStringUtils.random(10, true, false));
-			personDTO.setLastName(RandomStringUtils.random(10, true, false));
-			personDTO.setRoles(stakeholderRoles);
-			personDTO.setEmailAddress(MessageFormat.format("{0}@{1}.com", RandomStringUtils.random(10, true, false), RandomStringUtils.random(5, true, false)));
-			personDTO.setCellphoneNumber(RandomStringUtils.random(10, true, false));
-			personDTO.setPhoneNumber(RandomStringUtils.random(10, true, false));
-			personDTO.setAddresses(List.of(createAddressDTO(List.of(AddressCategory.VISITING_ADDRESS, AddressCategory.POSTAL_ADDRESS))));
-			personDTO.setExtraParameters(createExtraParameters());
-			return personDTO;
+			return PersonDTO.builder()
+				.withType(StakeholderType.PERSON)
+				.withPersonId(UUID.randomUUID().toString())
+				.withPersonalNumber(generateRandomPersonalNumber())
+				.withFirstName(RandomStringUtils.random(10, true, false))
+				.withLastName(RandomStringUtils.random(10, true, false))
+				.withRoles(stakeholderRoles)
+				.withEmailAddress(MessageFormat.format("{0}@{1}.com", RandomStringUtils.random(10, true, false), RandomStringUtils.random(5, true, false)))
+				.withCellphoneNumber(RandomStringUtils.random(10, true, false))
+				.withPhoneNumber(RandomStringUtils.random(10, true, false))
+				.withAddresses(List.of(createAddressDTO(List.of(AddressCategory.VISITING_ADDRESS, AddressCategory.POSTAL_ADDRESS))))
+				.withExtraParameters(createExtraParameters())
+				.build();
 		} else {
-			final OrganizationDTO organizationDTO = new OrganizationDTO();
-			organizationDTO.setType(StakeholderType.ORGANIZATION);
-			organizationDTO.setOrganizationNumber(generateRandomOrganizationNumber());
-			organizationDTO.setOrganizationName(RandomStringUtils.random(10, true, false));
-			organizationDTO.setRoles(stakeholderRoles);
-			organizationDTO.setEmailAddress(MessageFormat.format("{0}@{1}.com", RandomStringUtils.random(10, true, false), RandomStringUtils.random(5, true, false)));
-			organizationDTO.setCellphoneNumber(RandomStringUtils.random(10, true, false));
-			organizationDTO.setPhoneNumber(RandomStringUtils.random(10, true, false));
-			organizationDTO.setAddresses(List.of(createAddressDTO(List.of(AddressCategory.VISITING_ADDRESS, AddressCategory.INVOICE_ADDRESS, AddressCategory.POSTAL_ADDRESS))));
-			organizationDTO.setAuthorizedSignatory(RandomStringUtils.random(10, true, false));
-			organizationDTO.setExtraParameters(createExtraParameters());
-
-			return organizationDTO;
+			return OrganizationDTO.builder()
+				.withType(StakeholderType.ORGANIZATION)
+				.withOrganizationNumber(generateRandomOrganizationNumber())
+				.withOrganizationName(RandomStringUtils.random(10, true, false))
+				.withRoles(stakeholderRoles)
+				.withEmailAddress(MessageFormat.format("{0}@{1}.com", RandomStringUtils.random(10, true, false), RandomStringUtils.random(5, true, false)))
+				.withCellphoneNumber(RandomStringUtils.random(10, true, false))
+				.withPhoneNumber(RandomStringUtils.random(10, true, false))
+				.withAddresses(List.of(createAddressDTO(List.of(AddressCategory.VISITING_ADDRESS, AddressCategory.INVOICE_ADDRESS, AddressCategory.POSTAL_ADDRESS))))
+				.withAuthorizedSignatory(RandomStringUtils.random(10, true, false))
+				.withExtraParameters(createExtraParameters())
+				.build();
 		}
 	}
 
 	public static OtherCaseDTO createOtherCaseDTO() {
-		final var otherCase = new OtherCaseDTO();
-		otherCase.setCaseType(CaseType.PARKING_PERMIT.toString());
-		otherCase.setCaseTitleAddition("caseTitleAddition");
-		otherCase.setDescription("description");
-		otherCase.setExternalCaseId("externalCaseId");
-		otherCase.setExtraParameters(createExtraParameters());
-		otherCase.setFacilities(List.of(createFacilityDTO(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP)));
-		otherCase.setAttachments(List.of(createAttachmentDTO(AttachmentCategory.ANMALAN_VARMEPUMP)));
-		otherCase.setStakeholders(List.of(createStakeholderDTO(StakeholderType.ORGANIZATION, List.of(StakeholderRole.APPLICANT.toString()))));
-
-		return otherCase;
+		return OtherCaseDTO.builder()
+			.withCaseType(CaseType.PARKING_PERMIT.toString())
+			.withCaseTitleAddition("caseTitleAddition")
+			.withDescription("description")
+			.withExternalCaseId("externalCaseId")
+			.withExtraParameters(createExtraParameters())
+			.withFacilities(List.of(createFacilityDTO(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP)))
+			.withAttachments(List.of(createAttachmentDTO(AttachmentCategory.ANMALAN_VARMEPUMP)))
+			.withStakeholders(List.of(createStakeholderDTO(StakeholderType.ORGANIZATION, List.of(StakeholderRole.APPLICANT.toString()))))
+			.build();
 	}
 
 	public static AddressDTO createAddressDTO(final List<AddressCategory> addressCategories) {
-		final AddressDTO addressDTO = new AddressDTO();
-		addressDTO.setAddressCategories(addressCategories);
-		addressDTO.setCity(RandomStringUtils.random(10, true, false));
-		addressDTO.setCountry(Constants.SWEDEN);
-		addressDTO.setPropertyDesignation("SUNDSVALL FILLA 8:185");
-		addressDTO.setStreet(RandomStringUtils.random(10, true, false));
-		addressDTO.setHouseNumber(RandomStringUtils.random(10, true, true));
-		addressDTO.setCareOf(RandomStringUtils.random(10, true, false));
-		addressDTO.setPostalCode(RandomStringUtils.random(10, false, true));
-		addressDTO.setAppartmentNumber(RandomStringUtils.random(10, true, true));
-		addressDTO.setAttention(RandomStringUtils.random(10, true, false));
-		addressDTO.setInvoiceMarking(RandomStringUtils.random(10, true, true));
-		addressDTO.setIsZoningPlanArea(false);
-		addressDTO.setLocation(createCoordinatesDTO());
-		addressDTO.setExtraParameters(createExtraParameters());
-
-		return addressDTO;
+		return AddressDTO.builder()
+			.withAddressCategories(addressCategories)
+			.withCity(RandomStringUtils.random(10, true, false))
+			.withCountry(Constants.SWEDEN)
+			.withPropertyDesignation("SUNDSVALL FILLA 8:185")
+			.withStreet(RandomStringUtils.random(10, true, false))
+			.withHouseNumber(RandomStringUtils.random(10, true, true))
+			.withCareOf(RandomStringUtils.random(10, true, false))
+			.withPostalCode(RandomStringUtils.random(10, false, true))
+			.withAppartmentNumber(RandomStringUtils.random(10, true, true))
+			.withAttention(RandomStringUtils.random(10, true, false))
+			.withInvoiceMarking(RandomStringUtils.random(10, true, true))
+			.withIsZoningPlanArea(false)
+			.withLocation(createCoordinatesDTO())
+			.withExtraParameters(createExtraParameters())
+			.build();
 	}
 
 	public static CoordinatesDTO createCoordinatesDTO() {
-		final CoordinatesDTO coordinatesDTO = new CoordinatesDTO();
-		coordinatesDTO.setLatitude(new Random().nextDouble(100.0));
-		coordinatesDTO.setLongitude(new Random().nextDouble(100.0));
-		return coordinatesDTO;
+		return CoordinatesDTO.builder()
+			.withLatitude(new Random().nextDouble(100.0))
+			.withLongitude(new Random().nextDouble(100.0))
+			.build();
 	}
 
 	public static String generateRandomOrganizationNumber() {

@@ -29,23 +29,23 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @ApiResponse(responseCode = "400", description = "Bad request", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 @ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 @ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
-public class CaseMappingResource {
+class CaseMappingResource {
 
-    private final CaseMappingService caseMappingService;
+	private final CaseMappingService caseMappingService;
 
-    public CaseMappingResource(CaseMappingService caseMappingService) {
-        this.caseMappingService = caseMappingService;
-    }
+	CaseMappingResource(CaseMappingService caseMappingService) {
+		this.caseMappingService = caseMappingService;
+	}
 
-    @GetMapping(produces = {APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE})
-    @Operation(description = "Returns the connection between externalCaseId and the case in the underlying system.")
-    @ApiResponse(responseCode = "200", description = "OK - Successful operation")
-    public ResponseEntity<List<CaseMapping>> getCaseMapping(@RequestParam(name = "external-case-id", required = false) String externalCaseId) {
-        if (externalCaseId != null) {
-            return ResponseEntity.ok(List.of(caseMappingService.getCaseMapping(externalCaseId)));
-        } else {
-            return ResponseEntity.ok(caseMappingService.getAllCaseMappings());
-        }
-    }
+	@GetMapping(produces = {APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE})
+	@Operation(description = "Returns the connection between externalCaseId and the case in the underlying system.")
+	@ApiResponse(responseCode = "200", description = "OK - Successful operation")
+	public ResponseEntity<List<CaseMapping>> getCaseMapping(@RequestParam(name = "external-case-id", required = false) String externalCaseId) {
+		if (externalCaseId != null) {
+			return ResponseEntity.ok(List.of(caseMappingService.getCaseMapping(externalCaseId)));
+		} else {
+			return ResponseEntity.ok(caseMappingService.getAllCaseMappings());
+		}
+	}
 
 }

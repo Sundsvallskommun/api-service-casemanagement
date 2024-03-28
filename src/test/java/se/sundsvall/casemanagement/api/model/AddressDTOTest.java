@@ -44,7 +44,7 @@ class AddressDTOTest {
 		final var attention = "someAttention";
 		final var invoiceMarking = "someInvoiceMarking";
 		final var isZoningPlanArea = false;
-		final var location = new CoordinatesDTO();
+		final var location = CoordinatesDTO.builder().build();
 		final var extraParameters = Map.of("Key", "Value");
 
 		// Act

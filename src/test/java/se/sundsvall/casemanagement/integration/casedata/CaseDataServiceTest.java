@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.LOST_PARKING_PERMIT;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARKING_PERMIT;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARKING_PERMIT_RENEWAL;
+import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toAttachment;
 import static se.sundsvall.casemanagement.util.Constants.SERVICE_NAME;
 
 import java.net.URI;
@@ -41,7 +42,6 @@ import generated.client.casedata.ErrandDTO.ChannelEnum;
 import generated.client.casedata.PatchErrandDTO;
 import generated.client.casedata.StatusDTO;
 import se.sundsvall.casemanagement.TestUtil;
-import se.sundsvall.casemanagement.api.model.AttachmentDTO;
 import se.sundsvall.casemanagement.api.model.CaseDTO;
 import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
 import se.sundsvall.casemanagement.api.model.enums.CaseType;
@@ -243,13 +243,15 @@ class CaseDataServiceTest {
 
 	@Test
 	void patchErrandWithAttachmentNotFound() {
-		final var id = UUID.randomUUID().toString();
-		when(caseDataClientMock.postAttachment(any())).thenThrow(Problem.valueOf(Status.NOT_FOUND));
+		final var errandNumber = UUID.randomUUID().toString();
+		final var attachmentDTO = new se.sundsvall.casemanagement.api.model.AttachmentDTO();
+		final var attachments = List.of(attachmentDTO);
+		when(caseDataClientMock.postAttachment(toAttachment(attachmentDTO, errandNumber))).thenThrow(Problem.valueOf(Status.NOT_FOUND));
 
-		assertThatThrownBy(() -> caseDataService.patchErrandWithAttachment(id, List.of(new AttachmentDTO())))
+		assertThatThrownBy(() -> caseDataService.patchErrandWithAttachment(errandNumber, attachments))
 			.isInstanceOf(ThrowableProblem.class)
 			.hasFieldOrPropertyWithValue("status", Status.NOT_FOUND)
-			.hasFieldOrPropertyWithValue("detail", "No case was found in CaseData with caseId: " + id);
+			.hasFieldOrPropertyWithValue("detail", "No case was found in CaseData with caseId: " + errandNumber);
 	}
 
 	private OtherCaseDTO createCase(final CaseType caseType) {

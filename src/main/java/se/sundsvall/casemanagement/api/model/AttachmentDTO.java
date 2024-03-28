@@ -16,30 +16,33 @@ import lombok.NoArgsConstructor;
 @Builder(setterPrefix = "with")
 @NoArgsConstructor
 @AllArgsConstructor
+@Schema(description = "Attachment model")
 public class AttachmentDTO {
 
 	@ValidAttachmentCategory
+	@Schema(description = "The attachment category", example = "DOCUMENT")
 	private String category;
 
 	@NotBlank
-	@Schema(example = "The attachment name")
+	@Schema(description = "The attachment name", example = "Attachment name")
 	private String name;
 
-	@Schema(example = "A note on an attachment.")
+	@Schema(description = "A note on an attachment", example = "A note on an attachment.")
 	private String note;
 
 	@NotBlank
-	@Schema(example = ".pdf")
+	@Schema(description = "The file extension", example = ".pdf")
 	private String extension;
 
 	@NotBlank
-	@Schema(example = "application/pdf")
+	@Schema(description = "the mime type of the attahcment", example = "application/pdf")
 	private String mimeType;
 
 	@NotBlank
 	@Schema(type = "string", format = "byte", description = "Base64-encoded file (plain text)", example = "dGVzdA==")
 	private String file;
 
+	@Schema(description = "Extra parameters for the attachment")
 	private Map<String, String> extraParameters;
 
 }

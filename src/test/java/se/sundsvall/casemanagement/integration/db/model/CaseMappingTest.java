@@ -47,7 +47,7 @@ class CaseMappingTest {
 		final var timestamp = LocalDateTime.now();
 
 		// Act
-		final CaseMapping object = CaseMapping.builder()
+		final var caseMapping = CaseMapping.builder()
 			.withCaseId(caseId)
 			.withExternalCaseId(externalCaseId)
 			.withSystem(systemType)
@@ -57,13 +57,13 @@ class CaseMappingTest {
 			.build();
 
 		// Assert
-		assertThat(object).isNotNull().hasNoNullFieldsOrProperties();
-		assertThat(object.getCaseId()).isEqualTo(caseId);
-		assertThat(object.getExternalCaseId()).isEqualTo(externalCaseId);
-		assertThat(object.getSystem()).isEqualTo(systemType);
-		assertThat(object.getCaseType()).isEqualTo(caseType);
-		assertThat(object.getServiceName()).isEqualTo(serviceName);
-		assertThat(object.getTimestamp()).isEqualTo(timestamp);
+		assertThat(caseMapping).isNotNull().hasNoNullFieldsOrProperties();
+		assertThat(caseMapping.getCaseId()).isEqualTo(caseId);
+		assertThat(caseMapping.getExternalCaseId()).isEqualTo(externalCaseId);
+		assertThat(caseMapping.getSystem()).isEqualTo(systemType);
+		assertThat(caseMapping.getCaseType()).isEqualTo(caseType);
+		assertThat(caseMapping.getServiceName()).isEqualTo(serviceName);
+		assertThat(caseMapping.getTimestamp()).isEqualTo(timestamp);
 	}
 
 	@Test

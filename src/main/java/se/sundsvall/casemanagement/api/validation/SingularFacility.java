@@ -9,15 +9,15 @@ import java.lang.annotation.Target;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
-import se.sundsvall.casemanagement.api.validation.impl.ByggRCaseFacilityConstraintValidator;
+import se.sundsvall.casemanagement.api.validation.impl.SingularFacilityConstraintValidator;
 
 @Target({ElementType.TYPE, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = ByggRCaseFacilityConstraintValidator.class)
 @Documented
-public @interface ByggRCaseFacility {
+@Constraint(validatedBy = SingularFacilityConstraintValidator.class)
+public @interface SingularFacility {
 
-	String message() default "must be exactly one main facility";
+	String message() default "must be exactly one facility";
 
 	Class<?>[] groups() default {};
 

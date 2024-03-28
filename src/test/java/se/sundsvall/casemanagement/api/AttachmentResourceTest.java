@@ -52,7 +52,8 @@ class AttachmentResourceTest {
 
 		when(caseMappingService.getCaseMapping(PATH_VARIABLE)).thenReturn(caseMapping);
 
-		webTestClient.post().uri(uriBuilder -> uriBuilder.path("/cases/{externalCaseId}/attachments").build(PATH_VARIABLE))
+		webTestClient.post()
+			.uri(uriBuilder -> uriBuilder.path("/cases/{externalCaseId}/attachments").build(PATH_VARIABLE))
 			.bodyValue(attachments)
 			.exchange()
 			.expectStatus().isNoContent();
@@ -68,7 +69,8 @@ class AttachmentResourceTest {
 
 		when(caseMappingService.getCaseMapping(PATH_VARIABLE)).thenReturn(caseMapping);
 
-		webTestClient.post().uri(uriBuilder -> uriBuilder.path("/cases/{externalCaseId}/attachments").build(PATH_VARIABLE))
+		webTestClient.post()
+			.uri(uriBuilder -> uriBuilder.path("/cases/{externalCaseId}/attachments").build(PATH_VARIABLE))
 			.bodyValue(attachments)
 			.exchange()
 			.expectStatus().isNoContent();
@@ -84,7 +86,8 @@ class AttachmentResourceTest {
 
 		when(caseMappingService.getCaseMapping(PATH_VARIABLE)).thenReturn(caseMapping);
 
-		webTestClient.post().uri(uriBuilder -> uriBuilder.path("/cases/{externalCaseId}/attachments").build(PATH_VARIABLE))
+		webTestClient.post()
+			.uri(uriBuilder -> uriBuilder.path("/cases/{externalCaseId}/attachments").build(PATH_VARIABLE))
 			.bodyValue(attachments)
 			.exchange()
 			.expectStatus().isNoContent();

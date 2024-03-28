@@ -7,7 +7,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static se.sundsvall.casemanagement.TestUtil.createPlanningPermissionCase;
+import static se.sundsvall.casemanagement.TestUtil.createByggRCaseDTO;
 
 import java.sql.SQLException;
 
@@ -54,7 +54,7 @@ class ByggrProcessorTest {
 
 	@Test
 	void testHandleIncomingErrand() throws SQLException, JsonProcessingException {
-		final var event = new IncomingByggrCase(ByggrProcessorTest.class, createPlanningPermissionCase(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION));
+		final var event = new IncomingByggrCase(ByggrProcessorTest.class, createByggRCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION));
 
 		final var objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 		final String jsonString = objectMapper.writeValueAsString(event.getPayload());
@@ -85,7 +85,7 @@ class ByggrProcessorTest {
 
 	@Test
 	void testHandleIncomingErrand_maximumFound() throws SQLException, JsonProcessingException {
-		final var event = new IncomingByggrCase(ByggrProcessorTest.class, createPlanningPermissionCase(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION));
+		final var event = new IncomingByggrCase(ByggrProcessorTest.class, createByggRCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION));
 
 		final var objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 		final String jsonString = objectMapper.writeValueAsString(event.getPayload());

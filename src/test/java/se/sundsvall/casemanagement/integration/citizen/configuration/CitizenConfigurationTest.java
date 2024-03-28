@@ -11,14 +11,16 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+
 import feign.codec.ErrorDecoder;
 import se.sundsvall.dept44.configuration.feign.FeignMultiCustomizer;
 import se.sundsvall.dept44.configuration.feign.decoder.ProblemErrorDecoder;
+
+import feign.codec.ErrorDecoder;
 
 @ExtendWith(MockitoExtension.class)
 class CitizenConfigurationTest {
@@ -47,7 +49,7 @@ class CitizenConfigurationTest {
 		when(propertiesMock.oauth2TokenUrl()).thenReturn(tokenUrl);
 
 		// Mock static FeignMultiCustomizer to enable spy and to verify that static method is being called
-		try (MockedStatic<FeignMultiCustomizer> feignMultiCustomizerMock = Mockito.mockStatic(FeignMultiCustomizer.class)) {
+		try (final var feignMultiCustomizerMock = Mockito.mockStatic(FeignMultiCustomizer.class)) {
 			feignMultiCustomizerMock.when(FeignMultiCustomizer::create).thenReturn(feignMultiCustomizerSpy);
 
 			configuration.feignBuilderCustomizer();

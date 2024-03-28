@@ -51,7 +51,8 @@ class CaseStatusResourceTest {
 		when(byggrService.getByggrStatusByOrgNr(organizationNumber)).thenReturn(List.of(createCaseStatusDTO()));
 		when(ecosService.getEcosStatusByOrgNr(organizationNumber)).thenReturn(List.of(createCaseStatusDTO()));
 
-		final var response = webTestClient.get().uri(uriBuilder -> uriBuilder.path("organization/{organizationNumber}/cases/status").build(organizationNumber))
+		final var response = webTestClient.get()
+			.uri(uriBuilder -> uriBuilder.path("organization/{organizationNumber}/cases/status").build(organizationNumber))
 			.exchange()
 			.expectStatus().isOk()
 			.expectBodyList(CaseStatusDTO.class)
@@ -71,7 +72,8 @@ class CaseStatusResourceTest {
 		when(byggrService.getByggrStatusByOrgNr(organizationNumber)).thenReturn(List.of());
 		when(ecosService.getEcosStatusByOrgNr(organizationNumber)).thenReturn(List.of());
 
-		final var response = webTestClient.get().uri(uriBuilder -> uriBuilder.path("organization/{organizationNumber}/cases/status").build(organizationNumber))
+		final var response = webTestClient.get()
+			.uri(uriBuilder -> uriBuilder.path("organization/{organizationNumber}/cases/status").build(organizationNumber))
 			.exchange()
 			.expectStatus().isNotFound()
 			.expectBodyList(CaseStatusDTO.class)
@@ -87,21 +89,22 @@ class CaseStatusResourceTest {
 
 	@Test
 	void getStatusByExternalCaseId_Ecos() {
-		final var caseMapping = createCaseMapping(c -> c.setSystem(SystemType.ECOS));
-		final var caseStatusDTO = createCaseStatusDTO(c -> c.setSystem(SystemType.ECOS));
+		final var caseMapping = createCaseMapping(caseMappingConsumer -> caseMappingConsumer.setSystem(SystemType.ECOS));
+		final var caseStatusDTO = createCaseStatusDTO(caseStatusConsumer -> caseStatusConsumer.setSystem(SystemType.ECOS));
 		when(caseMappingService.getCaseMapping("externalCaseId")).thenReturn(caseMapping);
 		when(ecosService.getStatus(caseMapping.getCaseId(), caseMapping.getExternalCaseId())).thenReturn(caseStatusDTO);
 
-		final var response = webTestClient.get().uri(uriBuilder -> uriBuilder.path("cases/{externalCaseId}/status").build("externalCaseId"))
+		final var response = webTestClient.get()
+			.uri(uriBuilder -> uriBuilder.path("cases/{externalCaseId}/status").build("externalCaseId"))
 			.exchange()
 			.expectStatus().isOk()
 			.expectBody(CaseStatusDTO.class)
 			.returnResult().getResponseBody();
 
-		assertThat(response).satisfies(r -> {
-			assertThat(r.getSystem()).isEqualTo(SystemType.ECOS);
-			assertThat(r.getCaseId()).isEqualTo(caseStatusDTO.getCaseId());
-			assertThat(r.getStatus()).isEqualTo(caseStatusDTO.getStatus());
+		assertThat(response).satisfies(statusDTO -> {
+			assertThat(statusDTO.getSystem()).isEqualTo(SystemType.ECOS);
+			assertThat(statusDTO.getCaseId()).isEqualTo(caseStatusDTO.getCaseId());
+			assertThat(statusDTO.getStatus()).isEqualTo(caseStatusDTO.getStatus());
 		});
 
 		verify(caseMappingService).getCaseMapping("externalCaseId");
@@ -112,21 +115,22 @@ class CaseStatusResourceTest {
 
 	@Test
 	void getStatusByExternalCaseId_ByggR() {
-		final var caseMapping = createCaseMapping(c -> c.setSystem(SystemType.BYGGR));
-		final var caseStatusDTO = createCaseStatusDTO(c -> c.setSystem(SystemType.BYGGR));
+		final var caseMapping = createCaseMapping(caseMappingConsumer -> caseMappingConsumer.setSystem(SystemType.BYGGR));
+		final var caseStatusDTO = createCaseStatusDTO(caseStatusConsumer -> caseStatusConsumer.setSystem(SystemType.BYGGR));
 		when(caseMappingService.getCaseMapping("externalCaseId")).thenReturn(caseMapping);
 		when(byggrService.toByggrStatus(caseMapping)).thenReturn(caseStatusDTO);
 
-		final var response = webTestClient.get().uri(uriBuilder -> uriBuilder.path("cases/{externalCaseId}/status").build("externalCaseId"))
+		final var response = webTestClient.get()
+			.uri(uriBuilder -> uriBuilder.path("cases/{externalCaseId}/status").build("externalCaseId"))
 			.exchange()
 			.expectStatus().isOk()
 			.expectBody(CaseStatusDTO.class)
 			.returnResult().getResponseBody();
 
-		assertThat(response).satisfies(r -> {
-			assertThat(r.getSystem()).isEqualTo(SystemType.BYGGR);
-			assertThat(r.getCaseId()).isEqualTo(caseStatusDTO.getCaseId());
-			assertThat(r.getStatus()).isEqualTo(caseStatusDTO.getStatus());
+		assertThat(response).satisfies(statusDTO -> {
+			assertThat(statusDTO.getSystem()).isEqualTo(SystemType.BYGGR);
+			assertThat(statusDTO.getCaseId()).isEqualTo(caseStatusDTO.getCaseId());
+			assertThat(statusDTO.getStatus()).isEqualTo(caseStatusDTO.getStatus());
 		});
 
 		verify(caseMappingService).getCaseMapping("externalCaseId");
@@ -137,21 +141,22 @@ class CaseStatusResourceTest {
 
 	@Test
 	void getStatusByExternalCaseId_CaseData() {
-		final var caseMapping = createCaseMapping(c -> c.setSystem(SystemType.CASE_DATA));
-		final var caseStatusDTO = createCaseStatusDTO(c -> c.setSystem(SystemType.CASE_DATA));
+		final var caseMapping = createCaseMapping(caseMappingConsumer -> caseMappingConsumer.setSystem(SystemType.CASE_DATA));
+		final var caseStatusDTO = createCaseStatusDTO(caseStatusConsumer -> caseStatusConsumer.setSystem(SystemType.CASE_DATA));
 		when(caseMappingService.getCaseMapping("externalCaseId")).thenReturn(caseMapping);
 		when(caseDataService.getStatus(caseMapping)).thenReturn(caseStatusDTO);
 
-		final var response = webTestClient.get().uri(uriBuilder -> uriBuilder.path("cases/{externalCaseId}/status").build("externalCaseId"))
+		final var response = webTestClient.get()
+			.uri(uriBuilder -> uriBuilder.path("cases/{externalCaseId}/status").build("externalCaseId"))
 			.exchange()
 			.expectStatus().isOk()
 			.expectBody(CaseStatusDTO.class)
 			.returnResult().getResponseBody();
 
-		assertThat(response).satisfies(r -> {
-			assertThat(r.getSystem()).isEqualTo(SystemType.CASE_DATA);
-			assertThat(r.getCaseId()).isEqualTo(caseStatusDTO.getCaseId());
-			assertThat(r.getStatus()).isEqualTo(caseStatusDTO.getStatus());
+		assertThat(response).satisfies(statusDTO -> {
+			assertThat(statusDTO.getSystem()).isEqualTo(SystemType.CASE_DATA);
+			assertThat(statusDTO.getCaseId()).isEqualTo(caseStatusDTO.getCaseId());
+			assertThat(statusDTO.getStatus()).isEqualTo(caseStatusDTO.getStatus());
 		});
 
 		verify(caseMappingService).getCaseMapping("externalCaseId");
