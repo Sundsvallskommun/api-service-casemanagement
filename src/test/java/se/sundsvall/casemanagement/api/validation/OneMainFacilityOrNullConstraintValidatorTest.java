@@ -13,13 +13,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import se.sundsvall.casemanagement.api.validation.impl.OnlyOneMainFacilityConstraintValidator;
+import se.sundsvall.casemanagement.api.validation.impl.OneMainFacilityOrNullConstraintValidator;
 
 @ExtendWith(MockitoExtension.class)
-class OnlyOneMainFacilityConstraintValidatorTest {
+class OneMainFacilityOrNullConstraintValidatorTest {
 
 	@InjectMocks
-	private OnlyOneMainFacilityConstraintValidator validator;
+	private OneMainFacilityOrNullConstraintValidator validator;
 
 	@Mock
 	private ConstraintValidatorContext context;

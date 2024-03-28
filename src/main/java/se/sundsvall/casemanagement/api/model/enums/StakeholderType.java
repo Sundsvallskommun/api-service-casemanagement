@@ -1,5 +1,8 @@
 package se.sundsvall.casemanagement.api.model.enums;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "Stakeholder type")
 public enum StakeholderType {
 
 	PERSON(), ORGANIZATION();

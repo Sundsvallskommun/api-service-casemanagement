@@ -44,8 +44,8 @@ class CaseEntityTest {
 		// Arrange
 		final var id = "123";
 		final var deliveryStatus = DeliveryStatus.CREATED;
-		final var environmentalCaseDTO = new EcosCaseDTO();
-		final var dto = new SerialClob(environmentalCaseDTO.toString().toCharArray());
+		final var ecosCaseDTO = EcosCaseDTO.builder().build();
+		final var dto = new SerialClob(ecosCaseDTO.toString().toCharArray());
 
 		// Act
 		final var object = CaseEntity.builder()

@@ -157,7 +157,7 @@ class EcosServiceTest {
 	@Test
 	void testFoodFacilityCase() {
 		// Arrange
-		final var eCase = TestUtil.createEnvironmentalCase(CaseType.REGISTRERING_AV_LIVSMEDEL, AttachmentCategory.ANMALAN_LIVSMEDELSANLAGGNING);
+		final var eCase = TestUtil.createEcosCaseDTO(CaseType.REGISTRERING_AV_LIVSMEDEL, AttachmentCategory.ANMALAN_LIVSMEDELSANLAGGNING);
 		final var organization = (OrganizationDTO) TestUtil.createStakeholderDTO(StakeholderType.ORGANIZATION, List.of(StakeholderRole.APPLICANT.toString(), StakeholderRole.OPERATOR.toString()));
 		final var person = (PersonDTO) TestUtil.createStakeholderDTO(StakeholderType.PERSON, List.of(StakeholderRole.CONTACT_PERSON.toString()));
 		eCase.setStakeholders(List.of(organization, person));
@@ -239,7 +239,7 @@ class EcosServiceTest {
 	@Test
 	void testCreateHeatPumpFacilityCase() {
 		// Arrange
-		final var eCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP, AttachmentCategory.ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
+		final var eCase = TestUtil.createEcosCaseDTO(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP, AttachmentCategory.ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
 		final var organization = (OrganizationDTO) TestUtil.createStakeholderDTO(StakeholderType.ORGANIZATION, List.of(StakeholderRole.APPLICANT.toString(), StakeholderRole.OPERATOR.toString()));
 		final var person = (PersonDTO) TestUtil.createStakeholderDTO(StakeholderType.PERSON, List.of(StakeholderRole.CONTACT_PERSON.toString()));
 		eCase.setStakeholders(List.of(organization, person));
@@ -267,7 +267,7 @@ class EcosServiceTest {
 	@Test
 	void testAirHeating() {
 		// Arrange
-		final EcosCaseDTO eCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP, AttachmentCategory.ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
+		final EcosCaseDTO eCase = TestUtil.createEcosCaseDTO(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP, AttachmentCategory.ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
 		final Map<String, String> extraParameters = new HashMap<>();
 		extraParameters.put("CreateAirHeatingFacilitySvcDto_Manufacturer", "Mitsubishi");
 		extraParameters.put("CreateAirHeatingFacilitySvcDto_Model", "SuperHeater 2000");
@@ -286,7 +286,7 @@ class EcosServiceTest {
 
 	@Test
 	void testGeothermalHeating() {
-		final EcosCaseDTO eCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP, AttachmentCategory.ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
+		final EcosCaseDTO eCase = TestUtil.createEcosCaseDTO(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP, AttachmentCategory.ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
 		final var extraParameters = getGeoExtraParametersMap();
 		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
 
@@ -301,7 +301,7 @@ class EcosServiceTest {
 
 	@Test
 	void testSoilHeating() {
-		final EcosCaseDTO eCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP, AttachmentCategory.ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
+		final EcosCaseDTO eCase = TestUtil.createEcosCaseDTO(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP, AttachmentCategory.ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
 		final var extraParameters = getSoilExtraParametersMap();
 		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
 
@@ -316,7 +316,7 @@ class EcosServiceTest {
 
 	@Test
 	void testExtraParamsNull() {
-		final EcosCaseDTO eCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP, AttachmentCategory.ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
+		final EcosCaseDTO eCase = TestUtil.createEcosCaseDTO(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP, AttachmentCategory.ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
 		eCase.getFacilities().getFirst().setExtraParameters(null);
 
 		ecosService.postCase(eCase);
@@ -327,7 +327,7 @@ class EcosServiceTest {
 
 	@Test
 	void testExtraParamsEmpty() {
-		final EcosCaseDTO eCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP, AttachmentCategory.ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
+		final EcosCaseDTO eCase = TestUtil.createEcosCaseDTO(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP, AttachmentCategory.ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
 		final Map<String, String> extraParameters = new HashMap<>();
 		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
 
@@ -339,7 +339,7 @@ class EcosServiceTest {
 
 	@Test
 	void testMarineHeating() {
-		final EcosCaseDTO eCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP, AttachmentCategory.ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
+		final EcosCaseDTO eCase = TestUtil.createEcosCaseDTO(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP, AttachmentCategory.ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
 		final var extraParameters = getMarineExtraParameters();
 		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
 
@@ -374,7 +374,7 @@ class EcosServiceTest {
 	@Test
 	void healthProtectionTest() {
 		// Arrange
-		final var eCase = TestUtil.createEnvironmentalCase(CaseType.ANMALAN_HALSOSKYDDSVERKSAMHET, AttachmentCategory.ANMALAN_HALSOSKYDDSVERKSAMHET);
+		final var eCase = TestUtil.createEcosCaseDTO(CaseType.ANMALAN_HALSOSKYDDSVERKSAMHET, AttachmentCategory.ANMALAN_HALSOSKYDDSVERKSAMHET);
 		final var createHealthProtectionFacilityArgumentCaptor = ArgumentCaptor.forClass(CreateHealthProtectionFacility.class);
 
 		// Act
@@ -398,7 +398,7 @@ class EcosServiceTest {
 	@Test
 	void individualSewageSepticTank() {
 		// Arrange
-		final var eCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, AttachmentCategory.ANSOKAN_ENSKILT_AVLOPP);
+		final var eCase = TestUtil.createEcosCaseDTO(CaseType.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, AttachmentCategory.ANSOKAN_ENSKILT_AVLOPP);
 		final var extraParameters = new HashMap<String, String>();
 		final var prefix = "SepticTankSvcDto_";
 		TestUtil.setSewageStandardExtraParams(extraParameters, prefix);
@@ -427,7 +427,7 @@ class EcosServiceTest {
 	@Test
 	void individualSewageInfiltration() {
 		// Arrange
-		final var eCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, AttachmentCategory.ANSOKAN_ENSKILT_AVLOPP);
+		final var eCase = TestUtil.createEcosCaseDTO(CaseType.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, AttachmentCategory.ANSOKAN_ENSKILT_AVLOPP);
 		final var extraParameters = new HashMap<String, String>();
 		final var prefix = "InfiltrationPlantSvcDto_";
 		TestUtil.setSewageStandardExtraParams(extraParameters, prefix);
@@ -459,7 +459,7 @@ class EcosServiceTest {
 	@Test
 	void individualSewageClosedTank() {
 		// Arrange
-		final var eCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, AttachmentCategory.ANSOKAN_ENSKILT_AVLOPP);
+		final var eCase = TestUtil.createEcosCaseDTO(CaseType.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, AttachmentCategory.ANSOKAN_ENSKILT_AVLOPP);
 		final var extraParameters = new HashMap<String, String>();
 		final var prefix = "ClosedTankSvcDto_";
 		TestUtil.setSewageStandardExtraParams(extraParameters, prefix);
@@ -487,7 +487,7 @@ class EcosServiceTest {
 	@Test
 	void individualSewageDrySolution() {
 		// Arrange
-		final var eCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, AttachmentCategory.ANSOKAN_ENSKILT_AVLOPP);
+		final var eCase = TestUtil.createEcosCaseDTO(CaseType.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, AttachmentCategory.ANSOKAN_ENSKILT_AVLOPP);
 		final var extraParameters = new HashMap<String, String>();
 		final var prefix = "DrySolutionSvcDto_";
 		TestUtil.setSewageStandardExtraParams(extraParameters, prefix);
@@ -524,7 +524,7 @@ class EcosServiceTest {
 	@Test
 	void individualSewageMiniSewage() {
 		// Arrange
-		final var eCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, AttachmentCategory.ANSOKAN_ENSKILT_AVLOPP);
+		final var eCase = TestUtil.createEcosCaseDTO(CaseType.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, AttachmentCategory.ANSOKAN_ENSKILT_AVLOPP);
 		final var extraParameters = new HashMap<String, String>();
 		final var prefix = "MiniSewageSvcDto_";
 		TestUtil.setSewageStandardExtraParams(extraParameters, prefix);
@@ -552,7 +552,7 @@ class EcosServiceTest {
 	@Test
 	void individualSewageFilterBed() {
 		// Arrange
-		final var eCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, AttachmentCategory.ANSOKAN_ENSKILT_AVLOPP);
+		final var eCase = TestUtil.createEcosCaseDTO(CaseType.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, AttachmentCategory.ANSOKAN_ENSKILT_AVLOPP);
 		final var extraParameters = new HashMap<String, String>();
 		final var prefix = "FilterBedSvcDto_";
 		TestUtil.setSewageStandardExtraParams(extraParameters, prefix);
@@ -575,7 +575,7 @@ class EcosServiceTest {
 	@Test
 	void individualSewageSandFilter() {
 		// Arrange
-		final var eCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, AttachmentCategory.ANSOKAN_ENSKILT_AVLOPP);
+		final var eCase = TestUtil.createEcosCaseDTO(CaseType.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, AttachmentCategory.ANSOKAN_ENSKILT_AVLOPP);
 		final var extraParameters = new HashMap<String, String>();
 		final var prefix = "SandFilterSvcDto_";
 		TestUtil.setSewageStandardExtraParams(extraParameters, prefix);
@@ -601,7 +601,7 @@ class EcosServiceTest {
 	@Test
 	void individualSewageBiologicalStep() {
 		// Arrange
-		final var eCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, AttachmentCategory.ANSOKAN_ENSKILT_AVLOPP);
+		final var eCase = TestUtil.createEcosCaseDTO(CaseType.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, AttachmentCategory.ANSOKAN_ENSKILT_AVLOPP);
 		final var extraParameters = new HashMap<String, String>();
 		final var prefix = "BiologicalStepSvcDto_";
 		TestUtil.setSewageStandardExtraParams(extraParameters, prefix);
@@ -625,7 +625,7 @@ class EcosServiceTest {
 
 	@Test
 	void individualSewagePhosphorusTrap() {
-		final var eCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, AttachmentCategory.ANSOKAN_ENSKILT_AVLOPP);
+		final var eCase = TestUtil.createEcosCaseDTO(CaseType.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, AttachmentCategory.ANSOKAN_ENSKILT_AVLOPP);
 		final var extraParameters = new HashMap<String, String>();
 		final var prefix = "PhosphorusTrapSvcDto_";
 		TestUtil.setSewageStandardExtraParams(extraParameters, prefix);
@@ -640,7 +640,7 @@ class EcosServiceTest {
 
 	@Test
 	void individualSewageChemicalPretreatment() {
-		final var eCase = TestUtil.createEnvironmentalCase(CaseType.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, AttachmentCategory.ANSOKAN_ENSKILT_AVLOPP);
+		final var eCase = TestUtil.createEcosCaseDTO(CaseType.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, AttachmentCategory.ANSOKAN_ENSKILT_AVLOPP);
 		final var extraParameters = new HashMap<String, String>();
 		final var prefix = "ChemicalPretreatmentSvcDto_";
 		TestUtil.setSewageStandardExtraParams(extraParameters, prefix);
@@ -679,7 +679,7 @@ class EcosServiceTest {
 	@Test
 	void testMissingFacilityAddress() {
 		// Arrange
-		final var eCase = TestUtil.createEnvironmentalCase(CaseType.REGISTRERING_AV_LIVSMEDEL, AttachmentCategory.ANMALAN_LIVSMEDELSANLAGGNING);
+		final var eCase = TestUtil.createEcosCaseDTO(CaseType.REGISTRERING_AV_LIVSMEDEL, AttachmentCategory.ANMALAN_LIVSMEDELSANLAGGNING);
 		eCase.getFacilities().getFirst().setAddress(null);
 
 		// Act

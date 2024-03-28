@@ -41,7 +41,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 @ApiResponse(responseCode = "501", description = "Not Implemented", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 @ApiResponse(responseCode = "502", description = "Bad Gateway", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
-public class AttachmentResource {
+class AttachmentResource {
 
 	private final ByggrService byggrService;
 
@@ -51,7 +51,8 @@ public class AttachmentResource {
 
 	private final CaseMappingService caseMappingService;
 
-	public AttachmentResource(final ByggrService byggrService, final EcosService ecosService, final CaseDataService caseDataService, final CaseMappingService caseMappingService) {
+	AttachmentResource(final ByggrService byggrService, final EcosService ecosService,
+		final CaseDataService caseDataService, final CaseMappingService caseMappingService) {
 		this.byggrService = byggrService;
 		this.ecosService = ecosService;
 		this.caseDataService = caseDataService;

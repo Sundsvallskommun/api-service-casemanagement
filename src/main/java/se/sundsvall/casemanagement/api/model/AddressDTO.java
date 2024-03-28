@@ -21,6 +21,7 @@ import lombok.NoArgsConstructor;
 @Builder(setterPrefix = "with")
 @NoArgsConstructor
 @AllArgsConstructor
+@Schema(description = "Address model")
 public class AddressDTO {
 
 	@NotEmpty
@@ -55,13 +56,16 @@ public class AddressDTO {
 	@Schema(example = "LGH 1001")
 	private String appartmentNumber;
 
+	@Schema(description = "The address coordinates")
 	private CoordinatesDTO location;
 
+	@Schema(description = "Is the addres in zoning plan area?")
 	private Boolean isZoningPlanArea;
 
 	@Schema(description = "Only in combination with addressCategory: INVOICE_ADDRESS")
 	private String invoiceMarking;
 
+	@Schema(description = "Extra parameters for the address.")
 	private Map<String, String> extraParameters;
 
 }

@@ -52,14 +52,14 @@ public class PartyService {
 	}
 
 
-	public List<Map<String, ArrayOfguid>> findAndAddPartyToCase(final EcosCaseDTO eCase, final String caseId) {
+	public List<Map<String, ArrayOfguid>> findAndAddPartyToCase(final EcosCaseDTO ecosCaseDTO, final String caseId) {
 
-		final var organizationDTOs = eCase.getStakeholders().stream()
+		final var organizationDTOs = ecosCaseDTO.getStakeholders().stream()
 			.filter(OrganizationDTO.class::isInstance)
 			.map(OrganizationDTO.class::cast)
 			.toList();
 
-		final List<PersonDTO> privateDTOs = eCase.getStakeholders().stream()
+		final var privateDTOs = ecosCaseDTO.getStakeholders().stream()
 			.filter(PersonDTO.class::isInstance)
 			.map(PersonDTO.class::cast)
 			.toList();
@@ -156,14 +156,14 @@ public class PartyService {
 		return personSvcDto;
 	}
 
-	private ArrayOfguid getEcosFacilityRoles(final StakeholderDTO s) {
+	private ArrayOfguid getEcosFacilityRoles(final StakeholderDTO stakeholderDTO) {
 
 		return new ArrayOfguid()
-			.withGuid(s.getRoles().stream()
+			.withGuid(stakeholderDTO.getRoles().stream()
 				.map(roleString ->
 				{
-					final var r = StakeholderRole.valueOf(roleString);
-					return switch (r) {
+					final var role = StakeholderRole.valueOf(roleString);
+					return switch (role) {
 						case INVOICE_RECIPENT, INVOICE_RECIPIENT ->
 							Constants.ECOS_ROLE_ID_FAKTURAMOTTAGARE;
 						case OPERATOR -> Constants.ECOS_ROLE_ID_VERKSAMHETSUTOVARE;

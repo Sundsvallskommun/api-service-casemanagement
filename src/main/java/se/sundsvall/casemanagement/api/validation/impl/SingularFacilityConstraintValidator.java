@@ -4,9 +4,9 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
 import se.sundsvall.casemanagement.api.model.EcosCaseDTO;
-import se.sundsvall.casemanagement.api.validation.EcosCaseFacility;
+import se.sundsvall.casemanagement.api.validation.SingularFacility;
 
-public class EcosCaseFacilityConstraintValidator implements ConstraintValidator<EcosCaseFacility, EcosCaseDTO> {
+public class SingularFacilityConstraintValidator implements ConstraintValidator<SingularFacility, EcosCaseDTO> {
 
 	@Override
 	public boolean isValid(EcosCaseDTO value, ConstraintValidatorContext context) {

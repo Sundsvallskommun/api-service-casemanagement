@@ -24,6 +24,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonPropertyOrder({"facilityType", "description", "address", "facilityCollectionName", "mainFacility", "extraParameters"})
+@Schema(description = "Facility model")
 public class FacilityDTO {
 
 	@Schema(description = "Description of the facility", example = "En fritextbeskrivning av facility.")
@@ -44,6 +45,7 @@ public class FacilityDTO {
 	private AddressDTO address;
 
 	@Builder.Default
+	@Schema(description = "Extra parameters for the facility")
 	private Map<String, String> extraParameters = new HashMap<>();
 
 }

@@ -17,11 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
 
+import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
 import se.sundsvall.casemanagement.api.model.CaseDTO;
 import se.sundsvall.casemanagement.api.model.CaseResourceResponseDTO;
 import se.sundsvall.casemanagement.api.model.EcosCaseDTO;
 import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
-import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
 import se.sundsvall.casemanagement.integration.casedata.CaseDataService;
 import se.sundsvall.casemanagement.service.CaseMappingService;
 import se.sundsvall.casemanagement.service.CaseService;
@@ -41,7 +41,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 @ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 @ApiResponse(responseCode = "502", description = "Bad Gateway", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
-public class CaseResource {
+class CaseResource {
 
 	private final CaseMappingService caseMappingService;
 
@@ -49,7 +49,8 @@ public class CaseResource {
 
 	private final CaseDataService caseDataService;
 
-	public CaseResource(CaseMappingService caseMappingService, CaseService caseService, CaseDataService caseDataService) {
+	CaseResource(final CaseMappingService caseMappingService, final CaseService caseService,
+		final CaseDataService caseDataService) {
 		this.caseMappingService = caseMappingService;
 		this.caseService = caseService;
 		this.caseDataService = caseDataService;

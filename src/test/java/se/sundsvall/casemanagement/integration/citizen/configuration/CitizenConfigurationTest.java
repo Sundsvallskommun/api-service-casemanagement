@@ -1,25 +1,24 @@
 package se.sundsvall.casemanagement.integration.citizen.configuration;
 
-import feign.codec.ErrorDecoder;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static se.sundsvall.casemanagement.integration.citizen.configuration.CitizenConfiguration.CLIENT_ID;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.oauth2.client.registration.ClientRegistration;
-import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+
 import se.sundsvall.dept44.configuration.feign.FeignMultiCustomizer;
 import se.sundsvall.dept44.configuration.feign.decoder.ProblemErrorDecoder;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static se.sundsvall.casemanagement.integration.citizen.configuration.CitizenConfiguration.CLIENT_ID;
+import feign.codec.ErrorDecoder;
 
 @ExtendWith(MockitoExtension.class)
 class CitizenConfigurationTest {
@@ -48,7 +47,7 @@ class CitizenConfigurationTest {
 		when(propertiesMock.oauth2TokenUrl()).thenReturn(tokenUrl);
 
 		// Mock static FeignMultiCustomizer to enable spy and to verify that static method is being called
-		try (MockedStatic<FeignMultiCustomizer> feignMultiCustomizerMock = Mockito.mockStatic(FeignMultiCustomizer.class)) {
+		try (final var feignMultiCustomizerMock = Mockito.mockStatic(FeignMultiCustomizer.class)) {
 			feignMultiCustomizerMock.when(FeignMultiCustomizer::create).thenReturn(feignMultiCustomizerSpy);
 
 			configuration.feignBuilderCustomizer();

@@ -40,14 +40,14 @@ class CaseMappingIdTest {
 		final var externalCaseId = "456";
 
 		// Act
-		final var object = new CaseMappingId();
-		object.setCaseId(caseId);
-		object.setExternalCaseId(externalCaseId);
+		final var caseMappingId = new CaseMappingId();
+		caseMappingId.setCaseId(caseId);
+		caseMappingId.setExternalCaseId(externalCaseId);
 
 		// Assert
-		assertThat(object).isNotNull().hasNoNullFieldsOrProperties();
-		assertThat(object.getCaseId()).isEqualTo(caseId);
-		assertThat(object.getExternalCaseId()).isEqualTo(externalCaseId);
+		assertThat(caseMappingId).isNotNull().hasNoNullFieldsOrProperties();
+		assertThat(caseMappingId.getCaseId()).isEqualTo(caseId);
+		assertThat(caseMappingId.getExternalCaseId()).isEqualTo(externalCaseId);
 	}
 
 	@Test

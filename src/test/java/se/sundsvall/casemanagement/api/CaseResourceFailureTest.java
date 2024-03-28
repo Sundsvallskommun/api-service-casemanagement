@@ -44,7 +44,8 @@ class CaseResourceFailureTest {
 		final var body = resourceLoader.getResource("classpath:" + path)
 			.getContentAsString(Charset.defaultCharset());
 
-		final var result = webTestClient.post().uri(uriBuilder -> uriBuilder.path("/cases").build())
+		final var result = webTestClient.post()
+			.uri(uriBuilder -> uriBuilder.path("/cases").build())
 			.contentType(APPLICATION_JSON)
 			.bodyValue(body)
 			.exchange()
@@ -67,7 +68,8 @@ class CaseResourceFailureTest {
 		final var body = resourceLoader.getResource("classpath:" + path)
 			.getContentAsString(Charset.defaultCharset());
 
-		final var result = webTestClient.post().uri(uriBuilder -> uriBuilder.path("/cases").build())
+		final var result = webTestClient.post()
+			.uri(uriBuilder -> uriBuilder.path("/cases").build())
 			.contentType(APPLICATION_JSON)
 			.bodyValue(body)
 			.exchange()
@@ -90,7 +92,8 @@ class CaseResourceFailureTest {
 		final var body = resourceLoader.getResource("classpath:" + path)
 			.getContentAsString(Charset.defaultCharset());
 
-		final var result = webTestClient.post().uri(uriBuilder -> uriBuilder.path("/cases").build())
+		final var result = webTestClient.post()
+			.uri(uriBuilder -> uriBuilder.path("/cases").build())
 			.contentType(APPLICATION_JSON)
 			.bodyValue(body)
 			.exchange()
@@ -109,7 +112,8 @@ class CaseResourceFailureTest {
 
 	@Test
 	void postCase_EcosNoFacility(@Load("/case-resource-failure/ecos/no-facility.json") final String body) {
-		final var result = webTestClient.post().uri(uriBuilder -> uriBuilder.path("/cases").build())
+		final var result = webTestClient.post()
+			.uri(uriBuilder -> uriBuilder.path("/cases").build())
 			.contentType(APPLICATION_JSON)
 			.bodyValue(body)
 			.exchange()
@@ -128,7 +132,8 @@ class CaseResourceFailureTest {
 
 	@Test
 	void postCase_ByggRNoFacility(@Load("/case-resource-failure/byggr/no-facility.json") final String body) {
-		final var result = webTestClient.post().uri(uriBuilder -> uriBuilder.path("/cases").build())
+		final var result = webTestClient.post()
+			.uri(uriBuilder -> uriBuilder.path("/cases").build())
 			.contentType(APPLICATION_JSON)
 			.bodyValue(body)
 			.exchange()
@@ -149,7 +154,8 @@ class CaseResourceFailureTest {
 	//sub-classes of caseDTO are handled  individually.
 	@Test
 	void postCase_OtherNoFacility(@Load("/case-resource-failure/other/no-facility.json") final String body) {
-		final var result = webTestClient.post().uri(uriBuilder -> uriBuilder.path("/cases").build())
+		final var result = webTestClient
+			.post().uri(uriBuilder -> uriBuilder.path("/cases").build())
 			.contentType(APPLICATION_JSON)
 			.bodyValue(body)
 			.exchange()
