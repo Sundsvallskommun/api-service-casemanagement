@@ -36,21 +36,20 @@ import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
 import org.zalando.problem.ThrowableProblem;
 
-import generated.client.casedata.AttachmentDTO;
-import generated.client.casedata.ErrandDTO;
-import generated.client.casedata.ErrandDTO.ChannelEnum;
-import generated.client.casedata.PatchErrandDTO;
-import generated.client.casedata.StatusDTO;
 import se.sundsvall.casemanagement.TestUtil;
 import se.sundsvall.casemanagement.api.model.CaseDTO;
+import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
 import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
 import se.sundsvall.casemanagement.api.model.enums.CaseType;
+import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
+import se.sundsvall.casemanagement.api.model.enums.StakeholderType;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.service.CaseMappingService;
 import se.sundsvall.casemanagement.util.Constants;
 
 import generated.client.casedata.ErrandDTO;
+import generated.client.casedata.ErrandDTO.ChannelEnum;
 import generated.client.casedata.PatchErrandDTO;
 import generated.client.casedata.StatusDTO;
 
@@ -86,7 +85,7 @@ class CaseDataServiceTest {
 		final var uri = new URI("https://sundsvall-test.se/errands/" + errandId);
 		final var getErrandDTO = new ErrandDTO();
 		getErrandDTO.setErrandNumber("Inskickat");
-		final var inputCase = TestUtil.createOtherCase(caseType);
+		final var inputCase = createCase(caseType);
 
 		// Mock
 		when(caseDataClientMock.postErrands(any())).thenReturn(ResponseEntity.created(uri).build());
@@ -133,7 +132,7 @@ class CaseDataServiceTest {
 	void testPutErrand() {
 		// Arrange
 		final var errandId = new Random().nextLong();
-		final var inputCase = TestUtil.createOtherCase(CaseType.PARKING_PERMIT);
+		final var inputCase = createCase(CaseType.PARKING_PERMIT);
 
 		// Mock
 		when(caseDataClientMock.patchErrand(any(), any())).thenReturn(null);

@@ -48,6 +48,9 @@ public final class CaseDataMapper {
 			.caseTitleAddition(otherCase.getCaseTitleAddition())
 			.stakeholders(toStakeholderDTOs(otherCase.getStakeholders()))
 			.extraParameters(otherCase.getExtraParameters())
+			.channel(Optional.ofNullable(otherCase.getExternalCaseId())
+				.map(id -> ErrandDTO.ChannelEnum.ESERVICE)
+				.orElse(null))
 			.priority(Optional.ofNullable(otherCase.getExtraParameters())
 				.map(extraParameters -> extraParameters.get(APPLICATION_PRIORITY_KEY))
 				.map(ErrandDTO.PriorityEnum::valueOf)
@@ -155,7 +158,7 @@ public final class CaseDataMapper {
 				.organizationNumber(stakeholder.getOrganizationNumber())
 				.authorizedSignatory(stakeholder.getAuthorizedSignatory()));
 
-		return Stream.concat(personDTOs, organizationDTOs).toList();
+		return Stream.concat(organizationDTOs, personDTOs).toList();
 	}
 
 	public static generated.client.casedata.CoordinatesDTO toCoordinatesDTO(final CoordinatesDTO location) {

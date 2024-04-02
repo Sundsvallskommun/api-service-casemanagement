@@ -22,7 +22,7 @@ class CaseMappingMapperTest {
 
 	@ParameterizedTest
 	@MethodSource("toCaseMappingArguments")
-	void toCaseMapping(CaseDTO caseInput, String caseId, SystemType systemType, String serviceName) {
+	void toCaseMapping(final CaseDTO caseInput, final String caseId, final SystemType systemType, final String serviceName) {
 		Optional.ofNullable(serviceName).ifPresent(name -> caseInput.getExtraParameters().put(SERVICE_NAME, name));
 
 		final var bean = CaseMappingMapper.toCaseMapping(caseInput, caseId, systemType);
@@ -36,8 +36,8 @@ class CaseMappingMapperTest {
 
 	private static Stream<Arguments> toCaseMappingArguments() {
 		return Stream.of(
-			Arguments.of(TestUtil.createEnvironmentalCase(CaseType.REGISTRERING_AV_LIVSMEDEL, UNDERLAG_RISKKLASSNING), UUID.randomUUID().toString(), SystemType.ECOS, "SomeSystem"),
-			Arguments.of(TestUtil.createPlanningPermissionCase(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION), UUID.randomUUID().toString(), SystemType.BYGGR, null),
-			Arguments.of(TestUtil.createOtherCase(CaseType.PARKING_PERMIT), UUID.randomUUID().toString(), SystemType.CASE_DATA, "SomeOtherSystem"));
+			Arguments.of(TestUtil.createEcosCaseDTO(CaseType.REGISTRERING_AV_LIVSMEDEL, UNDERLAG_RISKKLASSNING), UUID.randomUUID().toString(), SystemType.ECOS, "SomeSystem"),
+			Arguments.of(TestUtil.createByggRCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION), UUID.randomUUID().toString(), SystemType.BYGGR, null),
+			Arguments.of(TestUtil.createOtherCaseDTO(), UUID.randomUUID().toString(), SystemType.CASE_DATA, "SomeOtherSystem"));
 	}
 }

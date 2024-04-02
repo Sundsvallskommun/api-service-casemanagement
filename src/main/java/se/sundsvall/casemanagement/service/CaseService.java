@@ -18,18 +18,15 @@ import se.sundsvall.casemanagement.service.util.Validator;
 @Service
 public class CaseService {
 
-
 	private final ApplicationEventPublisher eventPublisher;
 	private final CaseRepository caseRepository;
 	private final Validator validator;
-	private final ObjectMapper objectMapper = new ObjectMapper();
 
 	public CaseService(final ApplicationEventPublisher eventPublisher,
 		final CaseRepository caseRepository, final Validator validator) {
 		this.eventPublisher = eventPublisher;
 		this.caseRepository = caseRepository;
 		this.validator = validator;
-		this.objectMapper.registerModule(new JavaTimeModule());
 	}
 
 	public void handleCase(final CaseDTO dto) {
@@ -50,26 +47,17 @@ public class CaseService {
 
 	private void saveCase(final CaseDTO dto) {
 		caseRepository.save(toCaseEntity(dto));
-
-	private Clob doToClob(final CaseDTO dto) {
-		try {
-			final String jsonString = objectMapper.writeValueAsString(dto);
-			return new SerialClob(jsonString.toCharArray());
-		} catch (JsonProcessingException | SQLException e) {
-			log.error("Failed to convert to Clob", e);
-			return null;
-		}
 	}
 
-	private void handleByggRCase(final ByggRCaseDTO pCase) {
-		eventPublisher.publishEvent(new IncomingByggrCase(this, pCase));
+	private void handleByggRCase(final ByggRCaseDTO byggRCaseDTO) {
+		eventPublisher.publishEvent(new IncomingByggrCase(this, byggRCaseDTO));
 	}
 
-	private void handleEcosCase(final EcosCaseDTO eCase) {
-		eventPublisher.publishEvent(new IncomingEcosCase(this, eCase));
+	private void handleEcosCase(final EcosCaseDTO ecosCaseDTO) {
+		eventPublisher.publishEvent(new IncomingEcosCase(this, ecosCaseDTO));
 	}
 
-	private void handleOtherCase(OtherCaseDTO dto) {
-		eventPublisher.publishEvent(new IncomingOtherCase(this, dto));
+	private void handleOtherCase(final OtherCaseDTO otherCaseDTO) {
+		eventPublisher.publishEvent(new IncomingOtherCase(this, otherCaseDTO));
 	}
 }
