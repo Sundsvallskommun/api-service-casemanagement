@@ -1,6 +1,9 @@
 package se.sundsvall.casemanagement.api.validation.impl;
 
+import static java.util.Collections.emptyList;
+
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import jakarta.validation.ConstraintValidator;
@@ -11,26 +14,20 @@ import se.sundsvall.casemanagement.api.validation.ByggRStakeholderRole;
 
 public class ByggRStakeholderRoleConstraintValidator implements ConstraintValidator<ByggRStakeholderRole, List<String>> {
 
+	private static final Set<String> validRoles = Set.of(StakeholderRole.CONTACT_PERSON.toString(),
+		StakeholderRole.PAYMENT_PERSON.toString(),
+		StakeholderRole.PROPERTY_OWNER.toString(),
+		StakeholderRole.APPLICANT.toString(),
+		StakeholderRole.CONTROL_OFFICIAL.toString());
+
 	@Override
-	public boolean isValid(List<String> roles, ConstraintValidatorContext context) {
-		return roles.stream().allMatch(this::isValidRole);
+	public boolean isValid(final List<String> roles, final ConstraintValidatorContext context) {
+		return Optional.ofNullable(roles).orElse(emptyList()).stream()
+			.allMatch(this::isValidRole);
 	}
 
-	private boolean isValidRole(String role) {
-
-		if (role == null || role.isEmpty()) {
-			return false;
-		}
-
-		// Valid roles
-		final Set<String> validRoles = Set.of(
-			StakeholderRole.CONTACT_PERSON.toString(),
-			StakeholderRole.PAYMENT_PERSON.toString(),
-			StakeholderRole.PROPERTY_OWNER.toString(),
-			StakeholderRole.APPLICANT.toString(),
-			StakeholderRole.CONTROL_OFFICIAL.toString());
-
-		// Check if provided role is one of the valid roles.
-		return validRoles.contains(role);
+	private boolean isValidRole(final String role) {
+		return Optional.ofNullable(role).map(validRoles::contains)
+			.orElse(false);
 	}
 }

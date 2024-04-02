@@ -26,35 +26,35 @@ class EcosCaseDateOrderValidatorTest {
 
 	@Test
 	void isValid_StartDateBeforeEndDate() {
-		final var environmentalCase = new EcosCaseDTO();
-		environmentalCase.setStartDate(LocalDate.of(2021, 1, 1));
-		environmentalCase.setEndDate(LocalDate.of(2021, 1, 2));
+		final var ecosCaseDTO = new EcosCaseDTO();
+		ecosCaseDTO.setStartDate(LocalDate.of(2021, 1, 1));
+		ecosCaseDTO.setEndDate(LocalDate.of(2021, 1, 2));
 
-		assertThat(validator.isValid(environmentalCase, context)).isTrue();
+		assertThat(validator.isValid(ecosCaseDTO, context)).isTrue();
 	}
 
 	@Test
 	void isValid_EndDateBeforeStartDate() {
-		final var environmentalCase = new EcosCaseDTO();
-		environmentalCase.setStartDate(LocalDate.of(2021, 1, 2));
-		environmentalCase.setEndDate(LocalDate.of(2021, 1, 1));
+		final var ecosCaseDTO = new EcosCaseDTO();
+		ecosCaseDTO.setStartDate(LocalDate.of(2021, 1, 2));
+		ecosCaseDTO.setEndDate(LocalDate.of(2021, 1, 1));
 
-		assertThat(validator.isValid(environmentalCase, context)).isFalse();
+		assertThat(validator.isValid(ecosCaseDTO, context)).isFalse();
 	}
 
 	@Test
 	void isValid_StartDateNull() {
-		final var environmentalCase = new EcosCaseDTO();
-		environmentalCase.setEndDate(LocalDate.of(2021, 1, 1));
+		final var ecosCaseDTO = new EcosCaseDTO();
+		ecosCaseDTO.setEndDate(LocalDate.of(2021, 1, 1));
 
-		assertThat(validator.isValid(environmentalCase, context)).isTrue();
+		assertThat(validator.isValid(ecosCaseDTO, context)).isTrue();
 	}
 
 	@Test
 	void isValid_EndDateNull() {
-		final var environmentalCase = new EcosCaseDTO();
-		environmentalCase.setStartDate(LocalDate.of(2021, 1, 1));
+		final var ecosCaseDTO = new EcosCaseDTO();
+		ecosCaseDTO.setStartDate(LocalDate.of(2021, 1, 1));
 
-		assertThat(validator.isValid(environmentalCase, context)).isTrue();
+		assertThat(validator.isValid(ecosCaseDTO, context)).isTrue();
 	}
 }

@@ -13,13 +13,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import se.sundsvall.casemanagement.api.validation.impl.OneMainFacilityOrNullConstraintValidator;
+import se.sundsvall.casemanagement.api.validation.impl.MaxOneMainFacilityConstraintValidator;
 
 @ExtendWith(MockitoExtension.class)
-class OneMainFacilityOrNullConstraintValidatorTest {
+class MaxMaxOneMainFacilityConstraintValidatorTest {
 
 	@InjectMocks
-	private OneMainFacilityOrNullConstraintValidator validator;
+	private MaxOneMainFacilityConstraintValidator validator;
 
 	@Mock
 	private ConstraintValidatorContext context;
@@ -31,19 +31,14 @@ class OneMainFacilityOrNullConstraintValidatorTest {
 	}
 
 	@Test
-	void isValid_WithTwoMainFacilities() {
-		final var facilities = List.of(createFacilityDTO(true), createFacilityDTO(true));
+	void isValid_WithNoMainFacility() {
+		final var facilities = List.of(createFacilityDTO(false), createFacilityDTO(false));
 		assertThat(validator.isValid(facilities, context)).isFalse();
 	}
 
 	@Test
-	void isValid_WithNoMainFacility() {
-		final var facilities = List.of(createFacilityDTO(false), createFacilityDTO(false));
-		assertThat(validator.isValid(facilities, context)).isTrue();
-	}
-
-	@Test
-	void isValid_WithNull() {
-		assertThat(validator.isValid(null, context)).isTrue();
+	void isValid_withTwoMainFacilities() {
+		final var facilities = List.of(createFacilityDTO(true), createFacilityDTO(true));
+		assertThat(validator.isValid(facilities, context)).isFalse();
 	}
 }

@@ -34,4 +34,14 @@ class EcosStakeholderRoleConstraintValidatorTest {
 		final var values = List.of("CONTACT_PERSON", "INVOICE_RECIPENT", "INVOICE_RECIPIENT", "OPERATOR", "APPLICANT", "INSTALLER", "INVALID");
 		assertThat(validator.isValid(values, context)).isFalse();
 	}
+
+	@Test
+	void isValid_BlankRole() {
+		assertThat(validator.isValid(List.of(""), context)).isFalse();
+	}
+
+	@Test
+	void isValid_NullRole() {
+		assertThat(validator.isValid(null, context)).isTrue();
+	}
 }

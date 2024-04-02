@@ -34,4 +34,14 @@ class ByggRStakeholderRoleConstraintValidatorTest {
 		final var values = List.of("PROPERTY_OWNER", "PAYMENT_PERSON", "PROPERTY_OWNER", "APPLICANT", "CONTROL_OFFICIAL", "INVALID");
 		assertThat(validator.isValid(values, context)).isFalse();
 	}
+
+	@Test
+	void isValid_BlankRole() {
+		assertThat(validator.isValid(List.of(""), context)).isFalse();
+	}
+
+	@Test
+	void isValid_NullRole() {
+		assertThat(validator.isValid(null, context)).isTrue();
+	}
 }

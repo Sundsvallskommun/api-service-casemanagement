@@ -2,6 +2,8 @@ package se.sundsvall.casemanagement.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.tuple;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.zalando.problem.Status.BAD_REQUEST;
@@ -15,15 +17,23 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.zalando.problem.violations.ConstraintViolationProblem;
 
 import se.sundsvall.casemanagement.Application;
+import se.sundsvall.casemanagement.api.model.CaseDTO;
 import se.sundsvall.casemanagement.api.model.CaseResourceResponseDTO;
+import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
+import se.sundsvall.casemanagement.integration.casedata.CaseDataService;
+import se.sundsvall.casemanagement.service.CaseMappingService;
+import se.sundsvall.casemanagement.service.CaseService;
 import se.sundsvall.dept44.test.annotation.resource.Load;
 import se.sundsvall.dept44.test.extension.ResourceLoaderExtension;
 
@@ -37,6 +47,21 @@ class CaseResourceFailureTest {
 
 	@Autowired
 	private WebTestClient webTestClient;
+
+	@MockBean
+	private CaseMappingService caseMappingServiceMock;
+
+	@MockBean
+	private CaseService caseServiceMock;
+
+	@MockBean
+	private CaseDataService caseDataServiceMock;
+
+	@Captor
+	private ArgumentCaptor<String> caseIdCaptor;
+
+	@Captor
+	private ArgumentCaptor<CaseDTO> caseDTOCaptor;
 
 	@ParameterizedTest
 	@MethodSource("emptyStakeholders")
@@ -60,6 +85,8 @@ class CaseResourceFailureTest {
 			assertThat(problem.getViolations()).extracting("field", "message").containsExactlyInAnyOrder(
 				tuple("stakeholders", "must not be empty"));
 		});
+
+		verifyNoInteractions(caseMappingServiceMock, caseServiceMock, caseDataServiceMock);
 	}
 
 	@ParameterizedTest
@@ -84,6 +111,8 @@ class CaseResourceFailureTest {
 			assertThat(problem.getViolations()).extracting("field", "message").containsExactlyInAnyOrder(
 				tuple("attachments", "must not be empty"));
 		});
+
+		verifyNoInteractions(caseMappingServiceMock, caseServiceMock, caseDataServiceMock);
 	}
 
 	@ParameterizedTest
@@ -108,6 +137,8 @@ class CaseResourceFailureTest {
 			assertThat(problem.getViolations()).extracting("field", "message").containsExactlyInAnyOrder(
 				tuple("externalCaseId", "must not be blank"));
 		});
+
+		verifyNoInteractions(caseMappingServiceMock, caseServiceMock, caseDataServiceMock);
 	}
 
 	@Test
@@ -128,6 +159,8 @@ class CaseResourceFailureTest {
 			assertThat(problem.getViolations()).extracting("field", "message").containsExactlyInAnyOrder(
 				tuple("facilities", "size must be 1"), tuple("facilities", "must not be empty"));
 		});
+
+		verifyNoInteractions(caseMappingServiceMock, caseServiceMock, caseDataServiceMock);
 	}
 
 	@Test
@@ -146,8 +179,11 @@ class CaseResourceFailureTest {
 			assertThat(problem.getTitle()).isEqualTo("Constraint Violation");
 			assertThat(problem.getStatus()).isEqualTo(BAD_REQUEST);
 			assertThat(problem.getViolations()).extracting("field", "message").containsExactlyInAnyOrder(
+				tuple("facilities", "must be exactly one main facility"),
 				tuple("facilities", "must not be empty"));
 		});
+
+		verifyNoInteractions(caseMappingServiceMock, caseServiceMock, caseDataServiceMock);
 	}
 
 	//This case does not throw a bad request, this is by design to ensure that the different
@@ -166,6 +202,19 @@ class CaseResourceFailureTest {
 
 		assertThat(result.getCaseId()).isEqualTo("Inskickat");
 
+		verify(caseMappingServiceMock).validateUniqueCase(caseIdCaptor.capture());
+		assertThat(caseIdCaptor.getValue()).isEqualTo("externalCaseId");
+		verify(caseServiceMock).handleCase(caseDTOCaptor.capture());
+		var otherCaseDTO = (OtherCaseDTO) caseDTOCaptor.getValue();
+		assertThat(otherCaseDTO).satisfies(dto -> {
+			assertThat(dto.getExternalCaseId()).isEqualTo("externalCaseId");
+			assertThat(dto.getCaseType()).isEqualTo("PARKING_PERMIT");
+			assertThat(dto.getDescription()).isEqualTo("description");
+			assertThat(dto.getCaseTitleAddition()).isEqualTo("caseTitleAddition");
+			assertThat(dto.getFacilities()).isEmpty();
+			assertThat(dto.getAttachments()).hasSize(1);
+			assertThat(dto.getStakeholders()).hasSize(1);
+		});
 	}
 
 	private static Stream<Arguments> noExternalCaseId() {
