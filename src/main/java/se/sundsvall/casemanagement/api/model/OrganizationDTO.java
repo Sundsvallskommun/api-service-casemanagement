@@ -16,17 +16,18 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(setterPrefix = "with")
 @NoArgsConstructor
 @AllArgsConstructor
+@Schema(description = "Organization model")
 public class OrganizationDTO extends StakeholderDTO {
 
 	@NotBlank
-	@Schema(example = "Sundsvalls testfabrik")
+	@Schema(description = "Organization name", example = "Sundsvalls testfabrik")
 	private String organizationName;
 
 	@NotBlank
 	@Schema(description = "Organization number with 10 or 12 digits.", example = "20220622-2396")
 	private String organizationNumber;
 
-	@Schema(example = "Test Testorsson")
+	@Schema(description = "The authorized signatory", example = "Test Testorsson")
 	private String authorizedSignatory;
 
 }

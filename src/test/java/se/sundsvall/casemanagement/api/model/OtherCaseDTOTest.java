@@ -49,6 +49,7 @@ class OtherCaseDTOTest {
 		final var description = "Some description";
 		final var externalCaseId = "Some external case id";
 		final var extraParameters = Map.of("Key", "Value");
+		final var facilites = List.of(new FacilityDTO());
 
 		// Act
 		final var oCase = new OtherCaseDTO();
@@ -59,6 +60,7 @@ class OtherCaseDTOTest {
 		oCase.setDescription(description);
 		oCase.setExternalCaseId(externalCaseId);
 		oCase.setExtraParameters(extraParameters);
+		oCase.setFacilities(facilites);
 
 		// Assert
 		assertThat(oCase).isNotNull().hasNoNullFieldsOrProperties();

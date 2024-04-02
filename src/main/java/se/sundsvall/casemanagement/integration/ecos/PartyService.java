@@ -10,7 +10,7 @@ import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
 
 import se.sundsvall.casemanagement.api.model.AddressDTO;
-import se.sundsvall.casemanagement.api.model.EnvironmentalCaseDTO;
+import se.sundsvall.casemanagement.api.model.EcosCaseDTO;
 import se.sundsvall.casemanagement.api.model.OrganizationDTO;
 import se.sundsvall.casemanagement.api.model.PersonDTO;
 import se.sundsvall.casemanagement.api.model.StakeholderDTO;
@@ -52,14 +52,14 @@ public class PartyService {
 	}
 
 
-	public List<Map<String, ArrayOfguid>> findAndAddPartyToCase(final EnvironmentalCaseDTO eCase, final String caseId) {
+	public List<Map<String, ArrayOfguid>> findAndAddPartyToCase(final EcosCaseDTO ecosCaseDTO, final String caseId) {
 
-		final var organizationDTOs = eCase.getStakeholders().stream()
+		final var organizationDTOs = ecosCaseDTO.getStakeholders().stream()
 			.filter(OrganizationDTO.class::isInstance)
 			.map(OrganizationDTO.class::cast)
 			.toList();
 
-		final List<PersonDTO> privateDTOs = eCase.getStakeholders().stream()
+		final var privateDTOs = ecosCaseDTO.getStakeholders().stream()
 			.filter(PersonDTO.class::isInstance)
 			.map(PersonDTO.class::cast)
 			.toList();
@@ -156,15 +156,16 @@ public class PartyService {
 		return personSvcDto;
 	}
 
-	private ArrayOfguid getEcosFacilityRoles(final StakeholderDTO s) {
+	private ArrayOfguid getEcosFacilityRoles(final StakeholderDTO stakeholderDTO) {
 
 		return new ArrayOfguid()
-			.withGuid(s.getRoles().stream()
+			.withGuid(stakeholderDTO.getRoles().stream()
 				.map(roleString ->
 				{
-					final var r	= StakeholderRole.valueOf(roleString);
-					return switch (r) {
-						case INVOICE_RECIPENT, INVOICE_RECIPIENT -> Constants.ECOS_ROLE_ID_FAKTURAMOTTAGARE;
+					final var role = StakeholderRole.valueOf(roleString);
+					return switch (role) {
+						case INVOICE_RECIPENT, INVOICE_RECIPIENT ->
+							Constants.ECOS_ROLE_ID_FAKTURAMOTTAGARE;
 						case OPERATOR -> Constants.ECOS_ROLE_ID_VERKSAMHETSUTOVARE;
 						case CONTACT_PERSON -> Constants.ECOS_ROLE_ID_KONTAKTPERSON;
 						case APPLICANT -> Constants.ECOS_ROLE_ID_SOKANDE;
@@ -269,9 +270,12 @@ public class PartyService {
 									.map(adressType -> new AddressTypeSvcDto()
 										.withId(
 											switch (adressType) {
-												case INVOICE_ADDRESS -> Constants.ECOS_ADDRESS_TYPE_ID_FAKTURAADRESS;
-												case POSTAL_ADDRESS -> Constants.ECOS_ADDRESS_TYPE_ID_POSTADRESS;
-												case VISITING_ADDRESS -> Constants.ECOS_ADDRESS_TYPE_ID_BESOKSADRESS;
+												case INVOICE_ADDRESS ->
+													Constants.ECOS_ADDRESS_TYPE_ID_FAKTURAADRESS;
+												case POSTAL_ADDRESS ->
+													Constants.ECOS_ADDRESS_TYPE_ID_POSTADRESS;
+												case VISITING_ADDRESS ->
+													Constants.ECOS_ADDRESS_TYPE_ID_BESOKSADRESS;
 											}))
 									.toList())))
 					.toList());

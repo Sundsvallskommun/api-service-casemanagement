@@ -7,12 +7,11 @@ import java.sql.SQLException;
 
 import javax.sql.rowset.serial.SerialClob;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import se.sundsvall.casemanagement.api.model.CaseDTO;
 import se.sundsvall.casemanagement.integration.db.model.CaseEntity;
@@ -25,7 +24,7 @@ public final class CaseMapper {
 		// Intentionally empty
 	}
 
-	public static CaseEntity toCaseEntity(CaseDTO dto) {
+	public static CaseEntity toCaseEntity(final CaseDTO dto) {
 		return CaseEntity.builder()
 			.withId(dto.getExternalCaseId())
 			.withDto(toClob(dto))
@@ -33,7 +32,7 @@ public final class CaseMapper {
 			.build();
 	}
 
-	private static Clob toClob(CaseDTO dto) {
+	private static Clob toClob(final CaseDTO dto) {
 		try {
 			final String jsonString = OBJECT_MAPPER.writeValueAsString(dto);
 			return new SerialClob(jsonString.toCharArray());

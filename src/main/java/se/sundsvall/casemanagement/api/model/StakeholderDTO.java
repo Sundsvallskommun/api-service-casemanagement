@@ -14,11 +14,11 @@ import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import se.sundsvall.casemanagement.api.model.enums.StakeholderType;
-import se.sundsvall.casemanagement.api.validators.DefaultConstraints;
-import se.sundsvall.casemanagement.api.validators.EnvironmentStakeholderRole;
-import se.sundsvall.casemanagement.api.validators.EnvironmentalConstraints;
-import se.sundsvall.casemanagement.api.validators.PlanningConstraints;
-import se.sundsvall.casemanagement.api.validators.PlanningStakeholderRole;
+import se.sundsvall.casemanagement.api.validation.ByggRConstraints;
+import se.sundsvall.casemanagement.api.validation.ByggRStakeholderRole;
+import se.sundsvall.casemanagement.api.validation.DefaultConstraints;
+import se.sundsvall.casemanagement.api.validation.EcosConstraints;
+import se.sundsvall.casemanagement.api.validation.EcosStakeholderRole;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -35,32 +35,35 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(setterPrefix = "with")
 @NoArgsConstructor
 @AllArgsConstructor
+@Schema(description = "Stakeholder model")
 public abstract class StakeholderDTO {
 
 	@NotNull
+	@Schema(description = "The type of stakeholder", example = "PERSON")
 	private StakeholderType type;
 
 	@Schema(description = "An stakeholder can have one or more roles. Please note that INVOICE_RECIPENT is deprecated and should not be used. Use INVOICE_RECIPIENT instead.", enumAsRef = true)
-	@EnvironmentStakeholderRole(groups = EnvironmentalConstraints.class)
-	@PlanningStakeholderRole(groups = PlanningConstraints.class)
+	@EcosStakeholderRole(groups = EcosConstraints.class)
+	@ByggRStakeholderRole(groups = ByggRConstraints.class)
 	private List<String> roles;
 
-	@Schema(example = "060123456")
+	@Schema(description = "Stakeholder phone number", example = "060123456")
 	private String phoneNumber;
 
-	@Schema(example = "0701234567")
+	@Schema(description = "Stakeholder cellphone number", example = "0701234567")
 	private String cellphoneNumber;
 
 	@Email
-	@Schema(example = "test.testorsson@sundsvall.se")
+	@Schema(description = "Stakeholder emailaddress", example = "test.testorsson@sundsvall.se")
 	private String emailAddress;
 
 	@Valid
-	@ConvertGroup(from = PlanningConstraints.class, to = DefaultConstraints.class)
-	@ConvertGroup(from = EnvironmentalConstraints.class, to = DefaultConstraints.class)
+	@ConvertGroup(from = ByggRConstraints.class, to = DefaultConstraints.class)
+	@ConvertGroup(from = EcosConstraints.class, to = DefaultConstraints.class)
 	@Schema(description = "An stakeholder may have one or more addresses. For example one POSTAL_ADDRESS and another INVOICE_ADDRESS.")
 	private List<AddressDTO> addresses;
 
+	@Schema(description = "The stakeholder's billing address")
 	private Map<String, String> extraParameters;
 
 }

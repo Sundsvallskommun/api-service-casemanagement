@@ -7,8 +7,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 
 import se.sundsvall.casemanagement.api.model.enums.AddressCategory;
-import se.sundsvall.casemanagement.api.validators.EnvironmentalConstraints;
-import se.sundsvall.casemanagement.api.validators.PlanningConstraints;
+import se.sundsvall.casemanagement.api.validation.ByggRConstraints;
+import se.sundsvall.casemanagement.api.validation.EcosConstraints;
 import se.sundsvall.casemanagement.util.Constants;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -21,6 +21,7 @@ import lombok.NoArgsConstructor;
 @Builder(setterPrefix = "with")
 @NoArgsConstructor
 @AllArgsConstructor
+@Schema(description = "Address model")
 public class AddressDTO {
 
 	@NotEmpty
@@ -48,20 +49,23 @@ public class AddressDTO {
 	@Schema(example = "Test Testorsson")
 	private String attention;
 
-	@NotBlank(groups = {EnvironmentalConstraints.class, PlanningConstraints.class})
+	@NotBlank(groups = {EcosConstraints.class, ByggRConstraints.class})
 	@Schema(example = "SUNDSVALL BALDER 7:2")
 	private String propertyDesignation;
 
 	@Schema(example = "LGH 1001")
 	private String appartmentNumber;
 
+	@Schema(description = "The address coordinates")
 	private CoordinatesDTO location;
 
+	@Schema(description = "Is the addres in zoning plan area?")
 	private Boolean isZoningPlanArea;
 
 	@Schema(description = "Only in combination with addressCategory: INVOICE_ADDRESS")
 	private String invoiceMarking;
 
+	@Schema(description = "Extra parameters for the address.")
 	private Map<String, String> extraParameters;
 
 }

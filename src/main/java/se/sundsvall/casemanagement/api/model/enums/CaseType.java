@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 
 @Getter
-@Schema(example = NYBYGGNAD_ANSOKAN_OM_BYGGLOV)
+@Schema(description = "Case types", example = NYBYGGNAD_ANSOKAN_OM_BYGGLOV)
 public enum CaseType {
 
 	// =================== Byggr ===================

@@ -1,0 +1,55 @@
+{
+  "externalCaseId": "externalCaseId",
+  "caseType": "REGISTRERING_AV_LIVSMEDEL",
+  "description": "description",
+  "caseTitleAddition": "caseTitleAddition",
+  "facilities": [],
+  "stakeholders": [
+    {
+      "type": "PERSON",
+      "roles": [
+        "Fakturamottagare",
+        "BETA"
+      ],
+      "firstName": "Test",
+      "lastName": "Testorsson",
+      "personId": "3ed5bc30-6308-4fd5-a5a7-78d7f96f4438",
+      "personalNumber": "19900101-1234",
+      "phoneNumber": "060123456",
+      "cellphoneNumber": "0701234567",
+      "emailAddress": "test.testorsson@sundsvall.se",
+      "addresses": [
+        {
+          "addressCategories": [
+            "POSTAL_ADDRESS"
+          ],
+          "street": "Testargatan",
+          "houseNumber": "18",
+          "postalCode": "123 45",
+          "city": "Sundsvall",
+          "country": "Sverige",
+          "careOf": "Test Testorsson",
+          "attention": "Test Testorsson",
+          "propertyDesignation": "SUNDSVALL BALDER 7:2",
+          "appartmentNumber": "LGH 1001",
+          "isZoningPlanArea": false,
+          "invoiceMarking": "invoiceMarking",
+          "location": {
+            "latitude": 62.3908,
+            "longitude": 17.3069
+          }
+        }
+      ]
+    }
+  ],
+  "attachments": [
+    {
+      "category": "ARIT",
+      "name": "The attachment name",
+      "note": "A note on an attachment",
+      "extension": ".pdf",
+      "mimeType": "application/pdf",
+      "file": "dGVzdA=="
+    }
+  ]
+}
