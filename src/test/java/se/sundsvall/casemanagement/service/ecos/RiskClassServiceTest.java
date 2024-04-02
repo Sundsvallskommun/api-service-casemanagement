@@ -9,22 +9,20 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import java.util.Map;
 
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import minutmiljo.ArrayOfSearchFacilityResultSvcDto;
+import minutmiljo.SearchFacilityResponse;
+import minutmiljo.SearchFacilityResultSvcDto;
 import se.sundsvall.casemanagement.api.model.EnvironmentalCaseDTO;
 import se.sundsvall.casemanagement.api.model.EnvironmentalFacilityDTO;
 import se.sundsvall.casemanagement.api.model.OrganizationDTO;
 import se.sundsvall.casemanagement.integration.ecos.MinutMiljoClient;
 import se.sundsvall.casemanagement.integration.ecos.RiskClassService;
-
-import minutmiljo.ArrayOfSearchFacilityResultSvcDto;
-import minutmiljo.SearchFacilityResponse;
-import minutmiljo.SearchFacilityResultSvcDto;
 
 @ExtendWith(MockitoExtension.class)
 class RiskClassServiceTest {

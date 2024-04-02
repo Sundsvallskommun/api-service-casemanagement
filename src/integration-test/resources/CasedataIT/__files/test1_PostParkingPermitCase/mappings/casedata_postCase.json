@@ -1,44 +1,217 @@
 {
-  "name": "CaseData_PostErrands_201",
-  "request": {
-    "urlPathPattern": "/case-data/\\d.\\d/errands",
-    "method": "POST",
-    "bodyPatterns": [
-      {
-        "contains": "Some case title addition"
-      }
-    ]
-  },
-  "response": {
-    "status": 201,
-    "headers": {
-      "Access-Control-Allow-Headers": [
-        "*"
-      ],
-      "Access-Control-Allow-Methods": [
-        "*"
-      ],
-      "Access-Control-Allow-Origin": [
-        "*"
-      ],
-      "Access-Control-Expose-Headers": [
-        ""
-      ],
-      "Content-Type": [
-        "application/octet-stream"
-      ],
-      "Date": [
-        "Thu, 01 Sep 2022 13:00:24 GMT"
-      ],
-      "Location": [
-        "https://api-i-test.sundsvall.se/case-data/errands/24"
-      ],
-      "Transfer-Encoding": [
-        "chunked"
-      ],
-      "X-Request-ID": [
-        "e19981ad-34b2-4e14-88f5-133f61ca85aa"
-      ]
-    }
-  }
+	"name": "CaseData_PostErrands_201",
+	"request": {
+		"urlPathPattern": "/case-data/\\d.\\d/errands",
+		"method": "POST",
+		"bodyPatterns": [
+			{
+				"equalToJson": {
+					"externalCaseId": "40621444",
+					"caseType": "PARKING_PERMIT",
+					"channel": "ESERVICE",
+					"priority": "MEDIUM",
+					"description": "Some random description",
+					"caseTitleAddition": "Some case title addition",
+					"phase": "Aktualisering",
+					"statuses": [
+						{
+							"statusType": "Ärende inkommit",
+							"dateTime": "${json-unit.ignore}"
+						}
+					],
+					"stakeholders": [
+						{
+							"type": "ORGANIZATION",
+							"organizationName": "jNTYkyqBoe",
+							"organizationNumber": "138093-2898",
+							"authorizedSignatory": "VphEzGJsWJ",
+							"roles": [
+								"APPLICANT",
+								"CONTACT_PERSON"
+							],
+							"addresses": [
+								{
+									"addressCategory": "VISITING_ADDRESS",
+									"street": "vsXJPLIBzL",
+									"houseNumber": "QDD7SOb46K",
+									"postalCode": "1372232840",
+									"city": "IhNzWDUTUW",
+									"country": "Sverige",
+									"careOf": "CevcbGpoka",
+									"attention": "swfFRLrDLp",
+									"propertyDesignation": "SUNDSVALL FILLA 8:185",
+									"apartmentNumber": "eGpiM1f1GZ",
+									"isZoningPlanArea": false,
+									"invoiceMarking": "FuJQ69beqr",
+									"location": {
+										"latitude": 0.6969103809797621,
+										"longitude": 0.2827769235667891
+									}
+								},
+								{
+									"addressCategory": "INVOICE_ADDRESS",
+									"street": "vsXJPLIBzL",
+									"houseNumber": "QDD7SOb46K",
+									"postalCode": "1372232840",
+									"city": "IhNzWDUTUW",
+									"country": "Sverige",
+									"careOf": "CevcbGpoka",
+									"attention": "swfFRLrDLp",
+									"propertyDesignation": "SUNDSVALL FILLA 8:185",
+									"apartmentNumber": "eGpiM1f1GZ",
+									"isZoningPlanArea": false,
+									"invoiceMarking": "FuJQ69beqr",
+									"location": {
+										"latitude": 0.6969103809797621,
+										"longitude": 0.2827769235667891
+									}
+								},
+								{
+									"addressCategory": "POSTAL_ADDRESS",
+									"street": "vsXJPLIBzL",
+									"houseNumber": "QDD7SOb46K",
+									"postalCode": "1372232840",
+									"city": "IhNzWDUTUW",
+									"country": "Sverige",
+									"careOf": "CevcbGpoka",
+									"attention": "swfFRLrDLp",
+									"propertyDesignation": "SUNDSVALL FILLA 8:185",
+									"apartmentNumber": "eGpiM1f1GZ",
+									"isZoningPlanArea": false,
+									"invoiceMarking": "FuJQ69beqr",
+									"location": {
+										"latitude": 0.6969103809797621,
+										"longitude": 0.2827769235667891
+									}
+								}
+							],
+							"contactInformation": [
+								{
+									"contactType": "CELLPHONE",
+									"value": "HCinjwcJUG"
+								},
+								{
+									"contactType": "PHONE",
+									"value": "meSyRffXkb"
+								},
+								{
+									"contactType": "EMAIL",
+									"value": "FhYvUNokgR@EmxMj.com"
+								}
+							],
+							"extraParameters": {
+								"MxYBzFJRAV": "chyRhtwikUtuOZoLQasi",
+								"LjVjfBkXPn": "vDFaDITmkgZKrijMGtZM",
+								"kKyNoMcLQy": "RyObmjCTrvNNjmOsemfJ"
+							}
+						},
+						{
+							"type": "PERSON",
+							"firstName": "PeRRnaLRro",
+							"lastName": "ACerBugnuP",
+							"personId": "c9faf8e0-e7c1-4d94-b7fa-ce37b260f281",
+							"roles": [
+								"PAYMENT_PERSON",
+								"INVOICE_RECIPENT"
+							],
+							"addresses": [
+								{
+									"addressCategory": "VISITING_ADDRESS",
+									"street": "iHDmgxHSzx",
+									"houseNumber": "vwRO5wCpZT",
+									"postalCode": "0703115748",
+									"city": "cPrktcqcph",
+									"country": "Sverige",
+									"careOf": "TVWtgwoHnH",
+									"attention": "hUWhaoMUFV",
+									"propertyDesignation": "SUNDSVALL FILLA 8:185",
+									"apartmentNumber": "cFerdl7yy7",
+									"isZoningPlanArea": false,
+									"invoiceMarking": "cphZ9oZu8S",
+									"location": {
+										"latitude": 0.4025673014476795,
+										"longitude": 0.6908240209365898
+									}
+								},
+								{
+									"addressCategory": "POSTAL_ADDRESS",
+									"street": "iHDmgxHSzx",
+									"houseNumber": "vwRO5wCpZT",
+									"postalCode": "0703115748",
+									"city": "cPrktcqcph",
+									"country": "Sverige",
+									"careOf": "TVWtgwoHnH",
+									"attention": "hUWhaoMUFV",
+									"propertyDesignation": "SUNDSVALL FILLA 8:185",
+									"apartmentNumber": "cFerdl7yy7",
+									"isZoningPlanArea": false,
+									"invoiceMarking": "cphZ9oZu8S",
+									"location": {
+										"latitude": 0.4025673014476795,
+										"longitude": 0.6908240209365898
+									}
+								}
+							],
+							"contactInformation": [
+								{
+									"contactType": "CELLPHONE",
+									"value": "fXWMfeWqCx"
+								},
+								{
+									"contactType": "PHONE",
+									"value": "aQbByowCoq"
+								},
+								{
+									"contactType": "EMAIL",
+									"value": "OJHpCfXcDw@bCLHt.com"
+								}
+							],
+							"extraParameters": {
+								"KGNKjpITYh": "zAnHbHzRpMenxpRVChiv",
+								"mYNojuJNeF": "CTmHuqJDJseFisBRxgvH",
+								"lUVcbOtnMF": "uMnxaIhjxVeFICUupckY"
+							}
+						}
+					],
+					"extraParameters": {
+						"LhUaLSfVLl": "qugLdBiGNLoJCiSSEwRk",
+						"EiBDnjwIGQ": "YHHXclnbOMnviIuqzsyL",
+						"NxWjNUnpnI": "jQPMKOXLGQxeoIVXgeEt"
+					}
+				}
+			}
+		]
+	},
+	"response": {
+		"status": 201,
+		"headers": {
+			"Access-Control-Allow-Headers": [
+				"*"
+			],
+			"Access-Control-Allow-Methods": [
+				"*"
+			],
+			"Access-Control-Allow-Origin": [
+				"*"
+			],
+			"Access-Control-Expose-Headers": [
+				""
+			],
+			"Content-Type": [
+				"application/octet-stream"
+			],
+			"Date": [
+				"Thu, 01 Sep 2022 13:00:24 GMT"
+			],
+			"Location": [
+				"https://api-i-test.sundsvall.se/case-data/errands/24"
+			],
+			"Transfer-Encoding": [
+				"chunked"
+			],
+			"X-Request-ID": [
+				"e19981ad-34b2-4e14-88f5-133f61ca85aa"
+			]
+		}
+	}
 }

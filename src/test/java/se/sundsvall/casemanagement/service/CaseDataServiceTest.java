@@ -35,23 +35,20 @@ import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
 import org.zalando.problem.ThrowableProblem;
 
+import generated.client.casedata.AttachmentDTO;
+import generated.client.casedata.ErrandDTO;
+import generated.client.casedata.ErrandDTO.ChannelEnum;
+import generated.client.casedata.PatchErrandDTO;
+import generated.client.casedata.StatusDTO;
 import se.sundsvall.casemanagement.TestUtil;
 import se.sundsvall.casemanagement.api.model.CaseDTO;
-import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
 import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
 import se.sundsvall.casemanagement.api.model.enums.CaseType;
-import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
-import se.sundsvall.casemanagement.api.model.enums.StakeholderType;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
 import se.sundsvall.casemanagement.integration.casedata.CaseDataClient;
 import se.sundsvall.casemanagement.integration.casedata.CaseDataService;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.util.Constants;
-
-import generated.client.casedata.AttachmentDTO;
-import generated.client.casedata.ErrandDTO;
-import generated.client.casedata.PatchErrandDTO;
-import generated.client.casedata.StatusDTO;
 
 @ExtendWith(MockitoExtension.class)
 class CaseDataServiceTest {
@@ -85,7 +82,7 @@ class CaseDataServiceTest {
 		final var uri = new URI("https://sundsvall-test.se/errands/" + errandId);
 		final var getErrandDTO = new ErrandDTO();
 		getErrandDTO.setErrandNumber("Inskickat");
-		final var inputCase = createCase(caseType);
+		final var inputCase = TestUtil.createOtherCase(caseType);
 
 		// Mock
 		when(caseDataClientMock.postErrands(any())).thenReturn(ResponseEntity.created(uri).build());
@@ -98,17 +95,18 @@ class CaseDataServiceTest {
 		assertThat(response).isEqualTo("Inskickat");
 
 		final var errandDTOArgumentCaptor = ArgumentCaptor.forClass(ErrandDTO.class);
-		verify(caseDataClientMock, times(1)).postErrands(errandDTOArgumentCaptor.capture());
+		verify(caseDataClientMock).postErrands(errandDTOArgumentCaptor.capture());
 		final var errandDTO = errandDTOArgumentCaptor.getValue();
 
-		assertThat(errandDTO.getCaseType()).isEqualTo(inputCase.getCaseType());
-		assertThat(errandDTO.getExternalCaseId()).isEqualTo(inputCase.getExternalCaseId());
-		assertThat(errandDTO.getDescription()).isEqualTo(inputCase.getDescription());
 		assertThat(errandDTO.getCaseTitleAddition()).isEqualTo(inputCase.getCaseTitleAddition());
-		assertThat(errandDTO.getStakeholders()).hasSameSizeAs(inputCase.getStakeholders());
+		assertThat(errandDTO.getCaseType()).isEqualTo(inputCase.getCaseType());
+		assertThat(errandDTO.getChannel()).isEqualTo(ChannelEnum.ESERVICE);
+		assertThat(errandDTO.getDescription()).isEqualTo(inputCase.getDescription());
 		assertThat(errandDTO.getExtraParameters()).isEqualTo(inputCase.getExtraParameters());
+		assertThat(errandDTO.getExternalCaseId()).isEqualTo(inputCase.getExternalCaseId());
 		assertThat(errandDTO.getPhase()).isEqualTo("Aktualisering");
 		assertThat(errandDTO.getPriority()).isEqualTo(ErrandDTO.PriorityEnum.HIGH);
+		assertThat(errandDTO.getStakeholders()).hasSameSizeAs(inputCase.getStakeholders());
 		assertThat(errandDTO.getStatuses().getFirst().getStatusType()).isEqualTo("Ärende inkommit");
 		assertThat(errandDTO.getStatuses().getFirst().getDateTime()).isNotNull();
 
@@ -119,7 +117,7 @@ class CaseDataServiceTest {
 		assertThat(attachmentDTO.getCategory()).isEqualTo(AttachmentCategory.ANMALAN_VARMEPUMP.toString());
 
 		final var caseDTOArgumentCaptor = ArgumentCaptor.forClass(CaseDTO.class);
-		verify(caseMappingServiceMock, times(1)).postCaseMapping(caseDTOArgumentCaptor.capture(), any(String.class), any(SystemType.class));
+		verify(caseMappingServiceMock).postCaseMapping(caseDTOArgumentCaptor.capture(), any(String.class), any(SystemType.class));
 		final var caseMapping = caseDTOArgumentCaptor.getValue();
 		assertThat(caseMapping.getExternalCaseId()).isEqualTo(inputCase.getExternalCaseId());
 		assertThat(caseMapping.getCaseType()).isEqualTo(inputCase.getCaseType());
@@ -131,7 +129,7 @@ class CaseDataServiceTest {
 	void testPutErrand() {
 		// Arrange
 		final var errandId = new Random().nextLong();
-		final var inputCase = createCase(CaseType.PARKING_PERMIT);
+		final var inputCase = TestUtil.createOtherCase(CaseType.PARKING_PERMIT);
 
 		// Mock
 		when(caseDataClientMock.patchErrand(any(), any())).thenReturn(null);
@@ -240,26 +238,4 @@ class CaseDataServiceTest {
 			.hasFieldOrPropertyWithValue("status", Status.NOT_FOUND)
 			.hasFieldOrPropertyWithValue("detail", Constants.ERR_MSG_STATUS_NOT_FOUND);
 	}
-
-	private OtherCaseDTO createCase(final CaseType caseType) {
-		final var otherCase = new OtherCaseDTO();
-		otherCase.setCaseType(caseType.toString());
-		otherCase.setExternalCaseId(UUID.randomUUID().toString());
-		otherCase.setCaseTitleAddition("Some case title addition");
-		otherCase.setDescription("Some random description");
-
-		otherCase.setStakeholders(List.of(
-			TestUtil.createStakeholder(StakeholderType.ORGANIZATION, List.of(StakeholderRole.APPLICANT.toString(), StakeholderRole.CONTACT_PERSON.toString())),
-			TestUtil.createStakeholder(StakeholderType.PERSON, List.of(StakeholderRole.PAYMENT_PERSON.toString(), StakeholderRole.INVOICE_RECIPIENT.toString()))));
-
-		otherCase.setAttachments(List.of(
-			TestUtil.createAttachment(AttachmentCategory.BUILDING_PERMIT_APPLICATION),
-			TestUtil.createAttachment(AttachmentCategory.ANMALAN_VARMEPUMP),
-			TestUtil.createAttachment(AttachmentCategory.ANMALAN_VARMEPUMP)));
-
-		otherCase.setExtraParameters(TestUtil.createExtraParameters());
-		otherCase.getExtraParameters().put("application.priority", "HIGH");
-		return otherCase;
-	}
-
 }
