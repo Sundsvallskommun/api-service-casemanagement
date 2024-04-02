@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
+
 import se.sundsvall.casemanagement.api.model.AddressDTO;
 import se.sundsvall.casemanagement.api.model.AttachmentDTO;
 import se.sundsvall.casemanagement.api.model.CoordinatesDTO;
@@ -41,7 +43,7 @@ public final class CaseDataMapper {
 	}
 
 	public static ErrandDTO toErrandDTO(final OtherCaseDTO otherCase) {
-		return new ErrandDTO()
+		final var errand = new ErrandDTO()
 			.caseType(otherCase.getCaseType())
 			.externalCaseId(otherCase.getExternalCaseId())
 			.description(otherCase.getDescription())
@@ -51,13 +53,17 @@ public final class CaseDataMapper {
 			.channel(Optional.ofNullable(otherCase.getExternalCaseId())
 				.map(id -> ErrandDTO.ChannelEnum.ESERVICE)
 				.orElse(null))
-			.priority(Optional.ofNullable(otherCase.getExtraParameters())
-				.map(extraParameters -> extraParameters.get(APPLICATION_PRIORITY_KEY))
-				.map(ErrandDTO.PriorityEnum::valueOf)
-				.orElse(null))
 			.facilities(Optional.ofNullable(otherCase.getFacilities())
 				.map(CaseDataMapper::toFacilityDTOs)
 				.orElse(null));
+
+		Optional.ofNullable(otherCase.getExtraParameters())
+			.map(extraParameters -> extraParameters.get(APPLICATION_PRIORITY_KEY))
+			.filter(StringUtils::isNotBlank)
+			.map(ErrandDTO.PriorityEnum::valueOf)
+			.ifPresent(errand::setPriority);
+
+		return errand;
 	}
 
 	public static List<generated.client.casedata.FacilityDTO> toFacilityDTOs(final List<FacilityDTO> facilityDTOS) {
@@ -119,16 +125,20 @@ public final class CaseDataMapper {
 	}
 
 	public static PatchErrandDTO toPatchErrandDTO(final OtherCaseDTO otherCaseDTO) {
-		return new PatchErrandDTO()
+		final var errand = new PatchErrandDTO()
 			.caseType(PatchErrandDTO.CaseTypeEnum.fromValue(otherCaseDTO.getCaseType()))
 			.externalCaseId(otherCaseDTO.getExternalCaseId())
 			.description(otherCaseDTO.getDescription())
 			.caseTitleAddition(otherCaseDTO.getCaseTitleAddition())
-			.extraParameters(otherCaseDTO.getExtraParameters())
-			.priority(Optional.ofNullable(otherCaseDTO.getExtraParameters())
-				.map(extraParameters -> extraParameters.get(APPLICATION_PRIORITY_KEY))
-				.map(PatchErrandDTO.PriorityEnum::valueOf)
-				.orElse(null));
+			.extraParameters(otherCaseDTO.getExtraParameters());
+
+		Optional.ofNullable(otherCaseDTO.getExtraParameters())
+			.map(extraParameters -> extraParameters.get(APPLICATION_PRIORITY_KEY))
+			.filter(StringUtils::isNotBlank)
+			.map(PatchErrandDTO.PriorityEnum::valueOf)
+			.ifPresent(errand::setPriority);
+
+		return errand;
 	}
 
 	public static List<generated.client.casedata.StakeholderDTO> toStakeholderDTOs(final List<StakeholderDTO> stakeholderDTOs) {

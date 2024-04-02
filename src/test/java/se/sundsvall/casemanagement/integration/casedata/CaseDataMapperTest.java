@@ -23,6 +23,7 @@ import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderType;
 
 import generated.client.casedata.ContactInformationDTO;
+import generated.client.casedata.ErrandDTO;
 import generated.client.casedata.PatchErrandDTO;
 
 class CaseDataMapperTest {
@@ -75,6 +76,7 @@ class CaseDataMapperTest {
 		assertThat(result.getDescription()).isEqualTo(otherCase.getDescription());
 		assertThat(result.getExternalCaseId()).isEqualTo(otherCase.getExternalCaseId());
 		assertThat(result.getExtraParameters()).isEqualTo(otherCase.getExtraParameters());
+		assertThat(result.getPriority()).isEqualTo(ErrandDTO.PriorityEnum.MEDIUM);
 
 		assertThat(result.getStakeholders()).isEqualTo(CaseDataMapper.toStakeholderDTOs(otherCase.getStakeholders()));
 		assertThat(result.getFacilities()).isEqualTo(CaseDataMapper.toFacilityDTOs(otherCase.getFacilities()));
@@ -111,6 +113,7 @@ class CaseDataMapperTest {
 	@Test
 	void toPatchErrandDTO() {
 		final var otherCaseDTO = createOtherCaseDTO();
+		otherCaseDTO.getExtraParameters().put("application.priority", "HIGH");
 
 		final var result = CaseDataMapper.toPatchErrandDTO(otherCaseDTO);
 
@@ -120,6 +123,7 @@ class CaseDataMapperTest {
 			assertThat(errandDTO.getDescription()).isEqualTo(otherCaseDTO.getDescription());
 			assertThat(errandDTO.getExternalCaseId()).isEqualTo(otherCaseDTO.getExternalCaseId());
 			assertThat(errandDTO.getExtraParameters()).isEqualTo(otherCaseDTO.getExtraParameters());
+			assertThat(errandDTO.getPriority()).isEqualTo(PatchErrandDTO.PriorityEnum.HIGH);
 		});
 	}
 
