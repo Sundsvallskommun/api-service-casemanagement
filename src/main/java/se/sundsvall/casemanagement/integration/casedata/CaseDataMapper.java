@@ -67,9 +67,11 @@ public final class CaseDataMapper {
 	}
 
 	public static List<generated.client.casedata.FacilityDTO> toFacilityDTOs(final List<FacilityDTO> facilityDTOS) {
-		return facilityDTOS.stream()
-			.map(CaseDataMapper::toFacilityDTO)
-			.toList();
+		return Optional.ofNullable(facilityDTOS)
+			.map(facilities -> facilities.stream()
+				.map(CaseDataMapper::toFacilityDTO)
+				.toList())
+			.orElse(emptyList());
 	}
 
 	public static generated.client.casedata.FacilityDTO toFacilityDTO(final FacilityDTO facilityDTO) {
@@ -130,6 +132,7 @@ public final class CaseDataMapper {
 			.externalCaseId(otherCaseDTO.getExternalCaseId())
 			.description(otherCaseDTO.getDescription())
 			.caseTitleAddition(otherCaseDTO.getCaseTitleAddition())
+			.facilities(toFacilityDTOs(otherCaseDTO.getFacilities()))
 			.extraParameters(otherCaseDTO.getExtraParameters());
 
 		Optional.ofNullable(otherCaseDTO.getExtraParameters())
