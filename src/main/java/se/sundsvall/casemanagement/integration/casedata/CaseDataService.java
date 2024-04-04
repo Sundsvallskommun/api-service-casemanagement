@@ -18,12 +18,6 @@ import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
 import org.zalando.problem.ThrowableProblem;
 
-import generated.client.casedata.ContactInformationDTO;
-import generated.client.casedata.ErrandDTO;
-import generated.client.casedata.ErrandDTO.ChannelEnum;
-import generated.client.casedata.PatchErrandDTO;
-import generated.client.casedata.StatusDTO;
-import se.sundsvall.casemanagement.api.model.AddressDTO;
 import se.sundsvall.casemanagement.api.model.AttachmentDTO;
 import se.sundsvall.casemanagement.api.model.CaseStatusDTO;
 import se.sundsvall.casemanagement.api.model.OtherCaseDTO;

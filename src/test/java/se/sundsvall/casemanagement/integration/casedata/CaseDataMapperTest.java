@@ -90,7 +90,7 @@ class CaseDataMapperTest {
 
 		assertThat(result).hasSize(facilities.size());
 
-		for (var dto : result) {
+		for (final var dto : result) {
 			assertThat(dto).isEqualTo(CaseDataMapper.toFacilityDTO(facilities.get(result.indexOf(dto))));
 		}
 	}
@@ -124,6 +124,7 @@ class CaseDataMapperTest {
 			assertThat(errandDTO.getExternalCaseId()).isEqualTo(otherCaseDTO.getExternalCaseId());
 			assertThat(errandDTO.getExtraParameters()).isEqualTo(otherCaseDTO.getExtraParameters());
 			assertThat(errandDTO.getPriority()).isEqualTo(PatchErrandDTO.PriorityEnum.HIGH);
+			assertThat(errandDTO.getFacilities()).isEqualTo(CaseDataMapper.toFacilityDTOs(otherCaseDTO.getFacilities()));
 		});
 	}
 
@@ -193,7 +194,7 @@ class CaseDataMapperTest {
 		final var result = CaseDataMapper.toStakeholderAddressDTOs(List.of(address));
 
 		assertThat(result).hasSize(3);
-		for (var dto : result) {
+		for (final var dto : result) {
 			assertThat(dto.getAddressCategory()).isInstanceOf(generated.client.casedata.AddressDTO.AddressCategoryEnum.class);
 			assertThat(dto.getStreet()).isEqualTo(address.getStreet());
 			assertThat(dto.getHouseNumber()).isEqualTo(address.getHouseNumber());
@@ -236,4 +237,5 @@ class CaseDataMapperTest {
 		assertThat(result.getLast().getContactType()).isEqualTo(ContactInformationDTO.ContactTypeEnum.EMAIL);
 		assertThat(result.getLast().getValue()).isEqualTo(stakeholder.getEmailAddress());
 	}
+
 }
