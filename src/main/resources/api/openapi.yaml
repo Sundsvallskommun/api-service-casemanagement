@@ -5,9 +5,9 @@ info:
   license:
     name: MIT License
     url: https://opensource.org/licenses/MIT
-  version: "7.1"
+  version: '@project.version@'
 servers:
-  - url: http://localhost:63955
+  - url: http://localhost:51720
     description: Generated server url
 tags:
   - name: Status
@@ -68,6 +68,20 @@ paths:
                 - $ref: '#/components/schemas/OtherCaseDTO'
         required: true
       responses:
+        "204":
+          description: No content
+        "502":
+          description: Bad Gateway
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
         "500":
           description: Internal Server error
           content:
@@ -76,20 +90,6 @@ paths:
                 $ref: '#/components/schemas/Problem'
         "404":
           description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        "204":
-          description: No content
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        "502":
-          description: Bad Gateway
           content:
             application/problem+json:
               schema:
@@ -138,24 +138,6 @@ paths:
                 - $ref: '#/components/schemas/OtherCaseDTO'
         required: true
       responses:
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        "404":
-          description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "502":
           description: Bad Gateway
           content:
@@ -171,6 +153,24 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/CaseResourceResponseDTO'
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "404":
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
   /cases/{externalCaseId}/attachments:
     post:
       tags:
@@ -192,6 +192,20 @@ paths:
                 $ref: '#/components/schemas/AttachmentDTO'
         required: true
       responses:
+        "502":
+          description: Bad Gateway
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "204":
+          description: No content - Successful request.
         "500":
           description: Internal Server error
           content:
@@ -210,20 +224,6 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        "502":
-          description: Bad Gateway
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        "204":
-          description: No content - Successful request.
   /organization/{organizationNumber}/cases/status:
     get:
       tags:
@@ -243,14 +243,8 @@ paths:
             example: 20220622-2396
           example: 20220622-2396
       responses:
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        "404":
-          description: Not found
+        "502":
+          description: Bad Gateway
           content:
             application/problem+json:
               schema:
@@ -261,8 +255,8 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        "502":
-          description: Bad Gateway
+        "500":
+          description: Internal Server error
           content:
             application/problem+json:
               schema:
@@ -280,6 +274,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/CaseStatusDTO'
+        "404":
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
   /cases/{externalCaseId}/status:
     get:
       tags:
@@ -294,14 +294,8 @@ paths:
           schema:
             type: string
       responses:
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        "404":
-          description: Not found
+        "502":
+          description: Bad Gateway
           content:
             application/problem+json:
               schema:
@@ -312,8 +306,8 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        "502":
-          description: Bad Gateway
+        "500":
+          description: Internal Server error
           content:
             application/problem+json:
               schema:
@@ -327,6 +321,12 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/CaseStatusDTO'
+        "404":
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
   /cases/case-mappings:
     get:
       tags:
@@ -341,20 +341,14 @@ paths:
           schema:
             type: string
       responses:
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        "404":
-          description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "400":
           description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "500":
+          description: Internal Server error
           content:
             application/problem+json:
               schema:
@@ -372,6 +366,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/CaseMapping'
+        "404":
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
   /api-docs:
     get:
       tags:
@@ -757,18 +757,18 @@ components:
             type: object
         status:
           $ref: '#/components/schemas/StatusType'
-        title:
-          type: string
         detail:
+          type: string
+        title:
           type: string
     StatusType:
       type: object
       properties:
-        reasonPhrase:
-          type: string
         statusCode:
           type: integer
           format: int32
+        reasonPhrase:
+          type: string
     CaseResourceResponseDTO:
       type: object
       properties:

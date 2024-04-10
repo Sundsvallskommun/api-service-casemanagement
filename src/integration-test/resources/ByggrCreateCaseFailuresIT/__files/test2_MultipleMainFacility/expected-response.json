@@ -4,7 +4,7 @@
   "violations": [
     {
       "field": "facilities",
-      "message": "must be exactly one main facility"
+      "message": "Number of mainFacilities must be <= 1"
     }
   ],
   "title": "Constraint Violation"
