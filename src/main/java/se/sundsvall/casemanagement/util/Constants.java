@@ -210,7 +210,7 @@ public final class Constants {
 		Informationen finns i handlingen "Anmälan livsmedelsanläggning".""";
 
 	////////////////// Error messages
-	public static final String ERR_MSG_ONLY_ONE_MAIN_FACILITY = "Number of mainFacilities must be <= 1";
+	public static final String ERR_MSG_ONLY_ONE_MAIN_FACILITY = "Only one facility can be defined as main facility";
 
 	public static final String ERR_MSG_CASES_NOT_FOUND = "Case not found";
 
