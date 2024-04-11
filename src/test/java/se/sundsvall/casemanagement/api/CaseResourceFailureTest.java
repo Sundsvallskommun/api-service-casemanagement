@@ -179,7 +179,6 @@ class CaseResourceFailureTest {
 			assertThat(problem.getTitle()).isEqualTo("Constraint Violation");
 			assertThat(problem.getStatus()).isEqualTo(BAD_REQUEST);
 			assertThat(problem.getViolations()).extracting("field", "message").containsExactlyInAnyOrder(
-				tuple("facilities", "must be exactly one main facility"),
 				tuple("facilities", "must not be empty"));
 		});
 

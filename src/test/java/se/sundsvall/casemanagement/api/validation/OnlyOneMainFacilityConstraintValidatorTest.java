@@ -13,13 +13,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import se.sundsvall.casemanagement.api.validation.impl.MaxOneMainFacilityConstraintValidator;
+import se.sundsvall.casemanagement.api.validation.impl.OnlyOneMainFacilityConstraintValidator;
 
 @ExtendWith(MockitoExtension.class)
-class MaxMaxOneMainFacilityConstraintValidatorTest {
+class OnlyOneMainFacilityConstraintValidatorTest {
 
 	@InjectMocks
-	private MaxOneMainFacilityConstraintValidator validator;
+	private OnlyOneMainFacilityConstraintValidator validator;
 
 	@Mock
 	private ConstraintValidatorContext context;
@@ -33,7 +33,7 @@ class MaxMaxOneMainFacilityConstraintValidatorTest {
 	@Test
 	void isValid_WithNoMainFacility() {
 		final var facilities = List.of(createFacilityDTO(false), createFacilityDTO(false));
-		assertThat(validator.isValid(facilities, context)).isFalse();
+		assertThat(validator.isValid(facilities, context)).isTrue();
 	}
 
 	@Test

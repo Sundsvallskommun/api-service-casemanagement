@@ -6,7 +6,7 @@ import java.util.List;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 
-import se.sundsvall.casemanagement.api.validation.MaxOneMainFacility;
+import se.sundsvall.casemanagement.api.validation.OnlyOneMainFacility;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -29,7 +29,7 @@ public class ByggRCaseDTO extends CaseDTO implements Serializable {
 	private String diaryNumber;
 
 	@NotEmpty
-	@MaxOneMainFacility(nullable = true)
+	@OnlyOneMainFacility(nullable = true)
 	@Valid
 	@Schema(description = "The facilities in the case")
 	private List<@Valid FacilityDTO> facilities;

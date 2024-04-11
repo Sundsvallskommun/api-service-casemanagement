@@ -9,15 +9,16 @@ import java.lang.annotation.Target;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
-import se.sundsvall.casemanagement.api.validation.impl.MaxOneMainFacilityConstraintValidator;
+import se.sundsvall.casemanagement.api.validation.impl.OnlyOneMainFacilityConstraintValidator;
+import se.sundsvall.casemanagement.util.Constants;
 
 @Target({ElementType.TYPE, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = MaxOneMainFacilityConstraintValidator.class)
+@Constraint(validatedBy = OnlyOneMainFacilityConstraintValidator.class)
 @Documented
-public @interface MaxOneMainFacility {
+public @interface OnlyOneMainFacility {
 
-	String message() default "must be exactly one main facility";
+	String message() default Constants.ERR_MSG_ONLY_ONE_MAIN_FACILITY;
 
 	boolean nullable() default false;
 
