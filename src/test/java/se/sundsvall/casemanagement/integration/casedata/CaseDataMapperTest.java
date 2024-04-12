@@ -1,6 +1,9 @@
 package se.sundsvall.casemanagement.integration.casedata;
 
+import static generated.client.casedata.StakeholderDTO.*;
+import static generated.client.casedata.StakeholderDTO.TypeEnum.ORGANIZATION;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 import static se.sundsvall.casemanagement.TestUtil.createAddressDTO;
 import static se.sundsvall.casemanagement.TestUtil.createAttachmentDTO;
 import static se.sundsvall.casemanagement.TestUtil.createCoordinatesDTO;
@@ -8,9 +11,11 @@ import static se.sundsvall.casemanagement.TestUtil.createExtraParameters;
 import static se.sundsvall.casemanagement.TestUtil.createFacilityDTO;
 import static se.sundsvall.casemanagement.TestUtil.createOtherCaseDTO;
 import static se.sundsvall.casemanagement.TestUtil.createStakeholderDTO;
+import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toContactInformationDTO;
 
 import java.util.List;
 
+import generated.client.casedata.StakeholderDTO;
 import org.junit.jupiter.api.Test;
 
 import se.sundsvall.casemanagement.api.model.AttachmentDTO;
@@ -130,38 +135,62 @@ class CaseDataMapperTest {
 
 	@Test
 	void toStakeholderDTOs() {
+		final var organizationDTOOrgnumberWithoutHyphen = (OrganizationDTO) createStakeholderDTO(StakeholderType.ORGANIZATION, List.of("someRole"));
+		organizationDTOOrgnumberWithoutHyphen.setOrganizationNumber(organizationDTOOrgnumberWithoutHyphen.getOrganizationNumber().replace("-", ""));
 		final var stakeholders = List.of(
 			createStakeholderDTO(StakeholderType.ORGANIZATION, List.of("someRole")),
+			organizationDTOOrgnumberWithoutHyphen,
 			createStakeholderDTO(StakeholderType.PERSON, List.of("someRole")));
 		final var organizationDTO = (OrganizationDTO) stakeholders.getFirst();
 		final var personDTO = (PersonDTO) stakeholders.getLast();
 
 		final var result = CaseDataMapper.toStakeholderDTOs(stakeholders);
 
-		assertThat(result.getFirst()).satisfies(org -> {
-			assertThat(org.getRoles()).isEqualTo(organizationDTO.getRoles());
-			assertThat(org.getContactInformation()).isEqualTo(CaseDataMapper.toContactInformationDTO(organizationDTO));
-			assertThat(org.getAddresses()).isEqualTo(CaseDataMapper.toStakeholderAddressDTOs(organizationDTO.getAddresses()));
-			assertThat(org.getExtraParameters()).isEqualTo(organizationDTO.getExtraParameters());
-
-			assertThat(org.getOrganizationNumber()).isEqualTo(organizationDTO.getOrganizationNumber());
-			assertThat(org.getOrganizationName()).isEqualTo(organizationDTO.getOrganizationName());
-			assertThat(org.getAuthorizedSignatory()).isEqualTo(organizationDTO.getAuthorizedSignatory());
-			assertThat(org.getType()).isEqualTo(generated.client.casedata.StakeholderDTO.TypeEnum.ORGANIZATION);
-		});
-
-		assertThat(result.getLast()).satisfies(person -> {
-			assertThat(person.getRoles()).isEqualTo(personDTO.getRoles());
-			assertThat(person.getContactInformation()).isEqualTo(CaseDataMapper.toContactInformationDTO(personDTO));
-			assertThat(person.getAddresses()).isEqualTo(CaseDataMapper.toStakeholderAddressDTOs(personDTO.getAddresses()));
-			assertThat(person.getExtraParameters()).isEqualTo(personDTO.getExtraParameters());
-
-			assertThat(person.getPersonId()).isEqualTo(personDTO.getPersonId());
-			assertThat(person.getFirstName()).isEqualTo(personDTO.getFirstName());
-			assertThat(person.getLastName()).isEqualTo(personDTO.getLastName());
-			assertThat(person.getType()).isEqualTo(generated.client.casedata.StakeholderDTO.TypeEnum.PERSON);
-		});
-
+		assertThat(result).hasSize(3).extracting(StakeholderDTO::getRoles,
+			StakeholderDTO::getContactInformation,
+			StakeholderDTO::getAddresses,
+			StakeholderDTO::getExtraParameters,
+			StakeholderDTO::getOrganizationNumber,
+			StakeholderDTO::getOrganizationName,
+			StakeholderDTO::getAuthorizedSignatory,
+			StakeholderDTO::getPersonId,
+			StakeholderDTO::getFirstName,
+			StakeholderDTO::getLastName,
+			StakeholderDTO::getType).containsExactly(
+			tuple(organizationDTO.getRoles(),
+				toContactInformationDTO(organizationDTO),
+				CaseDataMapper.toStakeholderAddressDTOs(organizationDTO.getAddresses()),
+				organizationDTO.getExtraParameters(),
+				organizationDTO.getOrganizationNumber(),
+				organizationDTO.getOrganizationName(),
+				organizationDTO.getAuthorizedSignatory(),
+				null,
+				null,
+				null,
+				ORGANIZATION),
+			tuple(organizationDTOOrgnumberWithoutHyphen.getRoles(),
+				toContactInformationDTO(organizationDTOOrgnumberWithoutHyphen),
+				CaseDataMapper.toStakeholderAddressDTOs(organizationDTOOrgnumberWithoutHyphen.getAddresses()),
+				organizationDTOOrgnumberWithoutHyphen.getExtraParameters(),
+				organizationDTOOrgnumberWithoutHyphen.getOrganizationNumber().substring(0, 6) + "-" + organizationDTOOrgnumberWithoutHyphen.getOrganizationNumber().substring(6),
+				organizationDTOOrgnumberWithoutHyphen.getOrganizationName(),
+				organizationDTOOrgnumberWithoutHyphen.getAuthorizedSignatory(),
+				null,
+				null,
+				null,
+				ORGANIZATION),
+			tuple(personDTO.getRoles(),
+				toContactInformationDTO(personDTO),
+				CaseDataMapper.toStakeholderAddressDTOs(personDTO.getAddresses()),
+				personDTO.getExtraParameters(),
+				null,
+				null,
+				null,
+				personDTO.getPersonId(),
+				personDTO.getFirstName(),
+				personDTO.getLastName(),
+				TypeEnum.PERSON)
+		);
 	}
 
 	@Test
@@ -227,7 +256,7 @@ class CaseDataMapperTest {
 	void toContactInformationDTOs() {
 		final var stakeholder = createStakeholderDTO(StakeholderType.PERSON, List.of("someRole"));
 
-		final var result = CaseDataMapper.toContactInformationDTO(stakeholder);
+		final var result = toContactInformationDTO(stakeholder);
 
 		assertThat(result).hasSize(3);
 		assertThat(result.getFirst().getContactType()).isEqualTo(ContactInformationDTO.ContactTypeEnum.CELLPHONE);
