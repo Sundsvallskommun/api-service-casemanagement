@@ -1,6 +1,6 @@
 package se.sundsvall.casemanagement.integration.casedata;
 
-import static generated.client.casedata.StakeholderDTO.*;
+import static generated.client.casedata.StakeholderDTO.TypeEnum;
 import static generated.client.casedata.StakeholderDTO.TypeEnum.ORGANIZATION;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
@@ -14,8 +14,8 @@ import static se.sundsvall.casemanagement.TestUtil.createStakeholderDTO;
 import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toContactInformationDTO;
 
 import java.util.List;
+import java.util.Map;
 
-import generated.client.casedata.StakeholderDTO;
 import org.junit.jupiter.api.Test;
 
 import se.sundsvall.casemanagement.api.model.AttachmentDTO;
@@ -30,6 +30,7 @@ import se.sundsvall.casemanagement.api.model.enums.StakeholderType;
 import generated.client.casedata.ContactInformationDTO;
 import generated.client.casedata.ErrandDTO;
 import generated.client.casedata.PatchErrandDTO;
+import generated.client.casedata.StakeholderDTO;
 
 class CaseDataMapperTest {
 
@@ -135,18 +136,29 @@ class CaseDataMapperTest {
 
 	@Test
 	void toStakeholderDTOs() {
+
+		//Arrange
 		final var organizationDTOOrgnumberWithoutHyphen = (OrganizationDTO) createStakeholderDTO(StakeholderType.ORGANIZATION, List.of("someRole"));
 		organizationDTOOrgnumberWithoutHyphen.setOrganizationNumber(organizationDTOOrgnumberWithoutHyphen.getOrganizationNumber().replace("-", ""));
+
+		final var role = "someRole";
+		final var role2 = "someOtherRole";
+		final var role3 = "thirdRole";
+		final var rolemap = Map.of("roles", role + "," + role2 + ", " + role3);
 		final var stakeholders = List.of(
-			createStakeholderDTO(StakeholderType.ORGANIZATION, List.of("someRole")),
+			createStakeholderDTO(StakeholderType.ORGANIZATION, List.of(role2)),
 			organizationDTOOrgnumberWithoutHyphen,
-			createStakeholderDTO(StakeholderType.PERSON, List.of("someRole")));
+			createStakeholderDTO(StakeholderType.PERSON, List.of(role)));
+
+		stakeholders.forEach(stakeholderDTO -> stakeholderDTO.setExtraParameters(rolemap));
 		final var organizationDTO = (OrganizationDTO) stakeholders.getFirst();
 		final var personDTO = (PersonDTO) stakeholders.getLast();
 
+		//Act
 		final var result = CaseDataMapper.toStakeholderDTOs(stakeholders);
 
-		assertThat(result).hasSize(3).extracting(StakeholderDTO::getRoles,
+		assertThat(result).hasSize(3).extracting(
+			StakeholderDTO::getRoles,
 			StakeholderDTO::getContactInformation,
 			StakeholderDTO::getAddresses,
 			StakeholderDTO::getExtraParameters,
@@ -157,7 +169,7 @@ class CaseDataMapperTest {
 			StakeholderDTO::getFirstName,
 			StakeholderDTO::getLastName,
 			StakeholderDTO::getType).containsExactly(
-			tuple(organizationDTO.getRoles(),
+			tuple(List.of(role2, role3, role),
 				toContactInformationDTO(organizationDTO),
 				CaseDataMapper.toStakeholderAddressDTOs(organizationDTO.getAddresses()),
 				organizationDTO.getExtraParameters(),
@@ -168,7 +180,7 @@ class CaseDataMapperTest {
 				null,
 				null,
 				ORGANIZATION),
-			tuple(organizationDTOOrgnumberWithoutHyphen.getRoles(),
+			tuple(List.of(role2, role3, role),
 				toContactInformationDTO(organizationDTOOrgnumberWithoutHyphen),
 				CaseDataMapper.toStakeholderAddressDTOs(organizationDTOOrgnumberWithoutHyphen.getAddresses()),
 				organizationDTOOrgnumberWithoutHyphen.getExtraParameters(),
@@ -179,7 +191,7 @@ class CaseDataMapperTest {
 				null,
 				null,
 				ORGANIZATION),
-			tuple(personDTO.getRoles(),
+			tuple(List.of(role2, role3, role),
 				toContactInformationDTO(personDTO),
 				CaseDataMapper.toStakeholderAddressDTOs(personDTO.getAddresses()),
 				personDTO.getExtraParameters(),
