@@ -1,14 +1,9 @@
 package se.sundsvall.casemanagement.integration.casedata;
 
-import static java.util.Collections.emptyList;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Stream;
-
+import generated.client.casedata.ContactInformationDTO;
+import generated.client.casedata.ErrandDTO;
+import generated.client.casedata.PatchErrandDTO;
 import org.apache.commons.lang3.StringUtils;
-
 import se.sundsvall.casemanagement.api.model.AddressDTO;
 import se.sundsvall.casemanagement.api.model.AttachmentDTO;
 import se.sundsvall.casemanagement.api.model.CoordinatesDTO;
@@ -18,9 +13,12 @@ import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
 import se.sundsvall.casemanagement.api.model.PersonDTO;
 import se.sundsvall.casemanagement.api.model.StakeholderDTO;
 
-import generated.client.casedata.ContactInformationDTO;
-import generated.client.casedata.ErrandDTO;
-import generated.client.casedata.PatchErrandDTO;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
+
+import static java.util.Collections.emptyList;
 
 public final class CaseDataMapper {
 
@@ -168,7 +166,7 @@ public final class CaseDataMapper {
 				.extraParameters(stakeholder.getExtraParameters())
 				.type(generated.client.casedata.StakeholderDTO.TypeEnum.ORGANIZATION)
 				.organizationName(stakeholder.getOrganizationName())
-				.organizationNumber(stakeholder.getOrganizationNumber())
+				.organizationNumber(formatOrganizationNumber(stakeholder.getOrganizationNumber()))
 				.authorizedSignatory(stakeholder.getAuthorizedSignatory()));
 
 		return Stream.concat(organizationDTOs, personDTOs).toList();
@@ -200,6 +198,15 @@ public final class CaseDataMapper {
 				.value(emailAddress)));
 
 		return contactInformation;
+	}
+
+	private static String formatOrganizationNumber(final String organizationNumber) {
+		return Optional.ofNullable(organizationNumber)
+			.filter(number -> Stream.of(13, 12, 11, 10)
+				.anyMatch(i -> number.length() == i))
+			.map(number -> number.replaceAll("\\D", ""))
+			.map(number -> number.substring(0, number.length() - 4) + "-" + number.substring(number.length() - 4))
+			.orElse(null);
 	}
 
 }
