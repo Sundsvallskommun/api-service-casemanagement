@@ -1,9 +1,17 @@
 package se.sundsvall.casemanagement.integration.casedata;
 
-import generated.client.casedata.ContactInformationDTO;
-import generated.client.casedata.ErrandDTO;
-import generated.client.casedata.PatchErrandDTO;
+import static java.util.Collections.emptyList;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Stream;
+
 import org.apache.commons.lang3.StringUtils;
+
 import se.sundsvall.casemanagement.api.model.AddressDTO;
 import se.sundsvall.casemanagement.api.model.AttachmentDTO;
 import se.sundsvall.casemanagement.api.model.CoordinatesDTO;
@@ -13,12 +21,9 @@ import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
 import se.sundsvall.casemanagement.api.model.PersonDTO;
 import se.sundsvall.casemanagement.api.model.StakeholderDTO;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Stream;
-
-import static java.util.Collections.emptyList;
+import generated.client.casedata.ContactInformationDTO;
+import generated.client.casedata.ErrandDTO;
+import generated.client.casedata.PatchErrandDTO;
 
 public final class CaseDataMapper {
 
@@ -147,7 +152,7 @@ public final class CaseDataMapper {
 			.filter(PersonDTO.class::isInstance)
 			.map(PersonDTO.class::cast)
 			.map(stakeholder -> new generated.client.casedata.StakeholderDTO()
-				.roles(stakeholder.getRoles())
+				.roles(toRoles(stakeholder.getRoles(), stakeholder.getExtraParameters()))
 				.contactInformation(toContactInformationDTO(stakeholder))
 				.addresses(toStakeholderAddressDTOs(stakeholder.getAddresses()))
 				.extraParameters(stakeholder.getExtraParameters())
@@ -160,7 +165,7 @@ public final class CaseDataMapper {
 			.filter(OrganizationDTO.class::isInstance)
 			.map(OrganizationDTO.class::cast)
 			.map(stakeholder -> new generated.client.casedata.StakeholderDTO()
-				.roles(stakeholder.getRoles())
+				.roles(toRoles(stakeholder.getRoles(), stakeholder.getExtraParameters()))
 				.contactInformation(toContactInformationDTO(stakeholder))
 				.addresses(toStakeholderAddressDTOs(stakeholder.getAddresses()))
 				.extraParameters(stakeholder.getExtraParameters())
@@ -198,6 +203,18 @@ public final class CaseDataMapper {
 				.value(emailAddress)));
 
 		return contactInformation;
+	}
+
+	private static List<String> toRoles(final List<String> roles, final Map<String, String> extraParameters) {
+		final var roleSet = new HashSet<>(roles);
+		Optional.ofNullable(extraParameters.get("roles"))
+			.map(rolesString -> rolesString.split(","))
+			.stream()
+			.flatMap(Arrays::stream)
+			.map(String::trim)
+			.filter(role -> !role.isBlank())
+			.forEach(roleSet::add);
+		return List.copyOf(roleSet);
 	}
 
 	private static String formatOrganizationNumber(final String organizationNumber) {
