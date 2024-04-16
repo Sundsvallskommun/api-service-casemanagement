@@ -265,6 +265,16 @@ class CaseDataMapperTest {
 	}
 
 	@Test
+	void toRoles() {
+
+		final var roles = List.of("role1", "role2", "role3");
+
+		final var result = CaseDataMapper.toRoles(roles, null);
+
+		assertThat(result).isEqualTo(roles);
+	}
+
+	@Test
 	void toContactInformationDTOs() {
 		final var stakeholder = createStakeholderDTO(StakeholderType.PERSON, List.of("someRole"));
 
