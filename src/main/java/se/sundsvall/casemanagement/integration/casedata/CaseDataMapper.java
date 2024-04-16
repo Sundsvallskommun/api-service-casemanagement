@@ -214,7 +214,7 @@ public final class CaseDataMapper {
 			.map(rolesString -> rolesString.split(","))
 			.stream()
 			.flatMap(Arrays::stream)
-			.map(java.lang.String::trim)
+			.map(String::trim)
 			.filter(role -> !role.isBlank())
 			.forEach(roleSet::add);
 
