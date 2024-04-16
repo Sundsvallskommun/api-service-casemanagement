@@ -205,15 +205,19 @@ public final class CaseDataMapper {
 		return contactInformation;
 	}
 
-	private static List<String> toRoles(final List<String> roles, final Map<String, String> extraParameters) {
+
+	static List<String> toRoles(final List<String> roles, final Map<String, String> extraParameters) {
 		final var roleSet = new HashSet<>(roles);
-		Optional.ofNullable(extraParameters.get("roles"))
+
+		Optional.ofNullable(extraParameters)
+			.map(params -> params.get("roles"))
 			.map(rolesString -> rolesString.split(","))
 			.stream()
 			.flatMap(Arrays::stream)
-			.map(String::trim)
+			.map(java.lang.String::trim)
 			.filter(role -> !role.isBlank())
 			.forEach(roleSet::add);
+
 		return List.copyOf(roleSet);
 	}
 
