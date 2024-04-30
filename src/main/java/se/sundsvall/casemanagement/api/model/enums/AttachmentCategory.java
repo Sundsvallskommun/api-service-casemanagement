@@ -273,10 +273,15 @@ public enum AttachmentCategory {
 	CORPORATE_TAX_CARD("CORPORATE_TAX_CARD", "F-skattsedel"),
 	TERMINATION_OF_HUNTING_RIGHTS("TERMINATION_OF_HUNTING_RIGHTS", "Uppsägning jakträtt"),
 	REQUEST_TO_BUY_SMALL_HOUSE_PLOT("REQUEST_TO_BUY_SMALL_HOUSE_PLOT", "Förfrågan köpa småhustomt"),
-	CONTRACT_DRAFT("CONTRACT_DRAFT", "Avtalsutkast");
+	CONTRACT_DRAFT("CONTRACT_DRAFT", "Avtalsutkast"),
+	OEP_APPLICATION("OEP_APPLICATION", "Ansökan"),
+	ROAD_ALLOWANCE_APPROVAL("ROAD_ALLOWANCE_APPROVAL", "Godkännande för vägbidrag"),
+	MEX_PROTOCOL("PROTOCOL", "Protokoll"),
+	PREVIOUS_AGREEMENT("PREVIOUS_AGREEMENT", "Tidigare avtal");
 
 
 	private final String description;
+
 	private final String code;
 
 	AttachmentCategory(final String code, final String description) {
@@ -285,7 +290,7 @@ public enum AttachmentCategory {
 
 	}
 
-	public static AttachmentCategory fromCode(String code) {
+	public static AttachmentCategory fromCode(final String code) {
 		return Arrays.stream(AttachmentCategory.values()).filter(category -> category.code.equals(code)).findFirst().orElse(null);
 	}
 
