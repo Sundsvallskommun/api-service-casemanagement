@@ -1,5 +1,6 @@
 package se.sundsvall.casemanagement.integration.casedata;
 
+import static java.util.Collections.emptyList;
 import static org.zalando.problem.Status.NOT_FOUND;
 import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toAttachment;
 import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toErrandDTO;
@@ -61,6 +62,12 @@ public class CaseDataService {
 		statusDTO.setStatusType(ARENDE_INKOMMIT_STATUS);
 		statusDTO.setDateTime(OffsetDateTime.now());
 		errandDTO.setStatuses(List.of(statusDTO));
+
+		// To keep collection instantiated and not suddenly
+		// changed to null if openAPI decides to change the implementation. (again)
+		errandDTO.setMessageIds(emptyList());
+		errandDTO.setDecisions(emptyList());
+		errandDTO.setNotes(emptyList());
 
 		final var result = caseDataClient.postErrands(errandDTO);
 		final var location = String.valueOf(result.getHeaders().getFirst(HttpHeaders.LOCATION));
