@@ -15,10 +15,7 @@
     <name>api-service-casemanagement</name>
     <properties>
         <!-- Jenkins pipeline -->
-        <docker.image.name>ms-casemanagementservice</docker.image.name>
         <app.jvm.xmx.mb>1024</app.jvm.xmx.mb>
-        <published.container.port.test>8715</published.container.port.test>
-        <published.container.port.production>8715</published.container.port.production>
         <!--- Service properties -->
         <generated-sources-path>${project.build.directory}/generated-sources
         </generated-sources-path>
