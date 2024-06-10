@@ -1,5 +1,6 @@
 package se.sundsvall.casemanagement.api.model;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -22,7 +23,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "Address model")
-public class AddressDTO {
+public class AddressDTO implements Serializable {
 
 	@NotEmpty
 	@Schema(description = "An address can have one or more address categories. For example, it can be the same address that is to be used for mail and invoices.")
@@ -59,7 +60,7 @@ public class AddressDTO {
 	@Schema(description = "The address coordinates")
 	private CoordinatesDTO location;
 
-	@Schema(description = "Is the addres in zoning plan area?")
+	@Schema(description = "Is the address in zoning plan area?")
 	private Boolean isZoningPlanArea;
 
 	@Schema(description = "Only in combination with addressCategory: INVOICE_ADDRESS")

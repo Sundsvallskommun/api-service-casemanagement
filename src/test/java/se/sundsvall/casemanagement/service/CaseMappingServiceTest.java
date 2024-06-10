@@ -132,9 +132,10 @@ class CaseMappingServiceTest {
 
 		when(caseMappingRepository.findAllByExternalCaseIdOrCaseId(caseMappingInput.getExternalCaseId(), null)).thenReturn(List.of(caseMappingInput, caseMappingInput));
 
-		assertThatThrownBy(() -> caseMappingService.getCaseMapping(caseMappingInput.getExternalCaseId()))
+		final var externalCaseId =caseMappingInput.getExternalCaseId();
+		assertThatThrownBy(() -> caseMappingService.getCaseMapping(externalCaseId))
 			.isInstanceOf(ThrowableProblem.class)
-			.hasMessage(MessageFormat.format("Not Found: More than one case was found with the same externalCaseId: \"{0}\". This should not be possible.", caseMappingInput.getExternalCaseId()))
+			.hasMessage(MessageFormat.format("Not Found: More than one case was found with the same externalCaseId: \"{0}\". This should not be possible.", externalCaseId))
 			.hasFieldOrPropertyWithValue("status", Status.NOT_FOUND);
 	}
 

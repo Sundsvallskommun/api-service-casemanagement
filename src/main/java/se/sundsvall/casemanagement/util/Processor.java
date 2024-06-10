@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.annotation.Transactional;
 
 import callback.ConfirmDelivery;
 import callback.ExternalID;
@@ -29,14 +28,14 @@ public abstract class Processor {
 	private final MessagingIntegration messagingIntegration;
 
 	protected Processor(final OpeneClient openeClient, final CaseRepository caseRepository,
-		CaseMappingRepository caseMappingRepository, final MessagingIntegration messagingIntegration) {
+		final CaseMappingRepository caseMappingRepository, final MessagingIntegration messagingIntegration) {
 		this.openeClient = openeClient;
 		this.caseRepository = caseRepository;
 		this.caseMappingRepository = caseMappingRepository;
 		this.messagingIntegration = messagingIntegration;
 	}
 
-	public void cleanAttachmentBase64(Event<?> event) {
+	public void cleanAttachmentBase64(final Event<?> event) {
 
 		final var payload = (CaseDTO) event.getPayload();
 
@@ -44,7 +43,7 @@ public abstract class Processor {
 			.forEach(attachment -> attachment.setFile("<BASE64 ENCODED FILE CONTENT>"));
 	}
 
-	@Transactional
+
 	public void handleSuccessfulDelivery(final String flowInstanceID, final String system, final String caseID) {
 
 		log.info("Successful created errand for externalCaseId {})", flowInstanceID);
@@ -63,8 +62,8 @@ public abstract class Processor {
 		}
 	}
 
-	@Transactional
-	public void handleMaximumDeliveryAttemptsExceeded(Throwable failureEvent, final CaseEntity entity, final String system) {
+
+	public void handleMaximumDeliveryAttemptsExceeded(final Throwable failureEvent, final CaseEntity entity, final String system) {
 
 		log.info("Exceeded max sending attempts case with externalCaseId {}", entity.getId());
 		caseRepository.save(entity.withDeliveryStatus(DeliveryStatus.FAILED));

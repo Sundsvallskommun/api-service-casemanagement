@@ -20,8 +20,6 @@ import feign.codec.ErrorDecoder;
 import se.sundsvall.dept44.configuration.feign.FeignMultiCustomizer;
 import se.sundsvall.dept44.configuration.feign.decoder.ProblemErrorDecoder;
 
-import feign.codec.ErrorDecoder;
-
 @ExtendWith(MockitoExtension.class)
 class CitizenConfigurationTest {
 
