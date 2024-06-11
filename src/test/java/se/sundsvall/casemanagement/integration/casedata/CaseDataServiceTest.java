@@ -113,7 +113,7 @@ class CaseDataServiceTest {
 		assertThat(errandDTO.getStatuses().getFirst().getStatusType()).isEqualTo("Ärende inkommit");
 		assertThat(errandDTO.getStatuses().getFirst().getDateTime()).isNotNull();
 
-		final var attachmentDTOArgumentCaptor = ArgumentCaptor.forClass(generated.client.casedata.AttachmentDTO.class);
+		attachmentDTOArgumentCaptor = ArgumentCaptor.forClass(generated.client.casedata.AttachmentDTO.class);
 		verify(caseDataClientMock, times(3)).postAttachment(attachmentDTOArgumentCaptor.capture());
 		final var attachmentDTO = attachmentDTOArgumentCaptor.getValue();
 		assertThat(attachmentDTO).isNotNull();

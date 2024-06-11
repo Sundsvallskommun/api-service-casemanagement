@@ -116,7 +116,7 @@ public class EcosCreateCaseFailuresIT extends AbstractAppTest {
 	}
 
 	@Test
-	void test4_PropertyDesignationNotFound() throws JsonProcessingException, ClassNotFoundException, InterruptedException {
+	void test4_PropertyDesignationNotFound() throws JsonProcessingException, ClassNotFoundException {
 
 		final var EXTERNAL_CASE_ID = "513913320";
 

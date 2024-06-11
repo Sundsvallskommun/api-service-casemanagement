@@ -47,9 +47,8 @@ class OpenApiSpecificationIT {
 
 	@Test
 	void compareOpenApiSpecifications() {
-		String existingOpenApiSpecification = ResourceUtils.asString(openApiResource);
-		String currentOpenApiSpecification = getCurrentOpenApiSpecification();
-
+		final var existingOpenApiSpecification = ResourceUtils.asString(openApiResource);
+		final var currentOpenApiSpecification = getCurrentOpenApiSpecification();
 		assertThatJson(toJson(existingOpenApiSpecification))
 			.withOptions(List.of(Option.IGNORING_ARRAY_ORDER))
 			.whenIgnoringPaths("servers")
@@ -62,7 +61,7 @@ class OpenApiSpecificationIT {
 	 * @return the current OpenAPI specification
 	 */
 	private String getCurrentOpenApiSpecification() {
-		var uri = UriComponentsBuilder.fromPath("/api-docs.yaml")
+		final var uri = UriComponentsBuilder.fromPath("/api-docs.yaml")
 			.buildAndExpand(openApiName, openApiVersion)
 			.toUri();
 
@@ -78,7 +77,7 @@ class OpenApiSpecificationIT {
 	private String toJson(final String yaml) {
 		try {
 			return YAML_MAPPER.readTree(yaml).toString();
-		} catch (JsonProcessingException e) {
+		} catch (final JsonProcessingException e) {
 			throw new IllegalStateException("Unable to convert YAML to JSON", e);
 		}
 	}

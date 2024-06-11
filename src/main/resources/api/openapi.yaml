@@ -1,13 +1,13 @@
 openapi: 3.0.1
 info:
   title: ms-casemanagementservice
-  contact: { }
+  contact: {}
   license:
     name: MIT License
     url: https://opensource.org/licenses/MIT
   version: "7.1"
 servers:
-  - url: http://localhost:52571
+  - url: http://localhost:58046
     description: Generated server url
 tags:
   - name: Status
@@ -63,37 +63,37 @@ paths:
                     extension: .pdf
                     file: dGVzdA==
               oneOf:
-                - $ref: '#/components/schemas/ByggRCaseDTO'
-                - $ref: '#/components/schemas/EcosCaseDTO'
-                - $ref: '#/components/schemas/OtherCaseDTO'
+                - $ref: "#/components/schemas/ByggRCaseDTO"
+                - $ref: "#/components/schemas/EcosCaseDTO"
+                - $ref: "#/components/schemas/OtherCaseDTO"
         required: true
       responses:
         "204":
           description: No content
-        "502":
-          description: Bad Gateway
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "404":
           description: Not found
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/Problem'
+                $ref: "#/components/schemas/Problem"
         "500":
           description: Internal Server error
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/Problem'
+                $ref: "#/components/schemas/Problem"
         "400":
           description: Bad request
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/Problem'
+                $ref: "#/components/schemas/Problem"
+        "502":
+          description: Bad Gateway
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
   /cases:
     post:
       tags:
@@ -133,9 +133,9 @@ paths:
                     extension: .pdf
                     file: dGVzdA==
               oneOf:
-                - $ref: '#/components/schemas/ByggRCaseDTO'
-                - $ref: '#/components/schemas/EcosCaseDTO'
-                - $ref: '#/components/schemas/OtherCaseDTO'
+                - $ref: "#/components/schemas/ByggRCaseDTO"
+                - $ref: "#/components/schemas/EcosCaseDTO"
+                - $ref: "#/components/schemas/OtherCaseDTO"
         required: true
       responses:
         "200":
@@ -143,34 +143,34 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CaseResourceResponseDTO'
+                $ref: "#/components/schemas/CaseResourceResponseDTO"
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/CaseResourceResponseDTO'
-        "502":
-          description: Bad Gateway
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
+                $ref: "#/components/schemas/CaseResourceResponseDTO"
         "404":
           description: Not found
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/Problem'
+                $ref: "#/components/schemas/Problem"
         "500":
           description: Internal Server error
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/Problem'
+                $ref: "#/components/schemas/Problem"
         "400":
           description: Bad request
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/Problem'
+                $ref: "#/components/schemas/Problem"
+        "502":
+          description: Bad Gateway
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
   /cases/{externalCaseId}/attachments:
     post:
       tags:
@@ -189,15 +189,9 @@ paths:
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/AttachmentDTO'
+                $ref: "#/components/schemas/AttachmentDTO"
         required: true
       responses:
-        "502":
-          description: Bad Gateway
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "204":
           description: No content - Successful request.
         "404":
@@ -205,25 +199,31 @@ paths:
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/Problem'
-        "501":
-          description: Not Implemented
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
+                $ref: "#/components/schemas/Problem"
         "500":
           description: Internal Server error
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/Problem'
+                $ref: "#/components/schemas/Problem"
+        "501":
+          description: Not Implemented
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
         "400":
           description: Bad request
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/Problem'
+                $ref: "#/components/schemas/Problem"
+        "502":
+          description: Bad Gateway
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
   /organization/{organizationNumber}/cases/status:
     get:
       tags:
@@ -243,24 +243,18 @@ paths:
             example: 20220622-2396
           example: 20220622-2396
       responses:
-        "502":
-          description: Bad Gateway
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "404":
           description: Not found
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/Problem'
+                $ref: "#/components/schemas/Problem"
         "500":
           description: Internal Server error
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/Problem'
+                $ref: "#/components/schemas/Problem"
         "200":
           description: OK - Successful operation
           content:
@@ -268,18 +262,24 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/CaseStatusDTO'
+                  $ref: "#/components/schemas/CaseStatusDTO"
             application/problem+json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/CaseStatusDTO'
+                  $ref: "#/components/schemas/CaseStatusDTO"
         "400":
           description: Bad request
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/Problem'
+                $ref: "#/components/schemas/Problem"
+        "502":
+          description: Bad Gateway
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
   /cases/{externalCaseId}/status:
     get:
       tags:
@@ -294,39 +294,39 @@ paths:
           schema:
             type: string
       responses:
-        "502":
-          description: Bad Gateway
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "404":
           description: Not found
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/Problem'
+                $ref: "#/components/schemas/Problem"
         "500":
           description: Internal Server error
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/Problem'
+                $ref: "#/components/schemas/Problem"
         "200":
           description: OK - Successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CaseStatusDTO'
+                $ref: "#/components/schemas/CaseStatusDTO"
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/CaseStatusDTO'
+                $ref: "#/components/schemas/CaseStatusDTO"
         "400":
           description: Bad request
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/Problem'
+                $ref: "#/components/schemas/Problem"
+        "502":
+          description: Bad Gateway
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
   /cases/case-mappings:
     get:
       tags:
@@ -346,13 +346,13 @@ paths:
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/Problem'
+                $ref: "#/components/schemas/Problem"
         "500":
           description: Internal Server error
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/Problem'
+                $ref: "#/components/schemas/Problem"
         "200":
           description: OK - Successful operation
           content:
@@ -360,18 +360,18 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/CaseMapping'
+                  $ref: "#/components/schemas/CaseMapping"
             application/problem+json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/CaseMapping'
+                  $ref: "#/components/schemas/CaseMapping"
         "400":
           description: Bad request
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/Problem'
+                $ref: "#/components/schemas/Problem"
   /api-docs:
     get:
       tags:
@@ -436,10 +436,10 @@ components:
           type: string
           example: LGH 1001
         location:
-          $ref: '#/components/schemas/CoordinatesDTO'
+          $ref: "#/components/schemas/CoordinatesDTO"
         isZoningPlanArea:
           type: boolean
-          description: Is the addres in zoning plan area?
+          description: Is the address in zoning plan area?
         invoiceMarking:
           type: string
           description: "Only in combination with addressCategory: INVOICE_ADDRESS"
@@ -520,12 +520,12 @@ components:
           type: array
           description: The stakeholders in the case
           items:
-            $ref: '#/components/schemas/StakeholderDTO'
+            $ref: "#/components/schemas/StakeholderDTO"
         attachments:
           type: array
           description: The attachments in the case
           items:
-            $ref: '#/components/schemas/AttachmentDTO'
+            $ref: "#/components/schemas/AttachmentDTO"
         extraParameters:
           type: object
           additionalProperties:
@@ -540,7 +540,7 @@ components:
           type: array
           description: The facilities in the case
           items:
-            $ref: '#/components/schemas/FacilityDTO'
+            $ref: "#/components/schemas/FacilityDTO"
       description: ByggR-cases
     CoordinatesDTO:
       type: object
@@ -570,7 +570,7 @@ components:
           description: Description of the facility
           example: En fritextbeskrivning av facility.
         address:
-          $ref: '#/components/schemas/AddressDTO'
+          $ref: "#/components/schemas/AddressDTO"
         facilityCollectionName:
           type: string
           description: The name on the sign.
@@ -625,7 +625,7 @@ components:
           description: An stakeholder may have one or more addresses. For example
             one POSTAL_ADDRESS and another INVOICE_ADDRESS.
           items:
-            $ref: '#/components/schemas/AddressDTO'
+            $ref: "#/components/schemas/AddressDTO"
         extraParameters:
           type: object
           additionalProperties:
@@ -665,12 +665,12 @@ components:
           type: array
           description: The stakeholders in the case
           items:
-            $ref: '#/components/schemas/StakeholderDTO'
+            $ref: "#/components/schemas/StakeholderDTO"
         attachments:
           type: array
           description: The attachments in the case
           items:
-            $ref: '#/components/schemas/AttachmentDTO'
+            $ref: "#/components/schemas/AttachmentDTO"
         extraParameters:
           type: object
           additionalProperties:
@@ -693,7 +693,7 @@ components:
           type: array
           description: The facilities in the case
           items:
-            $ref: '#/components/schemas/FacilityDTO'
+            $ref: "#/components/schemas/FacilityDTO"
       description: Ecos2-case model class
     OtherCaseDTO:
       required:
@@ -724,12 +724,12 @@ components:
           type: array
           description: The stakeholders in the case
           items:
-            $ref: '#/components/schemas/StakeholderDTO'
+            $ref: "#/components/schemas/StakeholderDTO"
         attachments:
           type: array
           description: The attachments in the case
           items:
-            $ref: '#/components/schemas/AttachmentDTO'
+            $ref: "#/components/schemas/AttachmentDTO"
         extraParameters:
           type: object
           additionalProperties:
@@ -740,7 +740,7 @@ components:
           type: array
           description: The facilities in the case
           items:
-            $ref: '#/components/schemas/FacilityDTO'
+            $ref: "#/components/schemas/FacilityDTO"
       description: Other case model
     Problem:
       type: object
@@ -755,12 +755,12 @@ components:
           type: object
           additionalProperties:
             type: object
-        status:
-          $ref: '#/components/schemas/StatusType'
-        detail:
-          type: string
         title:
           type: string
+        detail:
+          type: string
+        status:
+          $ref: "#/components/schemas/StatusType"
     StatusType:
       type: object
       properties:
@@ -838,4 +838,4 @@ components:
           type: string
           format: date-time
           readOnly: true
-  securitySchemes: { }
+  securitySchemes: {}

@@ -1,5 +1,6 @@
 package se.sundsvall.casemanagement.api.model;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,7 +26,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @JsonPropertyOrder({"facilityType", "description", "address", "facilityCollectionName", "mainFacility", "extraParameters"})
 @Schema(description = "Facility model")
-public class FacilityDTO {
+public class FacilityDTO implements Serializable {
 
 	@Schema(description = "Description of the facility", example = "En fritextbeskrivning av facility.")
 	private String description;
