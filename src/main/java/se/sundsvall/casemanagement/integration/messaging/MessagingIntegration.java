@@ -21,4 +21,8 @@ public class MessagingIntegration {
 	public void sendSlack(final String message) {
 		messagingClient.sendSlack(mapper.toRequest(message));
 	}
+
+	public void sendMail(String subject, String message) {
+		messagingClient.sendEmail(mapper.toEmailRequest(subject, message));
+	}
 }

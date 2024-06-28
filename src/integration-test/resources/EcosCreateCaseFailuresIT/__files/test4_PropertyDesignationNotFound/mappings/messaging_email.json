@@ -1,0 +1,13 @@
+{
+  "name": "messaging",
+  "request": {
+    "urlPathPattern": "/messaging/3.1/email",
+    "method": "POST"
+  },
+  "response": {
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "status": 200
+  }
+}
