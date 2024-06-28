@@ -13,6 +13,7 @@ import lombok.Setter;
 public class MessagingProperties {
 
 	private String channel;
+	private String mailRecipient;
 	private String token;
 
 	/// BASE PROPERTIES

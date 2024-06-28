@@ -2,6 +2,8 @@ package se.sundsvall.casemanagement.integration.messaging;
 
 import org.springframework.stereotype.Component;
 
+import generated.client.messaging.EmailRequest;
+import generated.client.messaging.EmailSender;
 import generated.client.messaging.SlackRequest;
 
 @Component
@@ -18,5 +20,15 @@ public class MessagingIntegrationMapper {
 			.message(message)
 			.token(properties.getToken())
 			.channel(properties.getChannel());
+	}
+
+	public EmailRequest toEmailRequest(String subject, String message) {
+		return new EmailRequest()
+			.sender(new EmailSender()
+				.name("CaseManagement")
+				.address("noreply@sundsvall.se"))
+			.emailAddress(properties.getMailRecipient())
+			.subject(subject)
+			.message(message);
 	}
 }
