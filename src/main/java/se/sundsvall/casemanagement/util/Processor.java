@@ -43,7 +43,6 @@ public abstract class Processor {
 			.forEach(attachment -> attachment.setFile("<BASE64 ENCODED FILE CONTENT>"));
 	}
 
-
 	public void handleSuccessfulDelivery(final String flowInstanceID, final String system, final String caseID) {
 
 		log.info("Successful created errand for externalCaseId {})", flowInstanceID);
@@ -62,11 +61,14 @@ public abstract class Processor {
 		}
 	}
 
-
 	public void handleMaximumDeliveryAttemptsExceeded(final Throwable failureEvent, final CaseEntity entity, final String system) {
 
 		log.info("Exceeded max sending attempts case with externalCaseId {}", entity.getId());
 		caseRepository.save(entity.withDeliveryStatus(DeliveryStatus.FAILED));
-		messagingIntegration.sendSlack("[" + system + "]" + "Exceeded max sending attempts case with externalCaseId " + entity.getId() + " Exception: " + failureEvent.getMessage());
+
+		final var message = "[" + system + "]" + "Exceeded max sending attempts case with externalCaseId " + entity.getId() + " Exception: " + failureEvent.getMessage();
+
+		messagingIntegration.sendSlack(message);
+		messagingIntegration.sendMail("Incident from CaseManagement", message);
 	}
 }
