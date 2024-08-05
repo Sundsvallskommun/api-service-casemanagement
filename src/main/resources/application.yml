@@ -90,7 +90,6 @@ spring:
     baseline-on-migrate: true
     enabled: true
   jpa:
-    database-platform: org.hibernate.dialect.MariaDB106Dialect
     hibernate:
       ddl-auto: validate
       naming:
