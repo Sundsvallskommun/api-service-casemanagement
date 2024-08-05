@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,7 +14,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import dev.failsafe.Failsafe;
 import dev.failsafe.RetryPolicy;
 import minutmiljoV2.RegisterDocumentCaseResultSvcDto;
-
 import se.sundsvall.casemanagement.api.model.EcosCaseDTO;
 import se.sundsvall.casemanagement.configuration.RetryProperties;
 import se.sundsvall.casemanagement.integration.db.CaseMappingRepository;
@@ -47,7 +45,6 @@ class EcosProcessor extends Processor {
 			.build();
 	}
 
-	@Transactional
 	@EventListener(IncomingEcosCase.class)
 	public void handleIncomingErrand(final IncomingEcosCase event) throws JsonProcessingException, SQLException {
 
@@ -73,6 +70,5 @@ class EcosProcessor extends Processor {
 			cleanAttachmentBase64(event);
 			log.warn("Unable to create ecos errand {}: {}", event.getPayload(), e.getMessage());
 		}
-
 	}
 }
