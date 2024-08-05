@@ -86,6 +86,8 @@ spring:
     password: override
     url: override
     username: override
+    hikari:
+      maximum-pool-size: 20
   flyway:
     baseline-on-migrate: true
     enabled: true
