@@ -4,13 +4,16 @@ import java.io.BufferedReader;
 import java.sql.SQLException;
 import java.util.stream.Collectors;
 
+import org.springframework.context.event.EventListener;
+import org.springframework.stereotype.Component;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.springframework.context.event.EventListener;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
+import arendeexport.SaveNewArendeResponse2;
+import dev.failsafe.Failsafe;
+import dev.failsafe.RetryPolicy;
 import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
 import se.sundsvall.casemanagement.configuration.RetryProperties;
 import se.sundsvall.casemanagement.integration.db.CaseMappingRepository;
@@ -19,10 +22,6 @@ import se.sundsvall.casemanagement.integration.messaging.MessagingIntegration;
 import se.sundsvall.casemanagement.integration.opene.OpeneClient;
 import se.sundsvall.casemanagement.service.event.IncomingByggrCase;
 import se.sundsvall.casemanagement.util.Processor;
-
-import arendeexport.SaveNewArendeResponse2;
-import dev.failsafe.Failsafe;
-import dev.failsafe.RetryPolicy;
 
 @Component
 class ByggrProcessor extends Processor {
@@ -46,7 +45,6 @@ class ByggrProcessor extends Processor {
 			.build();
 	}
 
-	@Transactional
 	@EventListener(IncomingByggrCase.class)
 	public void handleIncomingErrand(final IncomingByggrCase event) throws JsonProcessingException, SQLException {
 
@@ -72,5 +70,4 @@ class ByggrProcessor extends Processor {
 			log.warn("Unable to create byggR errand {}: {}", event.getPayload(), e.getMessage());
 		}
 	}
-
 }

@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -47,7 +46,6 @@ class CasedataProcessor extends Processor {
 			.build();
 	}
 
-	@Transactional
 	@EventListener(IncomingOtherCase.class)
 	public void handleIncomingErrand(final IncomingOtherCase event) throws SQLException, JsonProcessingException {
 
@@ -72,6 +70,5 @@ class CasedataProcessor extends Processor {
 			cleanAttachmentBase64(event);
 			log.warn("Unable to create CaseData errand {}: {}", event.getPayload(), e.getMessage());
 		}
-
 	}
 }
