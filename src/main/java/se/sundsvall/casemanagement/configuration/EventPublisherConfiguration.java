@@ -12,7 +12,9 @@ class EventPublisherConfiguration {
     @Bean(name = "applicationEventMulticaster")
     ApplicationEventMulticaster simpleApplicationEventMulticaster() {
         var eventMulticaster = new SimpleApplicationEventMulticaster();
-        eventMulticaster.setTaskExecutor(new SimpleAsyncTaskExecutor());
+        var taskExecutor = new SimpleAsyncTaskExecutor();
+        taskExecutor.setTaskDecorator(new MDCTaskDecorator());
+        eventMulticaster.setTaskExecutor(taskExecutor);
         return eventMulticaster;
     }
 }
