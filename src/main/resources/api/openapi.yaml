@@ -7,7 +7,7 @@ info:
     url: https://opensource.org/licenses/MIT
   version: "7.1"
 servers:
-  - url: http://localhost:58046
+  - url: http://localhost:51511
     description: Generated server url
 tags:
   - name: Status
@@ -68,8 +68,6 @@ paths:
                 - $ref: "#/components/schemas/OtherCaseDTO"
         required: true
       responses:
-        "204":
-          description: No content
         "404":
           description: Not found
           content:
@@ -82,6 +80,8 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
+        "204":
+          description: No content
         "400":
           description: Bad request
           content:
@@ -138,15 +138,6 @@ paths:
                 - $ref: "#/components/schemas/OtherCaseDTO"
         required: true
       responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/CaseResourceResponseDTO"
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/CaseResourceResponseDTO"
         "404":
           description: Not found
           content:
@@ -171,6 +162,15 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CaseResourceResponseDTO"
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/CaseResourceResponseDTO"
   /cases/{externalCaseId}/attachments:
     post:
       tags:
@@ -192,8 +192,6 @@ paths:
                 $ref: "#/components/schemas/AttachmentDTO"
         required: true
       responses:
-        "204":
-          description: No content - Successful request.
         "404":
           description: Not found
           content:
@@ -206,14 +204,14 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-        "501":
-          description: Not Implemented
+        "400":
+          description: Bad request
           content:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-        "400":
-          description: Bad request
+        "501":
+          description: Not Implemented
           content:
             application/problem+json:
               schema:
@@ -224,6 +222,8 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
+        "204":
+          description: No content - Successful request.
   /organization/{organizationNumber}/cases/status:
     get:
       tags:
@@ -255,6 +255,18 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "502":
+          description: Bad Gateway
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
         "200":
           description: OK - Successful operation
           content:
@@ -268,18 +280,6 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/CaseStatusDTO"
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "502":
-          description: Bad Gateway
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
   /cases/{externalCaseId}/status:
     get:
       tags:
@@ -306,15 +306,6 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-        "200":
-          description: OK - Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/CaseStatusDTO"
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/CaseStatusDTO"
         "400":
           description: Bad request
           content:
@@ -327,6 +318,15 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
+        "200":
+          description: OK - Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CaseStatusDTO"
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/CaseStatusDTO"
   /cases/case-mappings:
     get:
       tags:
@@ -353,6 +353,12 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
         "200":
           description: OK - Successful operation
           content:
@@ -366,12 +372,6 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/CaseMapping"
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
   /api-docs:
     get:
       tags:
@@ -520,7 +520,9 @@ components:
           type: array
           description: The stakeholders in the case
           items:
-            $ref: "#/components/schemas/StakeholderDTO"
+            oneOf:
+              - $ref: "#/components/schemas/OrganizationDTO"
+              - $ref: "#/components/schemas/PersonDTO"
         attachments:
           type: array
           description: The attachments in the case
@@ -586,6 +588,58 @@ components:
             description: Extra parameters for the facility
           description: Extra parameters for the facility
       description: Facility model
+    OrganizationDTO:
+      required:
+        - organizationName
+        - organizationNumber
+        - type
+      type: object
+      description: Organization model
+      allOf:
+        - $ref: "#/components/schemas/StakeholderDTO"
+        - type: object
+          properties:
+            organizationName:
+              type: string
+              description: Organization name
+              example: Sundsvalls testfabrik
+            organizationNumber:
+              type: string
+              description: Organization number with 10 or 12 digits.
+              example: 20220622-2396
+            authorizedSignatory:
+              type: string
+              description: The authorized signatory
+              example: Test Testorsson
+    PersonDTO:
+      required:
+        - firstName
+        - lastName
+        - personId
+        - type
+      type: object
+      description: Person model
+      allOf:
+        - $ref: "#/components/schemas/StakeholderDTO"
+        - type: object
+          properties:
+            firstName:
+              type: string
+              description: The person's first name
+              example: Test
+            lastName:
+              type: string
+              description: The person's last name
+              example: Testorsson
+            personId:
+              type: string
+              description: The person's id
+              example: 3ed5bc30-6308-4fd5-a5a7-78d7f96f4438
+            personalNumber:
+              type: string
+              description: The person's personal number
+              readOnly: true
+              example: 20000101-1234
     StakeholderDTO:
       required:
         - type
@@ -665,7 +719,9 @@ components:
           type: array
           description: The stakeholders in the case
           items:
-            $ref: "#/components/schemas/StakeholderDTO"
+            oneOf:
+              - $ref: "#/components/schemas/OrganizationDTO"
+              - $ref: "#/components/schemas/PersonDTO"
         attachments:
           type: array
           description: The attachments in the case
@@ -724,7 +780,9 @@ components:
           type: array
           description: The stakeholders in the case
           items:
-            $ref: "#/components/schemas/StakeholderDTO"
+            oneOf:
+              - $ref: "#/components/schemas/OrganizationDTO"
+              - $ref: "#/components/schemas/PersonDTO"
         attachments:
           type: array
           description: The attachments in the case
@@ -755,20 +813,20 @@ components:
           type: object
           additionalProperties:
             type: object
+        status:
+          $ref: "#/components/schemas/StatusType"
         title:
           type: string
         detail:
           type: string
-        status:
-          $ref: "#/components/schemas/StatusType"
     StatusType:
       type: object
       properties:
-        reasonPhrase:
-          type: string
         statusCode:
           type: integer
           format: int32
+        reasonPhrase:
+          type: string
     CaseResourceResponseDTO:
       type: object
       properties:
