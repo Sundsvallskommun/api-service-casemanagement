@@ -279,7 +279,7 @@
                             <outputDirectory>
                                 ${generated-sources-path}/${generated-sources-java-path}
                             </outputDirectory>
-                            <clearOutputDir>false</clearOutputDir>
+                            <clearOutputDir>true</clearOutputDir>
                             <packageName>arendeexport</packageName>
                             <encoding>UTF-8</encoding>
                             <addGeneratedAnnotation>true</addGeneratedAnnotation>

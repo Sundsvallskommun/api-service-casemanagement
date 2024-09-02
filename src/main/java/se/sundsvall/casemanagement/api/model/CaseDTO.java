@@ -43,6 +43,7 @@ import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_SEL
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_TERMINATION_OF_HUNTING_LEASE;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_TERMINATION_OF_LEASE;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_UNAUTHORIZED_RESIDENCE;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.NEIGHBORHOOD_NOTIFICATION;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.NYBYGGNAD_ANSOKAN_OM_BYGGLOV;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.NYBYGGNAD_FORHANDSBESKED;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARKING_PERMIT;
@@ -100,7 +101,8 @@ import lombok.experimental.SuperBuilder;
 		MARKLOV_FYLL,
 		MARKLOV_TRADFALLNING,
 		MARKLOV_OVRIGT,
-		STRANDSKYDD_OVRIGT
+		STRANDSKYDD_OVRIGT,
+		NEIGHBORHOOD_NOTIFICATION
 	}),
 	@Type(value = EcosCaseDTO.class, names = {
 		REGISTRERING_AV_LIVSMEDEL,
@@ -113,7 +115,8 @@ import lombok.experimental.SuperBuilder;
 		UPPDATERING_RISKKLASSNING,
 		ANMALAN_HALSOSKYDDSVERKSAMHET,
 		ANMALAN_KOMPOSTERING,
-		ANMALAN_AVHJALPANDEATGARD_FORORENING}),
+		ANMALAN_AVHJALPANDEATGARD_FORORENING
+	}),
 	@Type(value = OtherCaseDTO.class, names = {
 		PARKING_PERMIT,
 		LOST_PARKING_PERMIT,

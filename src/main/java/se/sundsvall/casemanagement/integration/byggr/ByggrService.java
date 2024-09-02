@@ -2,6 +2,7 @@ package se.sundsvall.casemanagement.integration.byggr;
 
 
 import static java.util.Collections.emptyList;
+import static org.zalando.problem.Status.BAD_REQUEST;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.WITH_NULLABLE_FACILITY_TYPE;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.filterPersonId;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.getArendeBeskrivning;
@@ -33,12 +34,13 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.zalando.problem.Problem;
 
 import se.sundsvall.casemanagement.api.model.AttachmentDTO;
+import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
 import se.sundsvall.casemanagement.api.model.CaseStatusDTO;
 import se.sundsvall.casemanagement.api.model.OrganizationDTO;
 import se.sundsvall.casemanagement.api.model.PersonDTO;
-import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
 import se.sundsvall.casemanagement.api.model.StakeholderDTO;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
@@ -57,14 +59,23 @@ import arendeexport.ArendeFastighet;
 import arendeexport.ArendeIntressent;
 import arendeexport.ArrayOfAbstractArendeObjekt2;
 import arendeexport.ArrayOfArendeIntressent2;
+import arendeexport.ArrayOfHandelseHandling;
+import arendeexport.ArrayOfHandelseIntressent2;
+import arendeexport.ArrayOfHandling;
 import arendeexport.ArrayOfString;
+import arendeexport.Dokument;
+import arendeexport.DokumentFil;
 import arendeexport.Fastighet;
 import arendeexport.GetArende;
 import arendeexport.GetRelateradeArendenByPersOrgNrAndRole;
+import arendeexport.Handelse;
+import arendeexport.HandelseHandling;
+import arendeexport.HandelseIntressent;
 import arendeexport.HandlaggareBas;
 import arendeexport.SaveNewArende;
 import arendeexport.SaveNewArendeResponse2;
 import arendeexport.SaveNewHandelse;
+import arendeexport.SaveNewHandelseMessage;
 
 @Service
 public class ByggrService {
@@ -81,12 +92,171 @@ public class ByggrService {
 
 	private final CaseTypeRepository caseTypeRepository;
 
-	public ByggrService(final FbService fbService, final CitizenService citizenService, final CaseMappingService caseMappingService, final ArendeExportClient arendeExportClient, final CaseTypeRepository caseTypeRepository) {
+	public ByggrService(final FbService fbService,
+		final CitizenService citizenService,
+		final CaseMappingService caseMappingService,
+		final ArendeExportClient arendeExportClient,
+		final CaseTypeRepository caseTypeRepository) {
 		this.fbService = fbService;
 		this.citizenService = citizenService;
 		this.caseMappingService = caseMappingService;
 		this.arendeExportClient = arendeExportClient;
 		this.caseTypeRepository = caseTypeRepository;
+	}
+
+	public void updateByggRCase(final ByggRCaseDTO byggRCaseDTO) {
+		var stakeholderId = extractStakeholderId(byggRCaseDTO.getStakeholders());
+		var errandNr = byggRCaseDTO.getExtraParameters().get("errandNr");
+		var comment = byggRCaseDTO.getExtraParameters().get("comment");
+		var errandInformation = byggRCaseDTO.getExtraParameters().get("errandInformation");
+		var handelseHandling = createHandelseHandling(byggRCaseDTO);
+
+		var byggRCase = getByggRCase(errandNr);
+		var handelse = extractEvent(byggRCase, "GRANHO", "GRAUTS");
+
+		var intressent = extractEventStakeholder(handelse, stakeholderId);
+
+		var arendeFastighet = byggRCase.getObjektLista().getAbstractArendeObjekt().stream()
+			.map(abstractArendeObjekt -> (ArendeFastighet) abstractArendeObjekt)
+			.findFirst().orElseThrow(() -> Problem.valueOf(BAD_REQUEST, "No ArendeFastighet found in ByggRCase"));
+
+		var fastighet = arendeFastighet.getFastighet();
+		var newHandelse = createNewEvent(comment, errandInformation, intressent, fastighet, handelseHandling);
+		var saveNewHandelse = createSaveNewHandelse(errandNr, newHandelse, handelseHandling);
+
+		arendeExportClient.saveNewHandelse(saveNewHandelse);
+	}
+
+	/**
+	 * @param dnr The case number
+	 * @param handelse The ByggR event
+	 * @param arrayOfHandelseHandling The attachments that the stakeholder sends with the response
+	 * @return SaveNewHandelse, a request model that is sent to ByggR
+	 */
+	public SaveNewHandelse createSaveNewHandelse(final String dnr, final Handelse handelse, final ArrayOfHandelseHandling arrayOfHandelseHandling) {
+		var handlingar = arrayOfHandelseHandling.getHandling();
+
+		var arrayOfHandling = new ArrayOfHandling().withHandling(handlingar);
+
+		var saveNewHandelseMessage = new SaveNewHandelseMessage()
+			.withDnr(dnr)
+			.withHandelse(handelse)
+			.withHandlingar(arrayOfHandling);
+
+
+		return new SaveNewHandelse().withMessage(saveNewHandelseMessage);
+	}
+
+	/**
+	 * Repackages the attachments from the incoming request to a format that ByggR can understand.
+	 *
+	 * @param byggRCaseDTO The incoming request from OpenE
+	 * @return ArrayOfHandelseHandling, a list of attachments that the stakeholder sends with the response
+	 */
+	public ArrayOfHandelseHandling createHandelseHandling(final ByggRCaseDTO byggRCaseDTO) {
+		var attachments = byggRCaseDTO.getAttachments();
+		var arrayOfHandelseHandling = new ArrayOfHandelseHandling();
+
+		for (var attachment : attachments) {
+			var dokumentFil = new DokumentFil().withFilBuffer(attachment.getFile().getBytes()).withFilAndelse(attachment.getExtension());
+			var dokument = new Dokument().withFil(dokumentFil);
+			var handelseHandling = new HandelseHandling().withDokument(dokument).withTyp("BIL");
+			arrayOfHandelseHandling.getHandling().add(handelseHandling);
+		}
+		return arrayOfHandelseHandling;
+	}
+
+	/**
+	 * Creates a new Handelse object with the given parameters.
+	 *
+	 * @param comment String that determines if the stakeholder has any issues with the building permit
+	 * @param errandInformation String that contains the stakeholders comment. (Bad name given by OpenE)
+	 * @param intressent The stakeholder that responds to the hearing request
+	 * @param fastighet The property that the permit is for
+	 * @param handelseHandling The attachments that the stakeholder sends with the response
+	 * @return Handelse, a new event in a ByggR Case
+	 */
+	public Handelse createNewEvent(final String comment, final String errandInformation, final HandelseIntressent intressent, final Fastighet fastighet, final ArrayOfHandelseHandling handelseHandling) {
+		var opinion = comment.equals("Jag har synpunkter") ? "Grannehörande Svar med erinran" : "Grannehörande Svar utan erinran";
+		var trakt = fastighet.getTrakt();
+		var fbetNr = fastighet.getFbetNr();
+
+		var title = opinion + ", " + trakt + " " + fbetNr + ", " + intressent.getNamn();
+
+		return new Handelse()
+			.withRubrik(title)
+			.withAnteckning(errandInformation)
+			.withHandelsetyp("GRANHO")
+			.withHandelseslag("GRASVA")
+			.withHandlingLista(handelseHandling)
+			.withIntressentLista(new ArrayOfHandelseIntressent2().withIntressent(intressent));
+	}
+
+	/**
+	 * Extracts a stakeholder from a specific byggR event based on the stakeholder id.
+	 *
+	 * @param handelse the event
+	 * @param stakeholderId the stakeholder id
+	 * @return HandelseIntressent, the stakeholder of a specific event
+	 */
+	public HandelseIntressent extractEventStakeholder(final Handelse handelse, final String stakeholderId) {
+		return handelse.getIntressentLista().getIntressent().stream()
+			.filter(intressent1 -> intressent1.getPersOrgNr().equals(stakeholderId))
+			.findFirst().orElseThrow(() -> Problem.valueOf(BAD_REQUEST, "Stakeholder with id %s not found in ByggRCase".formatted(stakeholderId)));
+	}
+
+	/**
+	 * A byggR case might have multiple different events. This method extracts the wanted event based
+	 * on the handelsetyp and handelseslag.
+	 *
+	 * @param arende the byggR case
+	 * @param handelsetyp wanted handelsetyp
+	 * @param handelseslag wanted handelseslag
+	 * @return Handelse, a specific event in a ByggR Case
+	 */
+	public Handelse extractEvent(final Arende arende, final String handelsetyp, final String handelseslag) {
+		return arende.getHandelseLista().getHandelse().stream()
+			.filter(handelse -> handelse.getHandelsetyp().equals(handelsetyp) && handelse.getHandelseslag().equals(handelseslag))
+			.findFirst().orElseThrow(() -> Problem.valueOf(BAD_REQUEST, "No GRANHO/GRAUTS event found in ByggRCase"));
+	}
+
+	/**
+	 * The incoming request might have one or two stakeholders. If any stakeholder is of type
+	 * Organization, we should use the organization number as stakeholderId.
+	 * If no organization is found, we should use the personId to fetch a personal number from
+	 * citizenService and use this personal number as the stakeholder id.
+	 *
+	 * @param stakeholders List of stakeholders
+	 * @return String, organization number or personal number of the stakeholder.
+	 */
+	public String extractStakeholderId(final List<StakeholderDTO> stakeholders) {
+
+		var organizationId = stakeholders.stream()
+			.filter(stakeholder -> stakeholder instanceof OrganizationDTO)
+			.findFirst()
+			.map(stakeholder -> ((OrganizationDTO) stakeholder).getOrganizationNumber())
+			.orElse(null);
+
+		if (organizationId != null) {
+			return organizationId;
+		}
+
+		return stakeholders.stream()
+			.filter(stakeholder -> stakeholder instanceof PersonDTO)
+			.findFirst()
+			.map(stakeholder -> ((PersonDTO) stakeholder).getPersonId())
+			.map(citizenService::getPersonalNumber)
+			.orElseThrow(() -> Problem.valueOf(BAD_REQUEST, "No stakeholder found in the incoming request."));
+	}
+
+	/**
+	 * Fetches a ByggR case based on the case number.
+	 *
+	 * @param dnr the case number
+	 * @return Arende, a ByggR case
+	 */
+	public Arende getByggRCase(final String dnr) {
+		return arendeExportClient.getArende(new GetArende().withDnr(dnr)).getGetArendeResult();
 	}
 
 	public SaveNewArendeResponse2 saveNewCase(final ByggRCaseDTO caseInput) {
@@ -159,11 +329,7 @@ public class ByggrService {
 				return toByggrStatus(byggrArende,
 					Optional.ofNullable(caseMappingList)
 						.filter(list -> !list.isEmpty()).map(list -> list.getFirst().getExternalCaseId())
-						.orElse(null)
-
-
-				);
-
+						.orElse(null));
 			})
 			.toList();
 	}

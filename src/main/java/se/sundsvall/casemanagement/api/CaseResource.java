@@ -22,6 +22,7 @@ import se.sundsvall.casemanagement.api.model.CaseDTO;
 import se.sundsvall.casemanagement.api.model.CaseResourceResponseDTO;
 import se.sundsvall.casemanagement.api.model.EcosCaseDTO;
 import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
+import se.sundsvall.casemanagement.integration.byggr.ByggrService;
 import se.sundsvall.casemanagement.integration.casedata.CaseDataService;
 import se.sundsvall.casemanagement.service.CaseMappingService;
 import se.sundsvall.casemanagement.service.CaseService;
@@ -49,11 +50,14 @@ class CaseResource {
 
 	private final CaseDataService caseDataService;
 
+	private final ByggrService byggrService;
+
 	CaseResource(final CaseMappingService caseMappingService, final CaseService caseService,
-		final CaseDataService caseDataService) {
+		final CaseDataService caseDataService, final ByggrService byggrService) {
 		this.caseMappingService = caseMappingService;
 		this.caseService = caseService;
 		this.caseDataService = caseDataService;
+		this.byggrService = byggrService;
 	}
 
 	@Operation(description = "Creates a case in ByggR or Ecos2 based on caseType. Also persists a connection between externalCaseId and the created case.")
@@ -81,7 +85,11 @@ class CaseResource {
 		@RequestBody
 		@Valid CaseDTO caseDTOInput) {
 
-		if (caseDTOInput instanceof OtherCaseDTO otherCaseDTO) {
+		if (caseDTOInput instanceof ByggRCaseDTO byggRCaseDTO) {
+			// TODO: Implement this...
+			byggrService.updateByggRCase(byggRCaseDTO);
+			return null;
+		} else if (caseDTOInput instanceof OtherCaseDTO otherCaseDTO) {
 			caseDataService.putErrand(Long.valueOf(caseMappingService.getCaseMapping(externalCaseId).getCaseId()), otherCaseDTO);
 			return ResponseEntity.noContent().build();
 		} else {

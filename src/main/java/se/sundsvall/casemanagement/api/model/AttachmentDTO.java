@@ -35,7 +35,7 @@ public class AttachmentDTO {
 	private String extension;
 
 	@NotBlank
-	@Schema(description = "the mime type of the attahcment", example = "application/pdf")
+	@Schema(description = "the mime type of the attachment", example = "application/pdf")
 	private String mimeType;
 
 	@NotBlank
