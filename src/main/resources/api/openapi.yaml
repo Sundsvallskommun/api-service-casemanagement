@@ -1,13 +1,13 @@
 openapi: 3.0.1
 info:
   title: ms-casemanagementservice
-  contact: {}
+  contact: { }
   license:
     name: MIT License
     url: https://opensource.org/licenses/MIT
   version: "7.1"
 servers:
-  - url: http://localhost:51511
+  - url: http://localhost:53486
     description: Generated server url
 tags:
   - name: Status
@@ -68,20 +68,20 @@ paths:
                 - $ref: "#/components/schemas/OtherCaseDTO"
         required: true
       responses:
-        "404":
-          description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
+        "204":
+          description: No content
         "500":
           description: Internal Server error
           content:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-        "204":
-          description: No content
+        "404":
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
         "400":
           description: Bad request
           content:
@@ -138,14 +138,23 @@ paths:
                 - $ref: "#/components/schemas/OtherCaseDTO"
         required: true
       responses:
-        "404":
-          description: Not found
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CaseResourceResponseDTO"
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/CaseResourceResponseDTO"
+        "500":
+          description: Internal Server error
           content:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-        "500":
-          description: Internal Server error
+        "404":
+          description: Not found
           content:
             application/problem+json:
               schema:
@@ -162,15 +171,6 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/CaseResourceResponseDTO"
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/CaseResourceResponseDTO"
   /cases/{externalCaseId}/attachments:
     post:
       tags:
@@ -192,14 +192,16 @@ paths:
                 $ref: "#/components/schemas/AttachmentDTO"
         required: true
       responses:
-        "404":
-          description: Not found
+        "204":
+          description: No content - Successful request.
+        "500":
+          description: Internal Server error
           content:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-        "500":
-          description: Internal Server error
+        "404":
+          description: Not found
           content:
             application/problem+json:
               schema:
@@ -210,20 +212,18 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-        "501":
-          description: Not Implemented
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
         "502":
           description: Bad Gateway
           content:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-        "204":
-          description: No content - Successful request.
+        "501":
+          description: Not Implemented
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
   /organization/{organizationNumber}/cases/status:
     get:
       tags:
@@ -243,26 +243,8 @@ paths:
             example: 20220622-2396
           example: 20220622-2396
       responses:
-        "404":
-          description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
         "500":
           description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "502":
-          description: Bad Gateway
           content:
             application/problem+json:
               schema:
@@ -280,6 +262,24 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/CaseStatusDTO"
+        "404":
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "502":
+          description: Bad Gateway
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
   /cases/{externalCaseId}/status:
     get:
       tags:
@@ -294,14 +294,23 @@ paths:
           schema:
             type: string
       responses:
-        "404":
-          description: Not found
+        "500":
+          description: Internal Server error
           content:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-        "500":
-          description: Internal Server error
+        "200":
+          description: OK - Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CaseStatusDTO"
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/CaseStatusDTO"
+        "404":
+          description: Not found
           content:
             application/problem+json:
               schema:
@@ -318,15 +327,6 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-        "200":
-          description: OK - Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/CaseStatusDTO"
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/CaseStatusDTO"
   /cases/case-mappings:
     get:
       tags:
@@ -341,20 +341,8 @@ paths:
           schema:
             type: string
       responses:
-        "404":
-          description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
         "500":
           description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "400":
-          description: Bad request
           content:
             application/problem+json:
               schema:
@@ -372,6 +360,18 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/CaseMapping"
+        "404":
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
   /api-docs:
     get:
       tags:
@@ -476,7 +476,7 @@ components:
           example: .pdf
         mimeType:
           type: string
-          description: the mime type of the attahcment
+          description: the mime type of the attachment
           example: application/pdf
         file:
           type: string
@@ -803,6 +803,10 @@ components:
     Problem:
       type: object
       properties:
+        detail:
+          type: string
+        title:
+          type: string
         instance:
           type: string
           format: uri
@@ -815,10 +819,6 @@ components:
             type: object
         status:
           $ref: "#/components/schemas/StatusType"
-        title:
-          type: string
-        detail:
-          type: string
     StatusType:
       type: object
       properties:
@@ -896,4 +896,4 @@ components:
           type: string
           format: date-time
           readOnly: true
-  securitySchemes: {}
+  securitySchemes: { }

@@ -54,15 +54,17 @@ class CaseResourceTest {
 	@MockBean
 	private CaseDataService caseDataService;
 
+	@MockBean
+	private CitizenService citizenServiceMock;
+
+	@MockBean
+	private ArendeExportClient arendeExportClientMock;
+
 	@Captor
 	private ArgumentCaptor<CaseDTO> caseDTOCaptor;
 
 	@Autowired
 	private WebTestClient webTestClient;
-	@Autowired
-	private CitizenService citizenService;
-	@Autowired
-	private ArendeExportClient arendeExportClient;
 
 	@Test
 	void postCase_Ecos(@Load("/case-resource/ecos-case.json") final String body) {
@@ -165,8 +167,8 @@ class CaseResourceTest {
 	void putCase_ByggRCase(@Load("/case-resource/byggr-neighborhood-notification-case.json") final String body) {
 		var arende = createArende();
 		var arendeResponse = new GetArendeResponse().withGetArendeResult(arende);
-		when(citizenService.getPersonalNumber("3ed5bc30-6308-4fd5-a5a7-78d7f96f4438")).thenReturn("20000101-1234");
-		when(arendeExportClient.getArende(any())).thenReturn(arendeResponse);
+		when(citizenServiceMock.getPersonalNumber("3ed5bc30-6308-4fd5-a5a7-78d7f96f4438")).thenReturn("200001011234");
+		when(arendeExportClientMock.getArende(any())).thenReturn(arendeResponse);
 
 		webTestClient.put()
 			.uri(uriBuilder -> uriBuilder.path("/cases/{externalCaseId}").build("externalCaseId"))
@@ -175,10 +177,9 @@ class CaseResourceTest {
 			.exchange()
 			.expectStatus().isNoContent();
 
-		verify(citizenService.getPersonalNumber("3ed5bc30-6308-4fd5-a5a7-78d7f96f4438"));
-		verify(arendeExportClient).getArende(any());
-		verify(arendeExportClient).saveNewHandelse(any());
-
+		verify(citizenServiceMock).getPersonalNumber("3ed5bc30-6308-4fd5-a5a7-78d7f96f4438");
+		verify(arendeExportClientMock).getArende(any());
+		verify(arendeExportClientMock).saveNewHandelse(any());
 	}
 
 	@Test
@@ -199,6 +200,5 @@ class CaseResourceTest {
 
 		verifyNoInteractions(caseMappingService, caseDataService, caseService);
 	}
-
 
 }

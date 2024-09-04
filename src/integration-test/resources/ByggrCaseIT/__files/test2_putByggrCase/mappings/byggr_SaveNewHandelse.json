@@ -1,0 +1,27 @@
+{
+	"id": "a29981ad-34b2-4e14-88f5-133f61ca85aa",
+	"name": "tekisarende_arendeexportwssvc2",
+	"request": {
+		"url": "/TekisArende/ArendeExportWS.svc",
+		"method": "POST",
+		"bodyPatterns": [
+			{
+				"contains": "SaveNewHandelse"
+			}
+		]
+	},
+	"response": {
+		"status": 200,
+		"body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\">\n    <s:Body xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n        <SaveNewHandelseResponse xmlns=\"www.tekis.se/ServiceContract\">\n            <SaveNewHandelseResult xsi:type=\"Arende\">\n                <handelseId>\n                    12345\n                </handelseId>\n            </SaveNewHandelseResult>\n        </SaveNewHandelseResponse>\n    </s:Body>\n</s:Envelope>",
+		"headers": {
+			"Content-Type": "text/xml; charset=utf-8",
+			"Vary": "Accept-Encoding",
+			"Server": "Microsoft-IIS/10.0",
+			"X-Powered-By": "ASP.NET",
+			"Date": "Wed, 28 Jul 2021 06:31:46 GMT"
+		}
+	},
+	"uuid": "a29981ad-34b2-4e14-88f5-133f61ca85aa",
+	"persistent": true,
+	"insertionIndex": 10
+}

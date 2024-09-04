@@ -230,7 +230,6 @@ public class ByggrService {
 	 * @return String, organization number or personal number of the stakeholder.
 	 */
 	public String extractStakeholderId(final List<StakeholderDTO> stakeholders) {
-
 		var organizationId = stakeholders.stream()
 			.filter(stakeholder -> stakeholder instanceof OrganizationDTO)
 			.findFirst()
@@ -246,6 +245,7 @@ public class ByggrService {
 			.findFirst()
 			.map(stakeholder -> ((PersonDTO) stakeholder).getPersonId())
 			.map(citizenService::getPersonalNumber)
+			.map(personalNumber -> personalNumber.substring(0, 8) + "-" + personalNumber.substring(8))
 			.orElseThrow(() -> Problem.valueOf(BAD_REQUEST, "No stakeholder found in the incoming request."));
 	}
 

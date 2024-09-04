@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.annotation.DirtiesContext;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import se.sundsvall.casemanagement.Application;
@@ -20,6 +21,7 @@ import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 
 @Testcontainers
 @WireMockAppTestSuite(files = "classpath:/CasedataIT/", classes = Application.class)
+@DirtiesContext
 public class CaseDataIT extends AbstractAppTest {
 
 	public static final String CASE_DATA_ID = "24";

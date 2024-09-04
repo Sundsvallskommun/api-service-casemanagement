@@ -1,0 +1,40 @@
+{
+	"caseType": "NEIGHBORHOOD_NOTIFICATION",
+	"externalCaseId": 4301,
+	"extraParameters": {
+		"comment": "Jag har inga synpunkter",
+		"errandNr": "BYGG 2024-000017",
+		"serviceName": "Lämna svar på grannehörande - TEST"
+	},
+	"stakeholders": [
+		{
+			"type": "PERSON",
+			"roles": [
+				"APPLICANT"
+			],
+			"personId": "97ed4de2-9f80-427d-b010-5d81267ef96b",
+			"firstName": "André",
+			"lastName": "Söderlund"
+		}
+	],
+	"facilities": [
+		{
+			"mainFacility": true,
+			"address": {
+				"propertyDesignation": "SUNDSVALL BALDER 1",
+				"addressCategories": [
+					"VISITING_ADDRESS"
+				]
+			}
+		}
+	],
+	"attachments": [
+		{
+			"category": "ANM",
+			"name": "16520.pdf",
+			"extension": ".pdf",
+			"mimeType": "application/pdf",
+			"file": "[base64]"
+		}
+	]
+}

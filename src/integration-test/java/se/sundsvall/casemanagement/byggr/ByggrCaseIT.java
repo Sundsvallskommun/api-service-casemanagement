@@ -1,12 +1,17 @@
 package se.sundsvall.casemanagement.byggr;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpMethod.PUT;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
+
+import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.annotation.DirtiesContext;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import se.sundsvall.casemanagement.Application;
@@ -19,8 +24,12 @@ import se.sundsvall.dept44.test.AbstractAppTest;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 
 @Testcontainers
-@WireMockAppTestSuite(files = "classpath:/ByggrCreateCaseIT", classes = Application.class)
-class ByggrCreateCaseIT extends AbstractAppTest {
+@WireMockAppTestSuite(files = "classpath:/ByggrCaseIT", classes = Application.class)
+@DirtiesContext
+class ByggrCaseIT extends AbstractAppTest {
+
+	private static final String REQUEST = "request.json";
+	private static final String PATH = "/cases";
 
 	@Autowired
 	private CaseMappingRepository caseMappingRepository;
@@ -35,8 +44,8 @@ class ByggrCreateCaseIT extends AbstractAppTest {
 
 		final var result = setupCall()
 			.withHttpMethod(HttpMethod.POST)
-			.withServicePath("/cases")
-			.withRequest("request.json")
+			.withServicePath(PATH)
+			.withRequest(REQUEST)
 			.withExpectedResponseStatus(HttpStatus.OK)
 			.withExpectedResponse("expected-response.json")
 			.sendRequestAndVerifyResponse()
@@ -57,6 +66,16 @@ class ByggrCreateCaseIT extends AbstractAppTest {
 				assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV.toString());
 				assertThat(caseMapping.getSystem()).isEqualTo(SystemType.BYGGR);
 			});
+	}
+
+	@Test
+	void test2_putByggrCase() {
+		setupCall()
+			.withHttpMethod(PUT)
+			.withServicePath(uriBuilder -> uriBuilder.path(PATH + "/{externalCaseId}").build(Map.of("externalCaseId", "5123")))
+			.withRequest(REQUEST)
+			.withExpectedResponseStatus(NO_CONTENT)
+			.sendRequestAndVerifyResponse();
 	}
 
 }

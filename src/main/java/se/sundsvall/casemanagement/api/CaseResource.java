@@ -86,9 +86,8 @@ class CaseResource {
 		@Valid CaseDTO caseDTOInput) {
 
 		if (caseDTOInput instanceof ByggRCaseDTO byggRCaseDTO) {
-			// TODO: Implement this...
 			byggrService.updateByggRCase(byggRCaseDTO);
-			return null;
+			return ResponseEntity.noContent().build();
 		} else if (caseDTOInput instanceof OtherCaseDTO otherCaseDTO) {
 			caseDataService.putErrand(Long.valueOf(caseMappingService.getCaseMapping(externalCaseId).getCaseId()), otherCaseDTO);
 			return ResponseEntity.noContent().build();

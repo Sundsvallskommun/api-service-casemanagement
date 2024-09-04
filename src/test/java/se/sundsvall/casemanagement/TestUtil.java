@@ -55,9 +55,12 @@ import arendeexport.ArendeIntressent;
 import arendeexport.ArrayOfAbstractArendeObjekt2;
 import arendeexport.ArrayOfArendeIntressent2;
 import arendeexport.ArrayOfHandelse;
+import arendeexport.ArrayOfHandelseHandling;
+import arendeexport.ArrayOfHandelseIntressent2;
 import arendeexport.Fastighet;
 import arendeexport.Handelse;
 import arendeexport.HandelseHandling;
+import arendeexport.HandelseIntressent;
 import arendeexport.HandlaggareBas;
 import arendeexport.SaveNewArendeResponse;
 import arendeexport.SaveNewArendeResponse2;
@@ -574,13 +577,27 @@ public final class TestUtil {
 		handelse.setRiktning("IN");
 		handelse.setRubrik("Bygglov");
 		handelse.setStartDatum(LocalDateTime.now());
-		handelse.setHandelseslag("Bygglov");
-		handelse.setHandelsetyp("ANSÖKAN");
+		handelse.setHandelseslag("GRAUTS");
+		handelse.setHandelsetyp("GRANHO");
 		handelse.setSekretess(false);
 		handelse.setMakulerad(false);
-		handelse.getHandlingLista().getHandling().add(createHandling());
-		handelse.getHandlingLista().getHandling().add(createHandling());
+		handelse.setIntressentLista(createArrayOfHandelseIntressent2());
+		handelse.setHandlingLista(createArrayOfHandelseHandling());
 		return handelse;
+	}
+
+	public static ArrayOfHandelseIntressent2 createArrayOfHandelseIntressent2() {
+		var arrayOfHandelseIntressent2 = new ArrayOfHandelseIntressent2();
+		arrayOfHandelseIntressent2.getIntressent().add(createHandelseIntressent());
+		arrayOfHandelseIntressent2.getIntressent().add(createHandelseIntressent());
+		return arrayOfHandelseIntressent2;
+	}
+
+	public static ArrayOfHandelseHandling createArrayOfHandelseHandling() {
+		var arrayOfHandelseHandling = new ArrayOfHandelseHandling();
+		arrayOfHandelseHandling.getHandling().add(createHandling());
+		arrayOfHandelseHandling.getHandling().add(createHandling());
+		return arrayOfHandelseHandling;
 	}
 
 	public static HandelseHandling createHandling() {
@@ -608,6 +625,18 @@ public final class TestUtil {
 		arendeIntressent.setOrt("Sundsvall");
 		arendeIntressent.setFornamn("Test");
 		arendeIntressent.setEfternamn("Testsson");
+		arendeIntressent.setPersOrgNr("20000101-1234");
 		return arendeIntressent;
+	}
+
+	public static HandelseIntressent createHandelseIntressent() {
+		var handelseIntressent = new HandelseIntressent();
+		handelseIntressent.setAdress("Testgatan 1");
+		handelseIntressent.setIntressentId(123456);
+		handelseIntressent.setFornamn("Test");
+		handelseIntressent.setEfternamn("Testsson");
+		handelseIntressent.setNamn("Test Testsson");
+		handelseIntressent.setPersOrgNr("20000101-1234");
+		return handelseIntressent;
 	}
 }
