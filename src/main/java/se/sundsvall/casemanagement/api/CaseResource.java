@@ -86,8 +86,12 @@ class CaseResource {
 		@Valid CaseDTO caseDTOInput) {
 
 		if (caseDTOInput instanceof ByggRCaseDTO byggRCaseDTO) {
-			byggrService.updateByggRCase(byggRCaseDTO);
-			return ResponseEntity.noContent().build();
+			if (byggRCaseDTO.getCaseType().equalsIgnoreCase("NEIGHBORHOOD_NOTIFICATION")) {
+				byggrService.updateByggRCase(byggRCaseDTO);
+				return ResponseEntity.noContent().build();
+			} else {
+				throw Problem.valueOf(Status.BAD_REQUEST, "Only ByggR cases of type NEIGHBORHOOD_NOTIFICATION can be updated.");
+			}
 		} else if (caseDTOInput instanceof OtherCaseDTO otherCaseDTO) {
 			caseDataService.putErrand(Long.valueOf(caseMappingService.getCaseMapping(externalCaseId).getCaseId()), otherCaseDTO);
 			return ResponseEntity.noContent().build();
