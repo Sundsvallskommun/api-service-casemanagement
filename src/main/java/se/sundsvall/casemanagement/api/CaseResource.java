@@ -2,6 +2,7 @@ package se.sundsvall.casemanagement.api;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
+import static org.springframework.http.ResponseEntity.noContent;
 
 import jakarta.validation.Valid;
 
@@ -76,7 +77,7 @@ class CaseResource {
 
 	}
 
-	@Operation(description = "Update a case. Only available for cases created in CaseData.")
+	@Operation(description = "Update a case.")
 	@PutMapping(path = "cases/{externalCaseId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = {APPLICATION_PROBLEM_JSON_VALUE})
 	@ApiResponse(responseCode = "204", description = "No content")
 	public ResponseEntity<Void> putCase(
@@ -86,17 +87,14 @@ class CaseResource {
 		@Valid CaseDTO caseDTOInput) {
 
 		if (caseDTOInput instanceof ByggRCaseDTO byggRCaseDTO) {
-			if (byggRCaseDTO.getCaseType().equalsIgnoreCase("NEIGHBORHOOD_NOTIFICATION")) {
-				byggrService.updateByggRCase(byggRCaseDTO);
-				return ResponseEntity.noContent().build();
-			} else {
-				throw Problem.valueOf(Status.BAD_REQUEST, "Only ByggR cases of type NEIGHBORHOOD_NOTIFICATION can be updated.");
-			}
+			byggrService.putByggRCase(byggRCaseDTO);
+			return noContent().build();
 		} else if (caseDTOInput instanceof OtherCaseDTO otherCaseDTO) {
 			caseDataService.putErrand(Long.valueOf(caseMappingService.getCaseMapping(externalCaseId).getCaseId()), otherCaseDTO);
-			return ResponseEntity.noContent().build();
+			return noContent().build();
 		} else {
-			throw Problem.valueOf(Status.BAD_REQUEST, "Only cases created in CaseData can be updated.");
+			throw Problem.valueOf(Status.BAD_REQUEST, "No support for updating cases of the given type.");
 		}
+
 	}
 }

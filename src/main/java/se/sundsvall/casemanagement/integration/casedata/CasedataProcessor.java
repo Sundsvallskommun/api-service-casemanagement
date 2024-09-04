@@ -4,23 +4,23 @@ import java.io.BufferedReader;
 import java.sql.SQLException;
 import java.util.stream.Collectors;
 
-import org.springframework.context.event.EventListener;
-import org.springframework.stereotype.Component;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.springframework.context.event.EventListener;
+import org.springframework.stereotype.Component;
 
-import dev.failsafe.Failsafe;
-import dev.failsafe.RetryPolicy;
 import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
 import se.sundsvall.casemanagement.configuration.RetryProperties;
 import se.sundsvall.casemanagement.integration.db.CaseMappingRepository;
 import se.sundsvall.casemanagement.integration.db.CaseRepository;
 import se.sundsvall.casemanagement.integration.messaging.MessagingIntegration;
-import se.sundsvall.casemanagement.integration.opene.OpeneClient;
+import se.sundsvall.casemanagement.integration.opene.OpenEIntegration;
 import se.sundsvall.casemanagement.service.event.IncomingOtherCase;
 import se.sundsvall.casemanagement.util.Processor;
+
+import dev.failsafe.Failsafe;
+import dev.failsafe.RetryPolicy;
 
 @Component
 class CasedataProcessor extends Processor {
@@ -28,13 +28,13 @@ class CasedataProcessor extends Processor {
 	private final CaseDataService service;
 	private final RetryPolicy<String> retryPolicy;
 
-	CasedataProcessor(final OpeneClient openeClient,
+	CasedataProcessor(final OpenEIntegration openEIntegration,
 		final CaseRepository caseRepository,
 		final CaseDataService service,
 		final RetryProperties retryProperties,
 		final CaseMappingRepository caseMappingRepository,
 		final MessagingIntegration messagingIntegration) {
-		super(openeClient, caseRepository, caseMappingRepository, messagingIntegration);
+		super(openEIntegration, caseRepository, caseMappingRepository, messagingIntegration);
 		this.service = service;
 		this.retryPolicy = RetryPolicy.<String>builder()
 			.withMaxAttempts(retryProperties.maxAttempts())

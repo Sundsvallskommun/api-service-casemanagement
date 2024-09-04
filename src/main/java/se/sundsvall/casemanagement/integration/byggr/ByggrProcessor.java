@@ -4,24 +4,24 @@ import java.io.BufferedReader;
 import java.sql.SQLException;
 import java.util.stream.Collectors;
 
-import org.springframework.context.event.EventListener;
-import org.springframework.stereotype.Component;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.springframework.context.event.EventListener;
+import org.springframework.stereotype.Component;
 
-import arendeexport.SaveNewArendeResponse2;
-import dev.failsafe.Failsafe;
-import dev.failsafe.RetryPolicy;
 import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
 import se.sundsvall.casemanagement.configuration.RetryProperties;
 import se.sundsvall.casemanagement.integration.db.CaseMappingRepository;
 import se.sundsvall.casemanagement.integration.db.CaseRepository;
 import se.sundsvall.casemanagement.integration.messaging.MessagingIntegration;
-import se.sundsvall.casemanagement.integration.opene.OpeneClient;
+import se.sundsvall.casemanagement.integration.opene.OpenEIntegration;
 import se.sundsvall.casemanagement.service.event.IncomingByggrCase;
 import se.sundsvall.casemanagement.util.Processor;
+
+import arendeexport.SaveNewArendeResponse2;
+import dev.failsafe.Failsafe;
+import dev.failsafe.RetryPolicy;
 
 @Component
 class ByggrProcessor extends Processor {
@@ -30,9 +30,9 @@ class ByggrProcessor extends Processor {
 
 	private final RetryPolicy<SaveNewArendeResponse2> retryPolicy;
 
-	ByggrProcessor(final OpeneClient openeClient, final CaseRepository caseRepository,
+	ByggrProcessor(final OpenEIntegration openEIntegration, final CaseRepository caseRepository,
 		final RetryProperties retryProperties, final ByggrService service, final CaseMappingRepository caseMappingRepository, final MessagingIntegration messagingIntegration) {
-		super(openeClient, caseRepository, caseMappingRepository, messagingIntegration);
+		super(openEIntegration, caseRepository, caseMappingRepository, messagingIntegration);
 		this.service = service;
 
 		retryPolicy = RetryPolicy.<SaveNewArendeResponse2>builder()

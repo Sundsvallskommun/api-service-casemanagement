@@ -12,11 +12,8 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static se.sundsvall.casemanagement.TestUtil.FNR;
 import static se.sundsvall.casemanagement.TestUtil.createArende;
-import static se.sundsvall.casemanagement.TestUtil.createArrayOfHandelseHandling;
 import static se.sundsvall.casemanagement.TestUtil.createByggRCaseDTO;
-import static se.sundsvall.casemanagement.TestUtil.createFastighet;
 import static se.sundsvall.casemanagement.TestUtil.createHandelse;
-import static se.sundsvall.casemanagement.TestUtil.createHandelseIntressent;
 import static se.sundsvall.casemanagement.TestUtil.createStakeholderDTO;
 import static se.sundsvall.casemanagement.TestUtil.setUpCaseTypes;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.ANDRING_ANSOKAN_OM_BYGGLOV;
@@ -54,15 +51,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -88,6 +82,7 @@ import se.sundsvall.casemanagement.api.model.enums.StakeholderType;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
 import se.sundsvall.casemanagement.integration.db.CaseTypeRepository;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
+import se.sundsvall.casemanagement.integration.opene.OpenEIntegration;
 import se.sundsvall.casemanagement.service.CaseMappingService;
 import se.sundsvall.casemanagement.service.CitizenService;
 import se.sundsvall.casemanagement.service.FbService;
@@ -101,7 +96,6 @@ import arendeexport.ArendeIntressent;
 import arendeexport.ArrayOfAbstractArendeObjekt2;
 import arendeexport.ArrayOfArende1;
 import arendeexport.ArrayOfHandelse;
-import arendeexport.ArrayOfHandelseHandling;
 import arendeexport.ArrayOfHandelseIntressent2;
 import arendeexport.ArrayOfHandling;
 import arendeexport.Fastighet;
@@ -137,6 +131,9 @@ class ByggrServiceTest {
 
 	@Mock
 	private CaseMappingService caseMappingServiceMock;
+
+	@Mock
+	private OpenEIntegration openEIntegrationMock;
 
 	@Mock
 	private ArendeExportClient arendeExportClientMock;
@@ -1043,7 +1040,6 @@ class ByggrServiceTest {
 		var extraParameterMap = mock(HashMap.class);
 
 		// ByggR Mocks
-		var arrayOfHandelseHandling = mock(ArrayOfHandelseHandling.class);
 		var arende = mock(Arende.class);
 		var arrayOfAbstractArendeObjekt2 = mock(ArrayOfAbstractArendeObjekt2.class);
 		var arrayOfHandelse = mock(ArrayOfHandelse.class);
@@ -1052,7 +1048,6 @@ class ByggrServiceTest {
 		var handelse = mock(Handelse.class);
 		var arrayOfHandelseIntressent2 = mock(ArrayOfHandelseIntressent2.class);
 		var handelseIntressent = mock(HandelseIntressent.class);
-		var saveNewHandelse = mock(SaveNewHandelse.class);
 		var getArendeResponse = mock(GetArendeResponse.class);
 
 		when(byggRCaseDTO.getStakeholders()).thenReturn(stakeholders);
@@ -1076,49 +1071,20 @@ class ByggrServiceTest {
 
 		when(arendeExportClientMock.getArende(any())).thenReturn(getArendeResponse);
 		when(spy.extractStakeholderId(stakeholders)).thenReturn(stakeholderId);
-		when(spy.createHandelseHandling(byggRCaseDTO)).thenReturn(arrayOfHandelseHandling);
 		when(spy.getByggRCase(errandNr)).thenReturn(arende);
 		when(spy.extractEvent(arende, "GRANHO", "GRAUTS")).thenReturn(handelse);
 		when(spy.extractEventStakeholder(handelse, stakeholderId)).thenReturn(handelseIntressent);
-		when(spy.createNewEvent(comment, errandInformation, handelseIntressent, fastighet, arrayOfHandelseHandling)).thenReturn(handelse);
-		when(spy.createSaveNewHandelse(errandNr, handelse, arrayOfHandelseHandling)).thenReturn(saveNewHandelse);
-
 		spy.updateByggRCase(byggRCaseDTO);
 
 		verify(spy).extractStakeholderId(stakeholders);
-		verify(spy).createHandelseHandling(byggRCaseDTO);
 		verify(spy).getByggRCase(errandNr);
 		verify(spy).extractEvent(arende, "GRANHO", "GRAUTS");
 		verify(spy).extractEventStakeholder(handelse, stakeholderId);
-		verify(spy).createNewEvent(comment, errandInformation, handelseIntressent, fastighet, arrayOfHandelseHandling);
-		verify(spy).createSaveNewHandelse(errandNr, handelse, arrayOfHandelseHandling);
-		verify(arendeExportClientMock).saveNewHandelse(saveNewHandelse);
+		verify(openEIntegrationMock).confirmDelivery(any(), any(), any());
+
+		verify(arendeExportClientMock).saveNewHandelse(any());
 	}
 
-	@Test
-	void createSaveNewHandelse() {
-		var dnr = "dnr";
-		var handelse = createHandelse();
-		var arrayOfHandelseHandling = createArrayOfHandelseHandling();
-
-		var result = byggrService.createSaveNewHandelse(dnr, handelse, arrayOfHandelseHandling);
-
-		assertThat(result.getMessage().getDnr()).isEqualTo(dnr);
-		assertThat(result.getMessage().getHandelse()).isEqualTo(handelse);
-		assertThat(result.getMessage().getHandlingar().getHandling()).isEqualTo(arrayOfHandelseHandling.getHandling());
-	}
-
-	@Test
-	void createHandelseHandling() {
-		var byggRCase = createByggRCaseDTO(CaseType.NEIGHBORHOOD_NOTIFICATION, AttachmentCategory.UNDERLAG_RISKKLASSNING);
-		var attachment = byggRCase.getAttachments().getFirst();
-
-		var result = byggrService.createHandelseHandling(byggRCase);
-
-		assertThat(result.getHandling()).hasSize(1);
-		assertThat(result.getHandling().getFirst().getDokument().getFil().getFilAndelse()).isEqualTo(attachment.getExtension());
-		assertThat(result.getHandling().getFirst().getDokument().getFil().getFilBuffer()).isEqualTo(attachment.getFile().getBytes());
-	}
 
 	@Test
 	void extractEventStakeholder() {
@@ -1176,30 +1142,5 @@ class ByggrServiceTest {
 		assertThat(result.getHandelseslag()).isEqualTo(handelseslag);
 	}
 
-	@ParameterizedTest
-	@MethodSource("createNewEventArguments")
-	void createNewEvent(String comment, String titlePrefix) {
-		var errandInformation = "Jag gillar inte röda hus!";
-		var intressent = createHandelseIntressent();
-		var fastighet = createFastighet();
-		var handelseHandling = createArrayOfHandelseHandling();
-
-		var result = byggrService.createNewEvent(comment, errandInformation, intressent, fastighet, handelseHandling);
-
-		assertThat(result.getRubrik()).isEqualTo(titlePrefix + ", " + fastighet.getTrakt() + " " + fastighet.getFbetNr() + ", " + intressent.getNamn());
-		assertThat(result.getAnteckning()).isEqualTo(errandInformation);
-		assertThat(result.getHandelsetyp()).isEqualTo("GRANHO");
-		assertThat(result.getHandelseslag()).isEqualTo("GRASVA");
-		assertThat(result.getHandlingLista()).isEqualTo(handelseHandling);
-		assertThat(result.getIntressentLista().getIntressent()).isEqualTo(List.of(intressent));
-
-	}
-
-	private static Stream<Arguments> createNewEventArguments() {
-		return Stream.of(
-			Arguments.of("Jag har synpunkter", "Grannehörande Svar med erinran"),
-			Arguments.of("Jag har inga synpunkter", "Grannehörande Svar utan erinran")
-		);
-	}
 
 }

@@ -4,24 +4,24 @@ import java.io.BufferedReader;
 import java.sql.SQLException;
 import java.util.stream.Collectors;
 
-import org.springframework.context.event.EventListener;
-import org.springframework.stereotype.Component;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.springframework.context.event.EventListener;
+import org.springframework.stereotype.Component;
 
-import dev.failsafe.Failsafe;
-import dev.failsafe.RetryPolicy;
-import minutmiljoV2.RegisterDocumentCaseResultSvcDto;
 import se.sundsvall.casemanagement.api.model.EcosCaseDTO;
 import se.sundsvall.casemanagement.configuration.RetryProperties;
 import se.sundsvall.casemanagement.integration.db.CaseMappingRepository;
 import se.sundsvall.casemanagement.integration.db.CaseRepository;
 import se.sundsvall.casemanagement.integration.messaging.MessagingIntegration;
-import se.sundsvall.casemanagement.integration.opene.OpeneClient;
+import se.sundsvall.casemanagement.integration.opene.OpenEIntegration;
 import se.sundsvall.casemanagement.service.event.IncomingEcosCase;
 import se.sundsvall.casemanagement.util.Processor;
+
+import dev.failsafe.Failsafe;
+import dev.failsafe.RetryPolicy;
+import minutmiljoV2.RegisterDocumentCaseResultSvcDto;
 
 @Component
 class EcosProcessor extends Processor {
@@ -29,10 +29,10 @@ class EcosProcessor extends Processor {
 	private final EcosService ecosService;
 	private final RetryPolicy<RegisterDocumentCaseResultSvcDto> retryPolicy;
 
-	EcosProcessor(final OpeneClient openeClient, final CaseRepository caseRepository,
+	EcosProcessor(final OpenEIntegration openEIntegration, final CaseRepository caseRepository,
 		final RetryProperties retryProperties, final EcosService ecosService, final MessagingIntegration messagingIntegration,
 		final CaseMappingRepository caseMappingRepository) {
-		super(openeClient, caseRepository, caseMappingRepository, messagingIntegration);
+		super(openEIntegration, caseRepository, caseMappingRepository, messagingIntegration);
 		this.ecosService = ecosService;
 
 		retryPolicy = RetryPolicy.<RegisterDocumentCaseResultSvcDto>builder()

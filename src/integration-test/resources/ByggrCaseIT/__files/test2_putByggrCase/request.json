@@ -34,7 +34,7 @@
 			"name": "16520.pdf",
 			"extension": ".pdf",
 			"mimeType": "application/pdf",
-			"file": "[base64]"
+			"file": "base64"
 		}
 	]
 }

@@ -4,6 +4,9 @@ package se.sundsvall.casemanagement.integration.byggr;
 import static java.util.Collections.emptyList;
 import static org.zalando.problem.Status.BAD_REQUEST;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.WITH_NULLABLE_FACILITY_TYPE;
+import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.createArrayOfHandelseHandling;
+import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.createNewEvent;
+import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.createSaveNewHandelse;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.filterPersonId;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.getArendeBeskrivning;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.getArendeKlass;
@@ -47,6 +50,7 @@ import se.sundsvall.casemanagement.api.model.enums.SystemType;
 import se.sundsvall.casemanagement.integration.db.CaseTypeRepository;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.integration.db.model.CaseTypeData;
+import se.sundsvall.casemanagement.integration.opene.OpenEIntegration;
 import se.sundsvall.casemanagement.service.CaseMappingService;
 import se.sundsvall.casemanagement.service.CitizenService;
 import se.sundsvall.casemanagement.service.FbService;
@@ -59,34 +63,27 @@ import arendeexport.ArendeFastighet;
 import arendeexport.ArendeIntressent;
 import arendeexport.ArrayOfAbstractArendeObjekt2;
 import arendeexport.ArrayOfArendeIntressent2;
-import arendeexport.ArrayOfHandelseHandling;
-import arendeexport.ArrayOfHandelseIntressent2;
-import arendeexport.ArrayOfHandling;
 import arendeexport.ArrayOfString;
-import arendeexport.Dokument;
-import arendeexport.DokumentFil;
 import arendeexport.Fastighet;
 import arendeexport.GetArende;
 import arendeexport.GetRelateradeArendenByPersOrgNrAndRole;
 import arendeexport.Handelse;
-import arendeexport.HandelseHandling;
 import arendeexport.HandelseIntressent;
 import arendeexport.HandlaggareBas;
 import arendeexport.SaveNewArende;
 import arendeexport.SaveNewArendeResponse2;
 import arendeexport.SaveNewHandelse;
-import arendeexport.SaveNewHandelseMessage;
 
 @Service
 public class ByggrService {
 
 	private final FbService fbService;
-
 	private final CitizenService citizenService;
-
 	private final CaseMappingService caseMappingService;
 
 	private final ArendeExportClient arendeExportClient;
+
+	private final OpenEIntegration openEIntegration;
 
 	private final Map<String, CaseTypeData> caseTypeMap = new HashMap<>();
 
@@ -96,12 +93,22 @@ public class ByggrService {
 		final CitizenService citizenService,
 		final CaseMappingService caseMappingService,
 		final ArendeExportClient arendeExportClient,
+		final OpenEIntegration openEIntegration,
 		final CaseTypeRepository caseTypeRepository) {
 		this.fbService = fbService;
 		this.citizenService = citizenService;
 		this.caseMappingService = caseMappingService;
 		this.arendeExportClient = arendeExportClient;
+		this.openEIntegration = openEIntegration;
 		this.caseTypeRepository = caseTypeRepository;
+	}
+
+	public void putByggRCase(final ByggRCaseDTO byggRCaseDTO) {
+		if (byggRCaseDTO.getCaseType().equals("NEIGHBORHOOD_NOTIFICATION")) {
+			updateByggRCase(byggRCaseDTO);
+		} else {
+			throw Problem.valueOf(BAD_REQUEST, "CaseType %s not supported".formatted(byggRCaseDTO.getCaseType()));
+		}
 	}
 
 	public void updateByggRCase(final ByggRCaseDTO byggRCaseDTO) {
@@ -109,7 +116,7 @@ public class ByggrService {
 		var errandNr = byggRCaseDTO.getExtraParameters().get("errandNr");
 		var comment = byggRCaseDTO.getExtraParameters().get("comment");
 		var errandInformation = byggRCaseDTO.getExtraParameters().get("errandInformation");
-		var handelseHandling = createHandelseHandling(byggRCaseDTO);
+		var handelseHandling = createArrayOfHandelseHandling(byggRCaseDTO);
 
 		var byggRCase = getByggRCase(errandNr);
 		var handelse = extractEvent(byggRCase, "GRANHO", "GRAUTS");
@@ -125,71 +132,7 @@ public class ByggrService {
 		var saveNewHandelse = createSaveNewHandelse(errandNr, newHandelse, handelseHandling);
 
 		arendeExportClient.saveNewHandelse(saveNewHandelse);
-	}
-
-	/**
-	 * @param dnr The case number
-	 * @param handelse The ByggR event
-	 * @param arrayOfHandelseHandling The attachments that the stakeholder sends with the response
-	 * @return SaveNewHandelse, a request model that is sent to ByggR
-	 */
-	public SaveNewHandelse createSaveNewHandelse(final String dnr, final Handelse handelse, final ArrayOfHandelseHandling arrayOfHandelseHandling) {
-		var handlingar = arrayOfHandelseHandling.getHandling();
-
-		var arrayOfHandling = new ArrayOfHandling().withHandling(handlingar);
-
-		var saveNewHandelseMessage = new SaveNewHandelseMessage()
-			.withDnr(dnr)
-			.withHandelse(handelse)
-			.withHandlingar(arrayOfHandling);
-
-
-		return new SaveNewHandelse().withMessage(saveNewHandelseMessage);
-	}
-
-	/**
-	 * Repackages the attachments from the incoming request to a format that ByggR can understand.
-	 *
-	 * @param byggRCaseDTO The incoming request from OpenE
-	 * @return ArrayOfHandelseHandling, a list of attachments that the stakeholder sends with the response
-	 */
-	public ArrayOfHandelseHandling createHandelseHandling(final ByggRCaseDTO byggRCaseDTO) {
-		var attachments = byggRCaseDTO.getAttachments();
-		var arrayOfHandelseHandling = new ArrayOfHandelseHandling();
-
-		for (var attachment : attachments) {
-			var dokumentFil = new DokumentFil().withFilBuffer(attachment.getFile().getBytes()).withFilAndelse(attachment.getExtension());
-			var dokument = new Dokument().withFil(dokumentFil);
-			var handelseHandling = new HandelseHandling().withDokument(dokument).withTyp("BIL");
-			arrayOfHandelseHandling.getHandling().add(handelseHandling);
-		}
-		return arrayOfHandelseHandling;
-	}
-
-	/**
-	 * Creates a new Handelse object with the given parameters.
-	 *
-	 * @param comment String that determines if the stakeholder has any issues with the building permit
-	 * @param errandInformation String that contains the stakeholders comment. (Bad name given by OpenE)
-	 * @param intressent The stakeholder that responds to the hearing request
-	 * @param fastighet The property that the permit is for
-	 * @param handelseHandling The attachments that the stakeholder sends with the response
-	 * @return Handelse, a new event in a ByggR Case
-	 */
-	public Handelse createNewEvent(final String comment, final String errandInformation, final HandelseIntressent intressent, final Fastighet fastighet, final ArrayOfHandelseHandling handelseHandling) {
-		var opinion = comment.equals("Jag har synpunkter") ? "Grannehörande Svar med erinran" : "Grannehörande Svar utan erinran";
-		var trakt = fastighet.getTrakt();
-		var fbetNr = fastighet.getFbetNr();
-
-		var title = opinion + ", " + trakt + " " + fbetNr + ", " + intressent.getNamn();
-
-		return new Handelse()
-			.withRubrik(title)
-			.withAnteckning(errandInformation)
-			.withHandelsetyp("GRANHO")
-			.withHandelseslag("GRASVA")
-			.withHandlingLista(handelseHandling)
-			.withIntressentLista(new ArrayOfHandelseIntressent2().withIntressent(intressent));
+		openEIntegration.confirmDelivery(byggRCaseDTO.getExternalCaseId(), "BYGGR", errandNr);
 	}
 
 	/**
