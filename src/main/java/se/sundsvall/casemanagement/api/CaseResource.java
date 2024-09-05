@@ -2,6 +2,7 @@ package se.sundsvall.casemanagement.api;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
+import static org.springframework.http.ResponseEntity.noContent;
 
 import jakarta.validation.Valid;
 
@@ -22,6 +23,7 @@ import se.sundsvall.casemanagement.api.model.CaseDTO;
 import se.sundsvall.casemanagement.api.model.CaseResourceResponseDTO;
 import se.sundsvall.casemanagement.api.model.EcosCaseDTO;
 import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
+import se.sundsvall.casemanagement.integration.byggr.ByggrService;
 import se.sundsvall.casemanagement.integration.casedata.CaseDataService;
 import se.sundsvall.casemanagement.service.CaseMappingService;
 import se.sundsvall.casemanagement.service.CaseService;
@@ -49,11 +51,14 @@ class CaseResource {
 
 	private final CaseDataService caseDataService;
 
+	private final ByggrService byggrService;
+
 	CaseResource(final CaseMappingService caseMappingService, final CaseService caseService,
-		final CaseDataService caseDataService) {
+		final CaseDataService caseDataService, final ByggrService byggrService) {
 		this.caseMappingService = caseMappingService;
 		this.caseService = caseService;
 		this.caseDataService = caseDataService;
+		this.byggrService = byggrService;
 	}
 
 	@Operation(description = "Creates a case in ByggR or Ecos2 based on caseType. Also persists a connection between externalCaseId and the created case.")
@@ -72,7 +77,7 @@ class CaseResource {
 
 	}
 
-	@Operation(description = "Update a case. Only available for cases created in CaseData.")
+	@Operation(description = "Update a case.")
 	@PutMapping(path = "cases/{externalCaseId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = {APPLICATION_PROBLEM_JSON_VALUE})
 	@ApiResponse(responseCode = "204", description = "No content")
 	public ResponseEntity<Void> putCase(
@@ -81,11 +86,15 @@ class CaseResource {
 		@RequestBody
 		@Valid CaseDTO caseDTOInput) {
 
-		if (caseDTOInput instanceof OtherCaseDTO otherCaseDTO) {
+		if (caseDTOInput instanceof ByggRCaseDTO byggRCaseDTO) {
+			byggrService.putByggRCase(byggRCaseDTO);
+			return noContent().build();
+		} else if (caseDTOInput instanceof OtherCaseDTO otherCaseDTO) {
 			caseDataService.putErrand(Long.valueOf(caseMappingService.getCaseMapping(externalCaseId).getCaseId()), otherCaseDTO);
-			return ResponseEntity.noContent().build();
+			return noContent().build();
 		} else {
-			throw Problem.valueOf(Status.BAD_REQUEST, "Only cases created in CaseData can be updated.");
+			throw Problem.valueOf(Status.BAD_REQUEST, "No support for updating cases of the given type.");
 		}
+
 	}
 }

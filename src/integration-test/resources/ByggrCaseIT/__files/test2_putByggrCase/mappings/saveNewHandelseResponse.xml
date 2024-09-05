@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+    <s:Body xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <SaveNewHandelseResponse xmlns="www.tekis.se/ServiceContract">
+            <SaveNewHandelseResult xsi:type="Arende">
+                <handelseId>
+                    12345
+                </handelseId>
+            </SaveNewHandelseResult>
+        </SaveNewHandelseResponse>
+    </s:Body>
+</s:Envelope>

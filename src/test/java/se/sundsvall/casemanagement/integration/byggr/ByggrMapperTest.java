@@ -5,6 +5,10 @@ import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.within;
+import static se.sundsvall.casemanagement.TestUtil.createByggRCaseDTO;
+import static se.sundsvall.casemanagement.TestUtil.createFastighet;
+import static se.sundsvall.casemanagement.TestUtil.createHandelse;
+import static se.sundsvall.casemanagement.TestUtil.createHandelseIntressent;
 import static se.sundsvall.casemanagement.api.model.enums.AddressCategory.INVOICE_ADDRESS;
 import static se.sundsvall.casemanagement.api.model.enums.AddressCategory.POSTAL_ADDRESS;
 import static se.sundsvall.casemanagement.api.model.enums.FacilityType.BUSINESS_PREMISES;
@@ -40,18 +44,25 @@ import static se.sundsvall.casemanagement.util.Constants.HANDELSETYP_ANMALAN;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.zalando.problem.AbstractThrowableProblem;
 
+import se.sundsvall.casemanagement.TestUtil;
 import se.sundsvall.casemanagement.api.model.AddressDTO;
 import se.sundsvall.casemanagement.api.model.AttachmentDTO;
+import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
 import se.sundsvall.casemanagement.api.model.FacilityDTO;
 import se.sundsvall.casemanagement.api.model.OrganizationDTO;
 import se.sundsvall.casemanagement.api.model.PersonDTO;
-import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
 import se.sundsvall.casemanagement.api.model.StakeholderDTO;
 import se.sundsvall.casemanagement.api.model.enums.AddressCategory;
+import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
+import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.api.model.enums.FacilityType;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.integration.db.model.CaseTypeData;
@@ -889,6 +900,56 @@ class ByggrMapperTest {
 
 		// Assert
 		assertThat(result).isNull();
+	}
+
+	@Test
+	void createSaveNewHandelse() {
+		var dnr = "dnr";
+		var handelse = createHandelse();
+		var arrayOfHandelseHandling = TestUtil.createArrayOfHandelseHandling();
+
+		var result = ByggrMapper.createSaveNewHandelse(dnr, handelse, arrayOfHandelseHandling);
+
+		assertThat(result.getMessage().getDnr()).isEqualTo(dnr);
+		assertThat(result.getMessage().getHandelse()).isEqualTo(handelse);
+		assertThat(result.getMessage().getHandlingar().getHandling()).isEqualTo(arrayOfHandelseHandling.getHandling());
+	}
+
+	@Test
+	void createArrayOfHandelseHandling() {
+		var byggRCase = createByggRCaseDTO(CaseType.NEIGHBORHOOD_NOTIFICATION, AttachmentCategory.UNDERLAG_RISKKLASSNING);
+		var attachment = byggRCase.getAttachments().getFirst();
+
+		var result = ByggrMapper.createArrayOfHandelseHandling(byggRCase);
+
+		assertThat(result.getHandling()).hasSize(1);
+		assertThat(result.getHandling().getFirst().getDokument().getFil().getFilAndelse()).isEqualTo(attachment.getExtension());
+		assertThat(result.getHandling().getFirst().getDokument().getFil().getFilBuffer()).isEqualTo(Base64.getDecoder().decode(attachment.getFile().getBytes()));
+	}
+
+	@ParameterizedTest
+	@MethodSource("createNewEventArguments")
+	void createNewEvent(String comment, String titlePrefix) {
+		var errandInformation = "Jag gillar inte röda hus!";
+		var intressent = createHandelseIntressent();
+		var fastighet = createFastighet();
+		var handelseHandling = TestUtil.createArrayOfHandelseHandling();
+
+		var result = ByggrMapper.createNewEvent(comment, errandInformation, intressent, fastighet, handelseHandling);
+
+		assertThat(result.getRubrik()).isEqualTo(titlePrefix + ", " + fastighet.getTrakt() + " " + fastighet.getFbetNr() + ", " + intressent.getNamn());
+		assertThat(result.getAnteckning()).isEqualTo(errandInformation);
+		assertThat(result.getHandelsetyp()).isEqualTo("GRANHO");
+		assertThat(result.getHandelseslag()).isEqualTo("GRASVA");
+		assertThat(result.getHandlingLista()).isEqualTo(handelseHandling);
+		assertThat(result.getIntressentLista().getIntressent()).isEqualTo(List.of(intressent));
+	}
+
+	private static Stream<Arguments> createNewEventArguments() {
+		return Stream.of(
+			Arguments.of("Jag har synpunkter", "Grannehörande Svar med erinran"),
+			Arguments.of("Jag har inga synpunkter", "Grannehörande Svar utan erinran")
+		);
 	}
 
 }

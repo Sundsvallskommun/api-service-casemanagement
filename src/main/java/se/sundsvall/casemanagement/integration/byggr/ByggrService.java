@@ -2,7 +2,11 @@ package se.sundsvall.casemanagement.integration.byggr;
 
 
 import static java.util.Collections.emptyList;
+import static org.zalando.problem.Status.BAD_REQUEST;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.WITH_NULLABLE_FACILITY_TYPE;
+import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.createArrayOfHandelseHandling;
+import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.createNewEvent;
+import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.createSaveNewHandelse;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.filterPersonId;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.getArendeBeskrivning;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.getArendeKlass;
@@ -33,18 +37,20 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.zalando.problem.Problem;
 
 import se.sundsvall.casemanagement.api.model.AttachmentDTO;
+import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
 import se.sundsvall.casemanagement.api.model.CaseStatusDTO;
 import se.sundsvall.casemanagement.api.model.OrganizationDTO;
 import se.sundsvall.casemanagement.api.model.PersonDTO;
-import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
 import se.sundsvall.casemanagement.api.model.StakeholderDTO;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
 import se.sundsvall.casemanagement.integration.db.CaseTypeRepository;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.integration.db.model.CaseTypeData;
+import se.sundsvall.casemanagement.integration.opene.OpenEIntegration;
 import se.sundsvall.casemanagement.service.CaseMappingService;
 import se.sundsvall.casemanagement.service.CitizenService;
 import se.sundsvall.casemanagement.service.FbService;
@@ -61,6 +67,8 @@ import arendeexport.ArrayOfString;
 import arendeexport.Fastighet;
 import arendeexport.GetArende;
 import arendeexport.GetRelateradeArendenByPersOrgNrAndRole;
+import arendeexport.Handelse;
+import arendeexport.HandelseIntressent;
 import arendeexport.HandlaggareBas;
 import arendeexport.SaveNewArende;
 import arendeexport.SaveNewArendeResponse2;
@@ -70,23 +78,128 @@ import arendeexport.SaveNewHandelse;
 public class ByggrService {
 
 	private final FbService fbService;
-
 	private final CitizenService citizenService;
-
 	private final CaseMappingService caseMappingService;
 
 	private final ArendeExportClient arendeExportClient;
+
+	private final OpenEIntegration openEIntegration;
 
 	private final Map<String, CaseTypeData> caseTypeMap = new HashMap<>();
 
 	private final CaseTypeRepository caseTypeRepository;
 
-	public ByggrService(final FbService fbService, final CitizenService citizenService, final CaseMappingService caseMappingService, final ArendeExportClient arendeExportClient, final CaseTypeRepository caseTypeRepository) {
+	public ByggrService(final FbService fbService,
+		final CitizenService citizenService,
+		final CaseMappingService caseMappingService,
+		final ArendeExportClient arendeExportClient,
+		final OpenEIntegration openEIntegration,
+		final CaseTypeRepository caseTypeRepository) {
 		this.fbService = fbService;
 		this.citizenService = citizenService;
 		this.caseMappingService = caseMappingService;
 		this.arendeExportClient = arendeExportClient;
+		this.openEIntegration = openEIntegration;
 		this.caseTypeRepository = caseTypeRepository;
+	}
+
+	public void putByggRCase(final ByggRCaseDTO byggRCaseDTO) {
+		if (byggRCaseDTO.getCaseType().equals("NEIGHBORHOOD_NOTIFICATION")) {
+			updateByggRCase(byggRCaseDTO);
+		} else {
+			throw Problem.valueOf(BAD_REQUEST, "CaseType %s not supported".formatted(byggRCaseDTO.getCaseType()));
+		}
+	}
+
+	public void updateByggRCase(final ByggRCaseDTO byggRCaseDTO) {
+		var stakeholderId = extractStakeholderId(byggRCaseDTO.getStakeholders());
+		var errandNr = byggRCaseDTO.getExtraParameters().get("errandNr");
+		var comment = byggRCaseDTO.getExtraParameters().get("comment");
+		var errandInformation = byggRCaseDTO.getExtraParameters().get("errandInformation");
+		var handelseHandling = createArrayOfHandelseHandling(byggRCaseDTO);
+
+		var byggRCase = getByggRCase(errandNr);
+		var handelse = extractEvent(byggRCase, "GRANHO", "GRAUTS");
+
+		var intressent = extractEventStakeholder(handelse, stakeholderId);
+
+		var arendeFastighet = byggRCase.getObjektLista().getAbstractArendeObjekt().stream()
+			.map(abstractArendeObjekt -> (ArendeFastighet) abstractArendeObjekt)
+			.findFirst().orElseThrow(() -> Problem.valueOf(BAD_REQUEST, "No ArendeFastighet found in ByggRCase"));
+
+		var fastighet = arendeFastighet.getFastighet();
+		var newHandelse = createNewEvent(comment, errandInformation, intressent, fastighet, handelseHandling);
+		var saveNewHandelse = createSaveNewHandelse(errandNr, newHandelse, handelseHandling);
+
+		arendeExportClient.saveNewHandelse(saveNewHandelse);
+		openEIntegration.confirmDelivery(byggRCaseDTO.getExternalCaseId(), "BYGGR", errandNr);
+	}
+
+	/**
+	 * Extracts a stakeholder from a specific byggR event based on the stakeholder id.
+	 *
+	 * @param handelse the event
+	 * @param stakeholderId the stakeholder id
+	 * @return HandelseIntressent, the stakeholder of a specific event
+	 */
+	public HandelseIntressent extractEventStakeholder(final Handelse handelse, final String stakeholderId) {
+		return handelse.getIntressentLista().getIntressent().stream()
+			.filter(intressent1 -> intressent1.getPersOrgNr().equals(stakeholderId))
+			.findFirst().orElseThrow(() -> Problem.valueOf(BAD_REQUEST, "Stakeholder with id %s not found in ByggRCase".formatted(stakeholderId)));
+	}
+
+	/**
+	 * A byggR case might have multiple different events. This method extracts the wanted event based
+	 * on the handelsetyp and handelseslag.
+	 *
+	 * @param arende the byggR case
+	 * @param handelsetyp wanted handelsetyp
+	 * @param handelseslag wanted handelseslag
+	 * @return Handelse, a specific event in a ByggR Case
+	 */
+	public Handelse extractEvent(final Arende arende, final String handelsetyp, final String handelseslag) {
+		return arende.getHandelseLista().getHandelse().stream()
+			.filter(handelse -> handelse.getHandelsetyp().equals(handelsetyp) && handelse.getHandelseslag().equals(handelseslag))
+			.findFirst().orElseThrow(() -> Problem.valueOf(BAD_REQUEST, "No GRANHO/GRAUTS event found in ByggRCase"));
+	}
+
+	/**
+	 * The incoming request might have one or two stakeholders. If any stakeholder is of type
+	 * Organization, we should use the organization number as stakeholderId.
+	 * If no organization is found, we should use the personId to fetch a personal number from
+	 * citizenService and use this personal number as the stakeholder id.
+	 *
+	 * @param stakeholders List of stakeholders
+	 * @return String, organization number or personal number of the stakeholder.
+	 */
+	public String extractStakeholderId(final List<StakeholderDTO> stakeholders) {
+		var organizationId = stakeholders.stream()
+			.filter(stakeholder -> stakeholder instanceof OrganizationDTO)
+			.findFirst()
+			.map(stakeholder -> ((OrganizationDTO) stakeholder).getOrganizationNumber())
+			.orElse(null);
+
+		if (organizationId != null) {
+			return organizationId;
+		}
+
+		return stakeholders.stream()
+			.filter(stakeholder -> stakeholder instanceof PersonDTO)
+			.findFirst()
+			.map(stakeholder -> ((PersonDTO) stakeholder).getPersonId())
+			.map(citizenService::getPersonalNumber)
+			.map(personalNumber -> personalNumber.substring(0, 8) + "-" + personalNumber.substring(8))
+			.orElseThrow(() -> Problem.valueOf(BAD_REQUEST, "No stakeholder found in the incoming request."));
+	}
+
+	/**
+	 * Fetches a ByggR case based on the case number.
+	 *
+	 * @param dnr the case number
+	 * @return Arende, a ByggR case
+	 */
+	public Arende getByggRCase(final String dnr) {
+		return arendeExportClient.getArende(new GetArende().withDnr(dnr)).getGetArendeResult();
 	}
 
 	public SaveNewArendeResponse2 saveNewCase(final ByggRCaseDTO caseInput) {
@@ -159,11 +272,7 @@ public class ByggrService {
 				return toByggrStatus(byggrArende,
 					Optional.ofNullable(caseMappingList)
 						.filter(list -> !list.isEmpty()).map(list -> list.getFirst().getExternalCaseId())
-						.orElse(null)
-
-
-				);
-
+						.orElse(null));
 			})
 			.toList();
 	}

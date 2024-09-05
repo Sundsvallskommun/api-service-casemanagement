@@ -19,18 +19,6 @@ import java.util.function.Consumer;
 
 import org.apache.commons.lang3.RandomStringUtils;
 
-import arendeexport.SaveNewArendeResponse;
-import arendeexport.SaveNewArendeResponse2;
-import minutmiljo.ArrayOfguid;
-import minutmiljo.CreateFoodFacilityResponse;
-import minutmiljo.CreateHealthProtectionFacilityResponse;
-import minutmiljo.CreateHeatPumpFacilityResponse;
-import minutmiljo.CreateIndividualSewageFacilityResponse;
-import minutmiljo.CreateOrganizationPartyResponse;
-import minutmiljo.CreatePersonPartyResponse;
-import minutmiljo.SearchPartyResponse;
-import minutmiljoV2.RegisterDocumentCaseResultSvcDto;
-import minutmiljoV2.RegisterDocumentResponse;
 import se.sundsvall.casemanagement.api.model.AddressDTO;
 import se.sundsvall.casemanagement.api.model.AttachmentDTO;
 import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
@@ -59,6 +47,33 @@ import se.sundsvall.casemanagement.integration.fb.model.FbPropertyInfo;
 import se.sundsvall.casemanagement.service.CitizenService;
 import se.sundsvall.casemanagement.service.FbService;
 import se.sundsvall.casemanagement.util.Constants;
+
+import arendeexport.AbstractArendeObjekt;
+import arendeexport.Arende;
+import arendeexport.ArendeFastighet;
+import arendeexport.ArendeIntressent;
+import arendeexport.ArrayOfAbstractArendeObjekt2;
+import arendeexport.ArrayOfArendeIntressent2;
+import arendeexport.ArrayOfHandelse;
+import arendeexport.ArrayOfHandelseHandling;
+import arendeexport.ArrayOfHandelseIntressent2;
+import arendeexport.Fastighet;
+import arendeexport.Handelse;
+import arendeexport.HandelseHandling;
+import arendeexport.HandelseIntressent;
+import arendeexport.HandlaggareBas;
+import arendeexport.SaveNewArendeResponse;
+import arendeexport.SaveNewArendeResponse2;
+import minutmiljo.ArrayOfguid;
+import minutmiljo.CreateFoodFacilityResponse;
+import minutmiljo.CreateHealthProtectionFacilityResponse;
+import minutmiljo.CreateHeatPumpFacilityResponse;
+import minutmiljo.CreateIndividualSewageFacilityResponse;
+import minutmiljo.CreateOrganizationPartyResponse;
+import minutmiljo.CreatePersonPartyResponse;
+import minutmiljo.SearchPartyResponse;
+import minutmiljoV2.RegisterDocumentCaseResultSvcDto;
+import minutmiljoV2.RegisterDocumentResponse;
 
 public final class TestUtil {
 
@@ -503,4 +518,125 @@ public final class TestUtil {
 		return caseTypeDataList;
 	}
 
+	public static Arende createArende() {
+		var arende = new Arende();
+		arende.setArendeId(229982);
+		arende.setDnr("BYGG-DNR-0000");
+		arende.withDiarieprefix("BYGG");
+		arende.setKommun("Sundsvall");
+		arende.setEnhet("SBK");
+		arende.setArendegrupp("LOV");
+		arende.setArendetyp("BL");
+		arende.setArendeslag("P");
+		arende.setArendeklass("FRI");
+		arende.setNamndkod("SBN");
+		arende.setKalla("3");
+		arende.setStatus("Pågående");
+		arende.setBeskrivning("Bygglov för tillbyggnad av fritidshus");
+		arende.setAnkomstDatum(LocalDate.now());
+		arende.setUppdateradDatum(LocalDate.now());
+		arende.setRegistreradDatum(LocalDate.now());
+		arende.setHandlaggare(new HandlaggareBas().withEfternamn("Testersson").withFornamn("Test"));
+		arende.setIntressentLista(createArrayOfArendeIntressent2());
+		arende.setHandelseLista(createArrayOfHandelse());
+		arende.setArInomplan(false);
+		arende.setProjektnr("123456");
+		arende.setObjektLista(createArrayOfAbstractArendeObjekt2());
+
+		return arende;
+	}
+
+	public static ArrayOfAbstractArendeObjekt2 createArrayOfAbstractArendeObjekt2() {
+		var arrayOfAbstractArendeObjekt2 = new ArrayOfAbstractArendeObjekt2();
+		arrayOfAbstractArendeObjekt2.getAbstractArendeObjekt().add(createArendeFastighet());
+		return arrayOfAbstractArendeObjekt2;
+	}
+
+	public static AbstractArendeObjekt createArendeFastighet() {
+		var arendeFastighet = new ArendeFastighet();
+		arendeFastighet.setFastighet(createFastighet());
+		return arendeFastighet;
+	}
+
+	public static Fastighet createFastighet() {
+		var fastighet = new Fastighet();
+		fastighet.setFnr(22045604);
+		fastighet.setTrakt("Sundsvall");
+		fastighet.setFbetNr("Sundsvall 1:1");
+		return fastighet;
+	}
+
+	public static ArrayOfHandelse createArrayOfHandelse() {
+		var arrayOfHandelse = new ArrayOfHandelse();
+		arrayOfHandelse.getHandelse().add(createHandelse());
+		return arrayOfHandelse;
+	}
+
+	public static Handelse createHandelse() {
+		var handelse = new Handelse();
+		handelse.setRiktning("IN");
+		handelse.setRubrik("Bygglov");
+		handelse.setStartDatum(LocalDateTime.now());
+		handelse.setHandelseslag("GRAUTS");
+		handelse.setHandelsetyp("GRANHO");
+		handelse.setSekretess(false);
+		handelse.setMakulerad(false);
+		handelse.setIntressentLista(createArrayOfHandelseIntressent2());
+		handelse.setHandlingLista(createArrayOfHandelseHandling());
+		return handelse;
+	}
+
+	public static ArrayOfHandelseIntressent2 createArrayOfHandelseIntressent2() {
+		var arrayOfHandelseIntressent2 = new ArrayOfHandelseIntressent2();
+		arrayOfHandelseIntressent2.getIntressent().add(createHandelseIntressent());
+		arrayOfHandelseIntressent2.getIntressent().add(createHandelseIntressent());
+		return arrayOfHandelseIntressent2;
+	}
+
+	public static ArrayOfHandelseHandling createArrayOfHandelseHandling() {
+		var arrayOfHandelseHandling = new ArrayOfHandelseHandling();
+		arrayOfHandelseHandling.getHandling().add(createHandling());
+		arrayOfHandelseHandling.getHandling().add(createHandling());
+		return arrayOfHandelseHandling;
+	}
+
+	public static HandelseHandling createHandling() {
+		var handelseHandling = new HandelseHandling();
+		handelseHandling.setHandlingId(123456);
+		handelseHandling.setTyp("ANS");
+		handelseHandling.setStatus("Inkommen");
+		handelseHandling.setHandlingDatum(LocalDate.now());
+		handelseHandling.setAnteckning("Inkommen handling");
+		return handelseHandling;
+	}
+
+	public static ArrayOfArendeIntressent2 createArrayOfArendeIntressent2() {
+		var arrayOfArendeIntressent2 = new ArrayOfArendeIntressent2();
+		arrayOfArendeIntressent2.getIntressent().add(createArrendeIntressent());
+		arrayOfArendeIntressent2.getIntressent().add(createArrendeIntressent());
+		return arrayOfArendeIntressent2;
+	}
+
+	public static ArendeIntressent createArrendeIntressent() {
+		var arendeIntressent = new ArendeIntressent();
+		arendeIntressent.setNamn("Test Testsson");
+		arendeIntressent.setAdress("Testgatan 1");
+		arendeIntressent.setPostNr("12345");
+		arendeIntressent.setOrt("Sundsvall");
+		arendeIntressent.setFornamn("Test");
+		arendeIntressent.setEfternamn("Testsson");
+		arendeIntressent.setPersOrgNr("20000101-1234");
+		return arendeIntressent;
+	}
+
+	public static HandelseIntressent createHandelseIntressent() {
+		var handelseIntressent = new HandelseIntressent();
+		handelseIntressent.setAdress("Testgatan 1");
+		handelseIntressent.setIntressentId(123456);
+		handelseIntressent.setFornamn("Test");
+		handelseIntressent.setEfternamn("Testsson");
+		handelseIntressent.setNamn("Test Testsson");
+		handelseIntressent.setPersOrgNr("20000101-1234");
+		return handelseIntressent;
+	}
 }
