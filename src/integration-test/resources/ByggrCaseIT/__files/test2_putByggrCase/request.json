@@ -4,7 +4,8 @@
 	"extraParameters": {
 		"comment": "Jag har inga synpunkter",
 		"errandNr": "BYGG 2024-000017",
-		"serviceName": "Lämna svar på grannehörande - TEST"
+		"serviceName": "Lämna svar på grannehörande - TEST",
+		"oepAction": "PUT"
 	},
 	"stakeholders": [
 		{
@@ -13,13 +14,14 @@
 				"APPLICANT"
 			],
 			"personId": "97ed4de2-9f80-427d-b010-5d81267ef96b",
-			"firstName": "André",
-			"lastName": "Söderlund"
+			"firstName": "Testare",
+			"lastName": "Testarsson"
 		}
 	],
 	"facilities": [
 		{
 			"mainFacility": true,
+			"facilityType": "OTHER",
 			"address": {
 				"propertyDesignation": "SUNDSVALL BALDER 1",
 				"addressCategories": [

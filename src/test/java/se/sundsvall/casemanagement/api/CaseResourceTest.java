@@ -10,7 +10,6 @@ import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.zalando.problem.Status.BAD_REQUEST;
-import static se.sundsvall.casemanagement.TestUtil.createArende;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,16 +28,12 @@ import se.sundsvall.casemanagement.api.model.CaseDTO;
 import se.sundsvall.casemanagement.api.model.CaseResourceResponseDTO;
 import se.sundsvall.casemanagement.api.model.EcosCaseDTO;
 import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
-import se.sundsvall.casemanagement.integration.byggr.ArendeExportClient;
 import se.sundsvall.casemanagement.integration.casedata.CaseDataService;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.service.CaseMappingService;
 import se.sundsvall.casemanagement.service.CaseService;
-import se.sundsvall.casemanagement.service.CitizenService;
 import se.sundsvall.dept44.test.annotation.resource.Load;
 import se.sundsvall.dept44.test.extension.ResourceLoaderExtension;
-
-import arendeexport.GetArendeResponse;
 
 @SpringBootTest(classes = Application.class, webEnvironment = RANDOM_PORT)
 @ActiveProfiles("junit")
@@ -53,12 +48,6 @@ class CaseResourceTest {
 
 	@MockBean
 	private CaseDataService caseDataService;
-
-	@MockBean
-	private CitizenService citizenServiceMock;
-
-	@MockBean
-	private ArendeExportClient arendeExportClientMock;
 
 	@Captor
 	private ArgumentCaptor<CaseDTO> caseDTOCaptor;
@@ -87,7 +76,7 @@ class CaseResourceTest {
 			assertThat(caseDTO.getCaseType()).isEqualTo("REGISTRERING_AV_LIVSMEDEL");
 		});
 
-		verify(caseMappingService).validateUniqueCase(caseDTOCaptor.getValue().getExternalCaseId());
+		verify(caseMappingService).validateUniqueCase(caseDTOCaptor.getValue());
 		verifyNoMoreInteractions(caseService, caseMappingService);
 		verifyNoInteractions(caseDataService);
 	}
@@ -113,7 +102,7 @@ class CaseResourceTest {
 			assertThat(caseDTO.getCaseType()).isEqualTo("ANMALAN_ATTEFALL");
 		});
 
-		verify(caseMappingService).validateUniqueCase(caseDTOCaptor.getValue().getExternalCaseId());
+		verify(caseMappingService).validateUniqueCase(caseDTOCaptor.getValue());
 		verifyNoMoreInteractions(caseService, caseMappingService);
 		verifyNoInteractions(caseDataService);
 	}
@@ -139,9 +128,24 @@ class CaseResourceTest {
 			assertThat(caseDTO.getCaseType()).isEqualTo("PARKING_PERMIT");
 		});
 
-		verify(caseMappingService).validateUniqueCase(caseDTOCaptor.getValue().getExternalCaseId());
+		verify(caseMappingService).validateUniqueCase(caseDTOCaptor.getValue());
 		verifyNoMoreInteractions(caseService, caseMappingService);
 		verifyNoInteractions(caseDataService);
+	}
+
+	@Test
+	void putCase_ByggRCase(@Load("/case-resource/byggr-neighborhood-notification-case.json") final String body) {
+		webTestClient.post()
+			.uri("/cases")
+			.contentType(APPLICATION_JSON)
+			.bodyValue(body)
+			.exchange()
+			.expectStatus().isOk();
+
+		verify(caseMappingService).validateUniqueCase(caseDTOCaptor.capture());
+		var caseDTO = caseDTOCaptor.getValue();
+		assertThat(caseDTO).isInstanceOf(ByggRCaseDTO.class);
+		verify(caseService).handleCase(caseDTO);
 	}
 
 	@Test
@@ -161,25 +165,6 @@ class CaseResourceTest {
 		verify(caseDataService).putErrand(anyLong(), any(OtherCaseDTO.class));
 		verifyNoMoreInteractions(caseMappingService, caseDataService);
 		verifyNoInteractions(caseService);
-	}
-
-	@Test
-	void putCase_ByggRCase(@Load("/case-resource/byggr-neighborhood-notification-case.json") final String body) {
-		var arende = createArende();
-		var arendeResponse = new GetArendeResponse().withGetArendeResult(arende);
-		when(citizenServiceMock.getPersonalNumber("3ed5bc30-6308-4fd5-a5a7-78d7f96f4438")).thenReturn("200001011234");
-		when(arendeExportClientMock.getArende(any())).thenReturn(arendeResponse);
-
-		webTestClient.put()
-			.uri(uriBuilder -> uriBuilder.path("/cases/{externalCaseId}").build("externalCaseId"))
-			.contentType(APPLICATION_JSON)
-			.bodyValue(body)
-			.exchange()
-			.expectStatus().isNoContent();
-
-		verify(citizenServiceMock).getPersonalNumber("3ed5bc30-6308-4fd5-a5a7-78d7f96f4438");
-		verify(arendeExportClientMock).getArende(any());
-		verify(arendeExportClientMock).saveNewHandelse(any());
 	}
 
 	@Test

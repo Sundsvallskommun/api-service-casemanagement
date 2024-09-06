@@ -23,7 +23,6 @@ import se.sundsvall.casemanagement.api.model.CaseDTO;
 import se.sundsvall.casemanagement.api.model.CaseResourceResponseDTO;
 import se.sundsvall.casemanagement.api.model.EcosCaseDTO;
 import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
-import se.sundsvall.casemanagement.integration.byggr.ByggrService;
 import se.sundsvall.casemanagement.integration.casedata.CaseDataService;
 import se.sundsvall.casemanagement.service.CaseMappingService;
 import se.sundsvall.casemanagement.service.CaseService;
@@ -51,14 +50,11 @@ class CaseResource {
 
 	private final CaseDataService caseDataService;
 
-	private final ByggrService byggrService;
-
 	CaseResource(final CaseMappingService caseMappingService, final CaseService caseService,
-		final CaseDataService caseDataService, final ByggrService byggrService) {
+		final CaseDataService caseDataService) {
 		this.caseMappingService = caseMappingService;
 		this.caseService = caseService;
 		this.caseDataService = caseDataService;
-		this.byggrService = byggrService;
 	}
 
 	@Operation(description = "Creates a case in ByggR or Ecos2 based on caseType. Also persists a connection between externalCaseId and the created case.")
@@ -66,11 +62,10 @@ class CaseResource {
 	@ApiResponse(responseCode = "200", description = "OK")
 	public ResponseEntity<CaseResourceResponseDTO> postCases(
 		@Schema(oneOf = {ByggRCaseDTO.class, EcosCaseDTO.class, OtherCaseDTO.class}, example = Constants.POST_CASES_REQUEST_BODY_EXAMPLE)
-		@RequestBody
-		@Valid CaseDTO caseDTOInput) {
+		@RequestBody @Valid CaseDTO caseDTOInput) {
 
 		// Validates that it doesn't exist any case with the same oep-ID.
-		caseMappingService.validateUniqueCase(caseDTOInput.getExternalCaseId());
+		caseMappingService.validateUniqueCase(caseDTOInput);
 		caseService.handleCase(caseDTOInput);
 
 		return ResponseEntity.ok(new CaseResourceResponseDTO("Inskickat"));
@@ -83,18 +78,12 @@ class CaseResource {
 	public ResponseEntity<Void> putCase(
 		@PathVariable String externalCaseId,
 		@Schema(oneOf = {ByggRCaseDTO.class, EcosCaseDTO.class, OtherCaseDTO.class}, example = Constants.POST_CASES_REQUEST_BODY_EXAMPLE)
-		@RequestBody
-		@Valid CaseDTO caseDTOInput) {
-
-		if (caseDTOInput instanceof ByggRCaseDTO byggRCaseDTO) {
-			byggrService.putByggRCase(byggRCaseDTO);
-			return noContent().build();
-		} else if (caseDTOInput instanceof OtherCaseDTO otherCaseDTO) {
+		@RequestBody @Valid CaseDTO caseDTOInput) {
+		if (caseDTOInput instanceof OtherCaseDTO otherCaseDTO) {
 			caseDataService.putErrand(Long.valueOf(caseMappingService.getCaseMapping(externalCaseId).getCaseId()), otherCaseDTO);
 			return noContent().build();
 		} else {
 			throw Problem.valueOf(Status.BAD_REQUEST, "No support for updating cases of the given type.");
 		}
-
 	}
 }
