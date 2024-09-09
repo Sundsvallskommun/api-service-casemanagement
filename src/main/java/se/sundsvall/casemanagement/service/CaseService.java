@@ -40,17 +40,14 @@ public class CaseService {
 		if (dto instanceof final ByggRCaseDTO byggRCase) {
 			validator.validateByggrErrand(byggRCase);
 
-			var oepAction = Optional.ofNullable(byggRCase.getExtraParameters())
-				.map(extraParameter -> extraParameter.get("oepAction"))
-				.orElse(null);
 			// Open-E cannot send any other requests than POST. This is a dirty workaround.
-			if ("PUT".equalsIgnoreCase(oepAction)) {
-				byggrService.putByggRCase(byggRCase);
-				return;
-			}
-
-			saveCase(byggRCase);
-			handleByggRCase(byggRCase);
+			Optional.ofNullable(byggRCase.getExtraParameters())
+				.map(extraParameter -> extraParameter.get("oepAction"))
+				.filter("PUT"::equalsIgnoreCase)
+				.ifPresentOrElse(action -> byggrService.putByggRCase(byggRCase), () -> {
+					saveCase(byggRCase);
+					handleByggRCase(byggRCase);
+				});
 		} else if (dto instanceof final EcosCaseDTO ecosCase) {
 			validator.validateEcosErrand(ecosCase);
 			saveCase(ecosCase);
