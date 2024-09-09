@@ -75,6 +75,7 @@ public enum AttachmentCategory {
 	NOISE_SURVEY("BULL", "Bullerutredning"),
 	BILLING_STATEMENT("DEB", "Debiteringsblad"),
 	NOTIFICATION("DEL", "Delgivning"),
+	ATTACHMENT("BIL", "Bilaga"),
 	DELIVERY_RECEIPT("DELK", "Delgivningskvitto"),
 	PARTIAL_FINAL_DECISION("DELSLU", "Delslutbesked"),
 	START_DECISION("DELSTA", "Delstartsbesked"),

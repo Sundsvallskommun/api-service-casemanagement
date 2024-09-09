@@ -66,6 +66,7 @@ import org.zalando.problem.Status;
 import org.zalando.problem.ThrowableProblem;
 
 import se.sundsvall.casemanagement.TestUtil;
+import se.sundsvall.casemanagement.api.model.AddressDTO;
 import se.sundsvall.casemanagement.api.model.AttachmentDTO;
 import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
 import se.sundsvall.casemanagement.api.model.CaseStatusDTO;
@@ -93,12 +94,10 @@ import arendeexport.Arende;
 import arendeexport.Arende2;
 import arendeexport.ArendeFastighet;
 import arendeexport.ArendeIntressent;
-import arendeexport.ArrayOfAbstractArendeObjekt2;
 import arendeexport.ArrayOfArende1;
 import arendeexport.ArrayOfHandelse;
 import arendeexport.ArrayOfHandelseIntressent2;
 import arendeexport.ArrayOfHandling;
-import arendeexport.Fastighet;
 import arendeexport.GetArende;
 import arendeexport.GetArendeResponse;
 import arendeexport.GetRelateradeArendenByPersOrgNrAndRole;
@@ -1037,14 +1036,15 @@ class ByggrServiceTest {
 
 		var spy = Mockito.spy(byggrService);
 		var byggRCaseDTO = mock(ByggRCaseDTO.class);
+		var address = mock(AddressDTO.class);
+		var facility = mock(FacilityDTO.class);
+		var facilities = mock(List.class);
+
 		var extraParameterMap = mock(HashMap.class);
 
 		// ByggR Mocks
 		var arende = mock(Arende.class);
-		var arrayOfAbstractArendeObjekt2 = mock(ArrayOfAbstractArendeObjekt2.class);
 		var arrayOfHandelse = mock(ArrayOfHandelse.class);
-		var arendeFastighet = mock(ArendeFastighet.class);
-		var fastighet = mock(Fastighet.class);
 		var handelse = mock(Handelse.class);
 		var arrayOfHandelseIntressent2 = mock(ArrayOfHandelseIntressent2.class);
 		var handelseIntressent = mock(HandelseIntressent.class);
@@ -1052,6 +1052,10 @@ class ByggrServiceTest {
 
 		when(byggRCaseDTO.getStakeholders()).thenReturn(stakeholders);
 		when(byggRCaseDTO.getExtraParameters()).thenReturn(extraParameterMap);
+		when(byggRCaseDTO.getFacilities()).thenReturn(facilities);
+		when(facilities.getFirst()).thenReturn(facility);
+		when(facility.getAddress()).thenReturn(address);
+		when(address.getPropertyDesignation()).thenReturn("SUNDSVALL 123");
 		when(extraParameterMap.get(errandNr)).thenReturn(errandNr);
 		when(extraParameterMap.get(comment)).thenReturn(comment);
 		when(extraParameterMap.get(errandInformation)).thenReturn(errandInformation);
@@ -1065,9 +1069,6 @@ class ByggrServiceTest {
 		when(handelse.getIntressentLista()).thenReturn(arrayOfHandelseIntressent2);
 		when(arrayOfHandelseIntressent2.getIntressent()).thenReturn(List.of(handelseIntressent));
 		when(handelseIntressent.getPersOrgNr()).thenReturn(stakeholderId);
-		when(arende.getObjektLista()).thenReturn(arrayOfAbstractArendeObjekt2);
-		when(arrayOfAbstractArendeObjekt2.getAbstractArendeObjekt()).thenReturn(List.of(arendeFastighet));
-		when(arendeFastighet.getFastighet()).thenReturn(fastighet);
 
 		when(arendeExportClientMock.getArende(any())).thenReturn(getArendeResponse);
 		when(spy.extractStakeholderId(stakeholders)).thenReturn(stakeholderId);
@@ -1084,7 +1085,7 @@ class ByggrServiceTest {
 
 		verify(arendeExportClientMock).saveNewHandelse(any());
 	}
-	
+
 	@Test
 	void createNewEventStakeholder() {
 		var handelse = createHandelse();

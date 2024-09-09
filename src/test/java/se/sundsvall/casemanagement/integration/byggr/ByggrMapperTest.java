@@ -6,7 +6,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.within;
 import static se.sundsvall.casemanagement.TestUtil.createByggRCaseDTO;
-import static se.sundsvall.casemanagement.TestUtil.createFastighet;
 import static se.sundsvall.casemanagement.TestUtil.createHandelse;
 import static se.sundsvall.casemanagement.TestUtil.createHandelseIntressent;
 import static se.sundsvall.casemanagement.api.model.enums.AddressCategory.INVOICE_ADDRESS;
@@ -917,7 +916,7 @@ class ByggrMapperTest {
 
 	@Test
 	void createArrayOfHandelseHandling() {
-		var byggRCase = createByggRCaseDTO(CaseType.NEIGHBORHOOD_NOTIFICATION, AttachmentCategory.UNDERLAG_RISKKLASSNING);
+		var byggRCase = createByggRCaseDTO(CaseType.NEIGHBORHOOD_NOTIFICATION, AttachmentCategory.ATTACHMENT);
 		var attachment = byggRCase.getAttachments().getFirst();
 
 		var result = ByggrMapper.createArrayOfHandelseHandling(byggRCase);
@@ -932,12 +931,13 @@ class ByggrMapperTest {
 	void createNewEvent(String comment, String titlePrefix) {
 		var errandInformation = "Jag gillar inte röda hus!";
 		var intressent = createHandelseIntressent();
-		var fastighet = createFastighet();
+		var stakeholderName = "Test Testsson";
+		var propertyDesignation = "SUNDSVALL 5534";
 
 
-		var result = ByggrMapper.createNewEvent(comment, errandInformation, intressent, fastighet);
+		var result = ByggrMapper.createNewEvent(comment, errandInformation, intressent, stakeholderName, propertyDesignation);
 
-		assertThat(result.getRubrik()).isEqualTo(titlePrefix + ", " + fastighet.getTrakt() + " " + fastighet.getFbetNr() + ", " + intressent.getNamn());
+		assertThat(result.getRubrik()).isEqualTo(titlePrefix + ", " + propertyDesignation + ", " + intressent.getNamn());
 		assertThat(result.getAnteckning()).isEqualTo(errandInformation);
 		assertThat(result.getHandelsetyp()).isEqualTo("GRANHO");
 		assertThat(result.getHandelseslag()).isEqualTo("GRASVA");
