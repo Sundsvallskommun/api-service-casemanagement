@@ -82,6 +82,7 @@ public final class ByggrMapper {
 		return new SaveNewHandelse()
 			.withMessage(new SaveNewHandelseMessage()
 				.withDnr(dnr)
+				.withHandlaggarSign("SYSTEM")
 				.withHandelse(handelse)
 				.withHandlingar(new ArrayOfHandling()
 					.withHandling(arrayOfHandelseHandling.getHandling())));
@@ -116,10 +117,9 @@ public final class ByggrMapper {
 	 * @param errandInformation String that contains the stakeholders comment. (Bad name given by OpenE)
 	 * @param intressent The stakeholder that responds to the hearing request
 	 * @param fastighet The property that the permit is for
-	 * @param handelseHandling The attachments that the stakeholder sends with the response
 	 * @return Handelse, a new event in a ByggR Case
 	 */
-	static Handelse createNewEvent(final String comment, final String errandInformation, final HandelseIntressent intressent, final Fastighet fastighet, final ArrayOfHandelseHandling handelseHandling) {
+	static Handelse createNewEvent(final String comment, final String errandInformation, final HandelseIntressent intressent, final Fastighet fastighet) {
 		var isOpposed = comment.equals("Jag har synpunkter");
 		var opinion = isOpposed ? "Grannehörande Svar med erinran" : "Grannehörande Svar utan erinran";
 
@@ -129,11 +129,13 @@ public final class ByggrMapper {
 		var title = opinion + ", " + trakt + " " + fbetNr + ", " + intressent.getNamn();
 
 		return new Handelse()
+			.withRiktning("In")
+			.withHandelseslag("GRASVA")
+			.withHandelsetyp("GRANHO")
 			.withRubrik(title)
 			.withAnteckning(errandInformation)
-			.withHandelsetyp("GRANHO")
-			.withHandelseslag("GRASVA")
-			.withHandlingLista(handelseHandling)
+			.withSekretess(false)
+			.withMakulerad(false)
 			.withIntressentLista(new ArrayOfHandelseIntressent2().withIntressent(intressent));
 	}
 

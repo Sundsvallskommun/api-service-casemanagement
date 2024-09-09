@@ -1073,28 +1073,30 @@ class ByggrServiceTest {
 		when(spy.extractStakeholderId(stakeholders)).thenReturn(stakeholderId);
 		when(spy.getByggRCase(errandNr)).thenReturn(arende);
 		when(spy.extractEvent(arende, "GRANHO", "GRAUTS")).thenReturn(handelse);
-		when(spy.extractEventStakeholder(handelse, stakeholderId)).thenReturn(handelseIntressent);
+		when(spy.createNewEventStakeholder(handelse, stakeholderId)).thenReturn(handelseIntressent);
 		spy.updateByggRCase(byggRCaseDTO);
 
 		verify(spy).extractStakeholderId(stakeholders);
 		verify(spy).getByggRCase(errandNr);
 		verify(spy).extractEvent(arende, "GRANHO", "GRAUTS");
-		verify(spy).extractEventStakeholder(handelse, stakeholderId);
+		verify(spy).createNewEventStakeholder(handelse, stakeholderId);
 		verify(openEIntegrationMock).confirmDelivery(any(), any(), any());
 
 		verify(arendeExportClientMock).saveNewHandelse(any());
 	}
-
-
+	
 	@Test
-	void extractEventStakeholder() {
+	void createNewEventStakeholder() {
 		var handelse = createHandelse();
 		var stakeholderId = "20000101-1234";
 
-		var result = byggrService.extractEventStakeholder(handelse, stakeholderId);
+		var result = byggrService.createNewEventStakeholder(handelse, stakeholderId);
 
-		assertThat(result.getNamn()).isEqualTo(handelse.getIntressentLista().getIntressent().getFirst().getNamn());
-		assertThat(result.getPersOrgNr()).isEqualTo(stakeholderId);
+		assertThat(result.getIntressentId()).isEqualTo(handelse.getIntressentLista().getIntressent().getFirst().getIntressentId());
+		assertThat(result.getIntressentVersionId()).isEqualTo(handelse.getIntressentLista().getIntressent().getFirst().getIntressentVersionId());
+		assertThat(result.getIntressentKommunikationLista()).isEqualTo(handelse.getIntressentLista().getIntressent().getFirst().getIntressentKommunikationLista());
+		assertThat(result.getRollLista()).isEqualTo(handelse.getIntressentLista().getIntressent().getFirst().getRollLista());
+
 	}
 
 	/**

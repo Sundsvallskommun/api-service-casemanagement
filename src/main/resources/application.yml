@@ -47,6 +47,8 @@ logbook:
     json-path:
       - key: '$..file'
         value: '[base64]'
+      - key: '$..filBuffer'
+        value: '[base64]'
 logger:
   max:
     payload:

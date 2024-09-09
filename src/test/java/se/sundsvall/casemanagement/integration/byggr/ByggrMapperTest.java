@@ -933,15 +933,14 @@ class ByggrMapperTest {
 		var errandInformation = "Jag gillar inte röda hus!";
 		var intressent = createHandelseIntressent();
 		var fastighet = createFastighet();
-		var handelseHandling = TestUtil.createArrayOfHandelseHandling();
 
-		var result = ByggrMapper.createNewEvent(comment, errandInformation, intressent, fastighet, handelseHandling);
+
+		var result = ByggrMapper.createNewEvent(comment, errandInformation, intressent, fastighet);
 
 		assertThat(result.getRubrik()).isEqualTo(titlePrefix + ", " + fastighet.getTrakt() + " " + fastighet.getFbetNr() + ", " + intressent.getNamn());
 		assertThat(result.getAnteckning()).isEqualTo(errandInformation);
 		assertThat(result.getHandelsetyp()).isEqualTo("GRANHO");
 		assertThat(result.getHandelseslag()).isEqualTo("GRASVA");
-		assertThat(result.getHandlingLista()).isEqualTo(handelseHandling);
 		assertThat(result.getIntressentLista().getIntressent()).isEqualTo(List.of(intressent));
 	}
 

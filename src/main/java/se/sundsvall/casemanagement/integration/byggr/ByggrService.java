@@ -121,14 +121,14 @@ public class ByggrService {
 		var byggRCase = getByggRCase(errandNr);
 		var handelse = extractEvent(byggRCase, "GRANHO", "GRAUTS");
 
-		var intressent = extractEventStakeholder(handelse, stakeholderId);
+		var intressent = createNewEventStakeholder(handelse, stakeholderId);
 
 		var arendeFastighet = byggRCase.getObjektLista().getAbstractArendeObjekt().stream()
 			.map(abstractArendeObjekt -> (ArendeFastighet) abstractArendeObjekt)
 			.findFirst().orElseThrow(() -> Problem.valueOf(BAD_REQUEST, "No ArendeFastighet found in ByggRCase"));
 
 		var fastighet = arendeFastighet.getFastighet();
-		var newHandelse = createNewEvent(comment, errandInformation, intressent, fastighet, handelseHandling);
+		var newHandelse = createNewEvent(comment, errandInformation, intressent, fastighet);
 		var saveNewHandelse = createSaveNewHandelse(errandNr, newHandelse, handelseHandling);
 
 		arendeExportClient.saveNewHandelse(saveNewHandelse);
@@ -142,10 +142,16 @@ public class ByggrService {
 	 * @param stakeholderId the stakeholder id
 	 * @return HandelseIntressent, the stakeholder of a specific event
 	 */
-	public HandelseIntressent extractEventStakeholder(final Handelse handelse, final String stakeholderId) {
-		return handelse.getIntressentLista().getIntressent().stream()
+	public HandelseIntressent createNewEventStakeholder(final Handelse handelse, final String stakeholderId) {
+		var intressent = handelse.getIntressentLista().getIntressent().stream()
 			.filter(intressent1 -> intressent1.getPersOrgNr().equals(stakeholderId))
 			.findFirst().orElseThrow(() -> Problem.valueOf(BAD_REQUEST, "Stakeholder with id %s not found in ByggRCase".formatted(stakeholderId)));
+
+		return new HandelseIntressent()
+			.withIntressentId(intressent.getIntressentId())
+			.withIntressentVersionId(intressent.getIntressentVersionId())
+			.withIntressentKommunikationLista(intressent.getIntressentKommunikationLista())
+			.withRollLista(intressent.getRollLista());
 	}
 
 	/**
