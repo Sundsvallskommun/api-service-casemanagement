@@ -51,7 +51,6 @@ import arendeexport.ArrayOfString2;
 import arendeexport.Dokument;
 import arendeexport.DokumentFil;
 import arendeexport.Fakturaadress;
-import arendeexport.Fastighet;
 import arendeexport.Handelse;
 import arendeexport.HandelseHandling;
 import arendeexport.HandelseIntressent;
@@ -96,6 +95,7 @@ public final class ByggrMapper {
 	 */
 	static ArrayOfHandelseHandling createArrayOfHandelseHandling(final ByggRCaseDTO byggRCaseDTO) {
 		var handlingar = byggRCaseDTO.getAttachments().stream()
+			.filter(attachmentDTO -> attachmentDTO.getCategory().equalsIgnoreCase("BIL"))
 			.map(attachment -> new HandelseHandling()
 				.withAnteckning(attachment.getName())
 				.withStatus(Constants.BYGGR_HANDLING_STATUS_INKOMMEN)
@@ -110,23 +110,22 @@ public final class ByggrMapper {
 		return new ArrayOfHandelseHandling().withHandling(handlingar);
 	}
 
+
 	/**
 	 * Creates a new Handelse object with the given parameters.
 	 *
 	 * @param comment String that determines if the stakeholder has any issues with the building permit
 	 * @param errandInformation String that contains the stakeholders comment. (Bad name given by OpenE)
-	 * @param intressent The stakeholder that responds to the hearing request
-	 * @param fastighet The property that the permit is for
+	 * @param intressent HandelseIntressent
+	 * @param stakeholderName The stakeholder name
+	 * @param propertyDesignation The property designation
 	 * @return Handelse, a new event in a ByggR Case
 	 */
-	static Handelse createNewEvent(final String comment, final String errandInformation, final HandelseIntressent intressent, final Fastighet fastighet) {
+	static Handelse createNewEvent(final String comment, final String errandInformation, final HandelseIntressent intressent, final String stakeholderName, final String propertyDesignation) {
 		var isOpposed = comment.equals("Jag har synpunkter");
 		var opinion = isOpposed ? "Grannehörande Svar med erinran" : "Grannehörande Svar utan erinran";
 
-		var trakt = fastighet.getTrakt();
-		var fbetNr = fastighet.getFbetNr();
-
-		var title = opinion + ", " + trakt + " " + fbetNr + ", " + intressent.getNamn();
+		var title = opinion + ", " + propertyDesignation + ", " + stakeholderName;
 
 		return new Handelse()
 			.withRiktning("In")
@@ -138,7 +137,6 @@ public final class ByggrMapper {
 			.withMakulerad(false)
 			.withIntressentLista(new ArrayOfHandelseIntressent2().withIntressent(intressent));
 	}
-
 
 	static void setStakeholderFields(final StakeholderDTO stakeholderDTO, final List<String> personIdList, final ArendeIntressent intressent) {
 		switch (stakeholderDTO) {

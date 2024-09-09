@@ -112,7 +112,10 @@ public class ByggrService {
 	}
 
 	public void updateByggRCase(final ByggRCaseDTO byggRCaseDTO) {
+
 		var stakeholderId = extractStakeholderId(byggRCaseDTO.getStakeholders());
+		var propertyDesignation = byggRCaseDTO.getFacilities().getFirst().getAddress().getPropertyDesignation();
+		var stakeholderName = extractStakeholderName(byggRCaseDTO.getStakeholders());
 		var errandNr = byggRCaseDTO.getExtraParameters().get("errandNr");
 		var comment = byggRCaseDTO.getExtraParameters().get("comment");
 		var errandInformation = byggRCaseDTO.getExtraParameters().get("errandInformation");
@@ -123,12 +126,7 @@ public class ByggrService {
 
 		var intressent = createNewEventStakeholder(handelse, stakeholderId);
 
-		var arendeFastighet = byggRCase.getObjektLista().getAbstractArendeObjekt().stream()
-			.map(abstractArendeObjekt -> (ArendeFastighet) abstractArendeObjekt)
-			.findFirst().orElseThrow(() -> Problem.valueOf(BAD_REQUEST, "No ArendeFastighet found in ByggRCase"));
-
-		var fastighet = arendeFastighet.getFastighet();
-		var newHandelse = createNewEvent(comment, errandInformation, intressent, fastighet);
+		var newHandelse = createNewEvent(comment, errandInformation, intressent, stakeholderName, propertyDesignation);
 		var saveNewHandelse = createSaveNewHandelse(errandNr, newHandelse, handelseHandling);
 
 		arendeExportClient.saveNewHandelse(saveNewHandelse);
@@ -195,6 +193,24 @@ public class ByggrService {
 			.map(stakeholder -> ((PersonDTO) stakeholder).getPersonId())
 			.map(citizenService::getPersonalNumber)
 			.map(personalNumber -> personalNumber.substring(0, 8) + "-" + personalNumber.substring(8))
+			.orElseThrow(() -> Problem.valueOf(BAD_REQUEST, "No stakeholder found in the incoming request."));
+	}
+
+	public String extractStakeholderName(final List<StakeholderDTO> stakeholders) {
+		var organizationName = stakeholders.stream()
+			.filter(stakeholder -> stakeholder instanceof OrganizationDTO)
+			.findFirst()
+			.map(stakeholder -> ((OrganizationDTO) stakeholder).getOrganizationName())
+			.orElse(null);
+
+		if (organizationName != null) {
+			return organizationName;
+		}
+
+		return stakeholders.stream()
+			.filter(stakeholder -> stakeholder instanceof PersonDTO)
+			.findFirst()
+			.map(stakeholder -> ((PersonDTO) stakeholder).getFirstName() + " " + ((PersonDTO) stakeholder).getLastName())
 			.orElseThrow(() -> Problem.valueOf(BAD_REQUEST, "No stakeholder found in the incoming request."));
 	}
 
