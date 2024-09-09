@@ -81,6 +81,7 @@
 	"extraParameters": {
 		"errandNr": "errandNr",
 		"comment": "comment",
-		"errandInformation": "errandInformation"
+		"errandInformation": "errandInformation",
+		"oepAction": "PUT"
 	}
 }

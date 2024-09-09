@@ -1,16 +1,12 @@
 package se.sundsvall.casemanagement.byggr;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.http.HttpMethod.PUT;
-import static org.springframework.http.HttpStatus.NO_CONTENT;
-
-import java.util.Map;
+import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpStatus.OK;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -43,10 +39,10 @@ class ByggrCaseIT extends AbstractAppTest {
 		final var EXTERNAL_CASE_ID = "5123";
 
 		final var result = setupCall()
-			.withHttpMethod(HttpMethod.POST)
+			.withHttpMethod(POST)
 			.withServicePath(PATH)
 			.withRequest(REQUEST)
-			.withExpectedResponseStatus(HttpStatus.OK)
+			.withExpectedResponseStatus(OK)
 			.withExpectedResponse("expected-response.json")
 			.sendRequestAndVerifyResponse()
 			.andReturnBody(CaseResourceResponseDTO.class);
@@ -71,10 +67,10 @@ class ByggrCaseIT extends AbstractAppTest {
 	@Test
 	void test2_putByggrCase() {
 		setupCall()
-			.withHttpMethod(PUT)
-			.withServicePath(uriBuilder -> uriBuilder.path(PATH + "/{externalCaseId}").build(Map.of("externalCaseId", "5123")))
+			.withHttpMethod(POST)
+			.withServicePath(PATH)
 			.withRequest(REQUEST)
-			.withExpectedResponseStatus(NO_CONTENT)
+			.withExpectedResponseStatus(OK)
 			.sendRequestAndVerifyResponse();
 	}
 

@@ -201,8 +201,9 @@ class CaseResourceFailureTest {
 
 		assertThat(result.getCaseId()).isEqualTo("Inskickat");
 
-		verify(caseMappingServiceMock).validateUniqueCase(caseIdCaptor.capture());
-		assertThat(caseIdCaptor.getValue()).isEqualTo("externalCaseId");
+		verify(caseMappingServiceMock).validateUniqueCase(caseDTOCaptor.capture());
+		var caseDTO = caseDTOCaptor.getValue();
+		assertThat(caseDTO.getExternalCaseId()).isEqualTo("externalCaseId");
 		verify(caseServiceMock).handleCase(caseDTOCaptor.capture());
 		var otherCaseDTO = (OtherCaseDTO) caseDTOCaptor.getValue();
 		assertThat(otherCaseDTO).satisfies(dto -> {

@@ -20,6 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.zalando.problem.Status;
 import org.zalando.problem.ThrowableProblem;
 
+import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
 import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
 import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
@@ -38,10 +39,12 @@ class CaseMappingServiceTest {
 	@Test
 	void testPostCaseMapping() {
 		//Arrange
-		final var caseId = UUID.randomUUID().toString();
-		final var caseDTO = new OtherCaseDTO();
+		var caseId = UUID.randomUUID().toString();
+		var caseDTO = new OtherCaseDTO();
+		var externalCaseId = "externalCaseId";
+		caseDTO.setExternalCaseId(externalCaseId);
 		//Mock
-		when(caseMappingRepository.existsByExternalCaseId(caseId)).thenReturn(false);
+		when(caseMappingRepository.existsByExternalCaseId(any())).thenReturn(false);
 		//Act
 		caseMappingService.postCaseMapping(caseDTO, caseId, SystemType.CASE_DATA);
 		//Assert
@@ -53,13 +56,15 @@ class CaseMappingServiceTest {
 		//Arrange
 		final var caseId = UUID.randomUUID().toString();
 		final var caseDTO = new OtherCaseDTO();
+		var externalCaseId = "externalCaseId";
+		caseDTO.setExternalCaseId(externalCaseId);
 		//Mock
-		when(caseMappingRepository.existsByExternalCaseId(caseId)).thenReturn(true);
+		when(caseMappingRepository.existsByExternalCaseId(caseDTO.getExternalCaseId())).thenReturn(true);
 
 		//Act && Assert
 		assertThatThrownBy(() -> caseMappingService.postCaseMapping(caseDTO, caseId, SystemType.ECOS))
 			.isInstanceOf(ThrowableProblem.class)
-			.hasMessage(MessageFormat.format("Bad Request: A resources already exists with the same externalCaseId: {0}", caseId))
+			.hasMessage(MessageFormat.format("Bad Request: A resources already exists with the same externalCaseId: {0}", externalCaseId))
 			.hasFieldOrPropertyWithValue("status", Status.BAD_REQUEST);
 
 		verify(caseMappingRepository, never()).save(any());
@@ -132,7 +137,7 @@ class CaseMappingServiceTest {
 
 		when(caseMappingRepository.findAllByExternalCaseIdOrCaseId(caseMappingInput.getExternalCaseId(), null)).thenReturn(List.of(caseMappingInput, caseMappingInput));
 
-		final var externalCaseId =caseMappingInput.getExternalCaseId();
+		final var externalCaseId = caseMappingInput.getExternalCaseId();
 		assertThatThrownBy(() -> caseMappingService.getCaseMapping(externalCaseId))
 			.isInstanceOf(ThrowableProblem.class)
 			.hasMessage(MessageFormat.format("Not Found: More than one case was found with the same externalCaseId: \"{0}\". This should not be possible.", externalCaseId))
@@ -167,7 +172,9 @@ class CaseMappingServiceTest {
 
 	@Test
 	void testValidateUniqueCase() {
-		final var externalCaseId = UUID.randomUUID().toString();
+		var byggRCaseDTO = new ByggRCaseDTO();
+		var externalCaseId = UUID.randomUUID().toString();
+		byggRCaseDTO.setExternalCaseId(externalCaseId);
 		final var caseMappingInput = CaseMapping.builder()
 			.withCaseId(UUID.randomUUID().toString())
 			.withExternalCaseId(externalCaseId)
@@ -175,7 +182,7 @@ class CaseMappingServiceTest {
 
 		when(caseMappingRepository.existsByExternalCaseId(externalCaseId)).thenReturn(true);
 
-		assertThatThrownBy(() -> caseMappingService.validateUniqueCase(externalCaseId))
+		assertThatThrownBy(() -> caseMappingService.validateUniqueCase(byggRCaseDTO))
 			.isInstanceOf(ThrowableProblem.class)
 			.hasMessage(MessageFormat.format("Bad Request: A resources already exists with the same externalCaseId: {0}", caseMappingInput.getExternalCaseId()))
 			.hasFieldOrPropertyWithValue("status", Status.BAD_REQUEST);

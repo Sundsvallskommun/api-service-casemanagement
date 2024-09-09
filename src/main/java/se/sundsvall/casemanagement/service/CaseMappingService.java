@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
 
+import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
 import se.sundsvall.casemanagement.api.model.CaseDTO;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
 import se.sundsvall.casemanagement.integration.db.CaseMappingRepository;
@@ -26,7 +27,7 @@ public class CaseMappingService {
 	}
 
 	public void postCaseMapping(final CaseDTO caseInput, final String caseId, final SystemType systemType) {
-		validateUniqueCase(caseId);
+		validateUniqueCase(caseInput);
 		caseMappingRepository.save(toCaseMapping(caseInput, caseId, systemType));
 	}
 
@@ -57,7 +58,15 @@ public class CaseMappingService {
 		return caseMappingList;
 	}
 
-	public void validateUniqueCase(final String externalCaseId) {
+	public void validateUniqueCase(final CaseDTO caseDTO) {
+
+		var externalCaseId = caseDTO.getExternalCaseId();
+		if (caseDTO instanceof ByggRCaseDTO byggRCaseDTO
+			&& byggRCaseDTO.getExtraParameters() != null
+			&& "PUT".equalsIgnoreCase(byggRCaseDTO.getExtraParameters().get("oepAction"))) {
+			return;
+		}
+		
 		if (externalCaseId != null && caseMappingRepository.existsByExternalCaseId(externalCaseId)) {
 			throw Problem.valueOf(Status.BAD_REQUEST, MessageFormat.format("A resources already exists with the same externalCaseId: {0}", externalCaseId));
 		}
