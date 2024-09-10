@@ -130,6 +130,7 @@ public class ByggrService {
 		var saveNewHandelse = createSaveNewHandelse(errandNr, newHandelse, handelseHandling);
 
 		arendeExportClient.saveNewHandelse(saveNewHandelse);
+		openEIntegration.confirmDelivery(byggRCaseDTO.getExternalCaseId(), "BYGGR", errandNr);
 		openEIntegration.setStatus(byggRCaseDTO.getExternalCaseId(), "BYGGR", errandNr, "Klart");
 	}
 
