@@ -22,8 +22,11 @@ import se.sundsvall.casemanagement.service.util.Validator;
 public class CaseService {
 
 	private final ApplicationEventPublisher eventPublisher;
+
 	private final CaseRepository caseRepository;
+
 	private final Validator validator;
+
 	private final ByggrService byggrService;
 
 	public CaseService(final ApplicationEventPublisher eventPublisher,
@@ -35,7 +38,7 @@ public class CaseService {
 		this.byggrService = byggrService;
 	}
 
-	public void handleCase(final CaseDTO dto) {
+	public void handleCase(final CaseDTO dto, final String municipalityId) {
 
 		if (dto instanceof final ByggRCaseDTO byggRCase) {
 			validator.validateByggrErrand(byggRCase);
@@ -45,32 +48,33 @@ public class CaseService {
 				.map(extraParameter -> extraParameter.get("oepAction"))
 				.filter("PUT"::equalsIgnoreCase)
 				.ifPresentOrElse(action -> byggrService.putByggRCase(byggRCase), () -> {
-					saveCase(byggRCase);
-					handleByggRCase(byggRCase);
+					saveCase(byggRCase, municipalityId);
+					handleByggRCase(byggRCase, municipalityId);
 				});
 		} else if (dto instanceof final EcosCaseDTO ecosCase) {
 			validator.validateEcosErrand(ecosCase);
-			saveCase(ecosCase);
-			handleEcosCase(ecosCase);
+			saveCase(ecosCase, municipalityId);
+			handleEcosCase(ecosCase, municipalityId);
 		} else if (dto instanceof final OtherCaseDTO otherCase) {
-			saveCase(otherCase);
-			handleOtherCase(otherCase);
+			saveCase(otherCase, municipalityId);
+			handleOtherCase(otherCase, municipalityId);
 		}
 	}
 
-	private void saveCase(final CaseDTO dto) {
-		caseRepository.save(toCaseEntity(dto));
+	private void saveCase(final CaseDTO dto, final String municipalityId) {
+		caseRepository.save(toCaseEntity(dto, municipalityId));
 	}
 
-	private void handleByggRCase(final ByggRCaseDTO byggRCaseDTO) {
-		eventPublisher.publishEvent(new IncomingByggrCase(this, byggRCaseDTO));
+	private void handleByggRCase(final ByggRCaseDTO byggRCaseDTO, final String municipalityId) {
+		eventPublisher.publishEvent(new IncomingByggrCase(this, byggRCaseDTO, municipalityId));
 	}
 
-	private void handleEcosCase(final EcosCaseDTO ecosCaseDTO) {
-		eventPublisher.publishEvent(new IncomingEcosCase(this, ecosCaseDTO));
+	private void handleEcosCase(final EcosCaseDTO ecosCaseDTO, final String municipalityId) {
+		eventPublisher.publishEvent(new IncomingEcosCase(this, ecosCaseDTO, municipalityId));
 	}
 
-	private void handleOtherCase(final OtherCaseDTO otherCaseDTO) {
-		eventPublisher.publishEvent(new IncomingOtherCase(this, otherCaseDTO));
+	private void handleOtherCase(final OtherCaseDTO otherCaseDTO, final String municipalityId) {
+		eventPublisher.publishEvent(new IncomingOtherCase(this, otherCaseDTO, municipalityId));
 	}
+
 }

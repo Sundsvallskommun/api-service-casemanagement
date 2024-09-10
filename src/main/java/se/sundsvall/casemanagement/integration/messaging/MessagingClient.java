@@ -4,6 +4,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -15,9 +16,10 @@ import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 @CircuitBreaker(name = MessagingConfiguration.REGISTRATION_ID)
 public interface MessagingClient {
 
-	@PostMapping("/slack")
-	ResponseEntity<Void> sendSlack(SlackRequest request);
+	@PostMapping("/{municipalityId}/slack")
+	ResponseEntity<Void> sendSlack(@PathVariable("municipalityId") final String municipalityId, SlackRequest request);
 
-	@PostMapping(path = "/email", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
-	ResponseEntity<Void> sendEmail(@RequestBody EmailRequest emailRequest);
+	@PostMapping(path = "/{municipalityId}/email", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
+	ResponseEntity<Void> sendEmail(@PathVariable("municipalityId") final String municipalityId, @RequestBody EmailRequest emailRequest);
+
 }

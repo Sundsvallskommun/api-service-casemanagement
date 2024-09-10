@@ -9,9 +9,10 @@ import se.sundsvall.casemanagement.integration.db.model.CaseMappingId;
 
 public interface CaseMappingRepository extends JpaRepository<CaseMapping, CaseMappingId> {
 
-	List<CaseMapping> findAllByExternalCaseIdOrCaseId(String externalCaseId, String caseId);
+	List<CaseMapping> findAllByMunicipalityIdAndExternalCaseIdOrCaseId(String municipalityId, String externalCaseId, String caseId);
 
-	List<CaseMapping> findAllByExternalCaseId(String externalCaseId);
+	List<CaseMapping> findAllByExternalCaseIdAndMunicipalityId(String externalCaseId, String municipalityId);
 
-	boolean existsByExternalCaseId(String externalCaseId);
+	boolean existsByExternalCaseIdAndMunicipalityId(String externalCaseId, String municipalityId);
+
 }

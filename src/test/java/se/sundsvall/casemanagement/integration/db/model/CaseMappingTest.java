@@ -45,6 +45,7 @@ class CaseMappingTest {
 		final var caseType = CaseType.MEX_LAND_RIGHT.toString();
 		final var serviceName = "SomeServicename";
 		final var timestamp = LocalDateTime.now();
+		final var municipalityId = "2281";
 
 		// Act
 		final var caseMapping = CaseMapping.builder()
@@ -54,6 +55,7 @@ class CaseMappingTest {
 			.withCaseType(caseType)
 			.withServiceName(serviceName)
 			.withTimestamp(timestamp)
+			.withMunicipalityId(municipalityId)
 			.build();
 
 		// Assert
@@ -64,6 +66,7 @@ class CaseMappingTest {
 		assertThat(caseMapping.getCaseType()).isEqualTo(caseType);
 		assertThat(caseMapping.getServiceName()).isEqualTo(serviceName);
 		assertThat(caseMapping.getTimestamp()).isEqualTo(timestamp);
+		assertThat(caseMapping.getMunicipalityId()).isEqualTo(municipalityId);
 	}
 
 	@Test

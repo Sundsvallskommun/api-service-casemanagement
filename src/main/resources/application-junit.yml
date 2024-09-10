@@ -3,13 +3,28 @@ retry:
   max-delay: 2
   maxAttempts: 1
 spring:
+  cache:
+    type: none
   datasource:
     driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
-    password: password
-    url: jdbc:tc:mariadb:10.6.14:///casemanagement?TC_INITSCRIPT=db/casemanagement.sql
-    username: sa
-  flyway:
-    enabled: false
+    url: jdbc:tc:mariadb:10.6.14:///
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+        hbm2ddl:
+          schema-generation:
+            script:
+              append: false
+      jakarta:
+        persistence:
+          schema-generation:
+            create-source: metadata
+            database:
+              action: update
+            scripts:
+              action: create
+              create-target: target/database/generated-schema.sql
 integration:
   arendeexport:
     url:
@@ -51,4 +66,3 @@ integration:
     password: password
     url: opene.url
     username: username
-

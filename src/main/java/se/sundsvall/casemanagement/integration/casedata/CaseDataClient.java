@@ -33,39 +33,61 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 @CircuitBreaker(name = CaseDataConfiguration.REGISTRATION_ID)
 public interface CaseDataClient {
 
-	@PostMapping(path = "/errands", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_PROBLEM_JSON_VALUE)
-	ResponseEntity<Void> postErrands(ErrandDTO errandDTO);
+	@PostMapping(path = "/{municipalityId}/errands", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_PROBLEM_JSON_VALUE)
+	ResponseEntity<Void> postErrands(
+		@PathVariable(name = "municipalityId") final String municipalityId,
+		@RequestBody @Valid ErrandDTO errandDTO);
 
-	@PostMapping(path = "/attachments", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_PROBLEM_JSON_VALUE)
-	ResponseEntity<Void> postAttachment(AttachmentDTO attachmentDTO);
+	@PostMapping(path = "/{municipalityId}/attachments", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_PROBLEM_JSON_VALUE)
+	ResponseEntity<Void> postAttachment(
+		@PathVariable(name = "municipalityId") final String municipalityId,
+		@RequestBody @Valid AttachmentDTO attachmentDTO);
 
-	@PutMapping(path = "/attachments/{attachmentId}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_PROBLEM_JSON_VALUE)
-	ResponseEntity<Void> putAttachment(@PathVariable Long attachmentId, AttachmentDTO attachmentDTO);
+	@PutMapping(path = "/{municipalityId}/attachments/{attachmentId}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_PROBLEM_JSON_VALUE)
+	ResponseEntity<Void> putAttachment(
+		@PathVariable(name = "municipalityId") final String municipalityId,
+		@PathVariable(name = "attachmentId") final Long attachmentId,
+		@RequestBody @Valid AttachmentDTO attachmentDTO);
 
 	@Operation(description = "Get all attachments.")
-	@GetMapping(path = "/attachments/errand/{errandNumber}", produces = {APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE})
-	List<AttachmentDTO> getAttachmentsByErrandNumber(@PathVariable String errandNumber);
+	@GetMapping(path = "/{municipalityId}/attachments/errand/{errandNumber}", produces = {APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE})
+	List<AttachmentDTO> getAttachmentsByErrandNumber(
+		@PathVariable(name = "municipalityId") final String municipalityId,
+		@PathVariable(name = "errandNumber") String errandNumber);
 
 	@Operation(description = "Delete attachment.")
-	@DeleteMapping(path = "/attachments/{id}", produces = APPLICATION_PROBLEM_JSON_VALUE)
-	ResponseEntity<Void> deleteAttachment(@PathVariable Long id);
+	@DeleteMapping(path = "/{municipalityId}/attachments/{id}", produces = APPLICATION_PROBLEM_JSON_VALUE)
+	ResponseEntity<Void> deleteAttachment(
+		@PathVariable(name = "municipalityId") final String municipalityId,
+		@PathVariable(name = "id") final Long id);
 
-	@GetMapping(path = "/errands/{id}", consumes = APPLICATION_JSON_VALUE, produces = {APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE})
-	ErrandDTO getErrand(@PathVariable Long id);
+	@GetMapping(path = "/{municipalityId}/errands/{id}", consumes = APPLICATION_JSON_VALUE, produces = {APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE})
+	ErrandDTO getErrand(
+		@PathVariable(name = "municipalityId") final String municipalityId,
+		@PathVariable(name = "id") final Long id);
 
 	@Operation(description = "Update errand.")
-	@PatchMapping(path = "/errands/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = {APPLICATION_PROBLEM_JSON_VALUE})
+	@PatchMapping(path = "/{municipalityId}/errands/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = {APPLICATION_PROBLEM_JSON_VALUE})
 	@ApiResponse(responseCode = "204", description = "No content - Successful operation")
-	ResponseEntity<Void> patchErrand(@PathVariable Long id, @RequestBody @Valid PatchErrandDTO patchErrandDTO);
+	ResponseEntity<Void> patchErrand(
+		@PathVariable(name = "municipalityId") final String municipalityId,
+		@PathVariable(name = "id") final Long id,
+		@RequestBody @Valid PatchErrandDTO patchErrandDTO);
 
 	@Operation(description = "Add/replace status on errand.")
-	@PutMapping(path = "/errands/{id}/statuses", consumes = MediaType.APPLICATION_JSON_VALUE, produces = {APPLICATION_PROBLEM_JSON_VALUE})
+	@PutMapping(path = "/{municipalityId}/errands/{id}/statuses", consumes = MediaType.APPLICATION_JSON_VALUE, produces = {APPLICATION_PROBLEM_JSON_VALUE})
 	@ApiResponse(responseCode = "204", description = "No content - Successful operation")
-	ResponseEntity<Void> putStatusOnErrand(@PathVariable Long id, @RequestBody @Valid List<StatusDTO> statusDTOList);
+	ResponseEntity<Void> putStatusOnErrand(
+		@PathVariable(name = "municipalityId") final String municipalityId,
+		@PathVariable(name = "id") final Long id,
+		@RequestBody @Valid List<StatusDTO> statusDTOList);
 
 	@Operation(description = "Replace stakeholders on errand.")
-	@PutMapping(path = "/errands/{id}/stakeholders", consumes = MediaType.APPLICATION_JSON_VALUE, produces = {APPLICATION_PROBLEM_JSON_VALUE})
+	@PutMapping(path = "/{municipalityId}/errands/{id}/stakeholders", consumes = MediaType.APPLICATION_JSON_VALUE, produces = {APPLICATION_PROBLEM_JSON_VALUE})
 	@ApiResponse(responseCode = "204", description = "No content - Successful operation")
-	ResponseEntity<Void> putStakeholdersOnErrand(@PathVariable Long id, @RequestBody @Valid List<StakeholderDTO> stakeholderDTOList);
+	ResponseEntity<Void> putStakeholdersOnErrand(
+		@PathVariable(name = "municipalityId") final String municipalityId,
+		@PathVariable(name = "id") final Long id,
+		@RequestBody @Valid List<StakeholderDTO> stakeholderDTOList);
 
 }

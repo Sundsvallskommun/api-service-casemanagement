@@ -26,17 +26,17 @@ public class CaseMappingService {
 		this.caseMappingRepository = caseMappingRepository;
 	}
 
-	public void postCaseMapping(final CaseDTO caseInput, final String caseId, final SystemType systemType) {
-		validateUniqueCase(caseInput);
-		caseMappingRepository.save(toCaseMapping(caseInput, caseId, systemType));
+	public void postCaseMapping(final CaseDTO caseInput, final String caseId, final SystemType systemType, final String municipalityId) {
+		validateUniqueCase(caseInput, municipalityId);
+		caseMappingRepository.save(toCaseMapping(caseInput, caseId, systemType, municipalityId));
 	}
 
-	public List<CaseMapping> getCaseMapping(final String externalCaseId, final String caseId) {
-		return caseMappingRepository.findAllByExternalCaseIdOrCaseId(externalCaseId, caseId);
+	public List<CaseMapping> getCaseMapping(final String externalCaseId, final String caseId, final String municipalityId) {
+		return caseMappingRepository.findAllByMunicipalityIdAndExternalCaseIdOrCaseId(municipalityId, externalCaseId, caseId);
 	}
 
-	public CaseMapping getCaseMapping(final String externalCaseId) {
-		final List<CaseMapping> caseMappingList = getCaseMapping(externalCaseId, null);
+	public CaseMapping getCaseMapping(final String externalCaseId, final String municipalityId) {
+		final List<CaseMapping> caseMappingList = getCaseMapping(externalCaseId, null, municipalityId);
 
 		if (caseMappingList.isEmpty()) {
 			throw Problem.valueOf(NOT_FOUND, ERR_MSG_CASES_NOT_FOUND);
@@ -58,17 +58,18 @@ public class CaseMappingService {
 		return caseMappingList;
 	}
 
-	public void validateUniqueCase(final CaseDTO caseDTO) {
+	public void validateUniqueCase(final CaseDTO caseDTO, final String municipalityId) {
 
-		var externalCaseId = caseDTO.getExternalCaseId();
-		if (caseDTO instanceof ByggRCaseDTO byggRCaseDTO
+		final var externalCaseId = caseDTO.getExternalCaseId();
+		if (caseDTO instanceof final ByggRCaseDTO byggRCaseDTO
 			&& byggRCaseDTO.getExtraParameters() != null
 			&& "PUT".equalsIgnoreCase(byggRCaseDTO.getExtraParameters().get("oepAction"))) {
 			return;
 		}
-		
-		if (externalCaseId != null && caseMappingRepository.existsByExternalCaseId(externalCaseId)) {
+
+		if (externalCaseId != null && caseMappingRepository.existsByExternalCaseIdAndMunicipalityId(externalCaseId, municipalityId)) {
 			throw Problem.valueOf(Status.BAD_REQUEST, MessageFormat.format("A resources already exists with the same externalCaseId: {0}", externalCaseId));
 		}
 	}
+
 }

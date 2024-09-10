@@ -25,8 +25,9 @@ import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.integration.ecos.EcosService;
 import se.sundsvall.casemanagement.service.CaseMappingService;
 import se.sundsvall.casemanagement.util.Constants;
+import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
 
-import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -34,7 +35,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @Validated
-@RequestMapping("/")
+@RequestMapping("/{municipalityId}")
 @Tag(name = "Attachments", description = "Attachment operations")
 @ApiResponse(responseCode = "400", description = "Bad request", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 @ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
@@ -59,21 +60,22 @@ class AttachmentResource {
 		this.caseMappingService = caseMappingService;
 	}
 
-	@Operation(description = "Add attachments to existing case.")
 	@PostMapping(path = "cases/{externalCaseId}/attachments", consumes = MediaType.APPLICATION_JSON_VALUE, produces = {MediaType.APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE})
 	@ApiResponse(responseCode = "204", description = "No content - Successful request.")
-	public ResponseEntity<Void> postAttachmentsToCase(@PathVariable final String externalCaseId,
+	public ResponseEntity<Void> postAttachmentsToCase(
+		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable(name = "municipalityId") final String municipalityId,
+		@Parameter(name = "externalCaseId", description = "External case id", example = "1234") @PathVariable(name = "externalCaseId") final String externalCaseId,
 		@NotNull(message = Constants.REQUEST_BODY_MUST_NOT_BE_NULL)
 		@RequestBody @Valid final List<AttachmentDTO> attachmentDTOList) {
 
-		final CaseMapping caseMapping = caseMappingService.getCaseMapping(externalCaseId);
+		final CaseMapping caseMapping = caseMappingService.getCaseMapping(externalCaseId, municipalityId);
 
 		switch (caseMapping.getSystem()) {
 			case BYGGR ->
 				byggrService.saveNewIncomingAttachmentHandelse(caseMapping.getCaseId(), attachmentDTOList);
 			case ECOS -> ecosService.addDocumentsToCase(caseMapping.getCaseId(), attachmentDTOList);
 			case CASE_DATA ->
-				caseDataService.patchErrandWithAttachment(caseMapping.getExternalCaseId(), attachmentDTOList);
+				caseDataService.patchErrandWithAttachment(caseMapping.getExternalCaseId(), attachmentDTOList, municipalityId);
 			default ->
 				throw Problem.valueOf(Status.BAD_REQUEST, "It should not be possible to reach this row. systemType was: " + caseMapping.getSystem());
 		}

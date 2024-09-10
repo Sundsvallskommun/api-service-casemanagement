@@ -116,6 +116,8 @@ class ByggrServiceTest {
 
 	private static final String BYGG_CASE_ID = "Inskickat";
 
+	private static final String MUNICIPALITY_ID = "2281";
+
 	@Mock
 	private CaseTypeRepository caseTypeRepository;
 
@@ -279,7 +281,7 @@ class ByggrServiceTest {
 		final var input = createByggRCaseDTO(caseType, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		final var inputFacility = input.getFacilities().getFirst();
 		final var inputAttachment = input.getAttachments().getFirst();
-		final var response = byggrService.saveNewCase(input);
+		final var response = byggrService.saveNewCase(input, MUNICIPALITY_ID);
 
 		assertThat(response.getDnr()).isEqualTo(BYGG_CASE_ID);
 
@@ -342,7 +344,7 @@ class ByggrServiceTest {
 		final var inputAttachment = input.getAttachments().getFirst();
 
 		// Act
-		final var response = byggrService.saveNewCase(input);
+		final var response = byggrService.saveNewCase(input, MUNICIPALITY_ID);
 
 		// Assert
 		assertThat(response.getDnr()).isEqualTo(BYGG_CASE_ID);
@@ -403,7 +405,7 @@ class ByggrServiceTest {
 		input.getStakeholders().getFirst().getAddresses().getFirst().setAddressCategories(List.of(AddressCategory.POSTAL_ADDRESS));
 		final var inputFacility = input.getFacilities().getFirst();
 		final AttachmentDTO inputAttachment = input.getAttachments().getFirst();
-		final SaveNewArendeResponse2 response = byggrService.saveNewCase(input);
+		final SaveNewArendeResponse2 response = byggrService.saveNewCase(input, MUNICIPALITY_ID);
 
 		assertThat(response.getDnr()).isEqualTo(BYGG_CASE_ID);
 
@@ -453,7 +455,7 @@ class ByggrServiceTest {
 		input.getStakeholders().getFirst().getAddresses().getFirst().setAddressCategories(List.of(AddressCategory.POSTAL_ADDRESS));
 		final var inputFacility = input.getFacilities().getFirst();
 		final AttachmentDTO inputAttachment = input.getAttachments().getFirst();
-		final SaveNewArendeResponse2 response = byggrService.saveNewCase(input);
+		final SaveNewArendeResponse2 response = byggrService.saveNewCase(input, MUNICIPALITY_ID);
 
 		assertThat(response.getDnr()).isEqualTo(BYGG_CASE_ID);
 
@@ -506,7 +508,7 @@ class ByggrServiceTest {
 		final var inputAttachment = input.getAttachments().getFirst();
 
 		// Act
-		final SaveNewArendeResponse2 response = byggrService.saveNewCase(input);
+		final SaveNewArendeResponse2 response = byggrService.saveNewCase(input, MUNICIPALITY_ID);
 
 		// Assert
 		assertThat(response.getDnr()).isEqualTo(BYGG_CASE_ID);
@@ -553,9 +555,9 @@ class ByggrServiceTest {
 		final PersonDTO applicant = (PersonDTO) TestUtil.createStakeholderDTO(StakeholderType.PERSON, List.of(StakeholderRole.APPLICANT.toString()));
 		input.setStakeholders(List.of(applicant));
 
-		final var postResult = byggrService.saveNewCase(input);
+		final var postResult = byggrService.saveNewCase(input, MUNICIPALITY_ID);
 
-		verify(caseMappingServiceMock, times(1)).postCaseMapping(input, postResult.getDnr(), SystemType.BYGGR);
+		verify(caseMappingServiceMock, times(1)).postCaseMapping(input, postResult.getDnr(), SystemType.BYGGR, MUNICIPALITY_ID);
 	}
 
 	// Test no duplicates of arendeFastighet
@@ -573,7 +575,7 @@ class ByggrServiceTest {
 		// Add some facilities
 		input.setFacilities(List.of(facility1, facility2, facility3));
 
-		byggrService.saveNewCase(input);
+		byggrService.saveNewCase(input, MUNICIPALITY_ID);
 
 		final ArgumentCaptor<SaveNewArende> saveNewArendeRequestCaptor = ArgumentCaptor.forClass(SaveNewArende.class);
 		verify(arendeExportClientMock).saveNewArende(saveNewArendeRequestCaptor.capture());
@@ -592,14 +594,14 @@ class ByggrServiceTest {
 		input.getStakeholders().getFirst().getAddresses().getFirst().setAddressCategories(List.of(AddressCategory.POSTAL_ADDRESS));
 
 		final var mainFacility = TestUtil.createFacilityDTO(true);
-		final var randomFacility_1 = TestUtil.createFacilityDTO(false);
-		randomFacility_1.getAddress().setPropertyDesignation("Sundsvall test 1:1");
-		final var randomFacility_2 = TestUtil.createFacilityDTO(false);
-		randomFacility_2.getAddress().setPropertyDesignation("Sundsvall test 2:2");
+		final var randomFacility1 = TestUtil.createFacilityDTO(false);
+		randomFacility1.getAddress().setPropertyDesignation("Sundsvall test 1:1");
+		final var randomFacility2 = TestUtil.createFacilityDTO(false);
+		randomFacility2.getAddress().setPropertyDesignation("Sundsvall test 2:2");
 		// Add some facilities
-		input.setFacilities(List.of(randomFacility_1, mainFacility, randomFacility_2));
+		input.setFacilities(List.of(randomFacility1, mainFacility, randomFacility2));
 
-		byggrService.saveNewCase(input);
+		byggrService.saveNewCase(input, MUNICIPALITY_ID);
 
 		final ArgumentCaptor<SaveNewArende> saveNewArendeRequestCaptor = ArgumentCaptor.forClass(SaveNewArende.class);
 		verify(arendeExportClientMock).saveNewArende(saveNewArendeRequestCaptor.capture());
@@ -627,7 +629,7 @@ class ByggrServiceTest {
 		input.setStakeholders(List.of(applicant));
 
 		assertThatThrownBy(
-			() -> byggrService.saveNewCase(input))
+			() -> byggrService.saveNewCase(input, MUNICIPALITY_ID))
 			.isInstanceOf(ThrowableProblem.class)
 			.hasFieldOrPropertyWithValue("status", Status.BAD_REQUEST)
 			.hasFieldOrPropertyWithValue("detail", Constants.ERR_MSG_PERSON_INVOICE_ADDRESS);
@@ -641,7 +643,7 @@ class ByggrServiceTest {
 		final PersonDTO applicant = (PersonDTO) TestUtil.createStakeholderDTO(StakeholderType.PERSON, List.of(StakeholderRole.APPLICANT.toString()));
 		input.setStakeholders(List.of(applicant));
 
-		byggrService.saveNewCase(input);
+		byggrService.saveNewCase(input, MUNICIPALITY_ID);
 
 		final ArgumentCaptor<SaveNewArende> saveNewArendeRequestCaptor = ArgumentCaptor.forClass(SaveNewArende.class);
 
@@ -666,7 +668,7 @@ class ByggrServiceTest {
 		final OrganizationDTO applicant = (OrganizationDTO) TestUtil.createStakeholderDTO(StakeholderType.ORGANIZATION, List.of(StakeholderRole.APPLICANT.toString()));
 		input.setStakeholders(List.of(applicant));
 
-		byggrService.saveNewCase(input);
+		byggrService.saveNewCase(input, MUNICIPALITY_ID);
 
 		final ArgumentCaptor<SaveNewArende> saveNewArendeRequestCaptor = ArgumentCaptor.forClass(SaveNewArende.class);
 		verify(arendeExportClientMock).saveNewArende(saveNewArendeRequestCaptor.capture());
@@ -682,7 +684,7 @@ class ByggrServiceTest {
 
 	// 1 applicant and 1 propertyOwner
 	@Test
-	void testPopulateStakeholderListWithPropertyOwners_1() {
+	void testPopulateStakeholderListWithPropertyOwners1() {
 		final ByggRCaseDTO input = createByggRCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		final PersonDTO applicant = (PersonDTO) TestUtil.createStakeholderDTO(StakeholderType.PERSON, List.of(StakeholderRole.APPLICANT.toString()));
 		final PersonDTO propertyOwner = (PersonDTO) TestUtil.createStakeholderDTO(StakeholderType.PERSON, List.of(StakeholderRole.PROPERTY_OWNER.toString()));
@@ -690,7 +692,7 @@ class ByggrServiceTest {
 
 		when(fbServiceMock.getPropertyOwnerByPropertyDesignation(anyString())).thenReturn(List.of(propertyOwner));
 
-		byggrService.saveNewCase(input);
+		byggrService.saveNewCase(input, MUNICIPALITY_ID);
 
 		final ArgumentCaptor<SaveNewArende> saveNewArendeRequestCaptor = ArgumentCaptor.forClass(SaveNewArende.class);
 		verify(arendeExportClientMock).saveNewArende(saveNewArendeRequestCaptor.capture());
@@ -709,9 +711,9 @@ class ByggrServiceTest {
 		assertPersonDTO(applicant, applicants.getFirst());
 	}
 
-	// same as testPopulateStakeholderListWithPropertyOwners_1 but for organization
+	// same as testPopulateStakeholderListWithPropertyOwners1 but for organization
 	@Test
-	void testPopulateStakeholderListWithPropertyOwners_1_1() {
+	void testPopulateStakeholderListWithPropertyOwners11() {
 		final ByggRCaseDTO input = createByggRCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		final OrganizationDTO applicant = (OrganizationDTO) TestUtil.createStakeholderDTO(StakeholderType.ORGANIZATION, List.of(StakeholderRole.APPLICANT.toString()));
 		final OrganizationDTO propertyOwner = (OrganizationDTO) TestUtil.createStakeholderDTO(StakeholderType.ORGANIZATION, List.of(StakeholderRole.PROPERTY_OWNER.toString()));
@@ -719,7 +721,7 @@ class ByggrServiceTest {
 
 		when(fbServiceMock.getPropertyOwnerByPropertyDesignation(anyString())).thenReturn(List.of(propertyOwner));
 
-		byggrService.saveNewCase(input);
+		byggrService.saveNewCase(input, MUNICIPALITY_ID);
 
 		final ArgumentCaptor<SaveNewArende> saveNewArendeRequestCaptor = ArgumentCaptor.forClass(SaveNewArende.class);
 		verify(arendeExportClientMock).saveNewArende(saveNewArendeRequestCaptor.capture());
@@ -740,7 +742,7 @@ class ByggrServiceTest {
 
 	// 1 applicant that is also propertyOwner + 1 more propertyOwner
 	@Test
-	void testPopulateStakeholderListWithPropertyOwners_2() {
+	void testPopulateStakeholderListWithPropertyOwners2() {
 		final var input = createByggRCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		final var applicant = (PersonDTO) TestUtil.createStakeholderDTO(StakeholderType.PERSON, List.of(StakeholderRole.APPLICANT.toString()));
 		input.setStakeholders(List.of(applicant));
@@ -749,7 +751,7 @@ class ByggrServiceTest {
 
 		when(fbServiceMock.getPropertyOwnerByPropertyDesignation(anyString())).thenReturn(List.of(applicant, propertyOwner));
 
-		byggrService.saveNewCase(input);
+		byggrService.saveNewCase(input, MUNICIPALITY_ID);
 
 		final ArgumentCaptor<SaveNewArende> saveNewArendeRequestCaptor = ArgumentCaptor.forClass(SaveNewArende.class);
 		verify(arendeExportClientMock).saveNewArende(saveNewArendeRequestCaptor.capture());
@@ -775,7 +777,7 @@ class ByggrServiceTest {
 
 		when(fbServiceMock.getPropertyOwnerByPropertyDesignation(anyString())).thenReturn(Collections.emptyList());
 
-		final var postResult = byggrService.saveNewCase(input);
+		final var postResult = byggrService.saveNewCase(input, MUNICIPALITY_ID);
 		final ArgumentCaptor<SaveNewArende> saveNewArendeRequestCaptor = ArgumentCaptor.forClass(SaveNewArende.class);
 		verify(arendeExportClientMock).saveNewArende(saveNewArendeRequestCaptor.capture());
 		final SaveNewArendeMessage saveNewArendeMessage = saveNewArendeRequestCaptor.getValue().getMessage();
@@ -804,7 +806,7 @@ class ByggrServiceTest {
 		final PersonDTO applicant = (PersonDTO) TestUtil.createStakeholderDTO(StakeholderType.PERSON, List.of(StakeholderRole.APPLICANT.toString()));
 		input.setStakeholders(List.of(applicant, controlOfficial));
 
-		final var postResult = byggrService.saveNewCase(input);
+		final var postResult = byggrService.saveNewCase(input, MUNICIPALITY_ID);
 
 		final ArgumentCaptor<SaveNewArende> saveNewArendeRequestCaptor = ArgumentCaptor.forClass(SaveNewArende.class);
 		verify(arendeExportClientMock).saveNewArende(saveNewArendeRequestCaptor.capture());
@@ -839,7 +841,7 @@ class ByggrServiceTest {
 		applicant.setPersonId(personId);
 		input.setStakeholders(List.of(applicant, paymentPerson));
 
-		final var postResult = byggrService.saveNewCase(input);
+		final var postResult = byggrService.saveNewCase(input, MUNICIPALITY_ID);
 
 		final ArgumentCaptor<SaveNewArende> saveNewArendeRequestCaptor = ArgumentCaptor.forClass(SaveNewArende.class);
 		verify(arendeExportClientMock).saveNewArende(saveNewArendeRequestCaptor.capture());
@@ -905,24 +907,24 @@ class ByggrServiceTest {
 		arende.setDnr(caseId);
 		arende.setStatus("Pågående");
 		final ArrayOfHandelse arrayOfHandelse = new ArrayOfHandelse();
-		final Handelse handelse_1 = new Handelse();
-		handelse_1.setStartDatum(LocalDateTime.now().minusDays(5));
-		handelse_1.setHandelsetyp("Handelstyp 1");
-		handelse_1.setHandelseslag("Handelsbeslag 1");
-		handelse_1.setHandelseutfall("Handelsutfall 1");
-		final Handelse handelse_2 = new Handelse();
-		handelse_2.setStartDatum(LocalDateTime.now().minusDays(2));
-		handelse_2.setHandelsetyp(BYGGR_HANDELSETYP_BESLUT);
-		handelse_2.setHandelseslag(BYGGR_HANDELSESLAG_SLUTBESKED);
-		handelse_2.setHandelseutfall("Handelsutfall 2");
-		final Handelse handelse_3 = new Handelse();
-		handelse_3.setStartDatum(LocalDateTime.now().minusDays(10));
-		handelse_3.setHandelsetyp("Handelstyp 3");
-		handelse_3.setHandelseslag("Handelsslag 3");
-		handelse_3.setHandelseutfall("Handelsutfall 3");
-		arrayOfHandelse.getHandelse().add(handelse_1);
-		arrayOfHandelse.getHandelse().add(handelse_2);
-		arrayOfHandelse.getHandelse().add(handelse_3);
+		final Handelse handelse1 = new Handelse();
+		handelse1.setStartDatum(LocalDateTime.now().minusDays(5));
+		handelse1.setHandelsetyp("Handelstyp 1");
+		handelse1.setHandelseslag("Handelsbeslag 1");
+		handelse1.setHandelseutfall("Handelsutfall 1");
+		final Handelse handelse2 = new Handelse();
+		handelse2.setStartDatum(LocalDateTime.now().minusDays(2));
+		handelse2.setHandelsetyp(BYGGR_HANDELSETYP_BESLUT);
+		handelse2.setHandelseslag(BYGGR_HANDELSESLAG_SLUTBESKED);
+		handelse2.setHandelseutfall("Handelsutfall 2");
+		final Handelse handelse3 = new Handelse();
+		handelse3.setStartDatum(LocalDateTime.now().minusDays(10));
+		handelse3.setHandelsetyp("Handelstyp 3");
+		handelse3.setHandelseslag("Handelsslag 3");
+		handelse3.setHandelseutfall("Handelsutfall 3");
+		arrayOfHandelse.getHandelse().add(handelse1);
+		arrayOfHandelse.getHandelse().add(handelse2);
+		arrayOfHandelse.getHandelse().add(handelse3);
 		arende.setHandelseLista(arrayOfHandelse);
 		getArendeResponse.setGetArendeResult(arende);
 		when(arendeExportClientMock.getArende(any())).thenReturn(getArendeResponse);
@@ -930,7 +932,7 @@ class ByggrServiceTest {
 		// Act
 		final var getStatusResult = byggrService.toByggrStatus(caseMappingList.getFirst());
 
-		assertCaseStatus(caseId, externalCaseID, CaseType.valueOf(caseMappingList.getFirst().getCaseType()), caseMappingList.getFirst().getServiceName(), handelse_2.getHandelseslag(), handelse_2.getStartDatum(), getStatusResult);
+		assertCaseStatus(caseId, externalCaseID, CaseType.valueOf(caseMappingList.getFirst().getCaseType()), caseMappingList.getFirst().getServiceName(), handelse2.getHandelseslag(), handelse2.getStartDatum(), getStatusResult);
 
 		final ArgumentCaptor<GetArende> getArendeRequestCaptor = ArgumentCaptor.forClass(GetArende.class);
 		verify(arendeExportClientMock, times(1)).getArende(getArendeRequestCaptor.capture());
@@ -941,83 +943,83 @@ class ByggrServiceTest {
 	@Test
 	void testGetByggRStatusByOrgNr() {
 
-		final String caseId_1 = MessageFormat.format("BYGG-2021-{0}", new Random().nextInt(100000));
-		final String caseId_2 = MessageFormat.format("BYGG-2022-{0}", new Random().nextInt(100000));
-		final String externalCaseID_1 = UUID.randomUUID().toString();
-		final String externalCaseID_2 = UUID.randomUUID().toString();
+		final String caseId1 = MessageFormat.format("BYGG-2021-{0}", new Random().nextInt(100000));
+		final String caseId2 = MessageFormat.format("BYGG-2022-{0}", new Random().nextInt(100000));
+		final String externalCaseID1 = UUID.randomUUID().toString();
+		final String externalCaseID2 = UUID.randomUUID().toString();
 
 		// Mock caseMappingServiceMock
-		final List<CaseMapping> caseMappingList_1 = new ArrayList<>();
-		caseMappingList_1.add(CaseMapping.builder()
-			.withExternalCaseId(externalCaseID_1)
-			.withCaseId(caseId_1)
+		final List<CaseMapping> caseMappingList1 = new ArrayList<>();
+		caseMappingList1.add(CaseMapping.builder()
+			.withExternalCaseId(externalCaseID1)
+			.withCaseId(caseId1)
 			.withSystem(SystemType.BYGGR)
 			.withCaseType(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV.toString())
 			.withServiceName("Test service")
 			.build());
 
-		when(caseMappingServiceMock.getCaseMapping(null, caseId_1)).thenReturn(caseMappingList_1);
-		when(caseMappingServiceMock.getCaseMapping(externalCaseID_1, caseId_1)).thenReturn(caseMappingList_1);
+		when(caseMappingServiceMock.getCaseMapping(null, caseId1, MUNICIPALITY_ID)).thenReturn(caseMappingList1);
+		when(caseMappingServiceMock.getCaseMapping(externalCaseID1, caseId1, MUNICIPALITY_ID)).thenReturn(caseMappingList1);
 
-		final List<CaseMapping> caseMappingList_2 = new ArrayList<>();
+		final List<CaseMapping> caseMappingList2 = new ArrayList<>();
 
 
-		caseMappingList_2.add(CaseMapping.builder()
-			.withExternalCaseId(externalCaseID_2)
-			.withCaseId(caseId_2)
+		caseMappingList2.add(CaseMapping.builder()
+			.withExternalCaseId(externalCaseID2)
+			.withCaseId(caseId2)
 			.withSystem(SystemType.BYGGR)
 			.withCaseType(CaseType.ANMALAN_ATTEFALL.toString())
 			.withServiceName("Test service 2")
 			.build());
 
-		when(caseMappingServiceMock.getCaseMapping(null, caseId_2)).thenReturn(caseMappingList_2);
-		when(caseMappingServiceMock.getCaseMapping(externalCaseID_2, caseId_2)).thenReturn(caseMappingList_2);
+		when(caseMappingServiceMock.getCaseMapping(null, caseId2, MUNICIPALITY_ID)).thenReturn(caseMappingList2);
+		when(caseMappingServiceMock.getCaseMapping(externalCaseID2, caseId2, MUNICIPALITY_ID)).thenReturn(caseMappingList2);
 
 		// Mock ArendeExportClientMock
 		final GetRelateradeArendenByPersOrgNrAndRoleResponse getRelateradeArendenByPersOrgNrAndRoleResponse = new GetRelateradeArendenByPersOrgNrAndRoleResponse();
 		final ArrayOfArende1 arrayOfArende = new ArrayOfArende1();
-		final Arende arende_1 = new Arende();
-		arende_1.setDnr(caseId_1);
-		arende_1.setStatus("Pågående");
-		final ArrayOfHandelse arrayOfHandelse_1 = new ArrayOfHandelse();
-		final Handelse handelse_1 = new Handelse();
-		handelse_1.setStartDatum(LocalDateTime.now().minusDays(5));
-		handelse_1.setHandelsetyp(BYGGR_HANDELSETYP_HANDLING);
-		handelse_1.setHandelseslag(BYGGR_HANDELSESLAG_KOMPLETTERANDE_HANDLINGAR);
-		final Handelse handelse_2 = new Handelse();
-		handelse_2.setStartDatum(LocalDateTime.now().minusDays(2));
-		handelse_2.setHandelsetyp(BYGGR_HANDELSETYP_BESLUT);
-		handelse_2.setHandelseslag(BYGGR_HANDELSESLAG_SLUTBESKED);
-		arrayOfHandelse_1.getHandelse().add(handelse_1);
-		arrayOfHandelse_1.getHandelse().add(handelse_2);
-		arende_1.setHandelseLista(arrayOfHandelse_1);
-		arrayOfArende.getArende().add(arende_1);
+		final Arende arende1 = new Arende();
+		arende1.setDnr(caseId1);
+		arende1.setStatus("Pågående");
+		final ArrayOfHandelse arrayOfHandelse1 = new ArrayOfHandelse();
+		final Handelse handelse1 = new Handelse();
+		handelse1.setStartDatum(LocalDateTime.now().minusDays(5));
+		handelse1.setHandelsetyp(BYGGR_HANDELSETYP_HANDLING);
+		handelse1.setHandelseslag(BYGGR_HANDELSESLAG_KOMPLETTERANDE_HANDLINGAR);
+		final Handelse handelse2 = new Handelse();
+		handelse2.setStartDatum(LocalDateTime.now().minusDays(2));
+		handelse2.setHandelsetyp(BYGGR_HANDELSETYP_BESLUT);
+		handelse2.setHandelseslag(BYGGR_HANDELSESLAG_SLUTBESKED);
+		arrayOfHandelse1.getHandelse().add(handelse1);
+		arrayOfHandelse1.getHandelse().add(handelse2);
+		arende1.setHandelseLista(arrayOfHandelse1);
+		arrayOfArende.getArende().add(arende1);
 
-		final Arende arende_2 = new Arende();
-		arende_2.setDnr(caseId_2);
-		arende_2.setStatus("Pågående");
-		final ArrayOfHandelse arrayOfHandelse_2 = new ArrayOfHandelse();
-		final Handelse handelse_2_1 = new Handelse();
-		handelse_2_1.setStartDatum(LocalDateTime.now().minusDays(5));
-		handelse_2_1.setHandelsetyp(BYGGR_HANDELSETYP_HANDLING);
-		handelse_2_1.setHandelseslag(BYGGR_HANDELSESLAG_KOMPLETTERANDE_HANDLINGAR);
-		final Handelse handelse_2_2 = new Handelse();
-		handelse_2_2.setStartDatum(LocalDateTime.now().minusDays(10));
-		handelse_2_2.setHandelsetyp(BYGGR_HANDELSETYP_BESLUT);
-		handelse_2_2.setHandelseslag(BYGGR_HANDELSESLAG_SLUTBESKED);
-		arrayOfHandelse_2.getHandelse().add(handelse_2_1);
-		arrayOfHandelse_2.getHandelse().add(handelse_2_2);
-		arende_2.setHandelseLista(arrayOfHandelse_2);
-		arrayOfArende.getArende().add(arende_2);
+		final Arende arende2 = new Arende();
+		arende2.setDnr(caseId2);
+		arende2.setStatus("Pågående");
+		final ArrayOfHandelse arrayOfHandelse2 = new ArrayOfHandelse();
+		final Handelse handelse21 = new Handelse();
+		handelse21.setStartDatum(LocalDateTime.now().minusDays(5));
+		handelse21.setHandelsetyp(BYGGR_HANDELSETYP_HANDLING);
+		handelse21.setHandelseslag(BYGGR_HANDELSESLAG_KOMPLETTERANDE_HANDLINGAR);
+		final Handelse handelse22 = new Handelse();
+		handelse22.setStartDatum(LocalDateTime.now().minusDays(10));
+		handelse22.setHandelsetyp(BYGGR_HANDELSETYP_BESLUT);
+		handelse22.setHandelseslag(BYGGR_HANDELSESLAG_SLUTBESKED);
+		arrayOfHandelse2.getHandelse().add(handelse21);
+		arrayOfHandelse2.getHandelse().add(handelse22);
+		arende2.setHandelseLista(arrayOfHandelse2);
+		arrayOfArende.getArende().add(arende2);
 		getRelateradeArendenByPersOrgNrAndRoleResponse.setGetRelateradeArendenByPersOrgNrAndRoleResult(arrayOfArende);
 		when(arendeExportClientMock.getRelateradeArendenByPersOrgNrAndRole(any())).thenReturn(getRelateradeArendenByPersOrgNrAndRoleResponse);
 
 		final String orgnr = TestUtil.generateRandomOrganizationNumber();
-		final var getStatusResult = byggrService.getByggrStatusByOrgNr(orgnr);
+		final var getStatusResult = byggrService.getByggrStatusByOrgNr(orgnr, MUNICIPALITY_ID);
 
 		assertThat(getStatusResult).hasSize(2);
-		assertCaseStatus(caseId_1, externalCaseID_1, CaseType.valueOf(caseMappingList_1.getFirst().getCaseType()), caseMappingList_1.getFirst().getServiceName(), handelse_2.getHandelseslag(), handelse_2.getStartDatum(), getStatusResult.getFirst());
-		assertCaseStatus(caseId_2, externalCaseID_2, CaseType.valueOf(caseMappingList_2.getFirst().getCaseType()), caseMappingList_2.getFirst().getServiceName(), handelse_2_1.getHandelseslag(), handelse_2_1.getStartDatum(), getStatusResult.get(1));
+		assertCaseStatus(caseId1, externalCaseID1, CaseType.valueOf(caseMappingList1.getFirst().getCaseType()), caseMappingList1.getFirst().getServiceName(), handelse2.getHandelseslag(), handelse2.getStartDatum(), getStatusResult.getFirst());
+		assertCaseStatus(caseId2, externalCaseID2, CaseType.valueOf(caseMappingList2.getFirst().getCaseType()), caseMappingList2.getFirst().getServiceName(), handelse21.getHandelseslag(), handelse21.getStartDatum(), getStatusResult.get(1));
 
 		final ArgumentCaptor<GetRelateradeArendenByPersOrgNrAndRole> getRelateradeArendenByPersOrgNrAndRoleRequestCaptor = ArgumentCaptor.forClass(GetRelateradeArendenByPersOrgNrAndRole.class);
 		verify(arendeExportClientMock, times(1)).getRelateradeArendenByPersOrgNrAndRole(getRelateradeArendenByPersOrgNrAndRoleRequestCaptor.capture());
@@ -1028,27 +1030,27 @@ class ByggrServiceTest {
 
 	@Test
 	void updateByggCase() {
-		var stakeholders = List.of(createStakeholderDTO(StakeholderType.ORGANIZATION, List.of("role")));
-		var stakeholderId = "20000101-1234";
-		var errandNr = "errandNr";
-		var comment = "comment";
-		var errandInformation = "errandInformation";
+		final var stakeholders = List.of(createStakeholderDTO(StakeholderType.ORGANIZATION, List.of("role")));
+		final var stakeholderId = "20000101-1234";
+		final var errandNr = "errandNr";
+		final var comment = "comment";
+		final var errandInformation = "errandInformation";
 
-		var spy = Mockito.spy(byggrService);
-		var byggRCaseDTO = mock(ByggRCaseDTO.class);
-		var address = mock(AddressDTO.class);
-		var facility = mock(FacilityDTO.class);
-		var facilities = mock(List.class);
+		final var spy = Mockito.spy(byggrService);
+		final var byggRCaseDTO = mock(ByggRCaseDTO.class);
+		final var address = mock(AddressDTO.class);
+		final var facility = mock(FacilityDTO.class);
+		final var facilities = mock(List.class);
 
-		var extraParameterMap = mock(HashMap.class);
+		final var extraParameterMap = mock(HashMap.class);
 
 		// ByggR Mocks
-		var arende = mock(Arende.class);
-		var arrayOfHandelse = mock(ArrayOfHandelse.class);
-		var handelse = mock(Handelse.class);
-		var arrayOfHandelseIntressent2 = mock(ArrayOfHandelseIntressent2.class);
-		var handelseIntressent = mock(HandelseIntressent.class);
-		var getArendeResponse = mock(GetArendeResponse.class);
+		final var arende = mock(Arende.class);
+		final var arrayOfHandelse = mock(ArrayOfHandelse.class);
+		final var handelse = mock(Handelse.class);
+		final var arrayOfHandelseIntressent2 = mock(ArrayOfHandelseIntressent2.class);
+		final var handelseIntressent = mock(HandelseIntressent.class);
+		final var getArendeResponse = mock(GetArendeResponse.class);
 
 		when(byggRCaseDTO.getStakeholders()).thenReturn(stakeholders);
 		when(byggRCaseDTO.getExtraParameters()).thenReturn(extraParameterMap);
@@ -1088,10 +1090,10 @@ class ByggrServiceTest {
 
 	@Test
 	void createNewEventStakeholder() {
-		var handelse = createHandelse();
-		var stakeholderId = "20000101-1234";
+		final var handelse = createHandelse();
+		final var stakeholderId = "20000101-1234";
 
-		var result = byggrService.createNewEventStakeholder(handelse, stakeholderId);
+		final var result = byggrService.createNewEventStakeholder(handelse, stakeholderId);
 
 		assertThat(result.getIntressentId()).isEqualTo(handelse.getIntressentLista().getIntressent().getFirst().getIntressentId());
 		assertThat(result.getIntressentVersionId()).isEqualTo(handelse.getIntressentLista().getIntressent().getFirst().getIntressentVersionId());
@@ -1105,16 +1107,16 @@ class ByggrServiceTest {
 	 * Should return the organization stakeholders organization number.
 	 */
 	@Test
-	void extractStakeholderId_1() {
-		var personStakeholder = (PersonDTO) createStakeholderDTO(StakeholderType.PERSON, List.of("Granne"));
-		var organizationStakeholder = (OrganizationDTO) createStakeholderDTO(StakeholderType.ORGANIZATION, List.of("Granne"));
-		var organizationNumberOepFormat = "123456781234";
+	void extractStakeholderId1() {
+		final var personStakeholder = (PersonDTO) createStakeholderDTO(StakeholderType.PERSON, List.of("Granne"));
+		final var organizationStakeholder = (OrganizationDTO) createStakeholderDTO(StakeholderType.ORGANIZATION, List.of("Granne"));
+		final var organizationNumberOepFormat = "123456781234";
 		organizationStakeholder.setOrganizationNumber(organizationNumberOepFormat);
 
 
 		var stakeholders = List.of(personStakeholder, organizationStakeholder);
 
-		var result = byggrService.extractStakeholderId(stakeholders);
+		final var result = byggrService.extractStakeholderId(stakeholders);
 
 		assertThat(result).isEqualTo("12345678-1234");
 		verifyNoInteractions(citizenServiceMock);
@@ -1125,13 +1127,13 @@ class ByggrServiceTest {
 	 * Should retrieve and return personal number from citizen service.
 	 */
 	@Test
-	void extractStakeholderId_2() {
-		var personStakeholder = (PersonDTO) createStakeholderDTO(StakeholderType.PERSON, List.of("Granne"));
-		var personalNumber = "200001011234";
-		List<StakeholderDTO> stakeholders = List.of(personStakeholder);
+	void extractStakeholderId2() {
+		final var personStakeholder = (PersonDTO) createStakeholderDTO(StakeholderType.PERSON, List.of("Granne"));
+		final var personalNumber = "200001011234";
+		final List<StakeholderDTO> stakeholders = List.of(personStakeholder);
 		when(citizenServiceMock.getPersonalNumber(personStakeholder.getPersonId())).thenReturn(personalNumber);
 
-		var result = byggrService.extractStakeholderId(stakeholders);
+		final var result = byggrService.extractStakeholderId(stakeholders);
 
 		assertThat(result).isEqualTo("20000101-1234");
 		verify(citizenServiceMock).getPersonalNumber(personStakeholder.getPersonId());
@@ -1139,11 +1141,11 @@ class ByggrServiceTest {
 
 	@Test
 	void extractEvent() {
-		var arende = createArende();
-		var handelsetyp = "GRANHO";
-		var handelseslag = "GRAUTS";
+		final var arende = createArende();
+		final var handelsetyp = "GRANHO";
+		final var handelseslag = "GRAUTS";
 
-		var result = byggrService.extractEvent(arende, handelsetyp, handelseslag);
+		final var result = byggrService.extractEvent(arende, handelsetyp, handelseslag);
 
 		assertThat(result.getHandelsetyp()).isEqualTo(handelsetyp);
 		assertThat(result.getHandelseslag()).isEqualTo(handelseslag);

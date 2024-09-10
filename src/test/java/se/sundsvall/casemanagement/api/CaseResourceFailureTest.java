@@ -2,6 +2,7 @@ package se.sundsvall.casemanagement.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.tuple;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -42,6 +43,10 @@ import se.sundsvall.dept44.test.extension.ResourceLoaderExtension;
 @ExtendWith(ResourceLoaderExtension.class)
 class CaseResourceFailureTest {
 
+	private static final String MUNICIPALITY_ID = "2281";
+
+	private static final String PATH = "/" + MUNICIPALITY_ID + "/cases";
+
 	@Autowired
 	private ResourceLoader resourceLoader;
 
@@ -63,6 +68,30 @@ class CaseResourceFailureTest {
 	@Captor
 	private ArgumentCaptor<CaseDTO> caseDTOCaptor;
 
+	private static Stream<Arguments> noExternalCaseId() {
+		return Stream.of(
+			Arguments.of("/case-resource-failure/ecos/no-externalCaseId.json"),
+			Arguments.of("/case-resource-failure/byggr/no-externalCaseId.json"),
+			Arguments.of("/case-resource-failure/other/no-externalCaseId.json")
+		);
+	}
+
+	private static Stream<Arguments> emptyAttachments() {
+		return Stream.of(
+			Arguments.of("/case-resource-failure/ecos/no-attachment.json"),
+			Arguments.of("/case-resource-failure/byggr/no-attachment.json"),
+			Arguments.of("/case-resource-failure/other/no-attachment.json")
+		);
+	}
+
+	private static Stream<Arguments> emptyStakeholders() {
+		return Stream.of(
+			Arguments.of("/case-resource-failure/ecos/no-stakeholder.json"),
+			Arguments.of("/case-resource-failure/byggr/no-stakeholder.json"),
+			Arguments.of("/case-resource-failure/other/no-stakeholder.json")
+		);
+	}
+
 	@ParameterizedTest
 	@MethodSource("emptyStakeholders")
 	void postCase_EmptyStakeholders(final String path) throws IOException {
@@ -70,7 +99,7 @@ class CaseResourceFailureTest {
 			.getContentAsString(Charset.defaultCharset());
 
 		final var result = webTestClient.post()
-			.uri(uriBuilder -> uriBuilder.path("/cases").build())
+			.uri(uriBuilder -> uriBuilder.path(PATH).build())
 			.contentType(APPLICATION_JSON)
 			.bodyValue(body)
 			.exchange()
@@ -96,7 +125,7 @@ class CaseResourceFailureTest {
 			.getContentAsString(Charset.defaultCharset());
 
 		final var result = webTestClient.post()
-			.uri(uriBuilder -> uriBuilder.path("/cases").build())
+			.uri(uriBuilder -> uriBuilder.path(PATH).build())
 			.contentType(APPLICATION_JSON)
 			.bodyValue(body)
 			.exchange()
@@ -122,7 +151,7 @@ class CaseResourceFailureTest {
 			.getContentAsString(Charset.defaultCharset());
 
 		final var result = webTestClient.post()
-			.uri(uriBuilder -> uriBuilder.path("/cases").build())
+			.uri(uriBuilder -> uriBuilder.path(PATH).build())
 			.contentType(APPLICATION_JSON)
 			.bodyValue(body)
 			.exchange()
@@ -144,7 +173,7 @@ class CaseResourceFailureTest {
 	@Test
 	void postCase_EcosNoFacility(@Load("/case-resource-failure/ecos/no-facility.json") final String body) {
 		final var result = webTestClient.post()
-			.uri(uriBuilder -> uriBuilder.path("/cases").build())
+			.uri(uriBuilder -> uriBuilder.path(PATH).build())
 			.contentType(APPLICATION_JSON)
 			.bodyValue(body)
 			.exchange()
@@ -166,7 +195,7 @@ class CaseResourceFailureTest {
 	@Test
 	void postCase_ByggRNoFacility(@Load("/case-resource-failure/byggr/no-facility.json") final String body) {
 		final var result = webTestClient.post()
-			.uri(uriBuilder -> uriBuilder.path("/cases").build())
+			.uri(uriBuilder -> uriBuilder.path(PATH).build())
 			.contentType(APPLICATION_JSON)
 			.bodyValue(body)
 			.exchange()
@@ -190,7 +219,7 @@ class CaseResourceFailureTest {
 	@Test
 	void postCase_OtherNoFacility(@Load("/case-resource-failure/other/no-facility.json") final String body) {
 		final var result = webTestClient
-			.post().uri(uriBuilder -> uriBuilder.path("/cases").build())
+			.post().uri(uriBuilder -> uriBuilder.path(PATH).build())
 			.contentType(APPLICATION_JSON)
 			.bodyValue(body)
 			.exchange()
@@ -199,13 +228,14 @@ class CaseResourceFailureTest {
 			.returnResult()
 			.getResponseBody();
 
+		assertThat(result).isNotNull();
 		assertThat(result.getCaseId()).isEqualTo("Inskickat");
 
-		verify(caseMappingServiceMock).validateUniqueCase(caseDTOCaptor.capture());
-		var caseDTO = caseDTOCaptor.getValue();
+		verify(caseMappingServiceMock).validateUniqueCase(caseDTOCaptor.capture(), eq(MUNICIPALITY_ID));
+		final var caseDTO = caseDTOCaptor.getValue();
 		assertThat(caseDTO.getExternalCaseId()).isEqualTo("externalCaseId");
-		verify(caseServiceMock).handleCase(caseDTOCaptor.capture());
-		var otherCaseDTO = (OtherCaseDTO) caseDTOCaptor.getValue();
+		verify(caseServiceMock).handleCase(caseDTOCaptor.capture(), eq(MUNICIPALITY_ID));
+		final var otherCaseDTO = (OtherCaseDTO) caseDTOCaptor.getValue();
 		assertThat(otherCaseDTO).satisfies(dto -> {
 			assertThat(dto.getExternalCaseId()).isEqualTo("externalCaseId");
 			assertThat(dto.getCaseType()).isEqualTo("PARKING_PERMIT");
@@ -217,27 +247,4 @@ class CaseResourceFailureTest {
 		});
 	}
 
-	private static Stream<Arguments> noExternalCaseId() {
-		return Stream.of(
-			Arguments.of("/case-resource-failure/ecos/no-externalCaseId.json"),
-			Arguments.of("/case-resource-failure/byggr/no-externalCaseId.json"),
-			Arguments.of("/case-resource-failure/other/no-externalCaseId.json")
-		);
-	}
-
-	private static Stream<Arguments> emptyAttachments() {
-		return Stream.of(
-			Arguments.of("/case-resource-failure/ecos/no-attachment.json"),
-			Arguments.of("/case-resource-failure/byggr/no-attachment.json"),
-			Arguments.of("/case-resource-failure/other/no-attachment.json")
-		);
-	}
-
-	private static Stream<Arguments> emptyStakeholders() {
-		return Stream.of(
-			Arguments.of("/case-resource-failure/ecos/no-stakeholder.json"),
-			Arguments.of("/case-resource-failure/byggr/no-stakeholder.json"),
-			Arguments.of("/case-resource-failure/other/no-stakeholder.json")
-		);
-	}
 }

@@ -9,8 +9,8 @@ public class IncomingEcosCase extends Event<EcosCaseDTO> {
 	@Serial
 	private static final long serialVersionUID = 6678986011569774100L;
 
-	public IncomingEcosCase(final Object source, final EcosCaseDTO payload) {
-		super(source, payload);
+	public IncomingEcosCase(final Object source, final EcosCaseDTO payload, final String municipalityId) {
+		super(source, payload, municipalityId);
 	}
 
 }

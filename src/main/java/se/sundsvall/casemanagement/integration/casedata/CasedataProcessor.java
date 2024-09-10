@@ -26,6 +26,7 @@ import dev.failsafe.RetryPolicy;
 class CasedataProcessor extends Processor {
 
 	private final CaseDataService service;
+
 	private final RetryPolicy<String> retryPolicy;
 
 	CasedataProcessor(final OpenEIntegration openEIntegration,
@@ -63,12 +64,13 @@ class CasedataProcessor extends Processor {
 		try {
 			Failsafe
 				.with(retryPolicy)
-				.onSuccess(successEvent -> handleSuccessfulDelivery(caseEntity.getId(), "CASEDATA", successEvent.getResult()))
-				.onFailure(failureEvent -> handleMaximumDeliveryAttemptsExceeded(failureEvent.getException(), caseEntity, "CASEDATA"))
-				.get(() -> service.postErrand(otherCaseDTO));
+				.onSuccess(successEvent -> handleSuccessfulDelivery(caseEntity.getId(), "CASEDATA", successEvent.getResult(), event.getMunicipalityId()))
+				.onFailure(failureEvent -> handleMaximumDeliveryAttemptsExceeded(failureEvent.getException(), caseEntity, "CASEDATA", event.getMunicipalityId()))
+				.get(() -> service.postErrand(otherCaseDTO, event.getMunicipalityId()));
 		} catch (final Exception e) {
 			cleanAttachmentBase64(event);
 			log.warn("Unable to create CaseData errand {}: {}", event.getPayload(), e.getMessage());
 		}
 	}
+
 }

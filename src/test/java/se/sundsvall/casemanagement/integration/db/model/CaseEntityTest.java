@@ -46,12 +46,14 @@ class CaseEntityTest {
 		final var deliveryStatus = DeliveryStatus.CREATED;
 		final var ecosCaseDTO = EcosCaseDTO.builder().build();
 		final var dto = new SerialClob(ecosCaseDTO.toString().toCharArray());
+		final var municipalityId = "2281";
 
 		// Act
 		final var object = CaseEntity.builder()
 			.withId(id)
 			.withDeliveryStatus(deliveryStatus)
 			.withDto(dto)
+			.withMunicipalityId(municipalityId)
 			.build();
 
 		// Assert
@@ -59,6 +61,7 @@ class CaseEntityTest {
 		assertThat(object.getId()).isEqualTo(id);
 		assertThat(object.getDeliveryStatus()).isEqualTo(deliveryStatus);
 		assertThat(object.getDto()).isEqualTo(dto);
+		assertThat(object.getMunicipalityId()).isEqualTo(municipalityId);
 	}
 
 	@Test

@@ -1,35 +1,3 @@
-CREATE TABLE IF NOT EXISTS CaseEntity
-(
-    id             VARCHAR(255) NOT NULL PRIMARY KEY,
-    deliveryStatus VARCHAR(255) NULL,
-    dto            LONGTEXT     NULL
-
-);
-
-CREATE TABLE IF NOT EXISTS CaseMapping
-(
-    caseId         VARCHAR(255) NULL,
-    externalCaseId VARCHAR(255) NULL,
-    caseType       VARCHAR(255) NULL,
-    serviceName    VARCHAR(255) NULL,
-    `system`       VARCHAR(255) NULL,
-    timestamp      DATETIME(6)  NULL,
-    PRIMARY KEY (caseId, externalCaseId),
-    UNIQUE INDEX externalCaseId (externalCaseId)
-);
-
-CREATE TABLE IF NOT EXISTS casetypedata
-(
-    value          VARCHAR(255),
-    arendeslag     VARCHAR(255),
-    arendegrupp    VARCHAR(255),
-    arendetyp      VARCHAR(255),
-    handelsetyp    VARCHAR(255),
-    handelserubrik VARCHAR(255),
-    handelseslag   VARCHAR(255),
-    arendemening   VARCHAR(255)
-);
-
 INSERT INTO casetypedata
 VALUES ('NYBYGGNAD_ANSOKAN_OM_BYGGLOV', 'A', 'LOV', 'BL', 'ANSÖKAN', 'Bygglov', 'Bygglov',
         'Bygglov för nybyggnad av'),
@@ -77,12 +45,19 @@ VALUES ('NYBYGGNAD_ANSOKAN_OM_BYGGLOV', 'A', 'LOV', 'BL', 'ANSÖKAN', 'Bygglov',
         'Strandskyddsdispens för övrigt');
 
 
-INSERT INTO CaseMapping
+INSERT INTO CaseMapping(caseId, externalCaseId, caseType, serviceName, system, timestamp,
+                        municipalityId)
 VALUES ('BYGG 2021-000200', '3522', 'NYBYGGNAD_ANSOKAN_OM_BYGGLOV',
-        'Ansökan - strandskyddsdispens', 'BYGGR', '2023-05-12 14:53:58.672027'),
+        'Ansökan - strandskyddsdispens', 'BYGGR', '2023-05-12 14:53:58.672027', '2281'),
+
+
        ('e19981ad-34b2-4e14-88f5-133f61ca85aa', '2222', 'REGISTRERING_AV_LIVSMEDEL',
-        'Registrering av livsmedelsanläggning', 'ECOS', '2023-05-12 14:53:58.672027'),
+        'Registrering av livsmedelsanläggning', 'ECOS', '2023-05-12 14:53:58.672027', '2281'),
+
+
        ('e19981ad-34b2-4e14-88f5-133f61ca85aa', '2223', 'REGISTRERING_AV_LIVSMEDEL',
-        'Registrering av livsmedelsanläggning', 'ECOS', '2023-05-12 14:53:58.672027'),
+        'Registrering av livsmedelsanläggning', 'ECOS', '2023-05-12 14:53:58.672027', '2281'),
+    
+
        ('24', '231', 'PARKING_PERMIT', 'Parkeringstillstånd', 'CASE_DATA',
-        '2023-05-12 14:53:58.672027');
+        '2023-05-12 14:53:58.672027', '2281');

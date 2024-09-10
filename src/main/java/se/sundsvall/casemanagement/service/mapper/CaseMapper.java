@@ -17,17 +17,20 @@ import se.sundsvall.casemanagement.api.model.CaseDTO;
 import se.sundsvall.casemanagement.integration.db.model.CaseEntity;
 
 public final class CaseMapper {
+
 	private static final Logger LOG = LoggerFactory.getLogger(CaseMapper.class);
+
 	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper().registerModule(new JavaTimeModule());
 
 	private CaseMapper() {
 		// Intentionally empty
 	}
 
-	public static CaseEntity toCaseEntity(final CaseDTO dto) {
+	public static CaseEntity toCaseEntity(final CaseDTO dto, final String municipalityId) {
 		return CaseEntity.builder()
 			.withId(dto.getExternalCaseId())
 			.withDto(toClob(dto))
+			.withMunicipalityId(municipalityId)
 			.withDeliveryStatus(PENDING)
 			.build();
 	}
@@ -36,9 +39,10 @@ public final class CaseMapper {
 		try {
 			final String jsonString = OBJECT_MAPPER.writeValueAsString(dto);
 			return new SerialClob(jsonString.toCharArray());
-		} catch (JsonProcessingException | SQLException e) {
+		} catch (final JsonProcessingException | SQLException e) {
 			LOG.error("Failed to convert to Clob", e);
 			return null;
 		}
 	}
+
 }

@@ -9,8 +9,8 @@ public class IncomingByggrCase extends Event<ByggRCaseDTO> {
 	@Serial
 	private static final long serialVersionUID = -6097420394998607304L;
 
-	public IncomingByggrCase(final Object source, final ByggRCaseDTO payload) {
-		super(source, payload);
+	public IncomingByggrCase(final Object source, final ByggRCaseDTO payload, final String municipalityId) {
+		super(source, payload, municipalityId);
 	}
 
 }

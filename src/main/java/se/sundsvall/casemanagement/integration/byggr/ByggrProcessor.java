@@ -48,7 +48,7 @@ class ByggrProcessor extends Processor {
 	@EventListener(IncomingByggrCase.class)
 	public void handleIncomingErrand(final IncomingByggrCase event) throws JsonProcessingException, SQLException {
 
-		final var caseEntity = caseRepository.findById(event.getPayload().getExternalCaseId()).orElse(null);
+		final var caseEntity = caseRepository.findByIdAndMunicipalityId(event.getPayload().getExternalCaseId(), event.getMunicipalityId()).orElse(null);
 
 		if (caseEntity == null) {
 			cleanAttachmentBase64(event);
@@ -62,12 +62,13 @@ class ByggrProcessor extends Processor {
 		try {
 			Failsafe
 				.with(retryPolicy)
-				.onSuccess(successEvent -> handleSuccessfulDelivery(caseEntity.getId(), "BYGGR", successEvent.getResult().getDnr()))
-				.onFailure(failureEvent -> handleMaximumDeliveryAttemptsExceeded(failureEvent.getException(), caseEntity, "BYGGR"))
-				.get(() -> service.saveNewCase(planningPermissionCaseDTO));
+				.onSuccess(successEvent -> handleSuccessfulDelivery(caseEntity.getId(), "BYGGR", successEvent.getResult().getDnr(), event.getMunicipalityId()))
+				.onFailure(failureEvent -> handleMaximumDeliveryAttemptsExceeded(failureEvent.getException(), caseEntity, "BYGGR", event.getMunicipalityId()))
+				.get(() -> service.saveNewCase(planningPermissionCaseDTO, event.getMunicipalityId()));
 		} catch (final Exception e) {
 			cleanAttachmentBase64(event);
 			log.warn("Unable to create byggR errand {}: {}", event.getPayload(), e.getMessage());
 		}
 	}
+
 }

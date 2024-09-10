@@ -53,9 +53,10 @@ public class CaseDataService {
 
 	/**
 	 * @param otherCase The case to be created in CaseData
+	 * @param municipalityId The municipalityId to be used in CaseData
 	 * @return errandNumber (example: PRH-2022-000001)
 	 */
-	public String postErrand(final OtherCaseDTO otherCase) {
+	public String postErrand(final OtherCaseDTO otherCase, final String municipalityId) {
 		final var errandDTO = toErrandDTO(otherCase);
 		errandDTO.setPhase(AKTUALISERING_PHASE);
 		final var statusDTO = new StatusDTO();
@@ -69,25 +70,25 @@ public class CaseDataService {
 		errandDTO.setDecisions(emptyList());
 		errandDTO.setNotes(emptyList());
 
-		final var result = caseDataClient.postErrands(errandDTO);
+		final var result = caseDataClient.postErrands(municipalityId, errandDTO);
 		final var location = String.valueOf(result.getHeaders().getFirst(HttpHeaders.LOCATION));
 		final var id = Long.valueOf(location.substring(location.lastIndexOf("/") + 1));
 
-		final var errandNumber = getErrand(id).getErrandNumber();
+		final var errandNumber = getErrand(id, municipalityId).getErrandNumber();
 
 		if (errandNumber != null) {
 			otherCase.getAttachments().stream().map(
 					attachment -> toAttachment(attachment, errandNumber))
-				.forEach(caseDataClient::postAttachment);
+				.forEach(attachmentDTO -> caseDataClient.postAttachment(municipalityId, attachmentDTO));
 		}
-		caseMappingService.postCaseMapping(otherCase, String.valueOf(id), SystemType.CASE_DATA);
+		caseMappingService.postCaseMapping(otherCase, String.valueOf(id), SystemType.CASE_DATA, municipalityId);
 
 		return errandNumber;
 	}
 
-	public void patchErrandWithAttachment(final String errandNumber, final List<AttachmentDTO> attachmentDTOS) {
+	public void patchErrandWithAttachment(final String errandNumber, final List<AttachmentDTO> attachmentDTOS, final String municipalityId) {
 		try {
-			attachmentDTOS.forEach(attachment -> caseDataClient.postAttachment(toAttachment(attachment, errandNumber)));
+			attachmentDTOS.forEach(attachment -> caseDataClient.postAttachment(municipalityId, toAttachment(attachment, errandNumber)));
 		} catch (final ThrowableProblem e) {
 			if (Objects.equals(e.getStatus(), NOT_FOUND)) {
 				throw Problem.valueOf(NOT_FOUND, NO_CASE_WAS_FOUND_IN_CASE_DATA_WITH_CASE_ID + errandNumber);
@@ -97,9 +98,9 @@ public class CaseDataService {
 		}
 	}
 
-	private ErrandDTO getErrand(final Long id) {
+	private ErrandDTO getErrand(final Long id, final String municipalityId) {
 		try {
-			return caseDataClient.getErrand(id);
+			return caseDataClient.getErrand(municipalityId, id);
 		} catch (final ThrowableProblem e) {
 			if (Objects.equals(e.getStatus(), NOT_FOUND)) {
 				throw Problem.valueOf(NOT_FOUND, NO_CASE_WAS_FOUND_IN_CASE_DATA_WITH_CASE_ID + id);
@@ -109,8 +110,8 @@ public class CaseDataService {
 		}
 	}
 
-	public CaseStatusDTO getStatus(final CaseMapping caseMapping) {
-		final var errandDTO = getErrand(Long.valueOf(caseMapping.getCaseId()));
+	public CaseStatusDTO getStatus(final CaseMapping caseMapping, final String municipalityId) {
+		final var errandDTO = getErrand(Long.valueOf(caseMapping.getCaseId()), municipalityId);
 
 		final var latestStatus = Optional.ofNullable(Optional.ofNullable(errandDTO)
 				.orElse(new ErrandDTO())
@@ -140,21 +141,21 @@ public class CaseDataService {
 	 * @param caseId The ID from CaseData.
 	 * @param otherCaseDTO The updated case from OpenE.
 	 */
-	public void putErrand(final Long caseId, final OtherCaseDTO otherCaseDTO) {
-		caseDataClient.patchErrand(caseId, toPatchErrandDTO(otherCaseDTO));
+	public void putErrand(final Long caseId, final OtherCaseDTO otherCaseDTO, final String municipalityId) {
+		caseDataClient.patchErrand(municipalityId, caseId, toPatchErrandDTO(otherCaseDTO));
 
 		final var statusDTO = new StatusDTO();
 		statusDTO.setStatusType(KOMPLETTERING_INKOMMEN_STATUS);
 		statusDTO.setDateTime(OffsetDateTime.now());
-		caseDataClient.putStatusOnErrand(caseId, List.of(statusDTO));
-		caseDataClient.putStakeholdersOnErrand(caseId, toStakeholderDTOs(otherCaseDTO.getStakeholders()));
+		caseDataClient.putStatusOnErrand(municipalityId, caseId, List.of(statusDTO));
+		caseDataClient.putStakeholdersOnErrand(municipalityId, caseId, toStakeholderDTOs(otherCaseDTO.getStakeholders()));
 
-		final var result = caseDataClient.getAttachmentsByErrandNumber(otherCaseDTO.getExternalCaseId());
+		final var result = caseDataClient.getAttachmentsByErrandNumber(municipalityId, otherCaseDTO.getExternalCaseId());
 		if (result != null) {
-			result.forEach(attachment -> caseDataClient.deleteAttachment(attachment.getId()));
+			result.forEach(attachment -> caseDataClient.deleteAttachment(municipalityId, attachment.getId()));
 		}
 		otherCaseDTO.getAttachments().stream().map(attachment -> toAttachment(attachment, otherCaseDTO.getExternalCaseId()))
-			.forEach(caseDataClient::postAttachment);
+			.forEach(attachmentDTO -> caseDataClient.postAttachment(municipalityId, attachmentDTO));
 	}
 
 }

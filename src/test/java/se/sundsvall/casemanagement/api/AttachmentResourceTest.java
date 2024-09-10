@@ -28,7 +28,11 @@ import se.sundsvall.casemanagement.service.CaseMappingService;
 @ActiveProfiles("junit")
 class AttachmentResourceTest {
 
-	private static final String PATH_VARIABLE = "externalCaseId";
+	private static final String EXTERNAL_CASE_ID = "externalCaseId";
+
+	private static final String MUNICIPALITY_ID = "2281";
+
+	private static final String PATH = "/{municipalityId}/cases/{externalCaseId}/attachments";
 
 	@MockBean
 	private ByggrService byggrService;
@@ -50,10 +54,10 @@ class AttachmentResourceTest {
 		final var attachments = List.of(createAttachment(AttachmentCategory.BUILDING_PERMIT_APPLICATION));
 		final var caseMapping = createCaseMapping(c -> c.setSystem(SystemType.ECOS));
 
-		when(caseMappingService.getCaseMapping(PATH_VARIABLE)).thenReturn(caseMapping);
+		when(caseMappingService.getCaseMapping(EXTERNAL_CASE_ID, MUNICIPALITY_ID)).thenReturn(caseMapping);
 
 		webTestClient.post()
-			.uri(uriBuilder -> uriBuilder.path("/cases/{externalCaseId}/attachments").build(PATH_VARIABLE))
+			.uri(uriBuilder -> uriBuilder.path(PATH).build(MUNICIPALITY_ID, EXTERNAL_CASE_ID))
 			.bodyValue(attachments)
 			.exchange()
 			.expectStatus().isNoContent();
@@ -67,10 +71,10 @@ class AttachmentResourceTest {
 		final var attachments = List.of(createAttachment(AttachmentCategory.BUILDING_PERMIT_APPLICATION));
 		final var caseMapping = createCaseMapping(c -> c.setSystem(SystemType.BYGGR));
 
-		when(caseMappingService.getCaseMapping(PATH_VARIABLE)).thenReturn(caseMapping);
+		when(caseMappingService.getCaseMapping(EXTERNAL_CASE_ID, MUNICIPALITY_ID)).thenReturn(caseMapping);
 
 		webTestClient.post()
-			.uri(uriBuilder -> uriBuilder.path("/cases/{externalCaseId}/attachments").build(PATH_VARIABLE))
+			.uri(uriBuilder -> uriBuilder.path(PATH).build(MUNICIPALITY_ID, EXTERNAL_CASE_ID))
 			.bodyValue(attachments)
 			.exchange()
 			.expectStatus().isNoContent();
@@ -84,15 +88,15 @@ class AttachmentResourceTest {
 		final var attachments = List.of(createAttachment(AttachmentCategory.BUILDING_PERMIT_APPLICATION));
 		final var caseMapping = createCaseMapping(c -> c.setSystem(SystemType.CASE_DATA));
 
-		when(caseMappingService.getCaseMapping(PATH_VARIABLE)).thenReturn(caseMapping);
+		when(caseMappingService.getCaseMapping(EXTERNAL_CASE_ID, MUNICIPALITY_ID)).thenReturn(caseMapping);
 
 		webTestClient.post()
-			.uri(uriBuilder -> uriBuilder.path("/cases/{externalCaseId}/attachments").build(PATH_VARIABLE))
+			.uri(uriBuilder -> uriBuilder.path(PATH).build(MUNICIPALITY_ID, EXTERNAL_CASE_ID))
 			.bodyValue(attachments)
 			.exchange()
 			.expectStatus().isNoContent();
 
-		verify(caseDataService).patchErrandWithAttachment(caseMapping.getExternalCaseId(), attachments);
+		verify(caseDataService).patchErrandWithAttachment(caseMapping.getExternalCaseId(), attachments, MUNICIPALITY_ID);
 		verifyNoInteractions(byggrService, ecosService);
 	}
 

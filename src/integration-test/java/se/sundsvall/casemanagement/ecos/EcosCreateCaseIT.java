@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.jdbc.Sql;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import se.sundsvall.casemanagement.Application;
@@ -20,10 +21,17 @@ import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 
 @Testcontainers
 @WireMockAppTestSuite(files = "classpath:/EcosCreateCaseIT/", classes = Application.class)
+@Sql({
+	"/db/scripts/truncate.sql",
+	"/db/scripts/testdata-it.sql"
+})
 public class EcosCreateCaseIT extends AbstractAppTest {
 
 	public static final String ECOS_CASE_ID = "e19981ad-34b2-4e14-88f5-133f61ca85aa";
 
+	private static final String MUNICIPALITY_ID = "2281";
+
+	private static final String PATH = "/" + MUNICIPALITY_ID + "/cases";
 
 	@Autowired
 	private CaseMappingRepository caseMappingRepository;
@@ -37,7 +45,7 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 
 		final var result = setupCall()
 			.withHttpMethod(HttpMethod.POST)
-			.withServicePath("/cases")
+			.withServicePath(PATH)
 			.withRequest("request.json")
 			.withExpectedResponseStatus(HttpStatus.OK)
 			.withExpectedResponse("expected-response.json")
@@ -48,9 +56,9 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 		assertThat(result.getCaseId()).isEqualTo("Inskickat");
 
 		// Make sure that there doesn't exist a case entity
-		assertThat(caseRepository.findById("874407364")).isEmpty();
+		assertThat(caseRepository.findByIdAndMunicipalityId("874407364", MUNICIPALITY_ID)).isEmpty();
 		// Make sure that there exists a case mapping
-		assertThat(caseMappingRepository.findAllByExternalCaseId("874407364"))
+		assertThat(caseMappingRepository.findAllByExternalCaseIdAndMunicipalityId("874407364", MUNICIPALITY_ID))
 			.isNotNull()
 			.hasSize(1)
 			.allSatisfy(caseMapping -> {
@@ -60,7 +68,7 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 				assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
 			});
 
-		caseMappingRepository.delete(caseMappingRepository.findAllByExternalCaseId("874407364").getFirst());
+		caseMappingRepository.delete(caseMappingRepository.findAllByExternalCaseIdAndMunicipalityId("874407364", MUNICIPALITY_ID).getFirst());
 	}
 
 
@@ -70,7 +78,7 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 
 		final var result = setupCall()
 			.withHttpMethod(HttpMethod.POST)
-			.withServicePath("/cases")
+			.withServicePath(PATH)
 			.withRequest("request.json")
 			.withExpectedResponseStatus(HttpStatus.OK)
 			.withExpectedResponse("expected-response.json")
@@ -81,9 +89,9 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 		assertThat(result.getCaseId()).isEqualTo("Inskickat");
 
 		// Make sure that there doesn't exist a case entity
-		assertThat(caseRepository.findById(EXTERNAL_CASE_ID)).isEmpty();
+		assertThat(caseRepository.findByIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID)).isEmpty();
 		// Make sure that there exists a case mapping
-		assertThat(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID))
+		assertThat(caseMappingRepository.findAllByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID))
 			.isNotNull()
 			.hasSize(1)
 			.allSatisfy(caseMapping -> {
@@ -93,7 +101,7 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 				assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
 			});
 
-		caseMappingRepository.delete(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID).getFirst());
+		caseMappingRepository.delete(caseMappingRepository.findAllByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID).getFirst());
 	}
 
 
@@ -103,7 +111,7 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 
 		final var result = setupCall()
 			.withHttpMethod(HttpMethod.POST)
-			.withServicePath("/cases")
+			.withServicePath(PATH)
 			.withRequest("request.json")
 			.withExpectedResponseStatus(HttpStatus.OK)
 			.withExpectedResponse("expected-response.json")
@@ -114,9 +122,9 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 		assertThat(result.getCaseId()).isEqualTo("Inskickat");
 
 		// Make sure that there doesn't exist a case entity
-		assertThat(caseRepository.findById(EXTERNAL_CASE_ID)).isEmpty();
+		assertThat(caseRepository.findByIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID)).isEmpty();
 		// Make sure that there exists a case mapping
-		assertThat(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID))
+		assertThat(caseMappingRepository.findAllByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID))
 			.isNotNull()
 			.hasSize(1)
 			.allSatisfy(caseMapping -> {
@@ -126,7 +134,7 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 				assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
 			});
 
-		caseMappingRepository.delete(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID).getFirst());
+		caseMappingRepository.delete(caseMappingRepository.findAllByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID).getFirst());
 
 	}
 
@@ -136,7 +144,7 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 
 		final var result = setupCall()
 			.withHttpMethod(HttpMethod.POST)
-			.withServicePath("/cases")
+			.withServicePath(PATH)
 			.withRequest("request.json")
 			.withExpectedResponseStatus(HttpStatus.OK)
 			.withExpectedResponse("expected-response.json")
@@ -147,9 +155,9 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 		assertThat(result.getCaseId()).isEqualTo("Inskickat");
 
 		// Make sure that there doesn't exist a case entity
-		assertThat(caseRepository.findById(EXTERNAL_CASE_ID)).isEmpty();
+		assertThat(caseRepository.findByIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID)).isEmpty();
 		// Make sure that there exists a case mapping
-		assertThat(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID))
+		assertThat(caseMappingRepository.findAllByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID))
 			.isNotNull()
 			.hasSize(1)
 			.allSatisfy(caseMapping -> {
@@ -159,7 +167,7 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 				assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
 			});
 
-		caseMappingRepository.delete(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID).getFirst());
+		caseMappingRepository.delete(caseMappingRepository.findAllByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID).getFirst());
 
 	}
 
@@ -169,7 +177,7 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 
 		final var result = setupCall()
 			.withHttpMethod(HttpMethod.POST)
-			.withServicePath("/cases")
+			.withServicePath(PATH)
 			.withRequest("request.json")
 			.withExpectedResponseStatus(HttpStatus.OK)
 			.withExpectedResponse("expected-response.json")
@@ -180,9 +188,9 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 		assertThat(result.getCaseId()).isEqualTo("Inskickat");
 
 		// Make sure that there doesn't exist a case entity
-		assertThat(caseRepository.findById(EXTERNAL_CASE_ID)).isEmpty();
+		assertThat(caseRepository.findByIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID)).isEmpty();
 		// Make sure that there exists a case mapping
-		assertThat(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID))
+		assertThat(caseMappingRepository.findAllByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID))
 			.isNotNull()
 			.hasSize(1)
 			.allSatisfy(caseMapping -> {
@@ -192,7 +200,7 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 				assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
 			});
 
-		caseMappingRepository.delete(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID).getFirst());
+		caseMappingRepository.delete(caseMappingRepository.findAllByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID).getFirst());
 
 	}
 
@@ -202,7 +210,7 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 
 		final var result = setupCall()
 			.withHttpMethod(HttpMethod.POST)
-			.withServicePath("/cases")
+			.withServicePath(PATH)
 			.withRequest("request.json")
 			.withExpectedResponseStatus(HttpStatus.OK)
 			.withExpectedResponse("expected-response.json")
@@ -213,9 +221,9 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 		assertThat(result.getCaseId()).isEqualTo("Inskickat");
 
 		// Make sure that there doesn't exist a case entity
-		assertThat(caseRepository.findById(EXTERNAL_CASE_ID)).isEmpty();
+		assertThat(caseRepository.findByIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID)).isEmpty();
 		// Make sure that there exists a case mapping
-		assertThat(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID))
+		assertThat(caseMappingRepository.findAllByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID))
 			.isNotNull()
 			.hasSize(1)
 			.allSatisfy(caseMapping -> {
@@ -225,7 +233,7 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 				assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
 			});
 
-		caseMappingRepository.delete(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID).getFirst());
+		caseMappingRepository.delete(caseMappingRepository.findAllByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID).getFirst());
 
 	}
 
@@ -236,7 +244,7 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 
 		final var result = setupCall()
 			.withHttpMethod(HttpMethod.POST)
-			.withServicePath("/cases")
+			.withServicePath(PATH)
 			.withRequest("request.json")
 			.withExpectedResponseStatus(HttpStatus.OK)
 			.withExpectedResponse("expected-response.json")
@@ -247,9 +255,9 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 		assertThat(result.getCaseId()).isEqualTo("Inskickat");
 
 		// Make sure that there doesn't exist a case entity
-		assertThat(caseRepository.findById(EXTERNAL_CASE_ID)).isEmpty();
+		assertThat(caseRepository.findByIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID)).isEmpty();
 		// Make sure that there exists a case mapping
-		assertThat(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID))
+		assertThat(caseMappingRepository.findAllByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID))
 			.isNotNull()
 			.hasSize(1)
 			.allSatisfy(caseMapping -> {
@@ -259,7 +267,7 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 				assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
 			});
 
-		caseMappingRepository.delete(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID).getFirst());
+		caseMappingRepository.delete(caseMappingRepository.findAllByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID).getFirst());
 
 	}
 
@@ -269,7 +277,7 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 
 		final var result = setupCall()
 			.withHttpMethod(HttpMethod.POST)
-			.withServicePath("/cases")
+			.withServicePath(PATH)
 			.withRequest("request.json")
 			.withExpectedResponseStatus(HttpStatus.OK)
 			.withExpectedResponse("expected-response.json")
@@ -280,9 +288,9 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 		assertThat(result.getCaseId()).isEqualTo("Inskickat");
 
 		// Make sure that there doesn't exist a case entity
-		assertThat(caseRepository.findById(EXTERNAL_CASE_ID)).isEmpty();
+		assertThat(caseRepository.findByIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID)).isEmpty();
 		// Make sure that there exists a case mapping
-		assertThat(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID))
+		assertThat(caseMappingRepository.findAllByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID))
 			.isNotNull()
 			.hasSize(1)
 			.allSatisfy(caseMapping -> {
@@ -292,7 +300,7 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 				assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
 			});
 
-		caseMappingRepository.delete(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID).getFirst());
+		caseMappingRepository.delete(caseMappingRepository.findAllByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID).getFirst());
 
 	}
 

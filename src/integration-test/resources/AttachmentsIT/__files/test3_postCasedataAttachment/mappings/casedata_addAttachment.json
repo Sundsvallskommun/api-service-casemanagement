@@ -1,6 +1,6 @@
 {
   "request": {
-    "urlPathPattern": "/case-data/\\d.\\d/attachments",
+    "urlPathPattern": "/case-data/\\d.\\d/2281/attachments",
     "method": "POST"
   },
   "response": {

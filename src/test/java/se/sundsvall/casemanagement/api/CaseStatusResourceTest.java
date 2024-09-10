@@ -30,6 +30,12 @@ import se.sundsvall.casemanagement.service.CaseMappingService;
 @ActiveProfiles("junit")
 class CaseStatusResourceTest {
 
+	private static final String MUNICIPALITY_ID = "2281";
+
+	private static final String ORG_PATH = "/" + MUNICIPALITY_ID + "/organization/{organizationNumber}/cases/status";
+
+	private static final String PATH = "/" + MUNICIPALITY_ID + "/cases/{externalCaseId}/status";
+
 	@MockBean
 	private ByggrService byggrService;
 
@@ -48,11 +54,11 @@ class CaseStatusResourceTest {
 	@Test
 	void getStatusByOrgNr() {
 		final var organizationNumber = "20220622-2396";
-		when(byggrService.getByggrStatusByOrgNr(organizationNumber)).thenReturn(List.of(createCaseStatusDTO()));
-		when(ecosService.getEcosStatusByOrgNr(organizationNumber)).thenReturn(List.of(createCaseStatusDTO()));
+		when(byggrService.getByggrStatusByOrgNr(organizationNumber, MUNICIPALITY_ID)).thenReturn(List.of(createCaseStatusDTO()));
+		when(ecosService.getEcosStatusByOrgNr(organizationNumber, MUNICIPALITY_ID)).thenReturn(List.of(createCaseStatusDTO()));
 
 		final var response = webTestClient.get()
-			.uri(uriBuilder -> uriBuilder.path("organization/{organizationNumber}/cases/status").build(organizationNumber))
+			.uri(uriBuilder -> uriBuilder.path(ORG_PATH).build(organizationNumber))
 			.exchange()
 			.expectStatus().isOk()
 			.expectBodyList(CaseStatusDTO.class)
@@ -60,8 +66,8 @@ class CaseStatusResourceTest {
 
 		assertThat(response).hasSize(2);
 
-		verify(byggrService).getByggrStatusByOrgNr(organizationNumber);
-		verify(ecosService).getEcosStatusByOrgNr(organizationNumber);
+		verify(byggrService).getByggrStatusByOrgNr(organizationNumber, MUNICIPALITY_ID);
+		verify(ecosService).getEcosStatusByOrgNr(organizationNumber, MUNICIPALITY_ID);
 		verifyNoMoreInteractions(byggrService, ecosService);
 		verifyNoInteractions(caseMappingService, caseDataService);
 	}
@@ -69,11 +75,11 @@ class CaseStatusResourceTest {
 	@Test
 	void getStatusByOrgNr_NoMatch() {
 		final var organizationNumber = "20220622-2396";
-		when(byggrService.getByggrStatusByOrgNr(organizationNumber)).thenReturn(List.of());
-		when(ecosService.getEcosStatusByOrgNr(organizationNumber)).thenReturn(List.of());
+		when(byggrService.getByggrStatusByOrgNr(organizationNumber, MUNICIPALITY_ID)).thenReturn(List.of());
+		when(ecosService.getEcosStatusByOrgNr(organizationNumber, MUNICIPALITY_ID)).thenReturn(List.of());
 
 		final var response = webTestClient.get()
-			.uri(uriBuilder -> uriBuilder.path("organization/{organizationNumber}/cases/status").build(organizationNumber))
+			.uri(uriBuilder -> uriBuilder.path(ORG_PATH).build(organizationNumber))
 			.exchange()
 			.expectStatus().isNotFound()
 			.expectBodyList(CaseStatusDTO.class)
@@ -81,8 +87,8 @@ class CaseStatusResourceTest {
 
 		assertThat(response).isEmpty();
 
-		verify(byggrService).getByggrStatusByOrgNr(organizationNumber);
-		verify(ecosService).getEcosStatusByOrgNr(organizationNumber);
+		verify(byggrService).getByggrStatusByOrgNr(organizationNumber, MUNICIPALITY_ID);
+		verify(ecosService).getEcosStatusByOrgNr(organizationNumber, MUNICIPALITY_ID);
 		verifyNoMoreInteractions(byggrService, ecosService);
 		verifyNoInteractions(caseMappingService, caseDataService);
 	}
@@ -91,11 +97,11 @@ class CaseStatusResourceTest {
 	void getStatusByExternalCaseId_Ecos() {
 		final var caseMapping = createCaseMapping(caseMappingConsumer -> caseMappingConsumer.setSystem(SystemType.ECOS));
 		final var caseStatusDTO = createCaseStatusDTO(caseStatusConsumer -> caseStatusConsumer.setSystem(SystemType.ECOS));
-		when(caseMappingService.getCaseMapping("externalCaseId")).thenReturn(caseMapping);
-		when(ecosService.getStatus(caseMapping.getCaseId(), caseMapping.getExternalCaseId())).thenReturn(caseStatusDTO);
+		when(caseMappingService.getCaseMapping("externalCaseId", MUNICIPALITY_ID)).thenReturn(caseMapping);
+		when(ecosService.getStatus(caseMapping.getCaseId(), caseMapping.getExternalCaseId(), MUNICIPALITY_ID)).thenReturn(caseStatusDTO);
 
 		final var response = webTestClient.get()
-			.uri(uriBuilder -> uriBuilder.path("cases/{externalCaseId}/status").build("externalCaseId"))
+			.uri(uriBuilder -> uriBuilder.path(PATH).build("externalCaseId"))
 			.exchange()
 			.expectStatus().isOk()
 			.expectBody(CaseStatusDTO.class)
@@ -107,8 +113,8 @@ class CaseStatusResourceTest {
 			assertThat(statusDTO.getStatus()).isEqualTo(caseStatusDTO.getStatus());
 		});
 
-		verify(caseMappingService).getCaseMapping("externalCaseId");
-		verify(ecosService).getStatus(caseMapping.getCaseId(), caseMapping.getExternalCaseId());
+		verify(caseMappingService).getCaseMapping("externalCaseId", MUNICIPALITY_ID);
+		verify(ecosService).getStatus(caseMapping.getCaseId(), caseMapping.getExternalCaseId(), MUNICIPALITY_ID);
 		verifyNoMoreInteractions(caseMappingService, ecosService);
 		verifyNoInteractions(byggrService, caseDataService);
 	}
@@ -117,11 +123,11 @@ class CaseStatusResourceTest {
 	void getStatusByExternalCaseId_ByggR() {
 		final var caseMapping = createCaseMapping(caseMappingConsumer -> caseMappingConsumer.setSystem(SystemType.BYGGR));
 		final var caseStatusDTO = createCaseStatusDTO(caseStatusConsumer -> caseStatusConsumer.setSystem(SystemType.BYGGR));
-		when(caseMappingService.getCaseMapping("externalCaseId")).thenReturn(caseMapping);
+		when(caseMappingService.getCaseMapping("externalCaseId", MUNICIPALITY_ID)).thenReturn(caseMapping);
 		when(byggrService.toByggrStatus(caseMapping)).thenReturn(caseStatusDTO);
 
 		final var response = webTestClient.get()
-			.uri(uriBuilder -> uriBuilder.path("cases/{externalCaseId}/status").build("externalCaseId"))
+			.uri(uriBuilder -> uriBuilder.path(PATH).build("externalCaseId"))
 			.exchange()
 			.expectStatus().isOk()
 			.expectBody(CaseStatusDTO.class)
@@ -133,7 +139,7 @@ class CaseStatusResourceTest {
 			assertThat(statusDTO.getStatus()).isEqualTo(caseStatusDTO.getStatus());
 		});
 
-		verify(caseMappingService).getCaseMapping("externalCaseId");
+		verify(caseMappingService).getCaseMapping("externalCaseId", MUNICIPALITY_ID);
 		verify(byggrService).toByggrStatus(caseMapping);
 		verifyNoMoreInteractions(caseMappingService, byggrService);
 		verifyNoInteractions(ecosService, caseDataService);
@@ -143,11 +149,11 @@ class CaseStatusResourceTest {
 	void getStatusByExternalCaseId_CaseData() {
 		final var caseMapping = createCaseMapping(caseMappingConsumer -> caseMappingConsumer.setSystem(SystemType.CASE_DATA));
 		final var caseStatusDTO = createCaseStatusDTO(caseStatusConsumer -> caseStatusConsumer.setSystem(SystemType.CASE_DATA));
-		when(caseMappingService.getCaseMapping("externalCaseId")).thenReturn(caseMapping);
-		when(caseDataService.getStatus(caseMapping)).thenReturn(caseStatusDTO);
+		when(caseMappingService.getCaseMapping("externalCaseId", MUNICIPALITY_ID)).thenReturn(caseMapping);
+		when(caseDataService.getStatus(caseMapping, MUNICIPALITY_ID)).thenReturn(caseStatusDTO);
 
 		final var response = webTestClient.get()
-			.uri(uriBuilder -> uriBuilder.path("cases/{externalCaseId}/status").build("externalCaseId"))
+			.uri(uriBuilder -> uriBuilder.path(PATH).build("externalCaseId"))
 			.exchange()
 			.expectStatus().isOk()
 			.expectBody(CaseStatusDTO.class)
@@ -159,8 +165,8 @@ class CaseStatusResourceTest {
 			assertThat(statusDTO.getStatus()).isEqualTo(caseStatusDTO.getStatus());
 		});
 
-		verify(caseMappingService).getCaseMapping("externalCaseId");
-		verify(caseDataService).getStatus(caseMapping);
+		verify(caseMappingService).getCaseMapping("externalCaseId", MUNICIPALITY_ID);
+		verify(caseDataService).getStatus(caseMapping, MUNICIPALITY_ID);
 		verifyNoMoreInteractions(caseMappingService, caseDataService);
 		verifyNoInteractions(byggrService, ecosService);
 	}

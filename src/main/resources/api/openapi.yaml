@@ -5,9 +5,9 @@ info:
   license:
     name: MIT License
     url: https://opensource.org/licenses/MIT
-  version: "7.1"
+  version: "8.0"
 servers:
-  - url: http://localhost:64781
+  - url: http://localhost:60820
     description: Generated server url
 tags:
   - name: Status
@@ -19,18 +19,27 @@ tags:
   - name: Cases
     description: Cases operations
 paths:
-  /cases/{externalCaseId}:
+  /{municipalityId}/cases/{externalCaseId}:
     put:
       tags:
         - Cases
       description: Update a case.
       operationId: putCase
       parameters:
-        - name: externalCaseId
+        - name: municipalityId
           in: path
+          description: Municipality id
           required: true
           schema:
             type: string
+          example: 2281
+        - name: externalCaseId
+          in: path
+          description: External case id
+          required: true
+          schema:
+            type: string
+          example: 1234
       requestBody:
         content:
           application/json:
@@ -70,6 +79,12 @@ paths:
       responses:
         "204":
           description: No content
+        "404":
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
         "400":
           description: Bad request
           content:
@@ -88,19 +103,21 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-        "404":
-          description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-  /cases:
+  /{municipalityId}/cases:
     post:
       tags:
         - Cases
       description: Creates a case in ByggR or Ecos2 based on caseType. Also persists
         a connection between externalCaseId and the created case.
       operationId: postCases
+      parameters:
+        - name: municipalityId
+          in: path
+          description: Municipality id
+          required: true
+          schema:
+            type: string
+          example: 2281
       requestBody:
         content:
           application/json:
@@ -147,6 +164,12 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/CaseResourceResponseDTO"
+        "404":
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
         "400":
           description: Bad request
           content:
@@ -165,24 +188,26 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-        "404":
-          description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-  /cases/{externalCaseId}/attachments:
+  /{municipalityId}/cases/{externalCaseId}/attachments:
     post:
       tags:
         - Attachments
-      description: Add attachments to existing case.
       operationId: postAttachmentsToCase
       parameters:
-        - name: externalCaseId
+        - name: municipalityId
           in: path
+          description: Municipality id
           required: true
           schema:
             type: string
+          example: 2281
+        - name: externalCaseId
+          in: path
+          description: External case id
+          required: true
+          schema:
+            type: string
+          example: 1234
       requestBody:
         content:
           application/json:
@@ -192,8 +217,20 @@ paths:
                 $ref: "#/components/schemas/AttachmentDTO"
         required: true
       responses:
+        "404":
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
         "204":
           description: No content - Successful request.
+        "501":
+          description: Not Implemented
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
         "400":
           description: Bad request
           content:
@@ -212,19 +249,7 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-        "501":
-          description: Not Implemented
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "404":
-          description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-  /organization/{organizationNumber}/cases/status:
+  /{municipalityId}/organization/{organizationNumber}/cases/status:
     get:
       tags:
         - Status
@@ -232,17 +257,29 @@ paths:
         organization has the role "applicant".
       operationId: getStatusByOrgNr
       parameters:
+        - name: municipalityId
+          in: path
+          description: Municipality id
+          required: true
+          schema:
+            type: string
+          example: 2281
         - name: organizationNumber
           in: path
-          description: Organization number with 10 or 12 digits.
+          description: OrganizationNumber
           required: true
           schema:
             pattern: "^((18|19|20|21)\\d{6}|\\d{6})-(\\d{4})$"
             type: string
             description: Organization number with 10 or 12 digits.
             example: 20220622-2396
-          example: 20220622-2396
       responses:
+        "404":
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
         "400":
           description: Bad request
           content:
@@ -274,13 +311,7 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-        "404":
-          description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-  /cases/{externalCaseId}/status:
+  /{municipalityId}/cases/{externalCaseId}/status:
     get:
       tags:
         - Status
@@ -288,12 +319,26 @@ paths:
         connected to the specified externalCaseId.
       operationId: getStatusByExternalCaseId
       parameters:
+        - name: municipalityId
+          in: path
+          description: Municipality id
+          required: true
+          schema:
+            type: string
+          example: 2281
         - name: externalCaseId
           in: path
+          description: External case id
           required: true
           schema:
             type: string
       responses:
+        "404":
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
         "400":
           description: Bad request
           content:
@@ -321,13 +366,7 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-        "404":
-          description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-  /cases/case-mappings:
+  /{municipalityId}/cases/case-mappings:
     get:
       tags:
         - CaseMappings
@@ -335,12 +374,27 @@ paths:
         underlying system.
       operationId: getCaseMapping
       parameters:
+        - name: municipalityId
+          in: path
+          description: Municipality id
+          required: true
+          schema:
+            type: string
+          example: 2281
         - name: external-case-id
           in: query
+          description: External case id
           required: false
           schema:
             type: string
+          example: 2281
       responses:
+        "404":
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
         "400":
           description: Bad request
           content:
@@ -362,12 +416,6 @@ paths:
                   $ref: "#/components/schemas/CaseMapping"
         "500":
           description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "404":
-          description: Not found
           content:
             application/problem+json:
               schema:
@@ -815,18 +863,18 @@ components:
             type: object
         status:
           $ref: "#/components/schemas/StatusType"
-        detail:
-          type: string
         title:
+          type: string
+        detail:
           type: string
     StatusType:
       type: object
       properties:
+        reasonPhrase:
+          type: string
         statusCode:
           type: integer
           format: int32
-        reasonPhrase:
-          type: string
     CaseResourceResponseDTO:
       type: object
       properties:
@@ -880,6 +928,8 @@ components:
         externalCaseId:
           type: string
         caseId:
+          type: string
+        municipalityId:
           type: string
         system:
           type: string
