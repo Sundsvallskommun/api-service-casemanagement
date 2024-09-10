@@ -1081,7 +1081,7 @@ class ByggrServiceTest {
 		verify(spy).getByggRCase(errandNr);
 		verify(spy).extractEvent(arende, "GRANHO", "GRAUTS");
 		verify(spy).createNewEventStakeholder(handelse, stakeholderId);
-		verify(openEIntegrationMock).confirmDelivery(any(), any(), any());
+		verify(openEIntegrationMock).setStatus(any(), any(), any(), any());
 
 		verify(arendeExportClientMock).saveNewHandelse(any());
 	}
