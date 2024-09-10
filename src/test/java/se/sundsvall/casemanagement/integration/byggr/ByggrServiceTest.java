@@ -1108,11 +1108,15 @@ class ByggrServiceTest {
 	void extractStakeholderId_1() {
 		var personStakeholder = (PersonDTO) createStakeholderDTO(StakeholderType.PERSON, List.of("Granne"));
 		var organizationStakeholder = (OrganizationDTO) createStakeholderDTO(StakeholderType.ORGANIZATION, List.of("Granne"));
+		var organizationNumberOepFormat = "123456781234";
+		organizationStakeholder.setOrganizationNumber(organizationNumberOepFormat);
+
+
 		var stakeholders = List.of(personStakeholder, organizationStakeholder);
 
 		var result = byggrService.extractStakeholderId(stakeholders);
 
-		assertThat(result).isEqualTo(organizationStakeholder.getOrganizationNumber());
+		assertThat(result).isEqualTo("12345678-1234");
 		verifyNoInteractions(citizenServiceMock);
 	}
 
