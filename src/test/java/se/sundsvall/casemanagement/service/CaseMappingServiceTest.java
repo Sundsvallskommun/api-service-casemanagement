@@ -47,11 +47,11 @@ class CaseMappingServiceTest {
 		final var externalCaseId = "externalCaseId";
 		caseDTO.setExternalCaseId(externalCaseId);
 		//Mock
-		when(this.caseMappingRepository.existsByExternalCaseIdAndMunicipalityId(any(), eq(MUNICIPALITY_ID))).thenReturn(false);
+		when(caseMappingRepository.existsByExternalCaseIdAndMunicipalityId(any(), eq(MUNICIPALITY_ID))).thenReturn(false);
 		//Act
-		this.caseMappingService.postCaseMapping(caseDTO, caseId, SystemType.CASE_DATA, MUNICIPALITY_ID);
+		caseMappingService.postCaseMapping(caseDTO, caseId, SystemType.CASE_DATA, MUNICIPALITY_ID);
 		//Assert
-		verify(this.caseMappingRepository).save(any(CaseMapping.class));
+		verify(caseMappingRepository).save(any(CaseMapping.class));
 	}
 
 	@Test
@@ -62,15 +62,15 @@ class CaseMappingServiceTest {
 		final var externalCaseId = "externalCaseId";
 		caseDTO.setExternalCaseId(externalCaseId);
 		//Mock
-		when(this.caseMappingRepository.existsByExternalCaseIdAndMunicipalityId(caseDTO.getExternalCaseId(), MUNICIPALITY_ID)).thenReturn(true);
+		when(caseMappingRepository.existsByExternalCaseIdAndMunicipalityId(caseDTO.getExternalCaseId(), MUNICIPALITY_ID)).thenReturn(true);
 
 		//Act && Assert
-		assertThatThrownBy(() -> this.caseMappingService.postCaseMapping(caseDTO, caseId, SystemType.ECOS, MUNICIPALITY_ID))
+		assertThatThrownBy(() -> caseMappingService.postCaseMapping(caseDTO, caseId, SystemType.ECOS, MUNICIPALITY_ID))
 			.isInstanceOf(ThrowableProblem.class)
 			.hasMessage(MessageFormat.format("Bad Request: A resources already exists with the same externalCaseId: {0}", externalCaseId))
 			.hasFieldOrPropertyWithValue("status", Status.BAD_REQUEST);
 
-		verify(this.caseMappingRepository, never()).save(any());
+		verify(caseMappingRepository, never()).save(any());
 	}
 
 	@Test
@@ -79,15 +79,15 @@ class CaseMappingServiceTest {
 			.withExternalCaseId(UUID.randomUUID().toString())
 			.build();
 
-		when(this.caseMappingRepository.findAllByMunicipalityIdAndExternalCaseIdOrCaseId(MUNICIPALITY_ID, caseMappingInput.getExternalCaseId(), null)).thenReturn(List.of(caseMappingInput));
+		when(caseMappingRepository.findAllByMunicipalityIdAndExternalCaseIdOrCaseId(MUNICIPALITY_ID, caseMappingInput.getExternalCaseId(), null)).thenReturn(List.of(caseMappingInput));
 
-		final var result = this.caseMappingService.getCaseMapping(caseMappingInput.getExternalCaseId(), MUNICIPALITY_ID);
+		final var result = caseMappingService.getCaseMapping(caseMappingInput.getExternalCaseId(), MUNICIPALITY_ID);
 		assertThat(result.getExternalCaseId()).isEqualTo(caseMappingInput.getExternalCaseId());
 	}
 
 	@Test
 	void getAllCaseMappings() {
-		when(this.caseMappingRepository.findAll()).thenReturn(List.of(CaseMapping.builder()
+		when(caseMappingRepository.findAll()).thenReturn(List.of(CaseMapping.builder()
 				.withCaseId("caseId")
 				.withExternalCaseId("externalCaseId")
 				.withCaseType(CaseType.REGISTRERING_AV_LIVSMEDEL.toString())
@@ -102,9 +102,9 @@ class CaseMappingServiceTest {
 				.withTimestamp(LocalDateTime.now())
 				.build()));
 
-		final var result = this.caseMappingService.getAllCaseMappings();
+		final var result = caseMappingService.getAllCaseMappings();
 
-		verify(this.caseMappingRepository).findAll();
+		verify(caseMappingRepository).findAll();
 
 		assertThat(result).hasSize(2);
 		assertThat(result.getFirst().getCaseId()).isEqualTo("caseId");
@@ -124,9 +124,9 @@ class CaseMappingServiceTest {
 	void testGetCaseMappingWithExternalCaseIdNotFound() {
 		final var caseId = UUID.randomUUID().toString();
 
-		when(this.caseMappingRepository.findAllByMunicipalityIdAndExternalCaseIdOrCaseId(MUNICIPALITY_ID, caseId, null)).thenReturn(List.of());
+		when(caseMappingRepository.findAllByMunicipalityIdAndExternalCaseIdOrCaseId(MUNICIPALITY_ID, caseId, null)).thenReturn(List.of());
 
-		assertThatThrownBy(() -> this.caseMappingService.getCaseMapping(caseId, MUNICIPALITY_ID))
+		assertThatThrownBy(() -> caseMappingService.getCaseMapping(caseId, MUNICIPALITY_ID))
 			.isInstanceOf(ThrowableProblem.class)
 			.hasMessage("Not Found: Case not found")
 			.hasFieldOrPropertyWithValue("status", Status.NOT_FOUND);
@@ -138,10 +138,10 @@ class CaseMappingServiceTest {
 			.withExternalCaseId(UUID.randomUUID().toString())
 			.build();
 
-		when(this.caseMappingRepository.findAllByMunicipalityIdAndExternalCaseIdOrCaseId(MUNICIPALITY_ID, caseMappingInput.getExternalCaseId(), null)).thenReturn(List.of(caseMappingInput, caseMappingInput));
+		when(caseMappingRepository.findAllByMunicipalityIdAndExternalCaseIdOrCaseId(MUNICIPALITY_ID, caseMappingInput.getExternalCaseId(), null)).thenReturn(List.of(caseMappingInput, caseMappingInput));
 
 		final var externalCaseId = caseMappingInput.getExternalCaseId();
-		assertThatThrownBy(() -> this.caseMappingService.getCaseMapping(externalCaseId, MUNICIPALITY_ID))
+		assertThatThrownBy(() -> caseMappingService.getCaseMapping(externalCaseId, MUNICIPALITY_ID))
 			.isInstanceOf(ThrowableProblem.class)
 			.hasMessage(MessageFormat.format("Not Found: More than one case was found with the same externalCaseId: \"{0}\". This should not be possible.", externalCaseId))
 			.hasFieldOrPropertyWithValue("status", Status.NOT_FOUND);
@@ -153,9 +153,9 @@ class CaseMappingServiceTest {
 			.withExternalCaseId(UUID.randomUUID().toString())
 			.build();
 
-		when(this.caseMappingRepository.findAllByMunicipalityIdAndExternalCaseIdOrCaseId(MUNICIPALITY_ID, null, caseMappingInput.getCaseId())).thenReturn(List.of(caseMappingInput));
+		when(caseMappingRepository.findAllByMunicipalityIdAndExternalCaseIdOrCaseId(MUNICIPALITY_ID, null, caseMappingInput.getCaseId())).thenReturn(List.of(caseMappingInput));
 
-		final var result = this.caseMappingService.getCaseMapping(null, caseMappingInput.getCaseId(), MUNICIPALITY_ID);
+		final var result = caseMappingService.getCaseMapping(null, caseMappingInput.getCaseId(), MUNICIPALITY_ID);
 		assertThat(result.getFirst().getCaseId()).isEqualTo(caseMappingInput.getCaseId());
 	}
 
@@ -166,9 +166,9 @@ class CaseMappingServiceTest {
 			.withExternalCaseId(UUID.randomUUID().toString())
 			.build();
 
-		when(this.caseMappingRepository.findAllByMunicipalityIdAndExternalCaseIdOrCaseId(MUNICIPALITY_ID, caseMappingInput.getExternalCaseId(), caseMappingInput.getCaseId())).thenReturn(List.of(caseMappingInput));
+		when(caseMappingRepository.findAllByMunicipalityIdAndExternalCaseIdOrCaseId(MUNICIPALITY_ID, caseMappingInput.getExternalCaseId(), caseMappingInput.getCaseId())).thenReturn(List.of(caseMappingInput));
 
-		final var result = this.caseMappingService.getCaseMapping(caseMappingInput.getExternalCaseId(), caseMappingInput.getCaseId(), MUNICIPALITY_ID);
+		final var result = caseMappingService.getCaseMapping(caseMappingInput.getExternalCaseId(), caseMappingInput.getCaseId(), MUNICIPALITY_ID);
 		assertThat(result.getFirst().getCaseId()).isEqualTo(caseMappingInput.getCaseId());
 		assertThat(result.getFirst().getExternalCaseId()).isEqualTo(caseMappingInput.getExternalCaseId());
 	}
@@ -183,9 +183,9 @@ class CaseMappingServiceTest {
 			.withExternalCaseId(externalCaseId)
 			.build();
 
-		when(this.caseMappingRepository.existsByExternalCaseIdAndMunicipalityId(externalCaseId, MUNICIPALITY_ID)).thenReturn(true);
+		when(caseMappingRepository.existsByExternalCaseIdAndMunicipalityId(externalCaseId, MUNICIPALITY_ID)).thenReturn(true);
 
-		assertThatThrownBy(() -> this.caseMappingService.validateUniqueCase(byggRCaseDTO, MUNICIPALITY_ID))
+		assertThatThrownBy(() -> caseMappingService.validateUniqueCase(byggRCaseDTO, MUNICIPALITY_ID))
 			.isInstanceOf(ThrowableProblem.class)
 			.hasMessage(MessageFormat.format("Bad Request: A resources already exists with the same externalCaseId: {0}", caseMappingInput.getExternalCaseId()))
 			.hasFieldOrPropertyWithValue("status", Status.BAD_REQUEST);
