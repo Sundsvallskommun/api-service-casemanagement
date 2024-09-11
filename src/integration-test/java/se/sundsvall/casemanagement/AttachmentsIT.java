@@ -3,6 +3,7 @@ package se.sundsvall.casemanagement;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.jdbc.Sql;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import se.sundsvall.dept44.test.AbstractAppTest;
@@ -10,17 +11,26 @@ import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 
 @Testcontainers
 @WireMockAppTestSuite(files = "classpath:/AttachmentsIT/", classes = Application.class)
+@Sql({
+	"/db/scripts/truncate.sql",
+	"/db/scripts/testdata-it.sql"
+})
 class AttachmentsIT extends AbstractAppTest {
+
+	private static final String MUNICIPALITY_ID = "2281";
+
+	private static final String PATH = "/" + MUNICIPALITY_ID + "/cases/";
 
 	@Test
 	void test1_postEcosAttachment() {
 
 		setupCall()
 			.withHttpMethod(HttpMethod.POST)
-			.withServicePath("/cases/2222/attachments")
+			.withServicePath(PATH + "2222/attachments")
 			.withRequest("request.json")
 			.withExpectedResponseStatus(HttpStatus.NO_CONTENT)
-			.sendRequestAndVerifyResponse();
+			.sendRequestAndVerifyResponse()
+			.verifyAllStubs();
 	}
 
 	@Test
@@ -28,10 +38,11 @@ class AttachmentsIT extends AbstractAppTest {
 
 		setupCall()
 			.withHttpMethod(HttpMethod.POST)
-			.withServicePath("/cases/3522/attachments")
+			.withServicePath(PATH + "3522/attachments")
 			.withRequest("request.json")
 			.withExpectedResponseStatus(HttpStatus.NO_CONTENT)
-			.sendRequestAndVerifyResponse();
+			.sendRequestAndVerifyResponse()
+			.verifyAllStubs();
 	}
 
 	@Test
@@ -39,10 +50,11 @@ class AttachmentsIT extends AbstractAppTest {
 
 		setupCall()
 			.withHttpMethod(HttpMethod.POST)
-			.withServicePath("/cases/231/attachments")
+			.withServicePath(PATH + "231/attachments")
 			.withRequest("request.json")
 			.withExpectedResponseStatus(HttpStatus.NO_CONTENT)
-			.sendRequestAndVerifyResponse();
+			.sendRequestAndVerifyResponse()
+			.verifyAllStubs();
 
 	}
 
@@ -51,11 +63,12 @@ class AttachmentsIT extends AbstractAppTest {
 
 		setupCall()
 			.withHttpMethod(HttpMethod.POST)
-			.withServicePath("/cases/123/attachments")
+			.withServicePath(PATH + "123/attachments")
 			.withRequest("request.json")
 			.withExpectedResponse("expected-response.json")
 			.withExpectedResponseStatus(HttpStatus.NOT_FOUND)
-			.sendRequestAndVerifyResponse();
+			.sendRequestAndVerifyResponse()
+			.verifyAllStubs();
 
 	}
 
@@ -63,11 +76,12 @@ class AttachmentsIT extends AbstractAppTest {
 	void test5_InvalidRequest() {
 		setupCall()
 			.withHttpMethod(HttpMethod.POST)
-			.withServicePath("/cases/231/attachments")
+			.withServicePath(PATH + "231/attachments")
 			.withRequest("request.json")
 			.withExpectedResponse("expected-response.json")
 			.withExpectedResponseStatus(HttpStatus.BAD_REQUEST)
-			.sendRequestAndVerifyResponse();
+			.sendRequestAndVerifyResponse()
+			.verifyAllStubs();
 	}
 
 }

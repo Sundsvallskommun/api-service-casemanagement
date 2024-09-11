@@ -3,6 +3,7 @@ package se.sundsvall.casemanagement.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -90,6 +91,8 @@ class EcosServiceTest {
 
 	private static final String CYTONOL = "e19981ad-34b2-4e14-88f5-133f61ca85aa";
 
+	private static final String MUNICIPALITY_ID = "2281";
+
 	@InjectMocks
 	private EcosService ecosService;
 
@@ -166,7 +169,7 @@ class EcosServiceTest {
 		final var registerDocumentArgumentCaptor = ArgumentCaptor.forClass(RegisterDocument.class);
 
 		// Act
-		final var result = ecosService.postCase(eCase);
+		final var result = ecosService.postCase(eCase, MUNICIPALITY_ID);
 
 		// Assert
 		assertThat(result.getCaseNumber()).isEqualTo(ECOS_CASE_NUMBER);
@@ -189,7 +192,7 @@ class EcosServiceTest {
 		assertThat(registerDocumentCaseSvcDtoV2.getDiaryPlanId()).isEqualTo(Constants.ECOS_DIARY_PLAN_LIVSMEDEL);
 		assertThat(registerDocumentCaseSvcDtoV2.getProcessTypeId()).isEqualTo(Constants.ECOS_PROCESS_TYPE_ID_REGISTRERING_AV_LIVSMEDEL);
 
-		verify(caseMappingServiceMock, times(1)).postCaseMapping(any(CaseDTO.class), any(String.class), any(SystemType.class));
+		verify(caseMappingServiceMock, times(1)).postCaseMapping(any(CaseDTO.class), any(String.class), any(SystemType.class), eq(MUNICIPALITY_ID));
 	}
 
 	@Test
@@ -228,12 +231,12 @@ class EcosServiceTest {
 		eCase.setExternalCaseId(String.valueOf(new Random().nextLong()));
 
 		// Act
-		ecosService.postCase(eCase);
+		ecosService.postCase(eCase, MUNICIPALITY_ID);
 
 		// Assert
 		verify(minutMiljoClientMock, times(1)).createFoodFacility(any());
 		verify(minutMiljoClientV2Mock, times(1)).registerDocumentV2(any());
-		verify(caseMappingServiceMock, times(1)).postCaseMapping(any(CaseDTO.class), any(String.class), any(SystemType.class));
+		verify(caseMappingServiceMock, times(1)).postCaseMapping(any(CaseDTO.class), any(String.class), any(SystemType.class), eq(MUNICIPALITY_ID));
 	}
 
 	@Test
@@ -246,7 +249,7 @@ class EcosServiceTest {
 
 		final var createHeatPumpFacilityArgumentCaptor = ArgumentCaptor.forClass(CreateHeatPumpFacility.class);
 		// Act
-		final var result = ecosService.postCase(eCase);
+		final var result = ecosService.postCase(eCase, MUNICIPALITY_ID);
 
 		// Assert
 		assertThat(result.getCaseNumber()).isEqualTo("Inskickat");
@@ -276,7 +279,7 @@ class EcosServiceTest {
 		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
 
 		// Act
-		ecosService.postCase(eCase);
+		ecosService.postCase(eCase, MUNICIPALITY_ID);
 
 		// Assert
 		final ArgumentCaptor<CreateHeatPumpFacility> createHeatPumpFacilityArgumentCaptor = ArgumentCaptor.forClass(CreateHeatPumpFacility.class);
@@ -290,7 +293,7 @@ class EcosServiceTest {
 		final var extraParameters = getGeoExtraParametersMap();
 		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
 
-		ecosService.postCase(eCase);
+		ecosService.postCase(eCase, MUNICIPALITY_ID);
 
 		final ArgumentCaptor<CreateHeatPumpFacility> createHeatPumpFacilityArgumentCaptor = ArgumentCaptor.forClass(CreateHeatPumpFacility.class);
 		verifyMinutMiljoCallsForHeatPumpCase(createHeatPumpFacilityArgumentCaptor);
@@ -305,7 +308,7 @@ class EcosServiceTest {
 		final var extraParameters = getSoilExtraParametersMap();
 		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
 
-		ecosService.postCase(eCase);
+		ecosService.postCase(eCase, MUNICIPALITY_ID);
 
 		final ArgumentCaptor<CreateHeatPumpFacility> createHeatPumpFacilityArgumentCaptor = ArgumentCaptor.forClass(CreateHeatPumpFacility.class);
 		verifyMinutMiljoCallsForHeatPumpCase(createHeatPumpFacilityArgumentCaptor);
@@ -319,7 +322,7 @@ class EcosServiceTest {
 		final EcosCaseDTO eCase = TestUtil.createEcosCaseDTO(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP, AttachmentCategory.ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
 		eCase.getFacilities().getFirst().setExtraParameters(null);
 
-		ecosService.postCase(eCase);
+		ecosService.postCase(eCase, MUNICIPALITY_ID);
 
 		verify(minutMiljoClientMock, times(0)).createHeatPumpFacility(any());
 		verify(minutMiljoClientV2Mock, times(1)).registerDocumentV2(any());
@@ -331,7 +334,7 @@ class EcosServiceTest {
 		final Map<String, String> extraParameters = new HashMap<>();
 		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
 
-		ecosService.postCase(eCase);
+		ecosService.postCase(eCase, MUNICIPALITY_ID);
 
 		verify(minutMiljoClientMock, times(0)).createHeatPumpFacility(any());
 		verify(minutMiljoClientV2Mock, times(1)).registerDocumentV2(any());
@@ -343,7 +346,7 @@ class EcosServiceTest {
 		final var extraParameters = getMarineExtraParameters();
 		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
 
-		ecosService.postCase(eCase);
+		ecosService.postCase(eCase, MUNICIPALITY_ID);
 
 		final ArgumentCaptor<CreateHeatPumpFacility> createHeatPumpFacilityArgumentCaptor = ArgumentCaptor.forClass(CreateHeatPumpFacility.class);
 		verifyMinutMiljoCallsForHeatPumpCase(createHeatPumpFacilityArgumentCaptor);
@@ -378,7 +381,7 @@ class EcosServiceTest {
 		final var createHealthProtectionFacilityArgumentCaptor = ArgumentCaptor.forClass(CreateHealthProtectionFacility.class);
 
 		// Act
-		ecosService.postCase(eCase);
+		ecosService.postCase(eCase, MUNICIPALITY_ID);
 
 		// Assert
 		verify(partyServiceMock, times(1)).findAndAddPartyToCase(any(EcosCaseDTO.class), any(String.class));
@@ -409,7 +412,7 @@ class EcosServiceTest {
 		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
 
 		// Act
-		ecosService.postCase(eCase);
+		ecosService.postCase(eCase, MUNICIPALITY_ID);
 
 		final var argumentCaptor = ArgumentCaptor.forClass(CreateIndividualSewageFacility.class);
 		verifyMinutMiljoCallsForSewageCase(argumentCaptor);
@@ -440,7 +443,7 @@ class EcosServiceTest {
 		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
 
 		// Act
-		ecosService.postCase(eCase);
+		ecosService.postCase(eCase, MUNICIPALITY_ID);
 
 		final var argumentCaptor = ArgumentCaptor.forClass(CreateIndividualSewageFacility.class);
 		verifyMinutMiljoCallsForSewageCase(argumentCaptor);
@@ -470,7 +473,7 @@ class EcosServiceTest {
 		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
 
 		// Act
-		ecosService.postCase(eCase);
+		ecosService.postCase(eCase, MUNICIPALITY_ID);
 
 		final var argumentCaptor = ArgumentCaptor.forClass(CreateIndividualSewageFacility.class);
 		verifyMinutMiljoCallsForSewageCase(argumentCaptor);
@@ -502,7 +505,7 @@ class EcosServiceTest {
 		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
 
 		// Act
-		ecosService.postCase(eCase);
+		ecosService.postCase(eCase, MUNICIPALITY_ID);
 
 		final var argumentCaptor = ArgumentCaptor.forClass(CreateIndividualSewageFacility.class);
 
@@ -535,7 +538,7 @@ class EcosServiceTest {
 		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
 
 		// Act
-		ecosService.postCase(eCase);
+		ecosService.postCase(eCase, MUNICIPALITY_ID);
 
 		final var argumentCaptor = ArgumentCaptor.forClass(CreateIndividualSewageFacility.class);
 		verifyMinutMiljoCallsForSewageCase(argumentCaptor);
@@ -561,7 +564,7 @@ class EcosServiceTest {
 		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
 
 		// Act
-		ecosService.postCase(eCase);
+		ecosService.postCase(eCase, MUNICIPALITY_ID);
 
 		// Assert
 		final var argumentCaptor = ArgumentCaptor.forClass(CreateIndividualSewageFacility.class);
@@ -585,7 +588,7 @@ class EcosServiceTest {
 		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
 
 		// Act
-		ecosService.postCase(eCase);
+		ecosService.postCase(eCase, MUNICIPALITY_ID);
 
 		// Assert
 		final var argumentCaptor = ArgumentCaptor.forClass(CreateIndividualSewageFacility.class);
@@ -611,7 +614,7 @@ class EcosServiceTest {
 		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
 
 		// Act
-		ecosService.postCase(eCase);
+		ecosService.postCase(eCase, MUNICIPALITY_ID);
 
 		// Assert
 		final var argumentCaptor = ArgumentCaptor.forClass(CreateIndividualSewageFacility.class);
@@ -631,7 +634,7 @@ class EcosServiceTest {
 		TestUtil.setSewageStandardExtraParams(extraParameters, prefix);
 		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
 
-		ecosService.postCase(eCase);
+		ecosService.postCase(eCase, MUNICIPALITY_ID);
 
 		final var argumentCaptor = ArgumentCaptor.forClass(CreateIndividualSewageFacility.class);
 		verifyMinutMiljoCallsForSewageCase(argumentCaptor);
@@ -646,7 +649,7 @@ class EcosServiceTest {
 		TestUtil.setSewageStandardExtraParams(extraParameters, prefix);
 		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
 
-		ecosService.postCase(eCase);
+		ecosService.postCase(eCase, MUNICIPALITY_ID);
 
 		final var argumentCaptor = ArgumentCaptor.forClass(CreateIndividualSewageFacility.class);
 		verifyMinutMiljoCallsForSewageCase(argumentCaptor);
@@ -683,7 +686,7 @@ class EcosServiceTest {
 		eCase.getFacilities().getFirst().setAddress(null);
 
 		// Act
-		final var result = ecosService.postCase(eCase);
+		final var result = ecosService.postCase(eCase, MUNICIPALITY_ID);
 
 		// Assert
 		final var createOccurrenceOnCaseArgumentCaptor = ArgumentCaptor.forClass(CreateOccurrenceOnCase.class);
@@ -700,7 +703,7 @@ class EcosServiceTest {
 		verify(minutMiljoClientMock, times(0)).createFoodFacility(any());
 		verify(minutMiljoClientMock, times(0)).addPartyToFacility(any());
 
-		verify(caseMappingServiceMock, times(1)).postCaseMapping(any(CaseDTO.class), any(String.class), any(SystemType.class));
+		verify(caseMappingServiceMock, times(1)).postCaseMapping(any(CaseDTO.class), any(String.class), any(SystemType.class), eq(MUNICIPALITY_ID));
 	}
 
 	@Test
@@ -718,20 +721,20 @@ class EcosServiceTest {
 			.withTimestamp(LocalDateTime.now())
 			.build();
 
-		final var occurrenceListItemSvcDto_1 = new OccurrenceListItemSvcDto()
+		final var occurrenceListItemSvcDto1 = new OccurrenceListItemSvcDto()
 			.withOccurrenceDate(LocalDateTime.now().minusDays(5))
 			.withOccurrenceDescription(RandomStringUtils.random(5, true, false));
 
-		final var occurrenceListItemSvcDto_2 = new OccurrenceListItemSvcDto()
+		final var occurrenceListItemSvcDto2 = new OccurrenceListItemSvcDto()
 			.withOccurrenceDate(LocalDateTime.now().minusDays(1))
 			.withOccurrenceDescription(RandomStringUtils.random(5, true, false));
 
-		final var occurrenceListItemSvcDto_3 = new OccurrenceListItemSvcDto()
+		final var occurrenceListItemSvcDto3 = new OccurrenceListItemSvcDto()
 			.withOccurrenceDate(LocalDateTime.now().minusDays(3))
 			.withOccurrenceDescription(RandomStringUtils.random(5, true, false));
 
 		final var arrayOfOccurrenceListItemSvcDto = new ArrayOfOccurrenceListItemSvcDto();
-		arrayOfOccurrenceListItemSvcDto.getOccurrenceListItemSvcDto().addAll(List.of(occurrenceListItemSvcDto_1, occurrenceListItemSvcDto_2, occurrenceListItemSvcDto_3));
+		arrayOfOccurrenceListItemSvcDto.getOccurrenceListItemSvcDto().addAll(List.of(occurrenceListItemSvcDto1, occurrenceListItemSvcDto2, occurrenceListItemSvcDto3));
 
 		final var caseSvcDto = new CaseSvcDto()
 			.withCaseNumber(caseId)
@@ -740,11 +743,11 @@ class EcosServiceTest {
 
 		final var getCaseResponse = new GetCaseResponse().withGetCaseResult(caseSvcDto);
 		//Mock
-		when(caseMappingServiceMock.getCaseMapping(externalCaseID, caseId)).thenReturn(List.of(caseMapping));
+		when(caseMappingServiceMock.getCaseMapping(externalCaseID, caseId, MUNICIPALITY_ID)).thenReturn(List.of(caseMapping));
 		when(minutMiljoClientMock.getCase(any())).thenReturn(getCaseResponse);
 
 		// Act
-		final var result = ecosService.getStatus(caseId, externalCaseID);
+		final var result = ecosService.getStatus(caseId, externalCaseID, MUNICIPALITY_ID);
 
 		// Assert
 		assertThat(result.getCaseId()).isEqualTo(caseId);
@@ -752,8 +755,8 @@ class EcosServiceTest {
 		assertThat(result.getCaseType()).isEqualTo(caseMapping.getCaseType());
 		assertThat(result.getSystem()).isEqualTo(caseMapping.getSystem());
 		assertThat(result.getServiceName()).isEqualTo(caseMapping.getServiceName());
-		assertThat(result.getStatus()).isEqualTo(occurrenceListItemSvcDto_2.getOccurrenceDescription());
-		assertThat(result.getTimestamp()).isEqualTo(occurrenceListItemSvcDto_2.getOccurrenceDate());
+		assertThat(result.getStatus()).isEqualTo(occurrenceListItemSvcDto2.getOccurrenceDescription());
+		assertThat(result.getTimestamp()).isEqualTo(occurrenceListItemSvcDto2.getOccurrenceDate());
 
 		final var getCaseArgumentCaptor = ArgumentCaptor.forClass(GetCase.class);
 		verify(minutMiljoClientMock, times(1)).getCase(getCaseArgumentCaptor.capture());
@@ -763,7 +766,7 @@ class EcosServiceTest {
 	@Test
 	void testGetStatusNotFound() {
 		// Act & Assert
-		assertThatThrownBy(() -> ecosService.getStatus("someCaseId", "someExternalCaseId"))
+		assertThatThrownBy(() -> ecosService.getStatus("someCaseId", "someExternalCaseId", MUNICIPALITY_ID))
 			.isInstanceOf(Problem.class)
 			.hasMessage("Not Found: Status not found");
 	}
@@ -779,15 +782,15 @@ class EcosServiceTest {
 		final var arrayOfPartySvcDto = new ArrayOfPartySvcDto()
 			.withPartySvcDto(List.of(new PartySvcDto().withId(UUID.randomUUID().toString()), new PartySvcDto().withId(UUID.randomUUID().toString())));
 
-		final var searchCaseResultSvcDto_1 = new SearchCaseResultSvcDto()
+		final var searchCaseResultSvcDto1 = new SearchCaseResultSvcDto()
 			.withCaseId(caseId)
 			.withCaseNumber(caseNumber);
-		final var searchCaseResultSvcDto_2 = new SearchCaseResultSvcDto()
+		final var searchCaseResultSvcDto2 = new SearchCaseResultSvcDto()
 			.withCaseId(caseId)
 			.withCaseNumber(caseNumber);
 
 		final var searchCaseResponse = new SearchCaseResponse().withSearchCaseResult(new ArrayOfSearchCaseResultSvcDto()
-			.withSearchCaseResultSvcDto(List.of(searchCaseResultSvcDto_1, searchCaseResultSvcDto_2)));
+			.withSearchCaseResultSvcDto(List.of(searchCaseResultSvcDto1, searchCaseResultSvcDto2)));
 
 		final var caseMapping = CaseMapping.builder()
 			.withExternalCaseId(externalCaseID)
@@ -799,31 +802,31 @@ class EcosServiceTest {
 			.build();
 
 		final var arrayOfOccurrenceListItemSvcDto = new ArrayOfOccurrenceListItemSvcDto();
-		final var occurrenceListItemSvcDto_1 = new OccurrenceListItemSvcDto()
+		final var occurrenceListItemSvcDto1 = new OccurrenceListItemSvcDto()
 			.withOccurrenceDate(LocalDateTime.now().minusDays(5))
 			.withOccurrenceDescription(RandomStringUtils.random(5, true, false));
 
-		final var occurrenceListItemSvcDto_2 = new OccurrenceListItemSvcDto()
+		final var occurrenceListItemSvcDto2 = new OccurrenceListItemSvcDto()
 			.withOccurrenceDate(LocalDateTime.now().minusDays(1))
 			.withOccurrenceDescription(RandomStringUtils.random(5, true, false));
 
-		final var occurrenceListItemSvcDto_3 = new OccurrenceListItemSvcDto()
+		final var occurrenceListItemSvcDto3 = new OccurrenceListItemSvcDto()
 			.withOccurrenceDate(LocalDateTime.now().minusDays(3))
 			.withOccurrenceDescription(RandomStringUtils.random(5, true, false));
-		arrayOfOccurrenceListItemSvcDto.getOccurrenceListItemSvcDto().addAll(List.of(occurrenceListItemSvcDto_1, occurrenceListItemSvcDto_2, occurrenceListItemSvcDto_3));
+		arrayOfOccurrenceListItemSvcDto.getOccurrenceListItemSvcDto().addAll(List.of(occurrenceListItemSvcDto1, occurrenceListItemSvcDto2, occurrenceListItemSvcDto3));
 
 		final var caseSvcDto = new CaseSvcDto()
 			.withCaseNumber(caseNumber)
 			.withCaseId(caseId)
 			.withOccurrences(arrayOfOccurrenceListItemSvcDto);
 
-		when(caseMappingServiceMock.getCaseMapping(any(), any())).thenReturn(List.of(caseMapping));
+		when(caseMappingServiceMock.getCaseMapping(any(), any(), eq(MUNICIPALITY_ID))).thenReturn(List.of(caseMapping));
 		when(minutMiljoClientMock.getCase(any())).thenReturn(new GetCaseResponse().withGetCaseResult(caseSvcDto));
 		when(minutMiljoClientMock.searchCase(any())).thenReturn(searchCaseResponse);
 		when(partyServiceMock.searchPartyByOrganizationNumber(any())).thenReturn(arrayOfPartySvcDto);
 
 		// Act
-		final var result = ecosService.getEcosStatusByOrgNr(orgnr);
+		final var result = ecosService.getEcosStatusByOrgNr(orgnr, MUNICIPALITY_ID);
 
 		// Assert
 		assertThat(result).hasSize(2);
@@ -833,8 +836,8 @@ class EcosServiceTest {
 			assertThat(status.getCaseType()).isEqualTo(caseMapping.getCaseType());
 			assertThat(status.getSystem()).isEqualTo(caseMapping.getSystem());
 			assertThat(status.getServiceName()).isEqualTo(caseMapping.getServiceName());
-			assertThat(status.getStatus()).isEqualTo(occurrenceListItemSvcDto_2.getOccurrenceDescription());
-			assertThat(status.getTimestamp()).isEqualTo(occurrenceListItemSvcDto_2.getOccurrenceDate());
+			assertThat(status.getStatus()).isEqualTo(occurrenceListItemSvcDto2.getOccurrenceDescription());
+			assertThat(status.getTimestamp()).isEqualTo(occurrenceListItemSvcDto2.getOccurrenceDate());
 		});
 
 		final var getCaseArgumentCaptor = ArgumentCaptor.forClass(GetCase.class);

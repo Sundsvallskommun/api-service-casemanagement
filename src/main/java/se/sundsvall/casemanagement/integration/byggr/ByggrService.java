@@ -78,7 +78,9 @@ import arendeexport.SaveNewHandelse;
 public class ByggrService {
 
 	private final FbService fbService;
+
 	private final CitizenService citizenService;
+
 	private final CaseMappingService caseMappingService;
 
 	private final ArendeExportClient arendeExportClient;
@@ -113,21 +115,21 @@ public class ByggrService {
 
 	public void updateByggRCase(final ByggRCaseDTO byggRCaseDTO) {
 
-		var stakeholderId = extractStakeholderId(byggRCaseDTO.getStakeholders());
-		var propertyDesignation = byggRCaseDTO.getFacilities().getFirst().getAddress().getPropertyDesignation();
-		var stakeholderName = extractStakeholderName(byggRCaseDTO.getStakeholders());
-		var errandNr = byggRCaseDTO.getExtraParameters().get("errandNr");
-		var comment = byggRCaseDTO.getExtraParameters().get("comment");
-		var errandInformation = byggRCaseDTO.getExtraParameters().get("errandInformation");
-		var handelseHandling = createArrayOfHandelseHandling(byggRCaseDTO);
+		final var stakeholderId = extractStakeholderId(byggRCaseDTO.getStakeholders());
+		final var propertyDesignation = byggRCaseDTO.getFacilities().getFirst().getAddress().getPropertyDesignation();
+		final var stakeholderName = extractStakeholderName(byggRCaseDTO.getStakeholders());
+		final var errandNr = byggRCaseDTO.getExtraParameters().get("errandNr");
+		final var comment = byggRCaseDTO.getExtraParameters().get("comment");
+		final var errandInformation = byggRCaseDTO.getExtraParameters().get("errandInformation");
+		final var handelseHandling = createArrayOfHandelseHandling(byggRCaseDTO);
 
-		var byggRCase = getByggRCase(errandNr);
-		var handelse = extractEvent(byggRCase, "GRANHO", "GRAUTS");
+		final var byggRCase = getByggRCase(errandNr);
+		final var handelse = extractEvent(byggRCase, "GRANHO", "GRAUTS");
 
-		var intressent = createNewEventStakeholder(handelse, stakeholderId);
+		final var intressent = createNewEventStakeholder(handelse, stakeholderId);
 
-		var newHandelse = createNewEvent(comment, errandInformation, intressent, stakeholderName, propertyDesignation);
-		var saveNewHandelse = createSaveNewHandelse(errandNr, newHandelse, handelseHandling);
+		final var newHandelse = createNewEvent(comment, errandInformation, intressent, stakeholderName, propertyDesignation);
+		final var saveNewHandelse = createSaveNewHandelse(errandNr, newHandelse, handelseHandling);
 
 		arendeExportClient.saveNewHandelse(saveNewHandelse);
 		openEIntegration.confirmDelivery(byggRCaseDTO.getExternalCaseId(), "BYGGR", errandNr);
@@ -142,7 +144,7 @@ public class ByggrService {
 	 * @return HandelseIntressent, the stakeholder of a specific event
 	 */
 	public HandelseIntressent createNewEventStakeholder(final Handelse handelse, final String stakeholderId) {
-		var intressent = handelse.getIntressentLista().getIntressent().stream()
+		final var intressent = handelse.getIntressentLista().getIntressent().stream()
 			.filter(intressent1 -> intressent1.getPersOrgNr().equals(stakeholderId))
 			.findFirst().orElseThrow(() -> Problem.valueOf(BAD_REQUEST, "Stakeholder with id %s not found in ByggRCase".formatted(stakeholderId)));
 
@@ -178,8 +180,8 @@ public class ByggrService {
 	 * @return String, organization number or personal number of the stakeholder.
 	 */
 	public String extractStakeholderId(final List<StakeholderDTO> stakeholders) {
-		var organizationId = stakeholders.stream()
-			.filter(stakeholder -> stakeholder instanceof OrganizationDTO)
+		final var organizationId = stakeholders.stream()
+			.filter(OrganizationDTO.class::isInstance)
 			.findFirst()
 			.map(stakeholder -> ((OrganizationDTO) stakeholder).getOrganizationNumber())
 			.map(orgNumber -> orgNumber.substring(0, 8) + "-" + orgNumber.substring(8))
@@ -190,7 +192,7 @@ public class ByggrService {
 		}
 
 		return stakeholders.stream()
-			.filter(stakeholder -> stakeholder instanceof PersonDTO)
+			.filter(PersonDTO.class::isInstance)
 			.findFirst()
 			.map(stakeholder -> ((PersonDTO) stakeholder).getPersonId())
 			.map(citizenService::getPersonalNumber)
@@ -199,8 +201,8 @@ public class ByggrService {
 	}
 
 	public String extractStakeholderName(final List<StakeholderDTO> stakeholders) {
-		var organizationName = stakeholders.stream()
-			.filter(stakeholder -> stakeholder instanceof OrganizationDTO)
+		final var organizationName = stakeholders.stream()
+			.filter(OrganizationDTO.class::isInstance)
 			.findFirst()
 			.map(stakeholder -> ((OrganizationDTO) stakeholder).getOrganizationName())
 			.orElse(null);
@@ -210,7 +212,7 @@ public class ByggrService {
 		}
 
 		return stakeholders.stream()
-			.filter(stakeholder -> stakeholder instanceof PersonDTO)
+			.filter(PersonDTO.class::isInstance)
 			.findFirst()
 			.map(stakeholder -> ((PersonDTO) stakeholder).getFirstName() + " " + ((PersonDTO) stakeholder).getLastName())
 			.orElseThrow(() -> Problem.valueOf(BAD_REQUEST, "No stakeholder found in the incoming request."));
@@ -226,7 +228,7 @@ public class ByggrService {
 		return arendeExportClient.getArende(new GetArende().withDnr(dnr)).getGetArendeResult();
 	}
 
-	public SaveNewArendeResponse2 saveNewCase(final ByggRCaseDTO caseInput) {
+	public SaveNewArendeResponse2 saveNewCase(final ByggRCaseDTO caseInput, final String municipalityId) {
 
 		caseTypeRepository.findAll().forEach(caseTypeData -> caseTypeMap.put(caseTypeData.getValue(), caseTypeData));
 
@@ -236,7 +238,7 @@ public class ByggrService {
 		final var response = arendeExportClient.saveNewArende(saveNewArende).getSaveNewArendeResult();
 
 		createOccurrence(caseInput, saveNewArende, response);
-		caseMappingService.postCaseMapping(caseInput, response.getDnr(), SystemType.BYGGR);
+		caseMappingService.postCaseMapping(caseInput, response.getDnr(), SystemType.BYGGR, municipalityId);
 		return response;
 	}
 
@@ -268,12 +270,12 @@ public class ByggrService {
 		return ByggrMapper.toByggrStatus(arendeExportClient.getArende(new GetArende().withDnr(caseMapping.getCaseId())).getGetArendeResult(), caseMapping.getExternalCaseId(), List.of(caseMapping));
 	}
 
-	public CaseStatusDTO toByggrStatus(final Arende arende, final String externalCaseId) {
-		final var caseMappingList = caseMappingService.getCaseMapping(externalCaseId, arende.getDnr());
+	public CaseStatusDTO toByggrStatus(final Arende arende, final String externalCaseId, final String municipalityId) {
+		final var caseMappingList = caseMappingService.getCaseMapping(externalCaseId, arende.getDnr(), municipalityId);
 		return ByggrMapper.toByggrStatus(arende, externalCaseId, caseMappingList);
 	}
 
-	public List<CaseStatusDTO> getByggrStatusByOrgNr(final String organizationNumber) {
+	public List<CaseStatusDTO> getByggrStatusByOrgNr(final String organizationNumber, final String municipalityId) {
 
 		final var getRelateradeArendenByPersOrgNrAndRoleInput = new GetRelateradeArendenByPersOrgNrAndRole()
 			.withPersOrgNr(organizationNumber)
@@ -292,11 +294,11 @@ public class ByggrService {
 		}
 
 		return arrayOfByggrArende.getArende().stream().map(byggrArende -> {
-				final var caseMappingList = caseMappingService.getCaseMapping(null, byggrArende.getDnr());
+				final var caseMappingList = caseMappingService.getCaseMapping(null, byggrArende.getDnr(), municipalityId);
 				return toByggrStatus(byggrArende,
 					Optional.ofNullable(caseMappingList)
 						.filter(list -> !list.isEmpty()).map(list -> list.getFirst().getExternalCaseId())
-						.orElse(null));
+						.orElse(null), municipalityId);
 			})
 			.toList();
 	}

@@ -20,12 +20,19 @@ import se.sundsvall.casemanagement.api.model.enums.SystemType;
 
 class CaseMappingMapperTest {
 
+	private static Stream<Arguments> toCaseMappingArguments() {
+		return Stream.of(
+			Arguments.of(TestUtil.createEcosCaseDTO(CaseType.REGISTRERING_AV_LIVSMEDEL, UNDERLAG_RISKKLASSNING), UUID.randomUUID().toString(), SystemType.ECOS, "SomeSystem", "2281"),
+			Arguments.of(TestUtil.createByggRCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION), UUID.randomUUID().toString(), SystemType.BYGGR, null, "2281"),
+			Arguments.of(TestUtil.createOtherCaseDTO(), UUID.randomUUID().toString(), SystemType.CASE_DATA, "SomeOtherSystem", "2281"));
+	}
+
 	@ParameterizedTest
 	@MethodSource("toCaseMappingArguments")
-	void toCaseMapping(final CaseDTO caseInput, final String caseId, final SystemType systemType, final String serviceName) {
+	void toCaseMapping(final CaseDTO caseInput, final String caseId, final SystemType systemType, final String serviceName, final String municipalityId) {
 		Optional.ofNullable(serviceName).ifPresent(name -> caseInput.getExtraParameters().put(SERVICE_NAME, name));
 
-		final var bean = CaseMappingMapper.toCaseMapping(caseInput, caseId, systemType);
+		final var bean = CaseMappingMapper.toCaseMapping(caseInput, caseId, systemType, municipalityId);
 
 		assertThat(bean.getExternalCaseId()).isEqualTo(caseInput.getExternalCaseId());
 		assertThat(bean.getCaseId()).isEqualTo(caseId);
@@ -34,10 +41,4 @@ class CaseMappingMapperTest {
 		assertThat(bean.getServiceName()).isEqualTo(serviceName);
 	}
 
-	private static Stream<Arguments> toCaseMappingArguments() {
-		return Stream.of(
-			Arguments.of(TestUtil.createEcosCaseDTO(CaseType.REGISTRERING_AV_LIVSMEDEL, UNDERLAG_RISKKLASSNING), UUID.randomUUID().toString(), SystemType.ECOS, "SomeSystem"),
-			Arguments.of(TestUtil.createByggRCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION), UUID.randomUUID().toString(), SystemType.BYGGR, null),
-			Arguments.of(TestUtil.createOtherCaseDTO(), UUID.randomUUID().toString(), SystemType.CASE_DATA, "SomeOtherSystem"));
-	}
 }

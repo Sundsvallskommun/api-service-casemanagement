@@ -44,10 +44,17 @@ retry:
   max-delay: 2
   maxAttempts: 1
 spring:
+  cache:
+    type: none
   datasource:
     driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
-    password: password
-    url: jdbc:tc:mariadb:10.6:///casemanagement?TC_INITSCRIPT=db/casemanagement.sql
-    username: sa
+    url: jdbc:tc:mariadb:10.6.14:///
   flyway:
-    enabled: false
+    enabled: true
+  jpa:
+    properties:
+      jakarta:
+        persistence:
+          schema-generation:
+            database:
+              action: validate

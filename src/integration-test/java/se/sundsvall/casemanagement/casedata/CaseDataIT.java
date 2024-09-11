@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.jdbc.Sql;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import se.sundsvall.casemanagement.Application;
@@ -21,10 +22,18 @@ import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 
 @Testcontainers
 @WireMockAppTestSuite(files = "classpath:/CasedataIT/", classes = Application.class)
+@Sql({
+	"/db/scripts/truncate.sql",
+	"/db/scripts/testdata-it.sql"
+})
 @DirtiesContext
 public class CaseDataIT extends AbstractAppTest {
 
 	public static final String CASE_DATA_ID = "24";
+
+	private static final String MUNICIPALITY_ID = "2281";
+
+	private static final String PATH = "/" + MUNICIPALITY_ID + "/cases";
 
 	@Autowired
 	private CaseMappingRepository caseMappingRepository;
@@ -38,7 +47,7 @@ public class CaseDataIT extends AbstractAppTest {
 
 		final var result = setupCall()
 			.withHttpMethod(HttpMethod.POST)
-			.withServicePath("/cases")
+			.withServicePath(PATH)
 			.withRequest("request.json")
 			.withExpectedResponseStatus(HttpStatus.OK)
 			.withExpectedResponse("expected-response.json")
@@ -49,9 +58,9 @@ public class CaseDataIT extends AbstractAppTest {
 		assertThat(result.getCaseId()).isEqualTo("Inskickat");
 
 		// Make sure that there doesn't exist a case entity
-		assertThat(caseRepository.findById(EXTERNAL_CASE_ID)).isEmpty();
+		assertThat(caseRepository.findByIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID)).isEmpty();
 		// Make sure that there exists a case mapping
-		assertThat(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID))
+		assertThat(caseMappingRepository.findAllByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID))
 			.isNotNull()
 			.hasSize(1)
 			.allSatisfy(caseMapping -> {
@@ -69,16 +78,16 @@ public class CaseDataIT extends AbstractAppTest {
 
 		setupCall()
 			.withHttpMethod(HttpMethod.POST)
-			.withServicePath("/cases")
+			.withServicePath(PATH)
 			.withRequest("request.json")
 			.withExpectedResponseStatus(HttpStatus.OK)
 			.withExpectedResponse("expected-response.json")
 			.sendRequestAndVerifyResponse();
 
 		// Make sure that there exists a case entity
-		assertThat(caseRepository.findById(EXTERNAL_CASE_ID)).isPresent();
+		assertThat(caseRepository.findByIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID)).isPresent();
 		// Make sure that there doesn't exist a case mapping
-		assertThat(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID))
+		assertThat(caseMappingRepository.findAllByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID))
 			.isNotNull()
 			.isEmpty();
 	}
@@ -88,7 +97,7 @@ public class CaseDataIT extends AbstractAppTest {
 
 		setupCall()
 			.withHttpMethod(HttpMethod.PUT)
-			.withServicePath("/cases/231")
+			.withServicePath("/" + MUNICIPALITY_ID + "/cases/231")
 			.withRequest("request.json")
 			.withExpectedResponseStatus(HttpStatus.NO_CONTENT)
 			.sendRequestAndVerifyResponse();

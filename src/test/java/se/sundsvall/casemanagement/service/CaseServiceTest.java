@@ -36,6 +36,8 @@ import se.sundsvall.casemanagement.service.util.Validator;
 @ExtendWith(MockitoExtension.class)
 class CaseServiceTest {
 
+	private static final String MUNICIPALITY_ID = "2281";
+
 	@Spy
 	private Validator validator;
 
@@ -66,7 +68,7 @@ class CaseServiceTest {
 			.withFacilities(List.of())
 			.build();
 		// Act
-		caseService.handleCase(byggRCase);
+		caseService.handleCase(byggRCase, MUNICIPALITY_ID);
 		// Assert
 		verify(validator).validateByggrErrand(byggRCase);
 		verify(eventPublisher).publishEvent(byggrCaseCaptor.capture());
@@ -99,7 +101,7 @@ class CaseServiceTest {
 			.build();
 
 		// Act
-		caseService.handleCase(byggRCase);
+		caseService.handleCase(byggRCase, MUNICIPALITY_ID);
 		// Assert
 		verify(validator).validateByggrErrand(byggRCase);
 		verify(eventPublisher).publishEvent(byggrCaseCaptor.capture());
@@ -133,7 +135,7 @@ class CaseServiceTest {
 
 		// Act && assert
 		assertThatExceptionOfType(ThrowableProblem.class)
-			.isThrownBy(() -> caseService.handleCase(byggRCase))
+			.isThrownBy(() -> caseService.handleCase(byggRCase, MUNICIPALITY_ID))
 			.withMessage("Bad Request: FacilityType is not allowed to be null for CaseType " + caseType);
 
 		verify(validator).validateByggrErrand(byggRCase);
@@ -151,7 +153,7 @@ class CaseServiceTest {
 			.build();
 
 		// Act
-		caseService.handleCase(ecosCaseDTO);
+		caseService.handleCase(ecosCaseDTO, MUNICIPALITY_ID);
 		// Assert
 		verify(validator).validateEcosErrand(ecosCaseDTO);
 		verify(eventPublisher).publishEvent(ecosCaseCaptor.capture());
@@ -166,7 +168,7 @@ class CaseServiceTest {
 	void testHandleOtherCase() {
 		final var otherCaseDTO = OtherCaseDTO.builder().build();
 		// Act
-		caseService.handleCase(otherCaseDTO);
+		caseService.handleCase(otherCaseDTO, MUNICIPALITY_ID);
 		// Assert
 		verify(eventPublisher).publishEvent(otherCaseCaptor.capture());
 		verify(caseRepository).save(any());

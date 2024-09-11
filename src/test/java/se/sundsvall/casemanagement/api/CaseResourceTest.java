@@ -3,6 +3,7 @@ package se.sundsvall.casemanagement.api;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -40,6 +41,10 @@ import se.sundsvall.dept44.test.extension.ResourceLoaderExtension;
 @ExtendWith(ResourceLoaderExtension.class)
 class CaseResourceTest {
 
+	private static final String MUNICIPALITY_ID = "2281";
+
+	private static final String PATH = "/" + MUNICIPALITY_ID + "/cases";
+
 	@MockBean
 	private CaseMappingService caseMappingService;
 
@@ -58,7 +63,7 @@ class CaseResourceTest {
 	@Test
 	void postCase_Ecos(@Load("/case-resource/ecos-case.json") final String body) {
 		final var result = webTestClient.post()
-			.uri(uriBuilder -> uriBuilder.path("/cases").build())
+			.uri(uriBuilder -> uriBuilder.path(PATH).build())
 			.contentType(APPLICATION_JSON)
 			.bodyValue(body)
 			.exchange()
@@ -67,16 +72,17 @@ class CaseResourceTest {
 			.returnResult()
 			.getResponseBody();
 
+		assertThat(result).isNotNull();
 		assertThat(result.getCaseId()).isEqualTo("Inskickat");
 
-		verify(caseService).handleCase(caseDTOCaptor.capture());
+		verify(caseService).handleCase(caseDTOCaptor.capture(), eq(MUNICIPALITY_ID));
 		assertThat(caseDTOCaptor.getValue()).satisfies(caseDTO -> {
 			assertThat(caseDTO).isInstanceOf(EcosCaseDTO.class);
 			assertThat(caseDTO.getExternalCaseId()).isEqualTo("externalCaseId");
 			assertThat(caseDTO.getCaseType()).isEqualTo("REGISTRERING_AV_LIVSMEDEL");
 		});
 
-		verify(caseMappingService).validateUniqueCase(caseDTOCaptor.getValue());
+		verify(caseMappingService).validateUniqueCase(caseDTOCaptor.getValue(), MUNICIPALITY_ID);
 		verifyNoMoreInteractions(caseService, caseMappingService);
 		verifyNoInteractions(caseDataService);
 	}
@@ -84,7 +90,7 @@ class CaseResourceTest {
 	@Test
 	void postCase_ByggR(@Load("/case-resource/byggr-case.json") final String body) {
 		final var result = webTestClient.post()
-			.uri(uriBuilder -> uriBuilder.path("/cases").build())
+			.uri(uriBuilder -> uriBuilder.path(PATH).build())
 			.contentType(APPLICATION_JSON)
 			.bodyValue(body)
 			.exchange()
@@ -93,16 +99,17 @@ class CaseResourceTest {
 			.returnResult()
 			.getResponseBody();
 
+		assertThat(result).isNotNull();
 		assertThat(result.getCaseId()).isEqualTo("Inskickat");
 
-		verify(caseService).handleCase(caseDTOCaptor.capture());
+		verify(caseService).handleCase(caseDTOCaptor.capture(), eq(MUNICIPALITY_ID));
 		assertThat(caseDTOCaptor.getValue()).satisfies(caseDTO -> {
 			assertThat(caseDTO).isInstanceOf(ByggRCaseDTO.class);
 			assertThat(caseDTO.getExternalCaseId()).isEqualTo("externalCaseId");
 			assertThat(caseDTO.getCaseType()).isEqualTo("ANMALAN_ATTEFALL");
 		});
 
-		verify(caseMappingService).validateUniqueCase(caseDTOCaptor.getValue());
+		verify(caseMappingService).validateUniqueCase(caseDTOCaptor.getValue(), MUNICIPALITY_ID);
 		verifyNoMoreInteractions(caseService, caseMappingService);
 		verifyNoInteractions(caseDataService);
 	}
@@ -110,7 +117,7 @@ class CaseResourceTest {
 	@Test
 	void postCase_Other(@Load("/case-resource/other-case.json") final String body) {
 		final var result = webTestClient.post()
-			.uri(uriBuilder -> uriBuilder.path("/cases").build())
+			.uri(uriBuilder -> uriBuilder.path(PATH).build())
 			.contentType(APPLICATION_JSON)
 			.bodyValue(body)
 			.exchange()
@@ -119,16 +126,17 @@ class CaseResourceTest {
 			.returnResult()
 			.getResponseBody();
 
+		assertThat(result).isNotNull();
 		assertThat(result.getCaseId()).isEqualTo("Inskickat");
 
-		verify(caseService).handleCase(caseDTOCaptor.capture());
+		verify(caseService).handleCase(caseDTOCaptor.capture(), eq(MUNICIPALITY_ID));
 		assertThat(caseDTOCaptor.getValue()).satisfies(caseDTO -> {
 			assertThat(caseDTO).isInstanceOf(OtherCaseDTO.class);
 			assertThat(caseDTO.getExternalCaseId()).isEqualTo("externalCaseId");
 			assertThat(caseDTO.getCaseType()).isEqualTo("PARKING_PERMIT");
 		});
 
-		verify(caseMappingService).validateUniqueCase(caseDTOCaptor.getValue());
+		verify(caseMappingService).validateUniqueCase(caseDTOCaptor.getValue(), MUNICIPALITY_ID);
 		verifyNoMoreInteractions(caseService, caseMappingService);
 		verifyNoInteractions(caseDataService);
 	}
@@ -136,33 +144,33 @@ class CaseResourceTest {
 	@Test
 	void putCase_ByggRCase(@Load("/case-resource/byggr-neighborhood-notification-case.json") final String body) {
 		webTestClient.post()
-			.uri("/cases")
+			.uri(PATH)
 			.contentType(APPLICATION_JSON)
 			.bodyValue(body)
 			.exchange()
 			.expectStatus().isOk();
 
-		verify(caseMappingService).validateUniqueCase(caseDTOCaptor.capture());
-		var caseDTO = caseDTOCaptor.getValue();
+		verify(caseMappingService).validateUniqueCase(caseDTOCaptor.capture(), eq(MUNICIPALITY_ID));
+		final var caseDTO = caseDTOCaptor.getValue();
 		assertThat(caseDTO).isInstanceOf(ByggRCaseDTO.class);
-		verify(caseService).handleCase(caseDTO);
+		verify(caseService).handleCase(caseDTO, MUNICIPALITY_ID);
 	}
 
 	@Test
 	void putCase_OtherCase(@Load("/case-resource/put-other-case.json") final String body) {
-		when(caseMappingService.getCaseMapping("externalCaseId")).thenReturn(CaseMapping.builder()
+		when(caseMappingService.getCaseMapping("externalCaseId", MUNICIPALITY_ID)).thenReturn(CaseMapping.builder()
 			.withCaseId("12345")
 			.build());
 
 		webTestClient.put()
-			.uri(uriBuilder -> uriBuilder.path("/cases/{externalCaseId}").build("externalCaseId"))
+			.uri(uriBuilder -> uriBuilder.path(PATH + "/{externalCaseId}").build("externalCaseId"))
 			.contentType(APPLICATION_JSON)
 			.bodyValue(body)
 			.exchange()
 			.expectStatus().isNoContent();
 
-		verify(caseMappingService).getCaseMapping("externalCaseId");
-		verify(caseDataService).putErrand(anyLong(), any(OtherCaseDTO.class));
+		verify(caseMappingService).getCaseMapping("externalCaseId", MUNICIPALITY_ID);
+		verify(caseDataService).putErrand(anyLong(), any(OtherCaseDTO.class), eq(MUNICIPALITY_ID));
 		verifyNoMoreInteractions(caseMappingService, caseDataService);
 		verifyNoInteractions(caseService);
 	}
@@ -170,7 +178,7 @@ class CaseResourceTest {
 	@Test
 	void putCase_WrongCaseType(@Load("/case-resource/put-wrong-case.json") final String body) {
 		final var result = webTestClient.put()
-			.uri(uriBuilder -> uriBuilder.path("/cases/{externalCaseId}").build("externalCaseId"))
+			.uri(uriBuilder -> uriBuilder.path(PATH + "/{externalCaseId}").build("externalCaseId"))
 			.contentType(APPLICATION_JSON)
 			.bodyValue(body)
 			.exchange()

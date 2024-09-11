@@ -149,7 +149,7 @@ public class EcosService {
 		return filename;
 	}
 
-	public RegisterDocumentCaseResultSvcDto postCase(final EcosCaseDTO caseInput) {
+	public RegisterDocumentCaseResultSvcDto postCase(final EcosCaseDTO caseInput, final String municipalityId) {
 
 		final var eFacility = caseInput.getFacilities().getFirst();
 
@@ -172,7 +172,8 @@ public class EcosService {
 					createFoodFacility(caseInput, propertyInfo, registerDocumentResult);
 				case ANMALAN_INSTALLATION_VARMEPUMP, ANSOKAN_TILLSTAND_VARMEPUMP ->
 					createHeatPumpFacility(eFacility.getExtraParameters(), propertyInfo, registerDocumentResult);
-				case ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC, ANMALAN_ANDRING_AVLOPPSANLAGGNING, ANMALAN_ANDRING_AVLOPPSANORDNING ->
+				case ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC,
+				     ANMALAN_ANDRING_AVLOPPSANLAGGNING, ANMALAN_ANDRING_AVLOPPSANORDNING ->
 					createIndividualSewage(eFacility, propertyInfo, registerDocumentResult);
 				case ANMALAN_HALSOSKYDDSVERKSAMHET ->
 					createHealthProtectionFacility(eFacility, propertyInfo, registerDocumentResult);
@@ -199,7 +200,7 @@ public class EcosService {
 		}
 
 		// Persist the connection between OeP-case and Ecos-case
-		caseMappingService.postCaseMapping(caseInput, registerDocumentResult.getCaseId(), SystemType.ECOS);
+		caseMappingService.postCaseMapping(caseInput, registerDocumentResult.getCaseId(), SystemType.ECOS, municipalityId);
 		return registerDocumentResult;
 	}
 
@@ -629,9 +630,11 @@ public class EcosService {
 		return switch (CaseType.valueOf(caseType)) {
 			case REGISTRERING_AV_LIVSMEDEL, UPPDATERING_RISKKLASSNING ->
 				Constants.ECOS_DIARY_PLAN_LIVSMEDEL;
-			case ANMALAN_ANDRING_AVLOPPSANLAGGNING, ANMALAN_ANDRING_AVLOPPSANORDNING, ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC,
-				ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, ANMALAN_INSTALLATION_VARMEPUMP, ANSOKAN_TILLSTAND_VARMEPUMP,
-				ANMALAN_KOMPOSTERING, ANMALAN_AVHJALPANDEATGARD_FORORENING ->
+			case ANMALAN_ANDRING_AVLOPPSANLAGGNING, ANMALAN_ANDRING_AVLOPPSANORDNING,
+			     ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC,
+			     ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, ANMALAN_INSTALLATION_VARMEPUMP,
+			     ANSOKAN_TILLSTAND_VARMEPUMP,
+			     ANMALAN_KOMPOSTERING, ANMALAN_AVHJALPANDEATGARD_FORORENING ->
 				Constants.ECOS_DIARY_PLAN_AVLOPP;
 			case ANMALAN_HALSOSKYDDSVERKSAMHET -> Constants.ECOS_DIARY_PLAN_HALSOSKYDD;
 			default -> null;
@@ -641,8 +644,7 @@ public class EcosService {
 	private String getProcessTypeId(final String caseType) {
 
 		return switch (CaseType.valueOf(caseType)) {
-			case REGISTRERING_AV_LIVSMEDEL ->
-				Constants.ECOS_PROCESS_TYPE_ID_REGISTRERING_AV_LIVSMEDEL;
+			case REGISTRERING_AV_LIVSMEDEL -> Constants.ECOS_PROCESS_TYPE_ID_REGISTRERING_AV_LIVSMEDEL;
 			case ANMALAN_INSTALLATION_VARMEPUMP ->
 				Constants.ECOS_PROCESS_TYPE_ID_ANMALAN_INSTALLATION_VARMEPUMP;
 			case ANSOKAN_TILLSTAND_VARMEPUMP ->
@@ -713,7 +715,7 @@ public class EcosService {
 	 * @return CaseStatus from Ecos.
 	 * @throws ThrowableProblem NOT_FOUND if no status was found.
 	 */
-	public CaseStatusDTO getStatus(final String caseId, final String externalCaseId) {
+	public CaseStatusDTO getStatus(final String caseId, final String externalCaseId, final String municipalityId) {
 
 		final var getCase = new GetCase().withCaseId(caseId);
 
@@ -727,7 +729,7 @@ public class EcosService {
 				.filter(list -> !list.isEmpty())
 				.isPresent()) {
 
-				final var caseMapping = Optional.ofNullable(caseMappingService.getCaseMapping(externalCaseId, caseId).getFirst()).orElse(new CaseMapping());
+				final var caseMapping = Optional.ofNullable(caseMappingService.getCaseMapping(externalCaseId, caseId, municipalityId).getFirst()).orElse(new CaseMapping());
 
 				final var latestOccurrence = ecosCase.getOccurrences()
 					.getOccurrenceListItemSvcDto()
@@ -752,7 +754,7 @@ public class EcosService {
 		throw Problem.valueOf(Status.NOT_FOUND, Constants.ERR_MSG_STATUS_NOT_FOUND);
 	}
 
-	public List<CaseStatusDTO> getEcosStatusByOrgNr(final String organizationNumber) {
+	public List<CaseStatusDTO> getEcosStatusByOrgNr(final String organizationNumber, final String municipalityId) {
 		final List<CaseStatusDTO> caseStatusDTOList = new ArrayList<>();
 
 		// Find party both with and without prefix "16"
@@ -769,9 +771,9 @@ public class EcosService {
 			final var caseResultWithoutDuplicates = caseResult.getSearchCaseResultSvcDto().stream().distinct().toList();
 
 			caseResultWithoutDuplicates.forEach(ecosCase -> {
-				final List<CaseMapping> caseMappingList = caseMappingService.getCaseMapping(null, ecosCase.getCaseId());
+				final List<CaseMapping> caseMappingList = caseMappingService.getCaseMapping(null, ecosCase.getCaseId(), municipalityId);
 				final String externalCaseId = caseMappingList.isEmpty() ? null : caseMappingList.getFirst().getExternalCaseId();
-				final CaseStatusDTO caseStatusDTO = getStatus(ecosCase.getCaseId(), externalCaseId);
+				final CaseStatusDTO caseStatusDTO = getStatus(ecosCase.getCaseId(), externalCaseId, municipalityId);
 
 				if (caseStatusDTO != null) {
 					caseStatusDTOList.add(caseStatusDTO);

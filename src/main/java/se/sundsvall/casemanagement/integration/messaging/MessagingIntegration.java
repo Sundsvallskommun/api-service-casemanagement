@@ -18,11 +18,12 @@ public class MessagingIntegration {
 		this.mapper = mapper;
 	}
 
-	public void sendSlack(final String message) {
-		messagingClient.sendSlack(mapper.toRequest(message));
+	public void sendSlack(final String message, final String municipalityId) {
+		messagingClient.sendSlack(municipalityId, mapper.toRequest(message));
 	}
 
-	public void sendMail(String subject, String message) {
-		messagingClient.sendEmail(mapper.toEmailRequest(subject, message));
+	public void sendMail(final String subject, final String message, final String municipalityId) {
+		messagingClient.sendEmail(municipalityId, mapper.toEmailRequest(subject, message));
 	}
+
 }

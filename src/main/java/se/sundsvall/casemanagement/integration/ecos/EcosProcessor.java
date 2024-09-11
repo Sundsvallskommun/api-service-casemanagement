@@ -27,6 +27,7 @@ import minutmiljoV2.RegisterDocumentCaseResultSvcDto;
 class EcosProcessor extends Processor {
 
 	private final EcosService ecosService;
+
 	private final RetryPolicy<RegisterDocumentCaseResultSvcDto> retryPolicy;
 
 	EcosProcessor(final OpenEIntegration openEIntegration, final CaseRepository caseRepository,
@@ -48,7 +49,7 @@ class EcosProcessor extends Processor {
 	@EventListener(IncomingEcosCase.class)
 	public void handleIncomingErrand(final IncomingEcosCase event) throws JsonProcessingException, SQLException {
 
-		final var caseEntity = caseRepository.findById(event.getPayload().getExternalCaseId()).orElse(null);
+		final var caseEntity = caseRepository.findByIdAndMunicipalityId(event.getPayload().getExternalCaseId(), event.getMunicipalityId()).orElse(null);
 
 		if (caseEntity == null) {
 			cleanAttachmentBase64(event);
@@ -63,12 +64,13 @@ class EcosProcessor extends Processor {
 		try {
 			Failsafe
 				.with(retryPolicy)
-				.onSuccess(successEvent -> handleSuccessfulDelivery(caseEntity.getId(), "ECOS", successEvent.getResult().getCaseNumber()))
-				.onFailure(failureEvent -> handleMaximumDeliveryAttemptsExceeded(failureEvent.getException(), caseEntity, "ECOS"))
-				.get(() -> ecosService.postCase(environmentalCaseDTO));
+				.onSuccess(successEvent -> handleSuccessfulDelivery(caseEntity.getId(), "ECOS", successEvent.getResult().getCaseNumber(), event.getMunicipalityId()))
+				.onFailure(failureEvent -> handleMaximumDeliveryAttemptsExceeded(failureEvent.getException(), caseEntity, "ECOS", event.getMunicipalityId()))
+				.get(() -> ecosService.postCase(environmentalCaseDTO, event.getMunicipalityId()));
 		} catch (final Exception e) {
 			cleanAttachmentBase64(event);
 			log.warn("Unable to create ecos errand {}: {}", event.getPayload(), e.getMessage());
 		}
 	}
+
 }

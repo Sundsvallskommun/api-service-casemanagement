@@ -27,36 +27,40 @@ import se.sundsvall.casemanagement.integration.db.model.DeliveryStatus;
 
 @ExtendWith(MockitoExtension.class)
 class CaseMapperTest {
+
 	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper().registerModule(new JavaTimeModule());
+
+	private static Stream<Arguments> toCaseEntityArguments() {
+		return Stream.of(
+			Arguments.of(TestUtil.createEcosCaseDTO(CaseType.REGISTRERING_AV_LIVSMEDEL, UNDERLAG_RISKKLASSNING), "2281"),
+			Arguments.of(TestUtil.createByggRCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION), "2281"),
+			Arguments.of(TestUtil.createOtherCaseDTO(), "2281"));
+	}
 
 	@ParameterizedTest
 	@MethodSource("toCaseEntityArguments")
-	void toCaseEntity(final CaseDTO dto) throws Exception {
-		final var entity = CaseMapper.toCaseEntity(dto);
+	void toCaseEntity(final CaseDTO dto, final String municipalityId) throws Exception {
+		final var entity = CaseMapper.toCaseEntity(dto, municipalityId);
 
 		assertThat(entity.getId()).isEqualTo(dto.getExternalCaseId());
 		assertThat(entity.getDeliveryStatus()).isEqualTo(DeliveryStatus.PENDING);
+		assertThat(entity.getMunicipalityId()).isEqualTo(municipalityId);
 		assertThat(toString(entity.getDto().getCharacterStream())).isEqualTo(OBJECT_MAPPER.writeValueAsString(dto));
 	}
 
 	@Test
 	void toCaseEntityWhenToClobThrowsError() {
 		final var externalCaseId = "externalCaseId";
+		final var municipalityId = "2281";
 		final var dto = Mockito.mock(CaseDTO.class);
 
 		when(dto.getExternalCaseId()).thenReturn(externalCaseId);
 
-		final var entity = CaseMapper.toCaseEntity(dto);
+		final var entity = CaseMapper.toCaseEntity(dto, municipalityId);
 		assertThat(entity.getId()).isEqualTo(externalCaseId);
+		assertThat(entity.getMunicipalityId()).isEqualTo(municipalityId);
 		assertThat(entity.getDeliveryStatus()).isEqualTo(DeliveryStatus.PENDING);
 		assertThat(entity.getDto()).isNull();
-	}
-
-	private static Stream<Arguments> toCaseEntityArguments() {
-		return Stream.of(
-			Arguments.of(TestUtil.createEcosCaseDTO(CaseType.REGISTRERING_AV_LIVSMEDEL, UNDERLAG_RISKKLASSNING)),
-			Arguments.of(TestUtil.createByggRCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION)),
-			Arguments.of(TestUtil.createOtherCaseDTO()));
 	}
 
 	private String toString(final Reader reader) throws Exception {
@@ -68,4 +72,5 @@ class CaseMapperTest {
 		}
 		return builder.toString();
 	}
+
 }

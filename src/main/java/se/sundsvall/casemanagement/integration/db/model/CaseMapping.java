@@ -9,8 +9,10 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
+import jakarta.persistence.Index;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
@@ -21,12 +23,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity(name = "CaseMapping")
+@Entity
 @IdClass(CaseMappingId.class)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(setterPrefix = "with")
+@Table(name = "CaseMapping", indexes = {
+	@Index(name = "case_mapping_municipality_id_idx", columnList = "municipalityId"),
+})
 public class CaseMapping {
 
 	@Id
@@ -36,6 +41,9 @@ public class CaseMapping {
 	@Id
 	@Column(name = "caseId")
 	private String caseId;
+
+	@Column(name = "municipalityId")
+	private String municipalityId;
 
 	@NotNull
 	@Column(nullable = false, name = "system", columnDefinition = "varchar(255)")

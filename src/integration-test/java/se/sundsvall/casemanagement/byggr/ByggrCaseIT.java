@@ -8,6 +8,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.jdbc.Sql;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import se.sundsvall.casemanagement.Application;
@@ -21,11 +22,18 @@ import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 
 @Testcontainers
 @WireMockAppTestSuite(files = "classpath:/ByggrCaseIT", classes = Application.class)
+@Sql({
+	"/db/scripts/truncate.sql",
+	"/db/scripts/testdata-it.sql"
+})
 @DirtiesContext
 class ByggrCaseIT extends AbstractAppTest {
 
+	private static final String MUNICIPALITY_ID = "2281";
+
 	private static final String REQUEST = "request.json";
-	private static final String PATH = "/cases";
+
+	private static final String PATH = "/" + MUNICIPALITY_ID + "/cases";
 
 	@Autowired
 	private CaseMappingRepository caseMappingRepository;
@@ -53,7 +61,7 @@ class ByggrCaseIT extends AbstractAppTest {
 		// Make sure that there doesn't exist a case entity
 		assertThat(caseRepository.findById(EXTERNAL_CASE_ID)).isEmpty();
 		// Make sure that there exists a case mapping
-		assertThat(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID))
+		assertThat(caseMappingRepository.findAllByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID))
 			.isNotNull()
 			.hasSize(1)
 			.allSatisfy(caseMapping -> {

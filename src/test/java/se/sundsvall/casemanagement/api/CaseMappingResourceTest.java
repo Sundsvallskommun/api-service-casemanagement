@@ -3,6 +3,7 @@ package se.sundsvall.casemanagement.api;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.zalando.problem.Status.NOT_FOUND;
@@ -25,6 +26,8 @@ import se.sundsvall.casemanagement.service.CaseMappingService;
 @ExtendWith(MockitoExtension.class)
 class CaseMappingResourceTest {
 
+	private static final String MUNICIPALITY_ID = "2281";
+
 	@Mock
 	private CaseMappingService caseMappingService;
 
@@ -34,7 +37,7 @@ class CaseMappingResourceTest {
 	@Test
 	void getCaseMapping() {
 
-		when(caseMappingService.getCaseMapping(any(String.class))).thenReturn(CaseMapping.builder()
+		when(caseMappingService.getCaseMapping(any(String.class), eq(MUNICIPALITY_ID))).thenReturn(CaseMapping.builder()
 			.withCaseId("caseId")
 			.withExternalCaseId("externalCaseId")
 			.withCaseType(CaseType.REGISTRERING_AV_LIVSMEDEL.toString())
@@ -42,9 +45,9 @@ class CaseMappingResourceTest {
 			.withTimestamp(LocalDateTime.now())
 			.build());
 
-		final var result = caseMappingResource.getCaseMapping("externalCaseId");
+		final var result = caseMappingResource.getCaseMapping(MUNICIPALITY_ID, "externalCaseId");
 
-		verify(caseMappingService).getCaseMapping(any(String.class));
+		verify(caseMappingService).getCaseMapping(any(String.class), eq(MUNICIPALITY_ID));
 
 		assertThat(result).isNotNull();
 		assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -76,7 +79,7 @@ class CaseMappingResourceTest {
 				.withTimestamp(LocalDateTime.now())
 				.build()));
 
-		final var result = caseMappingResource.getCaseMapping(null);
+		final var result = caseMappingResource.getCaseMapping(MUNICIPALITY_ID, null);
 
 		verify(caseMappingService).getAllCaseMappings();
 
@@ -100,12 +103,12 @@ class CaseMappingResourceTest {
 
 	@Test
 	void getCeaseMappingNothingFound() {
-		when(caseMappingService.getCaseMapping(any(String.class))).thenThrow(Problem.builder()
+		when(caseMappingService.getCaseMapping(any(String.class), eq(MUNICIPALITY_ID))).thenThrow(Problem.builder()
 			.withTitle("No case mapping found")
 			.withStatus(NOT_FOUND)
 			.build());
 
-		assertThatThrownBy(() -> caseMappingResource.getCaseMapping("externalCaseId"), "", Problem.class)
+		assertThatThrownBy(() -> caseMappingResource.getCaseMapping(MUNICIPALITY_ID, "externalCaseId"), "", Problem.class)
 			.hasMessage("No case mapping found");
 	}
 
@@ -116,7 +119,7 @@ class CaseMappingResourceTest {
 			.withStatus(NOT_FOUND)
 			.build());
 
-		assertThatThrownBy(() -> caseMappingResource.getCaseMapping(null), "", Problem.class)
+		assertThatThrownBy(() -> caseMappingResource.getCaseMapping(MUNICIPALITY_ID, null), "", Problem.class)
 			.hasMessage("No case mappings found");
 	}
 

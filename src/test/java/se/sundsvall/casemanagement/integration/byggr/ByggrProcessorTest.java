@@ -2,6 +2,7 @@ package se.sundsvall.casemanagement.integration.byggr;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -37,6 +38,8 @@ import dev.failsafe.RetryPolicy;
 @ExtendWith(MockitoExtension.class)
 class ByggrProcessorTest {
 
+	private static final String MUNICIPALITY_ID = "2281";
+
 	@InjectMocks
 	ByggrProcessor byggrProcessor;
 
@@ -54,30 +57,30 @@ class ByggrProcessorTest {
 
 	@Test
 	void testHandleIncomingErrand() throws SQLException, JsonProcessingException {
-		final var event = new IncomingByggrCase(ByggrProcessorTest.class, createByggRCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION));
+		final var event = new IncomingByggrCase(ByggrProcessorTest.class, createByggRCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION), MUNICIPALITY_ID);
 
 		final var objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
-		final String jsonString = objectMapper.writeValueAsString(event.getPayload());
+		final var jsonString = objectMapper.writeValueAsString(event.getPayload());
 
-		when(caseRepository.findById(any(String.class)))
+		when(caseRepository.findByIdAndMunicipalityId(any(String.class), eq(MUNICIPALITY_ID)))
 			.thenReturn(java.util.Optional.of(CaseEntity.builder().withId("id").withDto(new SerialClob(jsonString.toCharArray())).build()));
 
 		byggrProcessor.handleIncomingErrand(event);
 
-		verify(caseRepository, times(1)).findById(any(String.class));
+		verify(caseRepository, times(1)).findByIdAndMunicipalityId(any(String.class), eq(MUNICIPALITY_ID));
 		verifyNoMoreInteractions(caseRepository);
-		verify(service, times(1)).saveNewCase(any(ByggRCaseDTO.class));
+		verify(service, times(1)).saveNewCase(any(ByggRCaseDTO.class), eq(MUNICIPALITY_ID));
 
 		assertThat(caseRepository.findAll()).isEmpty();
 	}
 
 	@Test
 	void testHandleIncomingErrand_NoErrandFound() throws SQLException, JsonProcessingException {
-		final var event = new IncomingByggrCase(ByggrProcessorTest.class, new ByggRCaseDTO());
+		final var event = new IncomingByggrCase(ByggrProcessorTest.class, new ByggRCaseDTO(), MUNICIPALITY_ID);
 
 		byggrProcessor.handleIncomingErrand(event);
 
-		verify(caseRepository, times(1)).findById(any());
+		verify(caseRepository, times(1)).findByIdAndMunicipalityId(any(), eq(MUNICIPALITY_ID));
 		verifyNoMoreInteractions(caseRepository);
 		verifyNoInteractions(service);
 
@@ -85,22 +88,22 @@ class ByggrProcessorTest {
 
 	@Test
 	void testHandleIncomingErrand_maximumFound() throws SQLException, JsonProcessingException {
-		final var event = new IncomingByggrCase(ByggrProcessorTest.class, createByggRCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION));
+		final var event = new IncomingByggrCase(ByggrProcessorTest.class, createByggRCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION), MUNICIPALITY_ID);
 
 		final var objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 		final String jsonString = objectMapper.writeValueAsString(event.getPayload());
 
-		when(caseRepository.findById(any(String.class)))
+		when(caseRepository.findByIdAndMunicipalityId(any(String.class), eq(MUNICIPALITY_ID)))
 			.thenReturn(java.util.Optional.of(CaseEntity.builder().withId("id").withDto(new SerialClob(jsonString.toCharArray())).build()));
 
-		when(service.saveNewCase(any(ByggRCaseDTO.class))).thenThrow(new RuntimeException("test"));
+		when(service.saveNewCase(any(ByggRCaseDTO.class), eq(MUNICIPALITY_ID))).thenThrow(new RuntimeException("test"));
 
 		byggrProcessor.handleIncomingErrand(event);
 
-		verify(caseRepository, times(1)).findById(any());
+		verify(caseRepository, times(1)).findByIdAndMunicipalityId(any(), eq(MUNICIPALITY_ID));
 		verify(caseRepository, times(1)).save(any());
 		verifyNoMoreInteractions(caseRepository);
-		verify(service, times(3)).saveNewCase(any(ByggRCaseDTO.class));
+		verify(service, times(3)).saveNewCase(any(ByggRCaseDTO.class), eq(MUNICIPALITY_ID));
 
 	}
 

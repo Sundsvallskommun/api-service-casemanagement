@@ -27,8 +27,10 @@ import se.sundsvall.casemanagement.integration.casedata.CaseDataService;
 import se.sundsvall.casemanagement.service.CaseMappingService;
 import se.sundsvall.casemanagement.service.CaseService;
 import se.sundsvall.casemanagement.util.Constants;
+import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -36,7 +38,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @Validated
-@RequestMapping("/")
+@RequestMapping("/{municipalityId}")
 @Tag(name = "Cases", description = "Cases operations")
 @ApiResponse(responseCode = "400", description = "Bad request", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 @ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
@@ -61,12 +63,13 @@ class CaseResource {
 	@PostMapping(path = "cases", consumes = MediaType.APPLICATION_JSON_VALUE, produces = {APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE})
 	@ApiResponse(responseCode = "200", description = "OK")
 	public ResponseEntity<CaseResourceResponseDTO> postCases(
+		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable(name = "municipalityId") final String municipalityId,
 		@Schema(oneOf = {ByggRCaseDTO.class, EcosCaseDTO.class, OtherCaseDTO.class}, example = Constants.POST_CASES_REQUEST_BODY_EXAMPLE)
-		@RequestBody @Valid CaseDTO caseDTOInput) {
+		@RequestBody @Valid final CaseDTO caseDTOInput) {
 
-		// Validates that it doesn't exist any case with the same oep-ID.
-		caseMappingService.validateUniqueCase(caseDTOInput);
-		caseService.handleCase(caseDTOInput);
+		// Validates that it doesn't exist any case with the same oep-ID and municipalityId
+		caseMappingService.validateUniqueCase(caseDTOInput, municipalityId);
+		caseService.handleCase(caseDTOInput, municipalityId);
 
 		return ResponseEntity.ok(new CaseResourceResponseDTO("Inskickat"));
 
@@ -76,14 +79,16 @@ class CaseResource {
 	@PutMapping(path = "cases/{externalCaseId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = {APPLICATION_PROBLEM_JSON_VALUE})
 	@ApiResponse(responseCode = "204", description = "No content")
 	public ResponseEntity<Void> putCase(
-		@PathVariable String externalCaseId,
+		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable(name = "municipalityId") final String municipalityId,
+		@Parameter(name = "externalCaseId", description = "External case id", example = "1234") @PathVariable(name = "externalCaseId") final String externalCaseId,
 		@Schema(oneOf = {ByggRCaseDTO.class, EcosCaseDTO.class, OtherCaseDTO.class}, example = Constants.POST_CASES_REQUEST_BODY_EXAMPLE)
-		@RequestBody @Valid CaseDTO caseDTOInput) {
-		if (caseDTOInput instanceof OtherCaseDTO otherCaseDTO) {
-			caseDataService.putErrand(Long.valueOf(caseMappingService.getCaseMapping(externalCaseId).getCaseId()), otherCaseDTO);
+		@RequestBody @Valid final CaseDTO caseDTOInput) {
+		if (caseDTOInput instanceof final OtherCaseDTO otherCaseDTO) {
+			caseDataService.putErrand(Long.valueOf(caseMappingService.getCaseMapping(externalCaseId, municipalityId).getCaseId()), otherCaseDTO, municipalityId);
 			return noContent().build();
 		} else {
 			throw Problem.valueOf(Status.BAD_REQUEST, "No support for updating cases of the given type.");
 		}
 	}
+
 }

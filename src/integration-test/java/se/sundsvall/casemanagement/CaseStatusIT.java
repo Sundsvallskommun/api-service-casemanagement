@@ -8,6 +8,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.jdbc.Sql;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import se.sundsvall.casemanagement.api.model.CaseStatusDTO;
@@ -18,15 +19,26 @@ import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 
 @Testcontainers
 @WireMockAppTestSuite(files = "classpath:/CaseStatusIT/", classes = Application.class)
+@Sql({
+	"/db/scripts/truncate.sql",
+	"/db/scripts/testdata-it.sql"
+})
 class CaseStatusIT extends AbstractAppTest {
+
+	private static final String MUNICIPALITY_ID = "2281";
+
+	private static final String PATH = "/" + MUNICIPALITY_ID + "/cases/{externalCaseId}/status";
+
+	private static final String ORG_PATH = "/" + MUNICIPALITY_ID + "/organization/{organizationNumber}/cases/status";
 
 	@Test
 	void test1_GetEcosStatusByExternalCaseId() throws JsonProcessingException, ClassNotFoundException {
 		final var ECOS_NUMBER = "MK-2021-837";
+		final var externalCaseId = "2223";
 
 		final var result = setupCall()
 			.withHttpMethod(HttpMethod.GET)
-			.withServicePath("/cases/" + "2223" + "/status")
+			.withServicePath(PATH.replace("{externalCaseId}", externalCaseId))
 			.withExpectedResponseStatus(HttpStatus.OK)
 			.sendRequestAndVerifyResponse()
 			.andReturnBody(CaseStatusDTO.class);
@@ -42,19 +54,19 @@ class CaseStatusIT extends AbstractAppTest {
 
 	@Test
 	void test2_GetByggrStatusByExternalCaseId() throws JsonProcessingException, ClassNotFoundException {
-
 		final var BYGGR_NUMBER = "BYGG 2021-000200";
+		final var externalCaseId = "3522";
 
 		final var result = setupCall()
 			.withHttpMethod(HttpMethod.GET)
-			.withServicePath("/cases/" + "3522" + "/status")
+			.withServicePath(PATH.replace("{externalCaseId}", externalCaseId))
 			.withExpectedResponseStatus(HttpStatus.OK)
 			.sendRequestAndVerifyResponse()
 			.andReturnBody(CaseStatusDTO.class);
 
 		assertThat(result.getSystem()).isEqualTo(SystemType.BYGGR);
 		assertThat(result.getCaseType()).isEqualTo(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV.toString());
-		assertThat(result.getExternalCaseId()).isEqualTo("3522");
+		assertThat(result.getExternalCaseId()).isEqualTo(externalCaseId);
 		assertThat(result.getCaseId()).isEqualTo(BYGGR_NUMBER);
 		assertThat(result.getStatus()).isEqualTo("ANSÖKAN");
 		assertThat(result.getServiceName()).isEqualTo("Ansökan - strandskyddsdispens");
@@ -62,10 +74,11 @@ class CaseStatusIT extends AbstractAppTest {
 
 	@Test
 	void test3_GetCaseDataStatusByExternalCaseId() throws JsonProcessingException, ClassNotFoundException {
+		final var externalCaseId = "231";
 
 		final var result = setupCall()
 			.withHttpMethod(HttpMethod.GET)
-			.withServicePath("/cases/" + "231" + "/status")
+			.withServicePath(PATH.replace("{externalCaseId}", externalCaseId))
 			.withExpectedResponseStatus(HttpStatus.OK)
 			.sendRequestAndVerifyResponse()
 			.andReturnBody(CaseStatusDTO.class);
@@ -85,7 +98,7 @@ class CaseStatusIT extends AbstractAppTest {
 
 		final var getStatusResponse = Arrays.asList(setupCall()
 			.withHttpMethod(HttpMethod.GET)
-			.withServicePath("/organization/" + organizationNumber + "/cases/status")
+			.withServicePath(ORG_PATH.replace("{organizationNumber}", organizationNumber))
 			.withExpectedResponseStatus(HttpStatus.OK)
 			.sendRequestAndVerifyResponse()
 			.andReturnBody(CaseStatusDTO[].class));

@@ -15,10 +15,11 @@ public class CaseMappingMapper {
 		// Intentionally empty
 	}
 
-	public static CaseMapping toCaseMapping(final CaseDTO caseInput, final String caseId, final SystemType systemType) {
+	public static CaseMapping toCaseMapping(final CaseDTO caseInput, final String caseId, final SystemType systemType, final String municipalityId) {
 		return CaseMapping.builder()
 			.withExternalCaseId(caseInput.getExternalCaseId())
 			.withCaseId(caseId)
+			.withMunicipalityId(municipalityId)
 			.withSystem(systemType)
 			.withCaseType(caseInput.getCaseType())
 			.withServiceName(Optional.ofNullable(caseInput.getExtraParameters())
@@ -26,4 +27,5 @@ public class CaseMappingMapper {
 				.get(SERVICE_NAME))
 			.build();
 	}
+
 }

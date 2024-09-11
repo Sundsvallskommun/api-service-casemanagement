@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.zalando.problem.violations.ConstraintViolationProblem;
 
@@ -23,9 +24,17 @@ import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 @ActiveProfiles("it")
 @Testcontainers
 @WireMockAppTestSuite(files = "classpath:/EcosCreateCaseFailuresIT/", classes = Application.class)
+@Sql({
+	"/db/scripts/truncate.sql",
+	"/db/scripts/testdata-it.sql"
+})
 public class EcosCreateCaseFailuresIT extends AbstractAppTest {
 
 	public static final String ECOS_CASE_ID = "e19981ad-34b2-4e14-88f5-133f61ca85aa";
+
+	private static final String MUNICIPALITY_ID = "2281";
+
+	private static final String PATH = "/" + MUNICIPALITY_ID + "/cases";
 
 
 	@Autowired
@@ -43,7 +52,7 @@ public class EcosCreateCaseFailuresIT extends AbstractAppTest {
 
 		final var result = setupCall()
 			.withHttpMethod(HttpMethod.POST)
-			.withServicePath("/cases")
+			.withServicePath(PATH)
 			.withRequest("request.json")
 			.withExpectedResponseStatus(HttpStatus.OK)
 			.withExpectedResponse("expected-response.json")
@@ -56,7 +65,7 @@ public class EcosCreateCaseFailuresIT extends AbstractAppTest {
 		// Make sure that there doesn't exist a case entity
 		assertThat(caseRepository.findById("1256239125")).isEmpty();
 		// Make sure that there exists a case mapping
-		assertThat(caseMappingRepository.findAllByExternalCaseId("1256239125"))
+		assertThat(caseMappingRepository.findAllByExternalCaseIdAndMunicipalityId("1256239125", MUNICIPALITY_ID))
 			.isNotNull()
 			.hasSize(1)
 			.allSatisfy(caseMapping -> {
@@ -65,7 +74,7 @@ public class EcosCreateCaseFailuresIT extends AbstractAppTest {
 				assertThat(caseMapping.getCaseId()).isEqualTo(ECOS_CASE_ID);
 				assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
 			});
-		caseMappingRepository.delete(caseMappingRepository.findAllByExternalCaseId("1256239125").getFirst());
+		caseMappingRepository.delete(caseMappingRepository.findAllByExternalCaseIdAndMunicipalityId("1256239125", MUNICIPALITY_ID).getFirst());
 	}
 
 	@Test
@@ -74,7 +83,7 @@ public class EcosCreateCaseFailuresIT extends AbstractAppTest {
 
 		setupCall()
 			.withHttpMethod(HttpMethod.POST)
-			.withServicePath("/cases")
+			.withServicePath(PATH)
 			.withRequest("request.json")
 			.withExpectedResponseStatus(HttpStatus.BAD_REQUEST)
 			.withExpectedResponse("expected-response.json")
@@ -84,7 +93,7 @@ public class EcosCreateCaseFailuresIT extends AbstractAppTest {
 		// Make sure that there doesn't exist a case entity
 		assertThat(caseRepository.findById(EXTERNAL_CASE_ID)).isEmpty();
 		// Make sure that there doesn't exist a case mapping
-		assertThat(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID))
+		assertThat(caseMappingRepository.findAllByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID))
 			.isNotNull()
 			.isEmpty();
 	}
@@ -96,7 +105,7 @@ public class EcosCreateCaseFailuresIT extends AbstractAppTest {
 
 		final var result = setupCall()
 			.withHttpMethod(HttpMethod.POST)
-			.withServicePath("/cases")
+			.withServicePath(PATH)
 			.withRequest("request.json")
 			.withExpectedResponseStatus(HttpStatus.OK)
 			.withExpectedResponse("expected-response.json")
@@ -110,7 +119,7 @@ public class EcosCreateCaseFailuresIT extends AbstractAppTest {
 		//  Make sure that there exists a case entity
 		assertThat(caseRepository.findById(EXTERNAL_CASE_ID)).isPresent();
 		// Make sure that there doesn't exist a case mapping
-		assertThat(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID))
+		assertThat(caseMappingRepository.findAllByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID))
 			.isNotNull()
 			.isEmpty();
 	}
@@ -122,7 +131,7 @@ public class EcosCreateCaseFailuresIT extends AbstractAppTest {
 
 		final var result = setupCall()
 			.withHttpMethod(HttpMethod.POST)
-			.withServicePath("/cases")
+			.withServicePath(PATH)
 			.withRequest("request.json")
 			.withExpectedResponseStatus(HttpStatus.OK)
 			.withExpectedResponse("expected-response.json")
@@ -136,7 +145,7 @@ public class EcosCreateCaseFailuresIT extends AbstractAppTest {
 		// Make sure that there exists a case entity
 		assertThat(caseRepository.findById(EXTERNAL_CASE_ID)).isPresent();
 		// Make sure that there doesn't exist a case mapping
-		assertThat(caseMappingRepository.findAllByExternalCaseId(EXTERNAL_CASE_ID))
+		assertThat(caseMappingRepository.findAllByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID))
 			.isNotNull()
 			.isEmpty();
 	}
