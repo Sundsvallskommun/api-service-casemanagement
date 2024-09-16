@@ -184,7 +184,7 @@ public class ByggrService {
 			.filter(OrganizationDTO.class::isInstance)
 			.findFirst()
 			.map(stakeholder -> ((OrganizationDTO) stakeholder).getOrganizationNumber())
-			.map(orgNumber -> orgNumber.substring(0, 8) + "-" + orgNumber.substring(8))
+			.map(orgNumber -> orgNumber.length() > 4 ? orgNumber.substring(0, orgNumber.length() - 4) + "-" + orgNumber.substring(orgNumber.length() - 4) : orgNumber)
 			.orElse(null);
 
 		if (organizationId != null) {
