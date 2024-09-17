@@ -187,7 +187,6 @@ public class ByggrService {
 			.map(stakeholder -> ((OrganizationDTO) stakeholder).getOrganizationNumber())
 			.map(LegalIdUtility::prefixOrgnbr)
 			.map(LegalIdUtility::addHyphen)
-			//.map(orgNumber -> orgNumber.length() > 4 ? orgNumber.substring(0, orgNumber.length() - 4) + "-" + orgNumber.substring(orgNumber.length() - 4) : orgNumber)
 			.orElse(null);
 
 		if (organizationId != null) {
@@ -200,7 +199,6 @@ public class ByggrService {
 			.map(stakeholder -> ((PersonDTO) stakeholder).getPersonId())
 			.map(citizenService::getPersonalNumber)
 			.map(LegalIdUtility::addHyphen)
-			//	.map(personalNumber -> personalNumber.substring(0, 8) + "-" + personalNumber.substring(8))
 			.orElseThrow(() -> Problem.valueOf(BAD_REQUEST, "No stakeholder found in the incoming request."));
 	}
 
