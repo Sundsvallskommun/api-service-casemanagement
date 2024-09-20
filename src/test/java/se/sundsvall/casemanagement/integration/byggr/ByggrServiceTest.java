@@ -1102,12 +1102,30 @@ class ByggrServiceTest {
 
 	}
 
+
+	/**
+	 * Test scenario where there is 1 person stakeholder.
+	 * Should retrieve and return personal number from citizen service.
+	 */
+	@Test
+	void extractStakeholderId1() {
+		final var personStakeholder = (PersonDTO) createStakeholderDTO(StakeholderType.PERSON, List.of("Granne"));
+		final var personalNumber = "200001011234";
+		final List<StakeholderDTO> stakeholders = List.of(personStakeholder);
+		when(citizenServiceMock.getPersonalNumber(personStakeholder.getPersonId())).thenReturn(personalNumber);
+
+		final var result = byggrService.extractStakeholderId(stakeholders);
+
+		assertThat(result).isEqualTo("20000101-1234");
+		verify(citizenServiceMock).getPersonalNumber(personStakeholder.getPersonId());
+	}
+
 	/**
 	 * Test scenario where there is 2 stakeholders, one person and one organization.
 	 * Should return the organization stakeholders organization number.
 	 */
 	@Test
-	void extractStakeholderId1() {
+	void extractStakeholderId2() {
 		final var personStakeholder = (PersonDTO) createStakeholderDTO(StakeholderType.PERSON, List.of("Granne"));
 		final var organizationStakeholder = (OrganizationDTO) createStakeholderDTO(StakeholderType.ORGANIZATION, List.of("Granne"));
 		final var organizationNumberOepFormat = "123456781234";
@@ -1123,20 +1141,23 @@ class ByggrServiceTest {
 	}
 
 	/**
-	 * Test scenario where there is 1 person stakeholder.
-	 * Should retrieve and return personal number from citizen service.
+	 * Test scenario where there is 2 stakeholders, one person and one organization and the
+	 * organization number is in 10 digit format.
+	 * Should add "16" prefix to the organization stakeholders organization number and return.
 	 */
 	@Test
-	void extractStakeholderId2() {
+	void extractStakeholderId3() {
 		final var personStakeholder = (PersonDTO) createStakeholderDTO(StakeholderType.PERSON, List.of("Granne"));
-		final var personalNumber = "200001011234";
-		final List<StakeholderDTO> stakeholders = List.of(personStakeholder);
-		when(citizenServiceMock.getPersonalNumber(personStakeholder.getPersonId())).thenReturn(personalNumber);
+		final var organizationStakeholder = (OrganizationDTO) createStakeholderDTO(StakeholderType.ORGANIZATION, List.of("Granne"));
+		final var organizationNumberOepFormat = "1234561234";
+		organizationStakeholder.setOrganizationNumber(organizationNumberOepFormat);
+
+		var stakeholders = List.of(personStakeholder, organizationStakeholder);
 
 		final var result = byggrService.extractStakeholderId(stakeholders);
 
-		assertThat(result).isEqualTo("20000101-1234");
-		verify(citizenServiceMock).getPersonalNumber(personStakeholder.getPersonId());
+		assertThat(result).isEqualTo("16123456-1234");
+		verifyNoInteractions(citizenServiceMock);
 	}
 
 	@Test
