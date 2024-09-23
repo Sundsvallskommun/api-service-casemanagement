@@ -153,7 +153,8 @@ public class ByggrService {
 		var errandInformation = byggRCaseDTO.getExtraParameters().get("errandInformation");
 		var handelseHandling = createNeighborhoodNotificationArrayOfHandling(byggRCaseDTO);
 
-		var handelseId = Integer.parseInt(errandNr.replaceAll(".*?\\[(.*?)].*", "$1"));
+		var handelseId = Integer.parseInt(errandNr.replaceAll("^[^\\[]*\\[([^]]+)].*", "$1"));
+
 
 		var handelse = extractEvent(getByggRCase(errandNr), handelseId);
 		var intressent = extractIntressentFromEvent(handelse, stakeholderId);
