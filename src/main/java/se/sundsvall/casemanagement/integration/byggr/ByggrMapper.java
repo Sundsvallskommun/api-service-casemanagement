@@ -548,7 +548,6 @@ public final class ByggrMapper {
 						.withFilAndelse(attachment.getExtension().toLowerCase()))))
 			.toList();
 		return new ArrayOfHandling().withHandling(handlingar);
-		;
 	}
 
 
