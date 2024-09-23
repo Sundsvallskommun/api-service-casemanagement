@@ -1030,7 +1030,7 @@ class ByggrServiceTest {
 	void respondToNeighborhoodNotification() {
 		final var stakeholders = List.of(createStakeholderDTO(StakeholderType.ORGANIZATION, List.of("role")));
 		final var stakeholderId = "20000101-1234";
-		final var errandNr = "errandNr";
+		final var errandNr = "some-dnr [123]";
 		final var comment = "comment";
 		final var errandInformation = "errandInformation";
 
@@ -1056,7 +1056,7 @@ class ByggrServiceTest {
 		when(facilities.getFirst()).thenReturn(facility);
 		when(facility.getAddress()).thenReturn(address);
 		when(address.getPropertyDesignation()).thenReturn("SUNDSVALL 123");
-		when(extraParameterMap.get(errandNr)).thenReturn(errandNr);
+		when(extraParameterMap.get("errandNr")).thenReturn(errandNr);
 		when(extraParameterMap.get(comment)).thenReturn(comment);
 		when(extraParameterMap.get(errandInformation)).thenReturn(errandInformation);
 
@@ -1064,9 +1064,8 @@ class ByggrServiceTest {
 		when(getArendeResponse.getGetArendeResult()).thenReturn(arende);
 		when(arende.getHandelseLista()).thenReturn(arrayOfHandelse);
 		when(arrayOfHandelse.getHandelse()).thenReturn(List.of(handelse));
-		when(handelse.getHandelsetyp()).thenReturn("GRANHO");
-		when(handelse.getHandelseslag()).thenReturn("GRAUTS");
 		when(handelse.getIntressentLista()).thenReturn(arrayOfHandelseIntressent2);
+		when(handelse.getHandelseId()).thenReturn(123);
 		when(arrayOfHandelseIntressent2.getIntressent()).thenReturn(List.of(handelseIntressent));
 		when(handelseIntressent.getPersOrgNr()).thenReturn(stakeholderId);
 

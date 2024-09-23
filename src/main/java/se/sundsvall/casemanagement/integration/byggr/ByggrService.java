@@ -153,9 +153,9 @@ public class ByggrService {
 		var errandInformation = byggRCaseDTO.getExtraParameters().get("errandInformation");
 		var handelseHandling = createNeighborhoodNotificationArrayOfHandling(byggRCaseDTO);
 
-		var byggRCase = getByggRCase(errandNr);
-		var handelse = extractEvent(byggRCase, "GRANHO", "GRAUTS");
+		var handelseId = Integer.parseInt(errandNr.replaceAll(".*?\\[(.*?)].*", "$1"));
 
+		var handelse = extractEvent(getByggRCase(errandNr), handelseId);
 		var intressent = extractIntressentFromEvent(handelse, stakeholderId);
 
 		var newHandelse = createNewEvent(comment, errandInformation, intressent, stakeholderName, propertyDesignation);

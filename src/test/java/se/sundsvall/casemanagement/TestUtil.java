@@ -577,6 +577,7 @@ public final class TestUtil {
 		var handelse = new Handelse();
 		handelse.setRiktning("IN");
 		handelse.setRubrik("Bygglov");
+		handelse.setHandelseId(123456);
 		handelse.setStartDatum(LocalDateTime.now());
 		handelse.setHandelseslag("GRAUTS");
 		handelse.setHandelsetyp("GRANHO");

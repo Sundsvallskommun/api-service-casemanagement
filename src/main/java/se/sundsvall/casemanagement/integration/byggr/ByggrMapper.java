@@ -618,19 +618,10 @@ public final class ByggrMapper {
 			.withRollLista(intressent.getRollLista());
 	}
 
-	/**
-	 * A byggR case might have multiple different events. This method extracts the wanted event based
-	 * on the handelsetyp and handelseslag.
-	 *
-	 * @param arende the byggR case
-	 * @param handelsetyp wanted handelsetyp
-	 * @param handelseslag wanted handelseslag
-	 * @return Handelse, a specific event in a ByggR Case
-	 */
-	static Handelse extractEvent(final Arende arende, final String handelsetyp, final String handelseslag) {
+	static Handelse extractEvent(final Arende arende, final Integer handelseId) {
 		return arende.getHandelseLista().getHandelse().stream()
-			.filter(handelse -> handelse.getHandelsetyp().equals(handelsetyp) && handelse.getHandelseslag().equals(handelseslag))
-			.findFirst().orElseThrow(() -> Problem.valueOf(BAD_REQUEST, "No GRANHO/GRAUTS event found in ByggRCase"));
+			.filter(handelse -> handelse.getHandelseId() == handelseId)
+			.findFirst().orElseThrow(() -> Problem.valueOf(BAD_REQUEST, "No handelse with id %s found in ByggRCase".formatted(handelseId)));
 	}
 
 	/**
