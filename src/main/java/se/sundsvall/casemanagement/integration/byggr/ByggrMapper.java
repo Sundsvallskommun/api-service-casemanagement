@@ -2,18 +2,23 @@ package se.sundsvall.casemanagement.integration.byggr;
 
 import static java.util.function.Predicate.not;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.zalando.problem.Status.BAD_REQUEST;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrUtil.hasHandelseList;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrUtil.isCaseClosed;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDLING_STATUS_INKOMMEN;
 import static se.sundsvall.casemanagement.util.Constants.HANDELSETYP_ANMALAN;
 import static se.sundsvall.casemanagement.util.Constants.HANDELSETYP_ANSOKAN;
 
 import java.text.MessageFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -41,9 +46,10 @@ import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.integration.db.model.CaseTypeData;
 import se.sundsvall.casemanagement.util.Constants;
 
+import arendeexport.Aktorbehorighet;
 import arendeexport.Arende;
 import arendeexport.ArendeIntressent;
-import arendeexport.ArrayOfHandelseHandling;
+import arendeexport.ArrayOfAktorbehorighet;
 import arendeexport.ArrayOfHandelseIntressent2;
 import arendeexport.ArrayOfHandling;
 import arendeexport.ArrayOfIntressentKommunikation;
@@ -69,74 +75,6 @@ public final class ByggrMapper {
 
 	private ByggrMapper() {}
 
-	/**
-	 * Creates a SaveNewHandelse object with the given parameters, used for NEIGHBORHOOD_NOTIFICATION cases.
-	 *
-	 * @param dnr The case number
-	 * @param handelse The ByggR event
-	 * @param arrayOfHandelseHandling The attachments that the stakeholder sends with the response
-	 * @return SaveNewHandelse, a request model that is sent to ByggR
-	 */
-	static SaveNewHandelse createSaveNewHandelse(final String dnr, final Handelse handelse, final ArrayOfHandelseHandling arrayOfHandelseHandling) {
-		return new SaveNewHandelse()
-			.withMessage(new SaveNewHandelseMessage()
-				.withDnr(dnr)
-				.withHandlaggarSign("SYSTEM")
-				.withHandelse(handelse)
-				.withHandlingar(new ArrayOfHandling()
-					.withHandling(arrayOfHandelseHandling.getHandling())));
-	}
-
-	/**
-	 * Repackages the attachments from the incoming request to a format that ByggR can understand.
-	 *
-	 * @param byggRCaseDTO The incoming request from OpenE
-	 * @return ArrayOfHandelseHandling, a list of attachments that the stakeholder sends with the response
-	 */
-	static ArrayOfHandelseHandling createArrayOfHandelseHandling(final ByggRCaseDTO byggRCaseDTO) {
-		var handlingar = byggRCaseDTO.getAttachments().stream()
-			.filter(attachmentDTO -> attachmentDTO.getCategory().equalsIgnoreCase("BIL"))
-			.map(attachment -> new HandelseHandling()
-				.withAnteckning(attachment.getName())
-				.withStatus(Constants.BYGGR_HANDLING_STATUS_INKOMMEN)
-				.withTyp("UNDERE")
-				.withDokument(new Dokument()
-					.withNamn(attachment.getName())
-					.withBeskrivning(attachment.getNote())
-					.withFil(new DokumentFil()
-						.withFilBuffer(Base64.getDecoder().decode(attachment.getFile().getBytes()))
-						.withFilAndelse(attachment.getExtension().toLowerCase()))))
-			.toList();
-		return new ArrayOfHandelseHandling().withHandling(handlingar);
-	}
-
-
-	/**
-	 * Creates a new Handelse object with the given parameters.
-	 *
-	 * @param comment String that determines if the stakeholder has any issues with the building permit
-	 * @param errandInformation String that contains the stakeholders comment. (Bad name given by OpenE)
-	 * @param intressent HandelseIntressent
-	 * @param stakeholderName The stakeholder name
-	 * @param propertyDesignation The property designation
-	 * @return Handelse, a new event in a ByggR Case
-	 */
-	static Handelse createNewEvent(final String comment, final String errandInformation, final HandelseIntressent intressent, final String stakeholderName, final String propertyDesignation) {
-		var isOpposed = comment.equals("Jag har synpunkter");
-		var opinion = isOpposed ? "Grannehörande Svar med erinran" : "Grannehörande Svar utan erinran";
-
-		var title = opinion + ", " + propertyDesignation + ", " + stakeholderName;
-
-		return new Handelse()
-			.withRiktning("In")
-			.withHandelseslag("GRASVA")
-			.withHandelsetyp("GRANHO")
-			.withRubrik(title)
-			.withAnteckning(errandInformation)
-			.withSekretess(false)
-			.withMakulerad(false)
-			.withIntressentLista(new ArrayOfHandelseIntressent2().withIntressent(intressent));
-	}
 
 	static void setStakeholderFields(final StakeholderDTO stakeholderDTO, final List<String> personIdList, final ArendeIntressent intressent) {
 		switch (stakeholderDTO) {
@@ -545,5 +483,199 @@ public final class ByggrMapper {
 		return null;
 	}
 
+	static ArrayOfIntressentKommunikation createArrayOfIntressentKommunikation(StakeholderDTO stakeholder) {
+		List<IntressentKommunikation> intressentKommunikationList = new ArrayList<>();
+
+		if (stakeholder.getPhoneNumber() != null) {
+			intressentKommunikationList.add(new IntressentKommunikation()
+				.withArAktiv(true)
+				.withKomtyp("TEL")
+				.withBeskrivning(stakeholder.getPhoneNumber()));
+		}
+		if (stakeholder.getCellphoneNumber() != null) {
+			intressentKommunikationList.add(new IntressentKommunikation()
+				.withArAktiv(true)
+				.withKomtyp("MOB")
+				.withBeskrivning(stakeholder.getCellphoneNumber()));
+		}
+		if (stakeholder.getEmailAddress() != null) {
+			intressentKommunikationList.add(new IntressentKommunikation()
+				.withArAktiv(true)
+				.withKomtyp("EMAIL")
+				.withBeskrivning(stakeholder.getEmailAddress()));
+		}
+		return new ArrayOfIntressentKommunikation()
+			.withIntressentKommunikation(intressentKommunikationList);
+	}
+
+	static ArrayOfHandling createAddCertifiedInspectorArrayOfHandling(final ByggRCaseDTO byggRCase) {
+		List<HandelseHandling> handelseHandlingar = new ArrayList<>();
+		for (var attachment : byggRCase.getAttachments()) {
+			var handelseHandling = new HandelseHandling()
+				.withAnteckning(attachment.getName())
+				.withStatus(BYGGR_HANDLING_STATUS_INKOMMEN)
+				.withTyp(attachment.getCategory())
+				.withDokument(new Dokument()
+					.withNamn(attachment.getName())
+					.withBeskrivning(attachment.getNote())
+					.withFil(new DokumentFil()
+						.withFilBuffer(Base64.getDecoder().decode(attachment.getFile().getBytes()))
+						.withFilAndelse(attachment.getExtension().toLowerCase())));
+
+			handelseHandlingar.add(handelseHandling);
+		}
+		return new ArrayOfHandling().withHandling(handelseHandlingar);
+	}
+
+	/**
+	 * Repackages the attachments from the incoming request to a format that ByggR can understand.
+	 *
+	 * @param byggRCase The incoming request from OpenE
+	 * @return ArrayOfHandelseHandling, a list of attachments that the stakeholder sends with the response
+	 */
+	static ArrayOfHandling createNeighborhoodNotificationArrayOfHandling(final ByggRCaseDTO byggRCase) {
+		var handlingar = byggRCase.getAttachments().stream()
+			.filter(attachmentDTO -> attachmentDTO.getCategory().equalsIgnoreCase("BIL"))
+			.map(attachment -> new HandelseHandling()
+				.withAnteckning(attachment.getName())
+				.withStatus(Constants.BYGGR_HANDLING_STATUS_INKOMMEN)
+				.withTyp("UNDERE")
+				.withDokument(new Dokument()
+					.withNamn(attachment.getName())
+					.withBeskrivning(attachment.getNote())
+					.withFil(new DokumentFil()
+						.withFilBuffer(Base64.getDecoder().decode(attachment.getFile().getBytes()))
+						.withFilAndelse(attachment.getExtension().toLowerCase()))))
+			.toList();
+		return new ArrayOfHandling().withHandling(handlingar);
+		;
+	}
+
+
+	static HandelseIntressent createAddCertifiedInspectorHandelseIntressent(
+		final StakeholderDTO stakeholder, String stakeholderId, final Map<String, String> extraParameters) {
+		var handelseIntressent = new HandelseIntressent()
+			.withPersOrgNr(stakeholderId)
+			.withAdress(stakeholder.getAddresses().getFirst().getStreet())
+			.withPostNr(stakeholder.getAddresses().getFirst().getPostalCode())
+			.withOrt(stakeholder.getAddresses().getFirst().getCity())
+			.withIntressentKommunikationLista(createArrayOfIntressentKommunikation(stakeholder))
+			.withAktorbehorighetLista(createAddCertifiedInspectorArrayOfAktorbehorighet(extraParameters))
+			.withRollLista(new ArrayOfString2().withRoll("KOA"));
+
+		if (stakeholder instanceof OrganizationDTO organization) {
+			handelseIntressent
+				.withArForetag(true)
+				.withNamn(organization.getOrganizationName());
+		}
+		if (stakeholder instanceof PersonDTO person) {
+			handelseIntressent
+				.withArForetag(false)
+				.withFornamn(person.getFirstName())
+				.withEfternamn(person.getLastName());
+		}
+		return handelseIntressent;
+	}
+
+	static Handelse createAddCertifiedInspectorHandelse(final String errandInformation, final HandelseIntressent handelseIntressent) {
+		return new Handelse()
+			.withRiktning("In")
+			.withRubrik("Anmälan KA")
+			.withStartDatum(LocalDateTime.now())
+			.withAnteckning(errandInformation)
+			.withHandelseslag("KOMPL")
+			.withHandelsetyp("HANDLING")
+			.withSekretess(false)
+			.withMakulerad(false)
+			.withIntressentLista(new ArrayOfHandelseIntressent2().withIntressent(handelseIntressent));
+	}
+
+	static ArrayOfAktorbehorighet createAddCertifiedInspectorArrayOfAktorbehorighet(final Map<String, String> extraParameters) {
+		return new ArrayOfAktorbehorighet()
+			.withAktorbehorighet(new Aktorbehorighet()
+				.withBehorighetRoll("KOA")
+				.withNiva(extraParameters.get("certificateAuthType"))
+				.withNr(extraParameters.get("certificateNumber"))
+				.withCertifieradAv(extraParameters.get("certificateIssuer"))
+				.withCertifieradTillDatum(LocalDate.parse(extraParameters.get("certificateValidDate"))));
+	}
+
+	/**
+	 * Extracts a stakeholder from a specific byggR event based on the stakeholder id.
+	 *
+	 * @param handelse the event
+	 * @param stakeholderId the stakeholder id
+	 * @return HandelseIntressent, the stakeholder of a specific event
+	 */
+	static HandelseIntressent extractIntressentFromEvent(final Handelse handelse, final String stakeholderId) {
+		final var intressent = handelse.getIntressentLista().getIntressent().stream()
+			.filter(intressent1 -> intressent1.getPersOrgNr().equals(stakeholderId))
+			.findFirst().orElseThrow(() -> Problem.valueOf(BAD_REQUEST, "Stakeholder with id %s not found in ByggRCase".formatted(stakeholderId)));
+
+		return new HandelseIntressent()
+			.withIntressentId(intressent.getIntressentId())
+			.withIntressentVersionId(intressent.getIntressentVersionId())
+			.withIntressentKommunikationLista(intressent.getIntressentKommunikationLista())
+			.withRollLista(intressent.getRollLista());
+	}
+
+	/**
+	 * A byggR case might have multiple different events. This method extracts the wanted event based
+	 * on the handelsetyp and handelseslag.
+	 *
+	 * @param arende the byggR case
+	 * @param handelsetyp wanted handelsetyp
+	 * @param handelseslag wanted handelseslag
+	 * @return Handelse, a specific event in a ByggR Case
+	 */
+	static Handelse extractEvent(final Arende arende, final String handelsetyp, final String handelseslag) {
+		return arende.getHandelseLista().getHandelse().stream()
+			.filter(handelse -> handelse.getHandelsetyp().equals(handelsetyp) && handelse.getHandelseslag().equals(handelseslag))
+			.findFirst().orElseThrow(() -> Problem.valueOf(BAD_REQUEST, "No GRANHO/GRAUTS event found in ByggRCase"));
+	}
+
+	/**
+	 * Creates a SaveNewHandelse object with the given parameters, used for NEIGHBORHOOD_NOTIFICATION cases.
+	 *
+	 * @param dnr The case number
+	 * @param handelse The ByggR event
+	 * @param arrayOfHandling The attachments that the stakeholder sends with the response
+	 * @return SaveNewHandelse, a request model that is sent to ByggR
+	 */
+	static SaveNewHandelse createSaveNewHandelse(final String dnr, final Handelse handelse, final ArrayOfHandling arrayOfHandling) {
+		return new SaveNewHandelse()
+			.withMessage(new SaveNewHandelseMessage()
+				.withDnr(dnr)
+				.withHandlaggarSign("SYSTEM")
+				.withHandelse(handelse)
+				.withHandlingar(arrayOfHandling));
+	}
+
+	/**
+	 * Creates a new Handelse object with the given parameters.
+	 *
+	 * @param comment String that determines if the stakeholder has any issues with the building permit
+	 * @param errandInformation String that contains the stakeholders comment. (Bad name given by OpenE)
+	 * @param intressent HandelseIntressent
+	 * @param stakeholderName The stakeholder name
+	 * @param propertyDesignation The property designation
+	 * @return Handelse, a new event in a ByggR Case
+	 */
+	static Handelse createNewEvent(final String comment, final String errandInformation, final HandelseIntressent intressent, final String stakeholderName, final String propertyDesignation) {
+		var isOpposed = comment.equals("Jag har synpunkter");
+		var opinion = isOpposed ? "Grannehörande Svar med erinran" : "Grannehörande Svar utan erinran";
+
+		var title = opinion + ", " + propertyDesignation + ", " + stakeholderName;
+
+		return new Handelse()
+			.withRiktning("In")
+			.withHandelseslag("GRASVA")
+			.withHandelsetyp("GRANHO")
+			.withRubrik(title)
+			.withAnteckning(errandInformation)
+			.withSekretess(false)
+			.withMakulerad(false)
+			.withIntressentLista(new ArrayOfHandelseIntressent2().withIntressent(intressent));
+	}
 
 }
