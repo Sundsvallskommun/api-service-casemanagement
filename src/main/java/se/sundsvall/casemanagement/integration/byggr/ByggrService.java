@@ -4,9 +4,14 @@ package se.sundsvall.casemanagement.integration.byggr;
 import static java.util.Collections.emptyList;
 import static org.zalando.problem.Status.BAD_REQUEST;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.WITH_NULLABLE_FACILITY_TYPE;
-import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.createArrayOfHandelseHandling;
+import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.createAddCertifiedInspectorArrayOfHandling;
+import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.createAddCertifiedInspectorHandelse;
+import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.createAddCertifiedInspectorHandelseIntressent;
+import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.createNeighborhoodNotificationArrayOfHandling;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.createNewEvent;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.createSaveNewHandelse;
+import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.extractEvent;
+import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.extractIntressentFromEvent;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.filterPersonId;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.getArendeBeskrivning;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.getArendeKlass;
@@ -68,12 +73,11 @@ import arendeexport.ArrayOfString;
 import arendeexport.Fastighet;
 import arendeexport.GetArende;
 import arendeexport.GetRelateradeArendenByPersOrgNrAndRole;
-import arendeexport.Handelse;
-import arendeexport.HandelseIntressent;
 import arendeexport.HandlaggareBas;
 import arendeexport.SaveNewArende;
 import arendeexport.SaveNewArendeResponse2;
 import arendeexport.SaveNewHandelse;
+import arendeexport.SaveNewHandelseMessage;
 
 @Service
 public class ByggrService {
@@ -106,70 +110,63 @@ public class ByggrService {
 		this.caseTypeRepository = caseTypeRepository;
 	}
 
-	public void putByggRCase(final ByggRCaseDTO byggRCaseDTO) {
-		if (byggRCaseDTO.getCaseType().equals("NEIGHBORHOOD_NOTIFICATION")) {
-			updateByggRCase(byggRCaseDTO);
-		} else {
-			throw Problem.valueOf(BAD_REQUEST, "CaseType %s not supported".formatted(byggRCaseDTO.getCaseType()));
+	public void updateByggRCase(final ByggRCaseDTO byggRCaseDTO) {
+		switch (byggRCaseDTO.getCaseType()) {
+			case "NEIGHBORHOOD_NOTIFICATION" -> respondToNeighborhoodNotification(byggRCaseDTO);
+			case "BYGGR_ADD_CERTIFIED_INSPECTOR" -> addCertifiedInspector(byggRCaseDTO);
+			default ->
+				throw Problem.valueOf(BAD_REQUEST, "CaseType %s not supported".formatted(byggRCaseDTO.getCaseType()));
 		}
 	}
 
-	public void updateByggRCase(final ByggRCaseDTO byggRCaseDTO) {
+	public void addCertifiedInspector(final ByggRCaseDTO byggRCase) {
+		var stakeholder = byggRCase.getStakeholders().getFirst();
+		var stakeholderId = extractStakeholderId(byggRCase.getStakeholders());
+		var errandNr = byggRCase.getExtraParameters().get("errandNr");
+		var errandInformation = byggRCase.getExtraParameters().get("errandInformation");
+		var arrayOfHandling = createAddCertifiedInspectorArrayOfHandling(byggRCase);
 
-		final var stakeholderId = extractStakeholderId(byggRCaseDTO.getStakeholders());
-		final var propertyDesignation = byggRCaseDTO.getFacilities().getFirst().getAddress().getPropertyDesignation();
-		final var stakeholderName = extractStakeholderName(byggRCaseDTO.getStakeholders());
-		final var errandNr = byggRCaseDTO.getExtraParameters().get("errandNr");
-		final var comment = byggRCaseDTO.getExtraParameters().get("comment");
-		final var errandInformation = byggRCaseDTO.getExtraParameters().get("errandInformation");
-		final var handelseHandling = createArrayOfHandelseHandling(byggRCaseDTO);
+		var handelseIntressent = createAddCertifiedInspectorHandelseIntressent(stakeholder, stakeholderId, byggRCase.getExtraParameters());
+		var newHandelse = createAddCertifiedInspectorHandelse(errandInformation, handelseIntressent);
 
-		final var byggRCase = getByggRCase(errandNr);
-		final var handelse = extractEvent(byggRCase, "GRANHO", "GRAUTS");
+		var saveNewHandelse = new SaveNewHandelse()
+			.withMessage(new SaveNewHandelseMessage()
+				.withDnr(errandNr)
+				.withHandlaggarSign("SYSTEM")
+				.withHandelse(newHandelse)
+				.withHandlingar(arrayOfHandling)
+				.withAnkomststamplaHandlingar(false)
+				.withAutoGenereraBeslutNr(false));
 
-		final var intressent = createNewEventStakeholder(handelse, stakeholderId);
+		arendeExportClient.saveNewHandelse(saveNewHandelse);
+		openEIntegration.confirmDelivery(byggRCase.getExternalCaseId(), "BYGGR", errandNr);
+		openEIntegration.setStatus(byggRCase.getExternalCaseId(), "BYGGR", errandNr, "Klart");
+	}
 
-		final var newHandelse = createNewEvent(comment, errandInformation, intressent, stakeholderName, propertyDesignation);
-		final var saveNewHandelse = createSaveNewHandelse(errandNr, newHandelse, handelseHandling);
+	public void respondToNeighborhoodNotification(final ByggRCaseDTO byggRCaseDTO) {
+
+		var stakeholderId = extractStakeholderId(byggRCaseDTO.getStakeholders());
+		var propertyDesignation = byggRCaseDTO.getFacilities().getFirst().getAddress().getPropertyDesignation();
+		var stakeholderName = extractStakeholderName(byggRCaseDTO.getStakeholders());
+		var errandNr = byggRCaseDTO.getExtraParameters().get("errandNr");
+		var comment = byggRCaseDTO.getExtraParameters().get("comment");
+		var errandInformation = byggRCaseDTO.getExtraParameters().get("errandInformation");
+		var handelseHandling = createNeighborhoodNotificationArrayOfHandling(byggRCaseDTO);
+
+		var handelseId = Integer.parseInt(errandNr.replaceAll("^[^\\[]*\\[([^]]+)].*", "$1"));
+
+
+		var handelse = extractEvent(getByggRCase(errandNr), handelseId);
+		var intressent = extractIntressentFromEvent(handelse, stakeholderId);
+
+		var newHandelse = createNewEvent(comment, errandInformation, intressent, stakeholderName, propertyDesignation);
+		var saveNewHandelse = createSaveNewHandelse(errandNr, newHandelse, handelseHandling);
 
 		arendeExportClient.saveNewHandelse(saveNewHandelse);
 		openEIntegration.confirmDelivery(byggRCaseDTO.getExternalCaseId(), "BYGGR", errandNr);
 		openEIntegration.setStatus(byggRCaseDTO.getExternalCaseId(), "BYGGR", errandNr, "Klart");
 	}
 
-	/**
-	 * Extracts a stakeholder from a specific byggR event based on the stakeholder id.
-	 *
-	 * @param handelse the event
-	 * @param stakeholderId the stakeholder id
-	 * @return HandelseIntressent, the stakeholder of a specific event
-	 */
-	public HandelseIntressent createNewEventStakeholder(final Handelse handelse, final String stakeholderId) {
-		final var intressent = handelse.getIntressentLista().getIntressent().stream()
-			.filter(intressent1 -> intressent1.getPersOrgNr().equals(stakeholderId))
-			.findFirst().orElseThrow(() -> Problem.valueOf(BAD_REQUEST, "Stakeholder with id %s not found in ByggRCase".formatted(stakeholderId)));
-
-		return new HandelseIntressent()
-			.withIntressentId(intressent.getIntressentId())
-			.withIntressentVersionId(intressent.getIntressentVersionId())
-			.withIntressentKommunikationLista(intressent.getIntressentKommunikationLista())
-			.withRollLista(intressent.getRollLista());
-	}
-
-	/**
-	 * A byggR case might have multiple different events. This method extracts the wanted event based
-	 * on the handelsetyp and handelseslag.
-	 *
-	 * @param arende the byggR case
-	 * @param handelsetyp wanted handelsetyp
-	 * @param handelseslag wanted handelseslag
-	 * @return Handelse, a specific event in a ByggR Case
-	 */
-	public Handelse extractEvent(final Arende arende, final String handelsetyp, final String handelseslag) {
-		return arende.getHandelseLista().getHandelse().stream()
-			.filter(handelse -> handelse.getHandelsetyp().equals(handelsetyp) && handelse.getHandelseslag().equals(handelseslag))
-			.findFirst().orElseThrow(() -> Problem.valueOf(BAD_REQUEST, "No GRANHO/GRAUTS event found in ByggRCase"));
-	}
 
 	/**
 	 * The incoming request might have one or two stakeholders. If any stakeholder is of type

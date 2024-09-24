@@ -47,7 +47,7 @@ public class CaseService {
 			Optional.ofNullable(byggRCase.getExtraParameters())
 				.map(extraParameter -> extraParameter.get("oepAction"))
 				.filter("PUT"::equalsIgnoreCase)
-				.ifPresentOrElse(action -> byggrService.putByggRCase(byggRCase), () -> {
+				.ifPresentOrElse(action -> byggrService.updateByggRCase(byggRCase), () -> {
 					saveCase(byggRCase, municipalityId);
 					handleByggRCase(byggRCase, municipalityId);
 				});

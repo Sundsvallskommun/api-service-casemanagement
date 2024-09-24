@@ -73,13 +73,18 @@ class ByggrCaseIT extends AbstractAppTest {
 	}
 
 	@Test
-	void test2_putByggrCase() {
+	void test2_respondToNeighborhoodNotification() {
 		setupCall()
 			.withHttpMethod(POST)
 			.withServicePath(PATH)
 			.withRequest(REQUEST)
 			.withExpectedResponseStatus(OK)
 			.sendRequestAndVerifyResponse();
+	}
+
+	@Test
+	void test3_addCertifiedInspector() {
+		// TODO: Create test when we have an example request from Open-E
 	}
 
 }

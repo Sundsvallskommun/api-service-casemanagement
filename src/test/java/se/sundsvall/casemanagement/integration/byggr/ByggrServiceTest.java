@@ -11,9 +11,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static se.sundsvall.casemanagement.TestUtil.FNR;
-import static se.sundsvall.casemanagement.TestUtil.createArende;
 import static se.sundsvall.casemanagement.TestUtil.createByggRCaseDTO;
-import static se.sundsvall.casemanagement.TestUtil.createHandelse;
 import static se.sundsvall.casemanagement.TestUtil.createStakeholderDTO;
 import static se.sundsvall.casemanagement.TestUtil.setUpCaseTypes;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.ANDRING_ANSOKAN_OM_BYGGLOV;
@@ -1029,10 +1027,10 @@ class ByggrServiceTest {
 	}
 
 	@Test
-	void updateByggCase() {
+	void respondToNeighborhoodNotification() {
 		final var stakeholders = List.of(createStakeholderDTO(StakeholderType.ORGANIZATION, List.of("role")));
 		final var stakeholderId = "20000101-1234";
-		final var errandNr = "errandNr";
+		final var errandNr = "some-dnr [123]";
 		final var comment = "comment";
 		final var errandInformation = "errandInformation";
 
@@ -1058,7 +1056,7 @@ class ByggrServiceTest {
 		when(facilities.getFirst()).thenReturn(facility);
 		when(facility.getAddress()).thenReturn(address);
 		when(address.getPropertyDesignation()).thenReturn("SUNDSVALL 123");
-		when(extraParameterMap.get(errandNr)).thenReturn(errandNr);
+		when(extraParameterMap.get("errandNr")).thenReturn(errandNr);
 		when(extraParameterMap.get(comment)).thenReturn(comment);
 		when(extraParameterMap.get(errandInformation)).thenReturn(errandInformation);
 
@@ -1066,40 +1064,21 @@ class ByggrServiceTest {
 		when(getArendeResponse.getGetArendeResult()).thenReturn(arende);
 		when(arende.getHandelseLista()).thenReturn(arrayOfHandelse);
 		when(arrayOfHandelse.getHandelse()).thenReturn(List.of(handelse));
-		when(handelse.getHandelsetyp()).thenReturn("GRANHO");
-		when(handelse.getHandelseslag()).thenReturn("GRAUTS");
 		when(handelse.getIntressentLista()).thenReturn(arrayOfHandelseIntressent2);
+		when(handelse.getHandelseId()).thenReturn(123);
 		when(arrayOfHandelseIntressent2.getIntressent()).thenReturn(List.of(handelseIntressent));
 		when(handelseIntressent.getPersOrgNr()).thenReturn(stakeholderId);
 
 		when(arendeExportClientMock.getArende(any())).thenReturn(getArendeResponse);
 		when(spy.extractStakeholderId(stakeholders)).thenReturn(stakeholderId);
 		when(spy.getByggRCase(errandNr)).thenReturn(arende);
-		when(spy.extractEvent(arende, "GRANHO", "GRAUTS")).thenReturn(handelse);
-		when(spy.createNewEventStakeholder(handelse, stakeholderId)).thenReturn(handelseIntressent);
-		spy.updateByggRCase(byggRCaseDTO);
+		spy.respondToNeighborhoodNotification(byggRCaseDTO);
 
 		verify(spy).extractStakeholderId(stakeholders);
 		verify(spy).getByggRCase(errandNr);
-		verify(spy).extractEvent(arende, "GRANHO", "GRAUTS");
-		verify(spy).createNewEventStakeholder(handelse, stakeholderId);
 		verify(openEIntegrationMock).setStatus(any(), any(), any(), any());
 
 		verify(arendeExportClientMock).saveNewHandelse(any());
-	}
-
-	@Test
-	void createNewEventStakeholder() {
-		final var handelse = createHandelse();
-		final var stakeholderId = "20000101-1234";
-
-		final var result = byggrService.createNewEventStakeholder(handelse, stakeholderId);
-
-		assertThat(result.getIntressentId()).isEqualTo(handelse.getIntressentLista().getIntressent().getFirst().getIntressentId());
-		assertThat(result.getIntressentVersionId()).isEqualTo(handelse.getIntressentLista().getIntressent().getFirst().getIntressentVersionId());
-		assertThat(result.getIntressentKommunikationLista()).isEqualTo(handelse.getIntressentLista().getIntressent().getFirst().getIntressentKommunikationLista());
-		assertThat(result.getRollLista()).isEqualTo(handelse.getIntressentLista().getIntressent().getFirst().getRollLista());
-
 	}
 
 
@@ -1158,18 +1137,6 @@ class ByggrServiceTest {
 
 		assertThat(result).isEqualTo("16123456-1234");
 		verifyNoInteractions(citizenServiceMock);
-	}
-
-	@Test
-	void extractEvent() {
-		final var arende = createArende();
-		final var handelsetyp = "GRANHO";
-		final var handelseslag = "GRAUTS";
-
-		final var result = byggrService.extractEvent(arende, handelsetyp, handelseslag);
-
-		assertThat(result.getHandelsetyp()).isEqualTo(handelsetyp);
-		assertThat(result.getHandelseslag()).isEqualTo(handelseslag);
 	}
 
 
