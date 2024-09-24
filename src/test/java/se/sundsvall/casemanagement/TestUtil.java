@@ -57,6 +57,7 @@ import arendeexport.ArrayOfArendeIntressent2;
 import arendeexport.ArrayOfHandelse;
 import arendeexport.ArrayOfHandelseHandling;
 import arendeexport.ArrayOfHandelseIntressent2;
+import arendeexport.ArrayOfHandling;
 import arendeexport.Fastighet;
 import arendeexport.Handelse;
 import arendeexport.HandelseHandling;
@@ -576,6 +577,7 @@ public final class TestUtil {
 		var handelse = new Handelse();
 		handelse.setRiktning("IN");
 		handelse.setRubrik("Bygglov");
+		handelse.setHandelseId(123456);
 		handelse.setStartDatum(LocalDateTime.now());
 		handelse.setHandelseslag("GRAUTS");
 		handelse.setHandelsetyp("GRANHO");
@@ -598,6 +600,13 @@ public final class TestUtil {
 		arrayOfHandelseHandling.getHandling().add(createHandling());
 		arrayOfHandelseHandling.getHandling().add(createHandling());
 		return arrayOfHandelseHandling;
+	}
+
+	public static ArrayOfHandling createArrayOfHandling() {
+		var arrayOfHandling = new ArrayOfHandling();
+		arrayOfHandling.getHandling().add(createHandling());
+		arrayOfHandling.getHandling().add(createHandling());
+		return arrayOfHandling;
 	}
 
 	public static HandelseHandling createHandling() {
