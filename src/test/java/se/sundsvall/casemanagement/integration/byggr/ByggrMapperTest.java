@@ -5,9 +5,11 @@ import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.within;
+import static se.sundsvall.casemanagement.TestUtil.createArende;
 import static se.sundsvall.casemanagement.TestUtil.createByggRCaseDTO;
 import static se.sundsvall.casemanagement.TestUtil.createHandelse;
 import static se.sundsvall.casemanagement.TestUtil.createHandelseIntressent;
+import static se.sundsvall.casemanagement.TestUtil.createStakeholderDTO;
 import static se.sundsvall.casemanagement.api.model.enums.AddressCategory.INVOICE_ADDRESS;
 import static se.sundsvall.casemanagement.api.model.enums.AddressCategory.POSTAL_ADDRESS;
 import static se.sundsvall.casemanagement.api.model.enums.FacilityType.BUSINESS_PREMISES;
@@ -40,9 +42,11 @@ import static se.sundsvall.casemanagement.util.Constants.BYGGR_STATUS_AVSLUTAT;
 import static se.sundsvall.casemanagement.util.Constants.BYGGR_SYSTEM_HANDLAGGARE_SIGN;
 import static se.sundsvall.casemanagement.util.Constants.HANDELSETYP_ANMALAN;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
@@ -63,6 +67,8 @@ import se.sundsvall.casemanagement.api.model.enums.AddressCategory;
 import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
 import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.api.model.enums.FacilityType;
+import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
+import se.sundsvall.casemanagement.api.model.enums.StakeholderType;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.integration.db.model.CaseTypeData;
 
@@ -905,21 +911,21 @@ class ByggrMapperTest {
 	void createSaveNewHandelse() {
 		var dnr = "dnr";
 		var handelse = createHandelse();
-		var arrayOfHandelseHandling = TestUtil.createArrayOfHandelseHandling();
+		var arrayOfHandling = TestUtil.createArrayOfHandling();
 
-		var result = ByggrMapper.createSaveNewHandelse(dnr, handelse, arrayOfHandelseHandling);
+		var result = ByggrMapper.createSaveNewHandelse(dnr, handelse, arrayOfHandling);
 
 		assertThat(result.getMessage().getDnr()).isEqualTo(dnr);
 		assertThat(result.getMessage().getHandelse()).isEqualTo(handelse);
-		assertThat(result.getMessage().getHandlingar().getHandling()).isEqualTo(arrayOfHandelseHandling.getHandling());
+		assertThat(result.getMessage().getHandlingar().getHandling()).isEqualTo(arrayOfHandling.getHandling());
 	}
 
 	@Test
-	void createArrayOfHandelseHandling() {
+	void createNeighborhoodNotificationArrayOfHandling() {
 		var byggRCase = createByggRCaseDTO(CaseType.NEIGHBORHOOD_NOTIFICATION, AttachmentCategory.ATTACHMENT);
 		var attachment = byggRCase.getAttachments().getFirst();
 
-		var result = ByggrMapper.createArrayOfHandelseHandling(byggRCase);
+		var result = ByggrMapper.createNeighborhoodNotificationArrayOfHandling(byggRCase);
 
 		assertThat(result.getHandling()).hasSize(1);
 		assertThat(result.getHandling().getFirst().getDokument().getFil().getFilAndelse()).isEqualTo(attachment.getExtension());
@@ -949,6 +955,112 @@ class ByggrMapperTest {
 			Arguments.of("Jag har synpunkter", "Grannehörande Svar med erinran"),
 			Arguments.of("Jag har inga synpunkter", "Grannehörande Svar utan erinran")
 		);
+	}
+
+	@Test
+	void extractIntressentFromEvent() {
+		final var handelse = createHandelse();
+		final var stakeholderId = "20000101-1234";
+
+		final var result = ByggrMapper.extractIntressentFromEvent(handelse, stakeholderId);
+
+		assertThat(result.getIntressentId()).isEqualTo(handelse.getIntressentLista().getIntressent().getFirst().getIntressentId());
+		assertThat(result.getIntressentVersionId()).isEqualTo(handelse.getIntressentLista().getIntressent().getFirst().getIntressentVersionId());
+		assertThat(result.getIntressentKommunikationLista()).isEqualTo(handelse.getIntressentLista().getIntressent().getFirst().getIntressentKommunikationLista());
+		assertThat(result.getRollLista()).isEqualTo(handelse.getIntressentLista().getIntressent().getFirst().getRollLista());
+
+	}
+
+	@Test
+	void extractEvent() {
+		final var arende = createArende();
+		final var handelseId = 123456;
+
+		final var result = ByggrMapper.extractEvent(arende, handelseId);
+
+		assertThat(result).isNotNull();
+		assertThat(result.getHandelseId()).isEqualTo(handelseId);
+	}
+
+	@Test
+	void createAddCertifiedInspectorHandelseIntressent_1() {
+		var stakeholder = createStakeholderDTO(StakeholderType.PERSON, List.of(StakeholderRole.APPLICANT.name()));
+		var extraParameters = Map.of("certificateAuthType", "certificateAuthType", "certificateNumber", "certificateNumber",
+			"certificateIssuer", "certificateIssuer", "certificateValidDate", "2020-01-01");
+
+		var result = ByggrMapper.createAddCertifiedInspectorHandelseIntressent(stakeholder, "stakeholderId", extraParameters);
+
+		assertThat(result.getPersOrgNr()).isEqualTo("stakeholderId");
+		assertThat(result.getAdress()).isEqualTo(stakeholder.getAddresses().getFirst().getStreet());
+		assertThat(result.getPostNr()).isEqualTo(stakeholder.getAddresses().getFirst().getPostalCode());
+		assertThat(result.getOrt()).isEqualTo(stakeholder.getAddresses().getFirst().getCity());
+		assertThat(result.getIntressentKommunikationLista()).usingRecursiveComparison().isEqualTo(ByggrMapper.createArrayOfIntressentKommunikation(stakeholder));
+		assertThat(result.getAktorbehorighetLista()).usingRecursiveComparison().isEqualTo(ByggrMapper.createAddCertifiedInspectorArrayOfAktorbehorighet(extraParameters));
+		assertThat(result.isArForetag()).isFalse();
+		assertThat(result.getRollLista().getRoll()).containsExactly("KOA");
+		assertThat(result.getNamn()).isNull();
+		assertThat(result.getFornamn()).isNotNull();
+		assertThat(result.getEfternamn()).isNotNull();
+	}
+
+	@Test
+	void createAddCertifiedInspectorHandelseIntressent_2() {
+		var stakeholder = createStakeholderDTO(StakeholderType.ORGANIZATION, List.of(StakeholderRole.APPLICANT.name()));
+		var extraParameters = Map.of("certificateAuthType", "certificateAuthType", "certificateNumber", "certificateNumber",
+			"certificateIssuer", "certificateIssuer", "certificateValidDate", "2020-01-01");
+
+		var result = ByggrMapper.createAddCertifiedInspectorHandelseIntressent(stakeholder, "stakeholderId", extraParameters);
+
+		assertThat(result.getPersOrgNr()).isEqualTo("stakeholderId");
+		assertThat(result.getAdress()).isEqualTo(stakeholder.getAddresses().getFirst().getStreet());
+		assertThat(result.getPostNr()).isEqualTo(stakeholder.getAddresses().getFirst().getPostalCode());
+		assertThat(result.getOrt()).isEqualTo(stakeholder.getAddresses().getFirst().getCity());
+		assertThat(result.getIntressentKommunikationLista()).usingRecursiveComparison().isEqualTo(ByggrMapper.createArrayOfIntressentKommunikation(stakeholder));
+		assertThat(result.getAktorbehorighetLista()).usingRecursiveComparison().isEqualTo(ByggrMapper.createAddCertifiedInspectorArrayOfAktorbehorighet(extraParameters));
+		assertThat(result.isArForetag()).isTrue();
+		assertThat(result.getRollLista().getRoll()).containsExactly("KOA");
+		assertThat(result.getNamn()).isNotNull();
+		assertThat(result.getFornamn()).isNull();
+		assertThat(result.getEfternamn()).isNull();
+	}
+
+	@Test
+	void createAddCertifiedInspectorHandelse() {
+		var errandInformation = "errandInformation";
+		var handelseIntressent = createHandelseIntressent();
+
+		var result = ByggrMapper.createAddCertifiedInspectorHandelse(errandInformation, handelseIntressent);
+
+		assertThat(result.getRiktning()).isEqualTo("In");
+		assertThat(result.getRubrik()).isEqualTo("Anmälan KA");
+		assertThat(result.getStartDatum()).isCloseTo(LocalDateTime.now(), within(10, SECONDS));
+		assertThat(result.getAnteckning()).isEqualTo(errandInformation);
+		assertThat(result.getHandelsetyp()).isEqualTo("HANDLING");
+		assertThat(result.getHandelseslag()).isEqualTo("KOMPL");
+		assertThat(result.getIntressentLista().getIntressent()).isEqualTo(List.of(handelseIntressent));
+	}
+
+	@Test
+	void createAddCertifiedInspectorArrayOfHandling() {
+		var byggrCase = createByggRCaseDTO(CaseType.BYGGR_ADD_CERTIFIED_INSPECTOR, AttachmentCategory.ATTACHMENT);
+		var attachment = byggrCase.getAttachments().getFirst();
+
+		var result = ByggrMapper.createAddCertifiedInspectorArrayOfHandling(byggrCase);
+
+		assertThat(result.getHandling()).hasSize(1);
+		var handling = result.getHandling().getFirst();
+
+		assertThat(handling.getStatus()).isEqualTo("Inkommen");
+		assertThat(handling.getAnteckning()).isEqualTo(attachment.getName());
+		assertThat(handling.getTyp()).isEqualTo(attachment.getCategory());
+		assertThat(handling.getDokument()).satisfies(dokument -> {
+			assertThat(dokument.getNamn()).isEqualTo(attachment.getName());
+			assertThat(dokument.getBeskrivning()).isEqualTo(attachment.getNote());
+			assertThat(dokument.getFil()).satisfies(fil -> {
+				assertThat(fil.getFilBuffer()).isEqualTo(Base64.getDecoder().decode(attachment.getFile().getBytes()));
+				assertThat(fil.getFilAndelse()).isEqualTo(attachment.getExtension());
+			});
+		});
 	}
 
 }
