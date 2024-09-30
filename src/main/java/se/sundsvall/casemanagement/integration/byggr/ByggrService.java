@@ -160,7 +160,7 @@ public class ByggrService {
 		var intressent = extractIntressentFromEvent(handelse, stakeholderId);
 
 		var newHandelse = createNewEvent(comment, errandInformation, intressent, stakeholderName, propertyDesignation);
-		var saveNewHandelse = createSaveNewHandelse(dnr, newHandelse, handelseHandling);
+		var saveNewHandelse = createSaveNewHandelse(dnr, newHandelse, handelseHandling, handelseId);
 
 		arendeExportClient.saveNewHandelse(saveNewHandelse);
 		openEIntegration.confirmDelivery(byggRCaseDTO.getExternalCaseId(), "BYGGR", errandNr);
