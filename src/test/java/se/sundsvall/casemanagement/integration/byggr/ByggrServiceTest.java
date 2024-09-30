@@ -96,6 +96,7 @@ import arendeexport.ArrayOfArende1;
 import arendeexport.ArrayOfHandelse;
 import arendeexport.ArrayOfHandelseIntressent2;
 import arendeexport.ArrayOfHandling;
+import arendeexport.ArrayOfIntressentKommunikation;
 import arendeexport.GetArende;
 import arendeexport.GetArendeResponse;
 import arendeexport.GetRelateradeArendenByPersOrgNrAndRole;
@@ -103,6 +104,8 @@ import arendeexport.GetRelateradeArendenByPersOrgNrAndRoleResponse;
 import arendeexport.Handelse;
 import arendeexport.HandelseHandling;
 import arendeexport.HandelseIntressent;
+import arendeexport.IntressentAttention;
+import arendeexport.IntressentKommunikation;
 import arendeexport.SaveNewArende;
 import arendeexport.SaveNewArendeMessage;
 import arendeexport.SaveNewArendeResponse2;
@@ -1069,6 +1072,13 @@ class ByggrServiceTest {
 		when(handelse.getHandelseId()).thenReturn(123);
 		when(arrayOfHandelseIntressent2.getIntressent()).thenReturn(List.of(handelseIntressent));
 		when(handelseIntressent.getPersOrgNr()).thenReturn(stakeholderId);
+		when(handelseIntressent.getIntressentKommunikationLista()).thenReturn(new ArrayOfIntressentKommunikation()
+			.withIntressentKommunikation(new IntressentKommunikation()
+				.withBeskrivning("Testkommunikation")
+				.withAttention(new IntressentAttention()
+					.withAttention("attention")
+					.withAttentionId(12345))
+				.withKomtyp("Epost")));
 
 		when(arendeExportClientMock.getArende(any())).thenReturn(getArendeResponse);
 		when(spy.extractStakeholderId(stakeholders)).thenReturn(stakeholderId);

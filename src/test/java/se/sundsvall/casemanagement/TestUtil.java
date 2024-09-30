@@ -58,11 +58,14 @@ import arendeexport.ArrayOfHandelse;
 import arendeexport.ArrayOfHandelseHandling;
 import arendeexport.ArrayOfHandelseIntressent2;
 import arendeexport.ArrayOfHandling;
+import arendeexport.ArrayOfIntressentKommunikation;
 import arendeexport.Fastighet;
 import arendeexport.Handelse;
 import arendeexport.HandelseHandling;
 import arendeexport.HandelseIntressent;
 import arendeexport.HandlaggareBas;
+import arendeexport.IntressentAttention;
+import arendeexport.IntressentKommunikation;
 import arendeexport.SaveNewArendeResponse;
 import arendeexport.SaveNewArendeResponse2;
 import minutmiljo.ArrayOfguid;
@@ -646,6 +649,13 @@ public final class TestUtil {
 		handelseIntressent.setEfternamn("Testsson");
 		handelseIntressent.setNamn("Test Testsson");
 		handelseIntressent.setPersOrgNr("20000101-1234");
+		handelseIntressent.setIntressentKommunikationLista(new ArrayOfIntressentKommunikation()
+			.withIntressentKommunikation(new IntressentKommunikation()
+				.withBeskrivning("Testkommunikation")
+				.withAttention(new IntressentAttention()
+					.withAttention("attention")
+					.withAttentionId(12345))
+				.withKomtyp("Epost")));
 		return handelseIntressent;
 	}
 }

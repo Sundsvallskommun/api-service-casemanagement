@@ -617,10 +617,18 @@ public final class ByggrMapper {
 			.filter(intressent1 -> intressent1.getPersOrgNr().equals(stakeholderId))
 			.findFirst().orElseThrow(() -> Problem.valueOf(BAD_REQUEST, "Stakeholder with id %s not found in ByggRCase".formatted(stakeholderId)));
 
+		var intressentKommunkationLista = new ArrayOfIntressentKommunikation()
+			.withIntressentKommunikation(intressent.getIntressentKommunikationLista().getIntressentKommunikation().stream()
+				.map(intressentKommunikation -> new IntressentKommunikation()
+					.withBeskrivning(intressentKommunikation.getBeskrivning())
+					.withAttention(new IntressentAttention().withAttention(Optional.ofNullable(intressentKommunikation.getAttention()).map(IntressentAttention::getAttention).orElse(null)))
+					.withKomtyp(intressentKommunikation.getKomtyp()))
+				.toList());
+
 		return new HandelseIntressent()
 			.withIntressentId(intressent.getIntressentId())
 			.withIntressentVersionId(intressent.getIntressentVersionId())
-			.withIntressentKommunikationLista(intressent.getIntressentKommunikationLista())
+			.withIntressentKommunikationLista(intressentKommunkationLista)
 			.withRollLista(intressent.getRollLista());
 	}
 
@@ -640,6 +648,7 @@ public final class ByggrMapper {
 	 */
 	static SaveNewHandelse createSaveNewHandelse(final String dnr, final Handelse handelse, final ArrayOfHandling arrayOfHandling, final Integer besvaradHandelseId) {
 		return new SaveNewHandelse()
+
 			.withMessage(new SaveNewHandelseMessage()
 				.withDnr(dnr)
 				.withBesvaradHandelseId(besvaradHandelseId)
