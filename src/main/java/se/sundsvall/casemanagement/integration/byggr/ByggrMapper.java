@@ -493,18 +493,21 @@ public final class ByggrMapper {
 			intressentKommunikationList.add(new IntressentKommunikation()
 				.withArAktiv(true)
 				.withKomtyp(BYGGR_KOMTYP_HEMTELEFON)
+				.withAttention(new IntressentAttention().withAttention(stakeholder.getAddresses().getFirst().getAttention()))
 				.withBeskrivning(stakeholder.getPhoneNumber()));
 		}
 		if (stakeholder.getCellphoneNumber() != null) {
 			intressentKommunikationList.add(new IntressentKommunikation()
 				.withArAktiv(true)
 				.withKomtyp(BYGGR_KOMTYP_MOBIL)
+				.withAttention(new IntressentAttention().withAttention(stakeholder.getAddresses().getFirst().getAttention()))
 				.withBeskrivning(stakeholder.getCellphoneNumber()));
 		}
 		if (stakeholder.getEmailAddress() != null) {
 			intressentKommunikationList.add(new IntressentKommunikation()
 				.withArAktiv(true)
 				.withKomtyp(BYGGR_KOMTYP_EPOST)
+				.withAttention(new IntressentAttention().withAttention(stakeholder.getAddresses().getFirst().getAttention()))
 				.withBeskrivning(stakeholder.getEmailAddress()));
 		}
 		return new ArrayOfIntressentKommunikation()
