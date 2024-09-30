@@ -6,6 +6,9 @@ import static org.zalando.problem.Status.BAD_REQUEST;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrUtil.hasHandelseList;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrUtil.isCaseClosed;
 import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDLING_STATUS_INKOMMEN;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR_KOMTYP_EPOST;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR_KOMTYP_HEMTELEFON;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR_KOMTYP_MOBIL;
 import static se.sundsvall.casemanagement.util.Constants.HANDELSETYP_ANMALAN;
 import static se.sundsvall.casemanagement.util.Constants.HANDELSETYP_ANSOKAN;
 
@@ -256,7 +259,7 @@ public final class ByggrMapper {
 			final var intressentKommunikation = new IntressentKommunikation()
 				.withArAktiv(true)
 				.withBeskrivning(stakeholderDTO.getCellphoneNumber())
-				.withKomtyp(Constants.BYGGR_KOMTYP_MOBIL)
+				.withKomtyp(BYGGR_KOMTYP_MOBIL)
 				.withAttention(intressentAttention);
 			arrayOfIntressentKommunikation.getIntressentKommunikation().add(intressentKommunikation);
 		}
@@ -264,7 +267,7 @@ public final class ByggrMapper {
 			final var intressentKommunikation = new IntressentKommunikation()
 				.withArAktiv(true)
 				.withBeskrivning(stakeholderDTO.getPhoneNumber())
-				.withKomtyp(Constants.BYGGR_KOMTYP_HEMTELEFON)
+				.withKomtyp(BYGGR_KOMTYP_HEMTELEFON)
 				.withAttention(intressentAttention);
 			arrayOfIntressentKommunikation.getIntressentKommunikation().add(intressentKommunikation);
 		}
@@ -272,7 +275,7 @@ public final class ByggrMapper {
 			final var intressentKommunikation = new IntressentKommunikation()
 				.withArAktiv(true)
 				.withBeskrivning(stakeholderDTO.getEmailAddress())
-				.withKomtyp(Constants.BYGGR_KOMTYP_EPOST)
+				.withKomtyp(BYGGR_KOMTYP_EPOST)
 				.withAttention(intressentAttention);
 			arrayOfIntressentKommunikation.getIntressentKommunikation().add(intressentKommunikation);
 		}
@@ -489,19 +492,19 @@ public final class ByggrMapper {
 		if (stakeholder.getPhoneNumber() != null) {
 			intressentKommunikationList.add(new IntressentKommunikation()
 				.withArAktiv(true)
-				.withKomtyp("TEL")
+				.withKomtyp(BYGGR_KOMTYP_HEMTELEFON)
 				.withBeskrivning(stakeholder.getPhoneNumber()));
 		}
 		if (stakeholder.getCellphoneNumber() != null) {
 			intressentKommunikationList.add(new IntressentKommunikation()
 				.withArAktiv(true)
-				.withKomtyp("MOB")
+				.withKomtyp(BYGGR_KOMTYP_MOBIL)
 				.withBeskrivning(stakeholder.getCellphoneNumber()));
 		}
 		if (stakeholder.getEmailAddress() != null) {
 			intressentKommunikationList.add(new IntressentKommunikation()
 				.withArAktiv(true)
-				.withKomtyp("EMAIL")
+				.withKomtyp(BYGGR_KOMTYP_EPOST)
 				.withBeskrivning(stakeholder.getEmailAddress()));
 		}
 		return new ArrayOfIntressentKommunikation()

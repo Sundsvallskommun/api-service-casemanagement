@@ -1031,6 +1031,7 @@ class ByggrServiceTest {
 		final var stakeholders = List.of(createStakeholderDTO(StakeholderType.ORGANIZATION, List.of("role")));
 		final var stakeholderId = "20000101-1234";
 		final var errandNr = "some-dnr [123]";
+		final var dnr = "some-dnr";
 		final var comment = "comment";
 		final var errandInformation = "errandInformation";
 
@@ -1071,11 +1072,11 @@ class ByggrServiceTest {
 
 		when(arendeExportClientMock.getArende(any())).thenReturn(getArendeResponse);
 		when(spy.extractStakeholderId(stakeholders)).thenReturn(stakeholderId);
-		when(spy.getByggRCase(errandNr)).thenReturn(arende);
+		when(spy.getByggRCase(dnr)).thenReturn(arende);
 		spy.respondToNeighborhoodNotification(byggRCaseDTO);
 
 		verify(spy).extractStakeholderId(stakeholders);
-		verify(spy).getByggRCase(errandNr);
+		verify(spy).getByggRCase(dnr);
 		verify(openEIntegrationMock).setStatus(any(), any(), any(), any());
 
 		verify(arendeExportClientMock).saveNewHandelse(any());

@@ -154,13 +154,13 @@ public class ByggrService {
 		var handelseHandling = createNeighborhoodNotificationArrayOfHandling(byggRCaseDTO);
 
 		var handelseId = Integer.parseInt(errandNr.replaceAll("^[^\\[]*\\[([^]]+)].*", "$1"));
+		var dnr = errandNr.split("\\[")[0].trim();
 
-
-		var handelse = extractEvent(getByggRCase(errandNr), handelseId);
+		var handelse = extractEvent(getByggRCase(dnr), handelseId);
 		var intressent = extractIntressentFromEvent(handelse, stakeholderId);
 
 		var newHandelse = createNewEvent(comment, errandInformation, intressent, stakeholderName, propertyDesignation);
-		var saveNewHandelse = createSaveNewHandelse(errandNr, newHandelse, handelseHandling);
+		var saveNewHandelse = createSaveNewHandelse(dnr, newHandelse, handelseHandling);
 
 		arendeExportClient.saveNewHandelse(saveNewHandelse);
 		openEIntegration.confirmDelivery(byggRCaseDTO.getExternalCaseId(), "BYGGR", errandNr);
