@@ -635,10 +635,11 @@ public final class ByggrMapper {
 	 * @param arrayOfHandling The attachments that the stakeholder sends with the response
 	 * @return SaveNewHandelse, a request model that is sent to ByggR
 	 */
-	static SaveNewHandelse createSaveNewHandelse(final String dnr, final Handelse handelse, final ArrayOfHandling arrayOfHandling) {
+	static SaveNewHandelse createSaveNewHandelse(final String dnr, final Handelse handelse, final ArrayOfHandling arrayOfHandling, final Integer besvaradHandelseId) {
 		return new SaveNewHandelse()
 			.withMessage(new SaveNewHandelseMessage()
 				.withDnr(dnr)
+				.withBesvaradHandelseId(besvaradHandelseId)
 				.withHandlaggarSign("SYSTEM")
 				.withHandelse(handelse)
 				.withHandlingar(arrayOfHandling));

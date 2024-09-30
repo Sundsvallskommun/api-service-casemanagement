@@ -911,12 +911,14 @@ class ByggrMapperTest {
 	void createSaveNewHandelse() {
 		var dnr = "dnr";
 		var handelse = createHandelse();
+		var handelseId = 123456;
 		var arrayOfHandling = TestUtil.createArrayOfHandling();
 
-		var result = ByggrMapper.createSaveNewHandelse(dnr, handelse, arrayOfHandling);
+		var result = ByggrMapper.createSaveNewHandelse(dnr, handelse, arrayOfHandling, handelseId);
 
 		assertThat(result.getMessage().getDnr()).isEqualTo(dnr);
 		assertThat(result.getMessage().getHandelse()).isEqualTo(handelse);
+		assertThat(result.getMessage().getBesvaradHandelseId()).isEqualTo(handelseId);
 		assertThat(result.getMessage().getHandlingar().getHandling()).isEqualTo(arrayOfHandling.getHandling());
 	}
 
