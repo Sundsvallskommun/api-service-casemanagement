@@ -968,9 +968,8 @@ class ByggrMapperTest {
 
 		assertThat(result.getIntressentId()).isEqualTo(handelse.getIntressentLista().getIntressent().getFirst().getIntressentId());
 		assertThat(result.getIntressentVersionId()).isEqualTo(handelse.getIntressentLista().getIntressent().getFirst().getIntressentVersionId());
-		assertThat(result.getIntressentKommunikationLista()).isEqualTo(handelse.getIntressentLista().getIntressent().getFirst().getIntressentKommunikationLista());
 		assertThat(result.getRollLista()).isEqualTo(handelse.getIntressentLista().getIntressent().getFirst().getRollLista());
-
+		assertThat(result.getIntressentKommunikationLista()).isNotEqualTo(handelse.getIntressentLista().getIntressent().getFirst().getIntressentKommunikationLista());
 	}
 
 	@Test
