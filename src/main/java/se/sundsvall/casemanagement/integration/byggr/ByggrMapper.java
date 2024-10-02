@@ -558,7 +558,7 @@ public final class ByggrMapper {
 
 
 	static HandelseIntressent createAddCertifiedInspectorHandelseIntressent(
-		final StakeholderDTO stakeholder, String stakeholderId, final Map<String, String> extraParameters) {
+		final StakeholderDTO stakeholder, final String stakeholderId, final Map<String, String> extraParameters) {
 		var handelseIntressent = new HandelseIntressent()
 			.withPersOrgNr(stakeholderId)
 			.withAdress(stakeholder.getAddresses().getFirst().getStreet())
@@ -603,6 +603,26 @@ public final class ByggrMapper {
 				.withNr(extraParameters.get("certificateNumber"))
 				.withCertifieradAv(extraParameters.get("certificateIssuer"))
 				.withCertifieradTillDatum(LocalDate.parse(extraParameters.get("certificateValidDate"))));
+	}
+
+	static SaveNewHandelse createAlertCaseManagerEvent(final String dnr) {
+		var alertCaseManagerEvent = new Handelse()
+			.withRiktning("In")
+			.withRubrik("Manuell hantering krävs")
+			.withStartDatum(LocalDateTime.now())
+			.withHandelseslag("MANHANT")
+			.withHandelsetyp("STATUS")
+			.withSekretess(false)
+			.withMakulerad(false)
+			.withArbetsmaterial(false);
+
+		return new SaveNewHandelse()
+			.withMessage(new SaveNewHandelseMessage()
+				.withDnr(dnr)
+				.withHandlaggarSign("SYSTEM")
+				.withHandelse(alertCaseManagerEvent)
+				.withAnkomststamplaHandlingar(false)
+				.withAutoGenereraBeslutNr(false));
 	}
 
 	/**

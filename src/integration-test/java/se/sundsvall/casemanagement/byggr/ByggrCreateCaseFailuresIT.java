@@ -17,10 +17,10 @@ import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 })
 class ByggrCreateCaseFailuresIT extends AbstractAppTest {
 
+	private static final String REQUEST = "request.json";
+	private static final String RESPONSE = "response.json";
 	private static final String MUNICIPALITY_ID = "2281";
-
 	private static final String PATH = "/" + MUNICIPALITY_ID + "/cases";
-
 
 	@Test
 	void test1_postWithExistingExternalCaseId() {
@@ -28,9 +28,9 @@ class ByggrCreateCaseFailuresIT extends AbstractAppTest {
 		setupCall()
 			.withHttpMethod(HttpMethod.POST)
 			.withServicePath(PATH)
-			.withRequest("request.json")
+			.withRequest(REQUEST)
 			.withExpectedResponseStatus(HttpStatus.BAD_REQUEST)
-			.withExpectedResponse("expected-response.json")
+			.withExpectedResponse(RESPONSE)
 			.sendRequestAndVerifyResponse();
 	}
 
@@ -39,9 +39,9 @@ class ByggrCreateCaseFailuresIT extends AbstractAppTest {
 		setupCall()
 			.withHttpMethod(HttpMethod.POST)
 			.withServicePath(PATH)
-			.withRequest("request.json")
+			.withRequest(REQUEST)
 			.withExpectedResponseStatus(HttpStatus.BAD_REQUEST)
-			.withExpectedResponse("expected-response.json")
+			.withExpectedResponse(RESPONSE)
 			.sendRequestAndVerifyResponse();
 	}
 
@@ -50,9 +50,9 @@ class ByggrCreateCaseFailuresIT extends AbstractAppTest {
 		setupCall()
 			.withHttpMethod(HttpMethod.POST)
 			.withServicePath(PATH)
-			.withRequest("request.json")
+			.withRequest(REQUEST)
 			.withExpectedResponseStatus(HttpStatus.BAD_REQUEST)
-			.withExpectedResponse("expected-response.json")
+			.withExpectedResponse(RESPONSE)
 			.sendRequestAndVerifyResponse();
 	}
 
@@ -61,9 +61,9 @@ class ByggrCreateCaseFailuresIT extends AbstractAppTest {
 		setupCall()
 			.withHttpMethod(HttpMethod.POST)
 			.withServicePath(PATH)
-			.withRequest("request.json")
+			.withRequest(REQUEST)
 			.withExpectedResponseStatus(HttpStatus.BAD_REQUEST)
-			.withExpectedResponse("expected-response.json")
+			.withExpectedResponse(RESPONSE)
 			.sendRequestAndVerifyResponse();
 	}
 

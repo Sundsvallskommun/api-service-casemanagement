@@ -30,6 +30,8 @@ import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 })
 public class EcosCreateCaseFailuresIT extends AbstractAppTest {
 
+	private static final String REQUEST = "request.json";
+	private static final String RESPONSE = "response.json";
 	public static final String ECOS_CASE_ID = "e19981ad-34b2-4e14-88f5-133f61ca85aa";
 
 	private static final String MUNICIPALITY_ID = "2281";
@@ -53,9 +55,9 @@ public class EcosCreateCaseFailuresIT extends AbstractAppTest {
 		final var result = setupCall()
 			.withHttpMethod(HttpMethod.POST)
 			.withServicePath(PATH)
-			.withRequest("request.json")
+			.withRequest(REQUEST)
 			.withExpectedResponseStatus(HttpStatus.OK)
-			.withExpectedResponse("expected-response.json")
+			.withExpectedResponse(RESPONSE)
 			.sendRequestAndVerifyResponse()
 			.andReturnBody(CaseResourceResponseDTO.class);
 
@@ -84,9 +86,9 @@ public class EcosCreateCaseFailuresIT extends AbstractAppTest {
 		setupCall()
 			.withHttpMethod(HttpMethod.POST)
 			.withServicePath(PATH)
-			.withRequest("request.json")
+			.withRequest(REQUEST)
 			.withExpectedResponseStatus(HttpStatus.BAD_REQUEST)
-			.withExpectedResponse("expected-response.json")
+			.withExpectedResponse(RESPONSE)
 			.sendRequestAndVerifyResponse()
 			.andReturnBody(ConstraintViolationProblem.class);
 
@@ -106,9 +108,9 @@ public class EcosCreateCaseFailuresIT extends AbstractAppTest {
 		final var result = setupCall()
 			.withHttpMethod(HttpMethod.POST)
 			.withServicePath(PATH)
-			.withRequest("request.json")
+			.withRequest(REQUEST)
 			.withExpectedResponseStatus(HttpStatus.OK)
-			.withExpectedResponse("expected-response.json")
+			.withExpectedResponse(RESPONSE)
 			.sendRequestAndVerifyResponse()
 			.andReturnBody(CaseResourceResponseDTO.class);
 
@@ -132,9 +134,9 @@ public class EcosCreateCaseFailuresIT extends AbstractAppTest {
 		final var result = setupCall()
 			.withHttpMethod(HttpMethod.POST)
 			.withServicePath(PATH)
-			.withRequest("request.json")
+			.withRequest(REQUEST)
 			.withExpectedResponseStatus(HttpStatus.OK)
-			.withExpectedResponse("expected-response.json")
+			.withExpectedResponse(RESPONSE)
 			.sendRequestAndVerifyResponse()
 			.andReturnBody(CaseResourceResponseDTO.class);
 

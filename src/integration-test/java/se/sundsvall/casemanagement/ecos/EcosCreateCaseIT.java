@@ -27,10 +27,10 @@ import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 })
 public class EcosCreateCaseIT extends AbstractAppTest {
 
-	public static final String ECOS_CASE_ID = "e19981ad-34b2-4e14-88f5-133f61ca85aa";
-
+	private static final String REQUEST = "request.json";
+	private static final String RESPONSE = "response.json";
+	private static final String ECOS_CASE_ID = "e19981ad-34b2-4e14-88f5-133f61ca85aa";
 	private static final String MUNICIPALITY_ID = "2281";
-
 	private static final String PATH = "/" + MUNICIPALITY_ID + "/cases";
 
 	@Autowired
@@ -46,9 +46,9 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 		final var result = setupCall()
 			.withHttpMethod(HttpMethod.POST)
 			.withServicePath(PATH)
-			.withRequest("request.json")
+			.withRequest(REQUEST)
 			.withExpectedResponseStatus(HttpStatus.OK)
-			.withExpectedResponse("expected-response.json")
+			.withExpectedResponse(RESPONSE)
 			.sendRequestAndVerifyResponse()
 			.andReturnBody(CaseResourceResponseDTO.class);
 
@@ -79,9 +79,9 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 		final var result = setupCall()
 			.withHttpMethod(HttpMethod.POST)
 			.withServicePath(PATH)
-			.withRequest("request.json")
+			.withRequest(REQUEST)
 			.withExpectedResponseStatus(HttpStatus.OK)
-			.withExpectedResponse("expected-response.json")
+			.withExpectedResponse(RESPONSE)
 			.sendRequestAndVerifyResponse()
 			.andReturnBody(CaseResourceResponseDTO.class);
 
@@ -112,9 +112,9 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 		final var result = setupCall()
 			.withHttpMethod(HttpMethod.POST)
 			.withServicePath(PATH)
-			.withRequest("request.json")
+			.withRequest(REQUEST)
 			.withExpectedResponseStatus(HttpStatus.OK)
-			.withExpectedResponse("expected-response.json")
+			.withExpectedResponse(RESPONSE)
 			.sendRequestAndVerifyResponse()
 			.andReturnBody(CaseResourceResponseDTO.class);
 
@@ -145,9 +145,9 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 		final var result = setupCall()
 			.withHttpMethod(HttpMethod.POST)
 			.withServicePath(PATH)
-			.withRequest("request.json")
+			.withRequest(REQUEST)
 			.withExpectedResponseStatus(HttpStatus.OK)
-			.withExpectedResponse("expected-response.json")
+			.withExpectedResponse(RESPONSE)
 			.sendRequestAndVerifyResponse()
 			.andReturnBody(CaseResourceResponseDTO.class);
 
@@ -178,9 +178,9 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 		final var result = setupCall()
 			.withHttpMethod(HttpMethod.POST)
 			.withServicePath(PATH)
-			.withRequest("request.json")
+			.withRequest(REQUEST)
 			.withExpectedResponseStatus(HttpStatus.OK)
-			.withExpectedResponse("expected-response.json")
+			.withExpectedResponse(RESPONSE)
 			.sendRequestAndVerifyResponse()
 			.andReturnBody(CaseResourceResponseDTO.class);
 
@@ -211,9 +211,9 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 		final var result = setupCall()
 			.withHttpMethod(HttpMethod.POST)
 			.withServicePath(PATH)
-			.withRequest("request.json")
+			.withRequest(REQUEST)
 			.withExpectedResponseStatus(HttpStatus.OK)
-			.withExpectedResponse("expected-response.json")
+			.withExpectedResponse(RESPONSE)
 			.sendRequestAndVerifyResponse()
 			.andReturnBody(CaseResourceResponseDTO.class);
 
@@ -245,9 +245,9 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 		final var result = setupCall()
 			.withHttpMethod(HttpMethod.POST)
 			.withServicePath(PATH)
-			.withRequest("request.json")
+			.withRequest(REQUEST)
 			.withExpectedResponseStatus(HttpStatus.OK)
-			.withExpectedResponse("expected-response.json")
+			.withExpectedResponse(RESPONSE)
 			.sendRequestAndVerifyResponse()
 			.andReturnBody(CaseResourceResponseDTO.class);
 
@@ -278,9 +278,9 @@ public class EcosCreateCaseIT extends AbstractAppTest {
 		final var result = setupCall()
 			.withHttpMethod(HttpMethod.POST)
 			.withServicePath(PATH)
-			.withRequest("request.json")
+			.withRequest(REQUEST)
 			.withExpectedResponseStatus(HttpStatus.OK)
-			.withExpectedResponse("expected-response.json")
+			.withExpectedResponse(RESPONSE)
 			.sendRequestAndVerifyResponse()
 			.andReturnBody(CaseResourceResponseDTO.class);
 

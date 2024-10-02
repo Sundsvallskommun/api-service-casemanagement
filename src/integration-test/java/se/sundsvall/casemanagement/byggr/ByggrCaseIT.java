@@ -51,7 +51,7 @@ class ByggrCaseIT extends AbstractAppTest {
 			.withServicePath(PATH)
 			.withRequest(REQUEST)
 			.withExpectedResponseStatus(OK)
-			.withExpectedResponse("expected-response.json")
+			.withExpectedResponse("response.json")
 			.sendRequestAndVerifyResponse()
 			.andReturnBody(CaseResourceResponseDTO.class);
 
@@ -84,7 +84,12 @@ class ByggrCaseIT extends AbstractAppTest {
 
 	@Test
 	void test3_addCertifiedInspector() {
-		// TODO: Create test when we have an example request from Open-E
+		setupCall()
+			.withHttpMethod(POST)
+			.withServicePath(PATH)
+			.withRequest(REQUEST)
+			.withExpectedResponseStatus(OK)
+			.sendRequestAndVerifyResponse();
 	}
 
 }

@@ -49,6 +49,9 @@ logbook:
         value: '[base64]'
       - key: '$..filBuffer'
         value: '[base64]'
+    xPath:
+      - key: '//filBuffer/text()'
+        value: '[binary]'
 logger:
   max:
     payload:

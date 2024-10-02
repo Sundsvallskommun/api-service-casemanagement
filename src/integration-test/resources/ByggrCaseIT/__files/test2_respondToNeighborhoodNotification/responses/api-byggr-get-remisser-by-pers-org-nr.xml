@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
     <SOAP-ENV:Header/>
-    <SOAP-ENV:Body xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    >
+    <SOAP-ENV:Body xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
         <GetRemisserByPersOrgNrResponse xmlns="www.tekis.se/ServiceContract">
             <GetRemisserByPersOrgNrResult>
                 <Remiss utskickId="305903" remissId="305903">

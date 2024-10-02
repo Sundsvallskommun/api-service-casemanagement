@@ -26,9 +26,7 @@ import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 class CaseStatusIT extends AbstractAppTest {
 
 	private static final String MUNICIPALITY_ID = "2281";
-
 	private static final String PATH = "/" + MUNICIPALITY_ID + "/cases/{externalCaseId}/status";
-
 	private static final String ORG_PATH = "/" + MUNICIPALITY_ID + "/organization/{organizationNumber}/cases/status";
 
 	@Test

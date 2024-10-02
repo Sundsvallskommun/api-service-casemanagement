@@ -1,11 +1,12 @@
 package se.sundsvall.casemanagement.casedata;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpMethod.PUT;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
@@ -29,10 +30,10 @@ import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 @DirtiesContext
 public class CaseDataIT extends AbstractAppTest {
 
-	public static final String CASE_DATA_ID = "24";
-
+	private static final String REQUEST = "request.json";
+	private static final String RESPONSE = "response.json";
+	private static final String CASE_DATA_ID = "24";
 	private static final String MUNICIPALITY_ID = "2281";
-
 	private static final String PATH = "/" + MUNICIPALITY_ID + "/cases";
 
 	@Autowired
@@ -46,11 +47,11 @@ public class CaseDataIT extends AbstractAppTest {
 		final var EXTERNAL_CASE_ID = "40621444";
 
 		final var result = setupCall()
-			.withHttpMethod(HttpMethod.POST)
+			.withHttpMethod(POST)
 			.withServicePath(PATH)
-			.withRequest("request.json")
+			.withRequest(REQUEST)
 			.withExpectedResponseStatus(HttpStatus.OK)
-			.withExpectedResponse("expected-response.json")
+			.withExpectedResponse(RESPONSE)
 			.sendRequestAndVerifyResponse()
 			.andReturnBody(CaseResourceResponseDTO.class);
 
@@ -77,11 +78,11 @@ public class CaseDataIT extends AbstractAppTest {
 		final var EXTERNAL_CASE_ID = "40621445";
 
 		setupCall()
-			.withHttpMethod(HttpMethod.POST)
+			.withHttpMethod(POST)
 			.withServicePath(PATH)
-			.withRequest("request.json")
+			.withRequest(REQUEST)
 			.withExpectedResponseStatus(HttpStatus.OK)
-			.withExpectedResponse("expected-response.json")
+			.withExpectedResponse(RESPONSE)
 			.sendRequestAndVerifyResponse();
 
 		// Make sure that there exists a case entity
@@ -96,9 +97,9 @@ public class CaseDataIT extends AbstractAppTest {
 	void test3_updateCase() {
 
 		setupCall()
-			.withHttpMethod(HttpMethod.PUT)
+			.withHttpMethod(PUT)
 			.withServicePath("/" + MUNICIPALITY_ID + "/cases/231")
-			.withRequest("request.json")
+			.withRequest(REQUEST)
 			.withExpectedResponseStatus(HttpStatus.NO_CONTENT)
 			.sendRequestAndVerifyResponse();
 	}

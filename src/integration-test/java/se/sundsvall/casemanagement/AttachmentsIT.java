@@ -17,8 +17,9 @@ import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 })
 class AttachmentsIT extends AbstractAppTest {
 
+	private static final String REQUEST = "request.json";
+	private static final String RESPONSE = "response.json";
 	private static final String MUNICIPALITY_ID = "2281";
-
 	private static final String PATH = "/" + MUNICIPALITY_ID + "/cases/";
 
 	@Test
@@ -27,7 +28,7 @@ class AttachmentsIT extends AbstractAppTest {
 		setupCall()
 			.withHttpMethod(HttpMethod.POST)
 			.withServicePath(PATH + "2222/attachments")
-			.withRequest("request.json")
+			.withRequest(REQUEST)
 			.withExpectedResponseStatus(HttpStatus.NO_CONTENT)
 			.sendRequestAndVerifyResponse()
 			.verifyAllStubs();
@@ -39,7 +40,7 @@ class AttachmentsIT extends AbstractAppTest {
 		setupCall()
 			.withHttpMethod(HttpMethod.POST)
 			.withServicePath(PATH + "3522/attachments")
-			.withRequest("request.json")
+			.withRequest(REQUEST)
 			.withExpectedResponseStatus(HttpStatus.NO_CONTENT)
 			.sendRequestAndVerifyResponse()
 			.verifyAllStubs();
@@ -51,7 +52,7 @@ class AttachmentsIT extends AbstractAppTest {
 		setupCall()
 			.withHttpMethod(HttpMethod.POST)
 			.withServicePath(PATH + "231/attachments")
-			.withRequest("request.json")
+			.withRequest(REQUEST)
 			.withExpectedResponseStatus(HttpStatus.NO_CONTENT)
 			.sendRequestAndVerifyResponse()
 			.verifyAllStubs();
@@ -64,8 +65,8 @@ class AttachmentsIT extends AbstractAppTest {
 		setupCall()
 			.withHttpMethod(HttpMethod.POST)
 			.withServicePath(PATH + "123/attachments")
-			.withRequest("request.json")
-			.withExpectedResponse("expected-response.json")
+			.withRequest(REQUEST)
+			.withExpectedResponse(RESPONSE)
 			.withExpectedResponseStatus(HttpStatus.NOT_FOUND)
 			.sendRequestAndVerifyResponse()
 			.verifyAllStubs();
@@ -77,8 +78,8 @@ class AttachmentsIT extends AbstractAppTest {
 		setupCall()
 			.withHttpMethod(HttpMethod.POST)
 			.withServicePath(PATH + "231/attachments")
-			.withRequest("request.json")
-			.withExpectedResponse("expected-response.json")
+			.withRequest(REQUEST)
+			.withExpectedResponse(RESPONSE)
 			.withExpectedResponseStatus(HttpStatus.BAD_REQUEST)
 			.sendRequestAndVerifyResponse()
 			.verifyAllStubs();
