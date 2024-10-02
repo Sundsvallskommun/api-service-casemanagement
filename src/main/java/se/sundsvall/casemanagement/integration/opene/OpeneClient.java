@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import se.sundsvall.casemanagement.integration.opene.configuration.OpeneConfiguration;
 
 import callback.ConfirmDelivery;
-import callback.ConfirmDeliveryResponse;
 import callback.SetStatus;
 import callback.SetStatusResponse;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
@@ -19,7 +18,7 @@ public interface OpeneClient {
 	String TEXT_XML_UTF_8 = "text/xml; charset=UTF-8";
 
 	@PostMapping(consumes = TEXT_XML_UTF_8, produces = TEXT_XML_UTF_8)
-	ConfirmDeliveryResponse confirmDelivery(@RequestBody ConfirmDelivery confirmDelivery);
+	void confirmDelivery(@RequestBody ConfirmDelivery confirmDelivery);
 
 	@PostMapping(consumes = TEXT_XML_UTF_8, produces = TEXT_XML_UTF_8)
 	SetStatusResponse setStatus(@RequestBody SetStatus status);

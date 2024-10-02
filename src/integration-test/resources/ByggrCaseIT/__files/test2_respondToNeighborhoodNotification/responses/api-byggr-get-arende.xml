@@ -1,0 +1,479 @@
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+    <SOAP-ENV:Header/>
+    <SOAP-ENV:Body xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    >
+        <GetArendeResponse xmlns="www.tekis.se/ServiceContract">
+            <GetArendeResult arendeId="233696" dnr="BYGG 2024-000019" diarieprefix="BYGG"
+                             komkod="2281" enhetkod="SBK" arendegrupp="LOV" arendetyp="BL"
+                             arendeslag="A" arendeklass="TRA" namndkod="SBN" kalla="3" checksum="0">
+                <status xmlns="www.tekis.se/arende">Pågående</status>
+                <beskrivning xmlns="www.tekis.se/arende">Bygglov för nybyggnad av
+                    transformatorstation
+                </beskrivning>
+                <ankomstDatum xmlns="www.tekis.se/arende">2024-08-27</ankomstDatum>
+                <uppdateradDatum xmlns="www.tekis.se/arende">2024-08-27</uppdateradDatum>
+                <registreradDatum xmlns="www.tekis.se/arende">2024-08-27</registreradDatum>
+                <handlaggare handlaggareId="1607" signatur="SYSTEM" xmlns="www.tekis.se/arende">
+                    <fornamn>Systemanvändare</fornamn>
+                    <efternamn>System</efternamn>
+                </handlaggare>
+                <intressentLista xmlns="www.tekis.se/arende">
+                    <intressent intressentId="38334" persOrgNr="16212000-2411" arForetag="true"
+                                intressentVersionId="215712" kundnr="12296" arInternKund="false"
+                                arAktiv="true" checksum="-360077901|1926702523">
+                        <namn>SUNDSVALLS KOMMUN</namn>
+                        <postNr>851 85</postNr>
+                        <ort>SUNDSVALL</ort>
+                        <land>Sverige</land>
+                        <intressentKommunikationLista>
+                            <intressentKommunikation arAktiv="true" checksum="740967109">
+                                <beskrivning>0701111111</beskrivning>
+                                <komtyp>HEM</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="-1143432453">
+                                <beskrivning>0702222222</beskrivning>
+                                <komtyp>MOB</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="-1737721936">
+                                <beskrivning>firmatecknare.org@test.se</beskrivning>
+                                <komtyp>Epost</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="-871694190">
+                                <beskrivning>markavdelningen@sundsvall.se</beskrivning>
+                                <komtyp>Epost</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="1162631145">
+                                <beskrivning>070-1000849</beskrivning>
+                                <komtyp>MOB</komtyp>
+                                <attention attentionId="13887" checksum="1830436194">
+                                    <attention>Lars Byström</attention>
+                                </attention>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="652881896">
+                                <beskrivning>060-191000</beskrivning>
+                                <komtyp>ARB</komtyp>
+                                <attention attentionId="13887" checksum="1830436194">
+                                    <attention>Lars Byström</attention>
+                                </attention>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="-1835757847">
+                                <beskrivning>lars.bystrom@sundsvall.se</beskrivning>
+                                <komtyp>Epost</komtyp>
+                                <attention attentionId="13887" checksum="1830436194">
+                                    <attention>Lars Byström</attention>
+                                </attention>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="1857560335">
+                                <beskrivning>07011122</beskrivning>
+                                <komtyp>MOB</komtyp>
+                                <attention attentionId="47267" checksum="757221280">
+                                    <attention>TEST</attention>
+                                </attention>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="599847429">
+                                <beskrivning>0701112211</beskrivning>
+                                <komtyp>MOB</komtyp>
+                                <attention attentionId="47267" checksum="757221280">
+                                    <attention>TEST</attention>
+                                </attention>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="-562964003">
+                                <beskrivning>0701112233</beskrivning>
+                                <komtyp>MOB</komtyp>
+                                <attention attentionId="47267" checksum="757221280">
+                                    <attention>TEST</attention>
+                                </attention>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="-1686876762">
+                                <beskrivning>test@test.com</beskrivning>
+                                <komtyp>Epost</komtyp>
+                                <attention attentionId="47267" checksum="757221280">
+                                    <attention>TEST</attention>
+                                </attention>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="-540156243">
+                                <beskrivning>testa@test.com</beskrivning>
+                                <komtyp>Epost</komtyp>
+                                <attention attentionId="47267" checksum="757221280">
+                                    <attention>TEST</attention>
+                                </attention>
+                            </intressentKommunikation>
+                        </intressentKommunikationLista>
+                        <rollLista>
+                            <roll>FAG</roll>
+                        </rollLista>
+                    </intressent>
+                    <intressent intressentId="132347" persOrgNr="19630724-7921" arForetag="true"
+                                intressentVersionId="216060" kundnr="132347" arInternKund="false"
+                                arAktiv="true" checksum="-359202621|-359202621">
+                        <namn>evas</namn>
+                        <adress>tg99</adress>
+                        <postNr>99999</postNr>
+                        <ort>hsand</ort>
+                        <intressentKommunikationLista>
+                            <intressentKommunikation arAktiv="true" checksum="222597226">
+                                <beskrivning>0701234569</beskrivning>
+                                <komtyp>HEM</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="-1428641392">
+                                <beskrivning>0703692587</beskrivning>
+                                <komtyp>HEM</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="-1393805503">
+                                <beskrivning>0705555555</beskrivning>
+                                <komtyp>HEM</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="-2027162912">
+                                <beskrivning>0709632147</beskrivning>
+                                <komtyp>HEM</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="766406109">
+                                <beskrivning>0709999999</beskrivning>
+                                <komtyp>HEM</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="-1901977618">
+                                <beskrivning>060511337</beskrivning>
+                                <komtyp>MOB</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="1096974910">
+                                <beskrivning>060888888</beskrivning>
+                                <komtyp>MOB</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="117080913">
+                                <beskrivning>0611456789</beskrivning>
+                                <komtyp>MOB</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="390952300">
+                                <beskrivning>0611511337</beskrivning>
+                                <komtyp>MOB</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="746406720">
+                                <beskrivning>0611630724</beskrivning>
+                                <komtyp>MOB</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="958854279">
+                                <beskrivning>0614511337</beskrivning>
+                                <komtyp>MOB</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="-1901941809">
+                                <beskrivning>061511337</beskrivning>
+                                <komtyp>MOB</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="-107848426">
+                                <beskrivning>0619999999</beskrivning>
+                                <komtyp>MOB</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="740967108">
+                                <beskrivning>0701111111</beskrivning>
+                                <komtyp>MOB</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="-562994818">
+                                <beskrivning>0701112233</beskrivning>
+                                <komtyp>MOB</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="-919999232">
+                                <beskrivning>0701234678</beskrivning>
+                                <komtyp>MOB</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="1266510427">
+                                <beskrivning>0701800113</beskrivning>
+                                <komtyp>MOB</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="-312093980">
+                                <beskrivning>0701965022</beskrivning>
+                                <komtyp>MOB</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="-1596505011">
+                                <beskrivning>0704445566</beskrivning>
+                                <komtyp>MOB</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="-144850632">
+                                <beskrivning>0707778899</beskrivning>
+                                <komtyp>MOB</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="1297768413">
+                                <beskrivning>0707896541</beskrivning>
+                                <komtyp>MOB</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="2109587517">
+                                <beskrivning>0708888888</beskrivning>
+                                <komtyp>MOB</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="1508594534">
+                                <beskrivning>070987456</beskrivning>
+                                <komtyp>MOB</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="1187377707">
+                                <beskrivning>0709874563</beskrivning>
+                                <komtyp>MOB</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="522556869">
+                                <beskrivning>07098745632</beskrivning>
+                                <komtyp>MOB</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="-611461266">
+                                <beskrivning>0709998877</beskrivning>
+                                <komtyp>MOB</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="766406108">
+                                <beskrivning>0709999999</beskrivning>
+                                <komtyp>MOB</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="-1844748854">
+                                <beskrivning>0901111111</beskrivning>
+                                <komtyp>MOB</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="1785158683">
+                                <beskrivning>09011111111</beskrivning>
+                                <komtyp>MOB</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="-777366796">
+                                <beskrivning>0907777777</beskrivning>
+                                <komtyp>MOB</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="-1954578045">
+                                <beskrivning>0701800113@post.se</beskrivning>
+                                <komtyp>Epost</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="1081205372">
+                                <beskrivning>196307247921@post.no</beskrivning>
+                                <komtyp>Epost</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="-1995243229">
+                                <beskrivning>6307247921@hsand.se</beskrivning>
+                                <komtyp>Epost</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="1040077287">
+                                <beskrivning>annan.kontaktpersons@fornamn.se</beskrivning>
+                                <komtyp>Epost</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="1434212654">
+                                <beskrivning>annan@kontakt.se</beskrivning>
+                                <komtyp>Epost</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="1552019630">
+                                <beskrivning>dd@dd.se</beskrivning>
+                                <komtyp>Epost</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="-1468004982">
+                                <beskrivning>ddd@dd.se</beskrivning>
+                                <komtyp>Epost</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="-2077690723">
+                                <beskrivning>ddd@k.se</beskrivning>
+                                <komtyp>Epost</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="1509728592">
+                                <beskrivning>ddd@ss.se</beskrivning>
+                                <komtyp>Epost</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="767357396">
+                                <beskrivning>e@s.se</beskrivning>
+                                <komtyp>Epost</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="-396196950">
+                                <beskrivning>ee@ss.se</beskrivning>
+                                <komtyp>Epost</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="-138314632">
+                                <beskrivning>evas@enskilda.se</beskrivning>
+                                <komtyp>Epost</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="-1151230741">
+                                <beskrivning>linnea@kontakt.se</beskrivning>
+                                <komtyp>Epost</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="935380688">
+                                <beskrivning>linnea@linnea.se</beskrivning>
+                                <komtyp>Epost</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="1340537412">
+                                <beskrivning>ll@ww.se</beskrivning>
+                                <komtyp>Epost</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="-1671435124">
+                                <beskrivning>o@ooooooo.se</beskrivning>
+                                <komtyp>Epost</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="767376942">
+                                <beskrivning>p@p.se</beskrivning>
+                                <komtyp>Epost</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="-322344577">
+                                <beskrivning>pask@hurra.se</beskrivning>
+                                <komtyp>Epost</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="425664113">
+                                <beskrivning>post@s.se</beskrivning>
+                                <komtyp>Epost</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="-2097511890">
+                                <beskrivning>pp@pp.se</beskrivning>
+                                <komtyp>Epost</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="-364759266">
+                                <beskrivning>ppp@pppppppp.se</beskrivning>
+                                <komtyp>Epost</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="-1816306354">
+                                <beskrivning>ss@ss.se</beskrivning>
+                                <komtyp>Epost</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="-655134738">
+                                <beskrivning>tttttttttttt@tttttttt.se</beskrivning>
+                                <komtyp>Epost</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="767373710">
+                                <beskrivning>u@u.se</beskrivning>
+                                <komtyp>Epost</komtyp>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="741014205">
+                                <beskrivning>0701111111</beskrivning>
+                                <komtyp>MOB</komtyp>
+                                <attention attentionId="47225" checksum="-1886728106">
+                                    <attention>eva</attention>
+                                </attention>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="1741661724">
+                                <beskrivning>0701234567</beskrivning>
+                                <komtyp>MOB</komtyp>
+                                <attention attentionId="47225" checksum="-1886728106">
+                                    <attention>eva</attention>
+                                </attention>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="2109569092">
+                                <beskrivning>0708888888</beskrivning>
+                                <komtyp>MOB</komtyp>
+                                <attention attentionId="47225" checksum="-1886728106">
+                                    <attention>eva</attention>
+                                </attention>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="36942711">
+                                <beskrivning>eva.eva@post.se</beskrivning>
+                                <komtyp>Epost</komtyp>
+                                <attention attentionId="47225" checksum="-1886728106">
+                                    <attention>eva</attention>
+                                </attention>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="373385911">
+                                <beskrivning>oo@oo.se</beskrivning>
+                                <komtyp>Epost</komtyp>
+                                <attention attentionId="47225" checksum="-1886728106">
+                                    <attention>eva</attention>
+                                </attention>
+                            </intressentKommunikation>
+                            <intressentKommunikation arAktiv="true" checksum="-1564761129">
+                                <beskrivning>post@post.se</beskrivning>
+                                <komtyp>Epost</komtyp>
+                                <attention attentionId="47225" checksum="-1886728106">
+                                    <attention>eva</attention>
+                                </attention>
+                            </intressentKommunikation>
+                        </intressentKommunikationLista>
+                        <attention attentionId="47225" checksum="-1886728106">
+                            <attention>eva</attention>
+                        </attention>
+                        <rollLista>
+                            <roll>SOK</roll>
+                        </rollLista>
+                    </intressent>
+                </intressentLista>
+                <handelseLista xmlns="www.tekis.se/arende">
+                    <handelse handelseId="1465832" checksum="7">
+                        <riktning>In</riktning>
+                        <rubrik>Bygglov</rubrik>
+                        <startDatum>2024-08-27T10:34:00+02:00</startDatum>
+                        <anteckning/>
+                        <handelseslag>Bygglov</handelseslag>
+                        <handelsetyp>ANSÖKAN</handelsetyp>
+                        <sekretess>false</sekretess>
+                        <makulerad>false</makulerad>
+                        <handlingLista>
+                            <handling handlingId="1484433" checksum="7">
+                                <typ>ANS</typ>
+                                <status>Inkommen</status>
+                                <handlingDatum>2024-08-27</handlingDatum>
+                                <anteckning>16474.pdf</anteckning>
+                                <uuid>9c2c4cf3-231a-40cf-857b-d0c6d8e4d0d8</uuid>
+                                <arkivStatus>Arkiveras</arkivStatus>
+                                <makulerad>false</makulerad>
+                                <dokument dokId="250324719"
+                                          checksum="1774581576|638603516920000000">
+                                    <namn>16474.pdf</namn>
+                                </dokument>
+                            </handling>
+                        </handlingLista>
+                        <intressentLista/>
+                        <arbetsmaterial>false</arbetsmaterial>
+                        <handlaggare signatur="SYSTEM"/>
+                    </handelse>
+                    <handelse handelseId="12345" checksum="21">
+                        <riktning>Ut</riktning>
+                        <rubrik>Grannehörande Utskick, omg. 1</rubrik>
+                        <startDatum>2024-10-01T10:51:00+02:00</startDatum>
+                        <anteckning>TEST</anteckning>
+                        <handelseslag>GRAUTS</handelseslag>
+                        <handelsetyp>GRANHO</handelsetyp>
+                        <sekretess>false</sekretess>
+                        <makulerad>false</makulerad>
+                        <handlingLista/>
+                        <intressentLista>
+                            <intressent intressentId="15568" persOrgNr="19010101-0159"
+                                        arForetag="false" intressentVersionId="50648" kundnr="15568"
+                                        arInternKund="false" arAktiv="true"
+                                        checksum="-561132741|1007849643">
+                                <namn>Ulrika Södergårds</namn>
+                                <adress>Siljekvarnsvägen 19</adress>
+                                <postNr>855 91</postNr>
+                                <ort>SUNDSVALL</ort>
+                                <intressentKommunikationLista>
+                                    <intressentKommunikation arAktiv="true" checksum="740967108">
+                                        <beskrivning>0701111111</beskrivning>
+                                        <komtyp>MOB</komtyp>
+                                    </intressentKommunikation>
+                                    <intressentKommunikation arAktiv="true" checksum="-598462390">
+                                        <beskrivning>0702859382</beskrivning>
+                                        <komtyp>MOB</komtyp>
+                                    </intressentKommunikation>
+                                    <intressentKommunikation arAktiv="true" checksum="-718143182">
+                                        <beskrivning>ulrika.sodergards@sundsvall.se</beskrivning>
+                                        <komtyp>Epost</komtyp>
+                                    </intressentKommunikation>
+                                    <intressentKommunikation arAktiv="true" checksum="1553983150">
+                                        <beskrivning>ulrika_sodergards@hotmail.com</beskrivning>
+                                        <komtyp>Epost</komtyp>
+                                    </intressentKommunikation>
+                                </intressentKommunikationLista>
+                                <aktorbehorighetLista>
+                                    <aktorbehorighet checksum="1677529790">
+                                        <behorighetRoll>KOA</behorighetRoll>
+                                        <niva>N</niva>
+                                        <nr>123456</nr>
+                                        <certifieradAv>RISE</certifieradAv>
+                                        <certifieradTillDatum>2025-02-12</certifieradTillDatum>
+                                    </aktorbehorighet>
+                                </aktorbehorighetLista>
+                                <rollLista>
+                                    <roll>KPER</roll>
+                                </rollLista>
+                            </intressent>
+                        </intressentLista>
+                        <arbetsmaterial>false</arbetsmaterial>
+                        <handlaggare signatur="SYSTEM"/>
+                    </handelse>
+                </handelseLista>
+                <projektnr xmlns="www.tekis.se/arende">hejåjå</projektnr>
+                <bevakningLista xmlns="www.tekis.se/arende"/>
+                <objektLista xmlns="www.tekis.se/arende">
+                    <abstractArendeObjekt xsi:type="arendeFastighet" arendeObjektId="246179"
+                                          arHuvudObjekt="true" checksum="1|">
+                        <fastighet checksum="1482424270|" fnr="22044332">
+                            <trakt>BALDER</trakt>
+                            <fbetNr>2</fbetNr>
+                        </fastighet>
+                    </abstractArendeObjekt>
+                </objektLista>
+            </GetArendeResult>
+        </GetArendeResponse>
+    </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>

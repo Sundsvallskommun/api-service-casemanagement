@@ -1,0 +1,20 @@
+{
+	"name": "api-opene-confirm-delivery",
+	"request": {
+		"method": "POST",
+		"urlPath": "/opene/1.0",
+		"headers": {
+			"Content-Type": {
+				"equalTo": "text/xml; charset=UTF-8"
+			}
+		},
+		"bodyPatterns": [
+			{
+				"matchesXPath": "//*[local-name()='confirmDelivery']"
+			}
+		]
+	},
+	"response": {
+		"status": 200
+	}
+}

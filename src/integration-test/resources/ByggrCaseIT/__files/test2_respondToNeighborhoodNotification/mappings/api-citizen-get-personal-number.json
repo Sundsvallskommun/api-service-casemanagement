@@ -1,0 +1,13 @@
+{
+	"request": {
+		"method": "GET",
+		"url": "/citizen/97ed4de2-9f80-427d-b010-5d81267ef96b/personnumber"
+	},
+	"response": {
+		"body": "190101010159",
+		"headers": {
+			"Content-Type": "text/plain"
+		},
+		"status": "200"
+	}
+}

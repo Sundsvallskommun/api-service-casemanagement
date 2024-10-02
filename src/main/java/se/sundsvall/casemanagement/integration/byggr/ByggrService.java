@@ -8,8 +8,6 @@ import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.createAd
 import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.createAddCertifiedInspectorHandelse;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.createAddCertifiedInspectorHandelseIntressent;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.createNeighborhoodNotificationArrayOfHandling;
-import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.createNewEvent;
-import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.createSaveNewHandelse;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.extractEvent;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.extractIntressentFromEvent;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.filterPersonId;
@@ -36,6 +34,7 @@ import static se.sundsvall.casemanagement.integration.byggr.ByggrUtil.writeEvent
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -73,11 +72,17 @@ import arendeexport.ArrayOfString;
 import arendeexport.Fastighet;
 import arendeexport.GetArende;
 import arendeexport.GetRelateradeArendenByPersOrgNrAndRole;
+import arendeexport.GetRemisserByPersOrgNr;
+import arendeexport.HandelseIntressent;
 import arendeexport.HandlaggareBas;
+import arendeexport.Remiss;
+import arendeexport.RemissStatusFilter;
 import arendeexport.SaveNewArende;
 import arendeexport.SaveNewArendeResponse2;
 import arendeexport.SaveNewHandelse;
 import arendeexport.SaveNewHandelseMessage;
+import arendeexport.SaveNewRemissvar;
+import arendeexport.SaveNewRemissvarMessage;
 
 @Service
 public class ByggrService {
@@ -144,29 +149,49 @@ public class ByggrService {
 	}
 
 	public void respondToNeighborhoodNotification(final ByggRCaseDTO byggRCaseDTO) {
-
 		var stakeholderId = extractStakeholderId(byggRCaseDTO.getStakeholders());
-		var propertyDesignation = byggRCaseDTO.getFacilities().getFirst().getAddress().getPropertyDesignation();
-		var stakeholderName = extractStakeholderName(byggRCaseDTO.getStakeholders());
 		var errandNr = byggRCaseDTO.getExtraParameters().get("errandNr");
+		var handelseId = Integer.parseInt(errandNr.replaceAll("^[^\\[]*\\[([^]]+)].*", "$1"));
+		var dnr = errandNr.split("\\[")[0].trim();
 		var comment = byggRCaseDTO.getExtraParameters().get("comment");
 		var errandInformation = byggRCaseDTO.getExtraParameters().get("errandInformation");
 		var handelseHandling = createNeighborhoodNotificationArrayOfHandling(byggRCaseDTO);
 
-		var handelseId = Integer.parseInt(errandNr.replaceAll("^[^\\[]*\\[([^]]+)].*", "$1"));
-		var dnr = errandNr.split("\\[")[0].trim();
-
 		var handelse = extractEvent(getByggRCase(dnr), handelseId);
 		var intressent = extractIntressentFromEvent(handelse, stakeholderId);
 
-		var newHandelse = createNewEvent(comment, errandInformation, intressent, stakeholderName, propertyDesignation);
-		var saveNewHandelse = createSaveNewHandelse(dnr, newHandelse, handelseHandling, handelseId);
+		var remisser = getRemisserByPersOrgNrAndFilterByDnr(stakeholderId, dnr);
+		var remiss = filterRemisserByStakeholderIdAndIntressentRoll(remisser, stakeholderId, intressent);
 
-		arendeExportClient.saveNewHandelse(saveNewHandelse);
+		var saveNewRemissvar = new SaveNewRemissvar()
+			.withMessage(new SaveNewRemissvarMessage()
+				.withHandlaggarSign("SYSTEM")
+				.withErinran(comment.equals("Jag har synpunkter"))
+				.withMeddelande(errandInformation)
+				.withRemissId(remiss.getRemissId())
+				.withHandlingar(handelseHandling));
+
+		arendeExportClient.saveNewRemissvar(saveNewRemissvar);
 		openEIntegration.confirmDelivery(byggRCaseDTO.getExternalCaseId(), "BYGGR", errandNr);
 		openEIntegration.setStatus(byggRCaseDTO.getExternalCaseId(), "BYGGR", errandNr, "Klart");
 	}
 
+	public Remiss filterRemisserByStakeholderIdAndIntressentRoll(final List<Remiss> remisser, final String stakeholderId, final HandelseIntressent intressent) {
+		return remisser.stream()
+			.filter(remiss -> stakeholderId.equals(remiss.getMottagare().getPersOrgNr()))
+			.filter(remiss -> // Kontrollerar att alla roller i intressenten finns i remissen och vice versa
+				new HashSet<>(intressent.getRollLista().getRoll()).containsAll(remiss.getMottagare().getRollLista().getRoll()) &&
+					new HashSet<>(remiss.getMottagare().getRollLista().getRoll()).containsAll(intressent.getRollLista().getRoll()))
+			.findFirst().orElseThrow(() -> Problem.valueOf(BAD_REQUEST, "No remiss with equal rollLista found for stakeholderId %s".formatted(stakeholderId)));
+	}
+
+	public List<Remiss> getRemisserByPersOrgNrAndFilterByDnr(final String persOrgNr, final String dnr) {
+		return arendeExportClient.getRemisserByPersOrgNr(new GetRemisserByPersOrgNr()
+				.withPersOrgNr(persOrgNr)
+				.withStatusFilter(RemissStatusFilter.NONE)).getGetRemisserByPersOrgNrResult().getRemiss().stream()
+			.filter(remiss -> remiss.getDnr().equals(dnr))
+			.toList();
+	}
 
 	/**
 	 * The incoming request might have one or two stakeholders. If any stakeholder is of type
