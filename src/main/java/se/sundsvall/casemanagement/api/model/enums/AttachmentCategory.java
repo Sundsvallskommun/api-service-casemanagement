@@ -12,6 +12,10 @@ public enum AttachmentCategory {
 	///////////////////////////////////
 	// ByggR
 	///////////////////////////////////
+	LAND_SECTION_DRAWING("MASE", "Marksektionsritning"),
+	LAND_PLANNING_DRAWING("MAPL", "Markplaneringsritning"),
+	PROJECT_DESCRIPTION("PROJ", "Projektbeskrivning"),
+	MOBILITY_REPORT("MOB", "Mobilitetsredogörelse"),
 	PLAN_DRAWING("ARIT", "A-ritningar"),
 	FACADE("FAS", "Fasad"),
 	FACADE_SECTION_DRAWING("FS2", "Fasad- och sektionsritning"),

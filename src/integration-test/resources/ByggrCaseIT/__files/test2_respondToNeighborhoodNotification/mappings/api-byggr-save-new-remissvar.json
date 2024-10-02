@@ -1,0 +1,23 @@
+{
+	"name": "api-byggr-save-new-remissvar",
+	"request": {
+		"method": "POST",
+		"urlPath": "/TekisArende/ArendeExportWS.svc",
+		"headers": {
+			"Content-Type": {
+				"equalTo": "text/xml;charset=UTF-8"
+			},
+			"SOAPAction": {
+				"equalTo": "www.tekis.se/ServiceContract/V4/IExportArenden/SaveNewRemissvar"
+			}
+		},
+		"bodyPatterns": [
+			{
+				"matchesXPath": "//*[local-name()='SaveNewRemissvar']"
+			}
+		]
+	},
+	"response": {
+		"status": 200
+	}
+}

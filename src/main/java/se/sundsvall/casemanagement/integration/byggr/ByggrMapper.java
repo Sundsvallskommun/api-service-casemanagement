@@ -614,7 +614,7 @@ public final class ByggrMapper {
 	 */
 	static HandelseIntressent extractIntressentFromEvent(final Handelse handelse, final String stakeholderId) {
 		final var intressent = handelse.getIntressentLista().getIntressent().stream()
-			.filter(intressent1 -> intressent1.getPersOrgNr().equals(stakeholderId))
+			.filter(intressent1 -> (intressent1.getPersOrgNr().equals(stakeholderId) || intressent1.getPersOrgNr().equals(stakeholderId.substring(2))))
 			.findFirst().orElseThrow(() -> Problem.valueOf(BAD_REQUEST, "Stakeholder with id %s not found in ByggRCase".formatted(stakeholderId)));
 
 		var intressentKommunkationLista = new ArrayOfIntressentKommunikation()

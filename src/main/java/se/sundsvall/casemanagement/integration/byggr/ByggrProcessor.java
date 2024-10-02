@@ -57,14 +57,14 @@ class ByggrProcessor extends Processor {
 		}
 		final String json = new BufferedReader(caseEntity.getDto().getCharacterStream()).lines().collect(Collectors.joining());
 		final var objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
-		final var planningPermissionCaseDTO = objectMapper.readValue(json, ByggRCaseDTO.class);
+		final var byggRCaseDTO = objectMapper.readValue(json, ByggRCaseDTO.class);
 
 		try {
 			Failsafe
 				.with(retryPolicy)
 				.onSuccess(successEvent -> handleSuccessfulDelivery(caseEntity.getId(), "BYGGR", successEvent.getResult().getDnr(), event.getMunicipalityId()))
 				.onFailure(failureEvent -> handleMaximumDeliveryAttemptsExceeded(failureEvent.getException(), caseEntity, "BYGGR", event.getMunicipalityId()))
-				.get(() -> service.saveNewCase(planningPermissionCaseDTO, event.getMunicipalityId()));
+				.get(() -> service.saveNewCase(byggRCaseDTO, event.getMunicipalityId()));
 		} catch (final Exception e) {
 			cleanAttachmentBase64(event);
 			log.warn("Unable to create byggR errand {}: {}", event.getPayload(), e.getMessage());

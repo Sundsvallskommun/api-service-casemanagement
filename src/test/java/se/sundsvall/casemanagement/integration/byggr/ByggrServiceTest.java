@@ -64,7 +64,6 @@ import org.zalando.problem.Status;
 import org.zalando.problem.ThrowableProblem;
 
 import se.sundsvall.casemanagement.TestUtil;
-import se.sundsvall.casemanagement.api.model.AddressDTO;
 import se.sundsvall.casemanagement.api.model.AttachmentDTO;
 import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
 import se.sundsvall.casemanagement.api.model.CaseStatusDTO;
@@ -97,15 +96,19 @@ import arendeexport.ArrayOfHandelse;
 import arendeexport.ArrayOfHandelseIntressent2;
 import arendeexport.ArrayOfHandling;
 import arendeexport.ArrayOfIntressentKommunikation;
+import arendeexport.ArrayOfRemiss;
+import arendeexport.ArrayOfString2;
 import arendeexport.GetArende;
 import arendeexport.GetArendeResponse;
 import arendeexport.GetRelateradeArendenByPersOrgNrAndRole;
 import arendeexport.GetRelateradeArendenByPersOrgNrAndRoleResponse;
+import arendeexport.GetRemisserByPersOrgNrResponse;
 import arendeexport.Handelse;
 import arendeexport.HandelseHandling;
 import arendeexport.HandelseIntressent;
 import arendeexport.IntressentAttention;
 import arendeexport.IntressentKommunikation;
+import arendeexport.Remiss;
 import arendeexport.SaveNewArende;
 import arendeexport.SaveNewArendeMessage;
 import arendeexport.SaveNewArendeResponse2;
@@ -1037,16 +1040,18 @@ class ByggrServiceTest {
 		final var dnr = "some-dnr";
 		final var comment = "comment";
 		final var errandInformation = "errandInformation";
+		final var rollLista = List.of("Kung", "Drottning", "Prins");
 
 		final var spy = Mockito.spy(byggrService);
 		final var byggRCaseDTO = mock(ByggRCaseDTO.class);
-		final var address = mock(AddressDTO.class);
-		final var facility = mock(FacilityDTO.class);
-		final var facilities = mock(List.class);
 
 		final var extraParameterMap = mock(HashMap.class);
 
 		// ByggR Mocks
+		final var remiss = mock(Remiss.class);
+		final var getRemisserByPersOrgNrResponse = mock(GetRemisserByPersOrgNrResponse.class);
+		final var arrayOfRemiss = mock(ArrayOfRemiss.class);
+		final var arrayOfString2 = mock(ArrayOfString2.class);
 		final var arende = mock(Arende.class);
 		final var arrayOfHandelse = mock(ArrayOfHandelse.class);
 		final var handelse = mock(Handelse.class);
@@ -1056,15 +1061,20 @@ class ByggrServiceTest {
 
 		when(byggRCaseDTO.getStakeholders()).thenReturn(stakeholders);
 		when(byggRCaseDTO.getExtraParameters()).thenReturn(extraParameterMap);
-		when(byggRCaseDTO.getFacilities()).thenReturn(facilities);
-		when(facilities.getFirst()).thenReturn(facility);
-		when(facility.getAddress()).thenReturn(address);
-		when(address.getPropertyDesignation()).thenReturn("SUNDSVALL 123");
 		when(extraParameterMap.get("errandNr")).thenReturn(errandNr);
 		when(extraParameterMap.get(comment)).thenReturn(comment);
 		when(extraParameterMap.get(errandInformation)).thenReturn(errandInformation);
 
 		// ByggR Stubs
+		when(arendeExportClientMock.getRemisserByPersOrgNr(any())).thenReturn(getRemisserByPersOrgNrResponse);
+		when(getRemisserByPersOrgNrResponse.getGetRemisserByPersOrgNrResult()).thenReturn(arrayOfRemiss);
+		when(arrayOfRemiss.getRemiss()).thenReturn(List.of(remiss));
+		when(remiss.getDnr()).thenReturn(dnr);
+		when(remiss.getMottagare()).thenReturn(handelseIntressent);
+		when(handelseIntressent.getRollLista()).thenReturn(arrayOfString2);
+		when(arrayOfString2.getRoll()).thenReturn(rollLista);
+
+		when(arendeExportClientMock.getArende(any())).thenReturn(getArendeResponse);
 		when(getArendeResponse.getGetArendeResult()).thenReturn(arende);
 		when(arende.getHandelseLista()).thenReturn(arrayOfHandelse);
 		when(arrayOfHandelse.getHandelse()).thenReturn(List.of(handelse));
@@ -1080,7 +1090,6 @@ class ByggrServiceTest {
 					.withAttentionId(12345))
 				.withKomtyp("Epost")));
 
-		when(arendeExportClientMock.getArende(any())).thenReturn(getArendeResponse);
 		when(spy.extractStakeholderId(stakeholders)).thenReturn(stakeholderId);
 		when(spy.getByggRCase(dnr)).thenReturn(arende);
 		spy.respondToNeighborhoodNotification(byggRCaseDTO);
@@ -1089,7 +1098,31 @@ class ByggrServiceTest {
 		verify(spy).getByggRCase(dnr);
 		verify(openEIntegrationMock).setStatus(any(), any(), any(), any());
 
+		verify(arendeExportClientMock).saveNewRemissvar(any());
+	}
+
+	@Test
+	void addCertifiedInspectorTest() {
+		var stakeholders = List.of(createStakeholderDTO(StakeholderType.ORGANIZATION, List.of("role")));
+		var errandNr = "some-dnr [123]";
+		var errandInformation = "errandInformation";
+		var byggRCaseDTO = mock(ByggRCaseDTO.class);
+		var extraParameterMap = mock(HashMap.class);
+
+		when(byggRCaseDTO.getStakeholders()).thenReturn(stakeholders);
+		when(byggRCaseDTO.getExtraParameters()).thenReturn(extraParameterMap);
+		when(extraParameterMap.get("errandNr")).thenReturn(errandNr);
+		when(extraParameterMap.get("errandInformation")).thenReturn(errandInformation);
+		when(extraParameterMap.get("certificateValidDate")).thenReturn("2001-01-01");
+		when(extraParameterMap.get("certificateAuthType")).thenReturn("NIVA");
+		when(extraParameterMap.get("certificateIssuer")).thenReturn("issuer");
+		when(extraParameterMap.get("certificateNumber")).thenReturn("123456");
+
+		byggrService.addCertifiedInspector(byggRCaseDTO);
+
 		verify(arendeExportClientMock).saveNewHandelse(any());
+		verify(openEIntegrationMock).confirmDelivery(any(), any(), any());
+		verify(openEIntegrationMock).setStatus(any(), any(), any(), any());
 	}
 
 
