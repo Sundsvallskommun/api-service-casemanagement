@@ -1,0 +1,57 @@
+{
+	"caseType": "BYGGR_ADD_CERTIFIED_INSPECTOR",
+	"externalCaseId": 4397,
+	"extraParameters": {
+		"certificateAuthType": "N",
+		"certificateIssuer": "RISE",
+		"certificateNumber": "1234567Q",
+		"certificateValidDate": "2025-09-27",
+		"oepAction": "PUT",
+		"otherInformation": "Hejhopp",
+		"serviceName": "Anmälan av kontrollansvarig - TEST"
+	},
+	"stakeholders": [
+		{
+			"type": "PERSON",
+			"roles": [
+				"APPLICANT"
+			],
+			"personId": "7cc6d5ef-e44c-49ee-890e-888bde8863e1",
+			"firstName": "OLA",
+			"lastName": "ENEBRO",
+			"cellphoneNumber": "0703981881",
+			"emailAddress": "ola.enebro@sundsvall.se",
+			"addresses": [
+				{
+					"street": "REBETSKYGATAN 14B",
+					"postalCode": "854 60",
+					"city": "SUNDSVALL",
+					"addressCategories": [
+						"POSTAL_ADDRESS"
+					]
+				}
+			]
+		}
+	],
+	"facilities": [
+		{
+			"facilityType": "OTHER",
+			"mainFacility": true,
+			"address": {
+				"propertyDesignation": "SUNDSVALL BALDER 5",
+				"addressCategories": [
+					"VISITING_ADDRESS"
+				]
+			}
+		}
+	],
+	"attachments": [
+		{
+			"category": "ANM",
+			"name": "16700.pdf",
+			"extension": ".pdf",
+			"mimeType": "application/pdf",
+			"file": "dGVzdA=="
+		}
+	]
+}

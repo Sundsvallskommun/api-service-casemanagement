@@ -7,6 +7,7 @@ import static se.sundsvall.casemanagement.api.model.enums.CaseType.WITH_NULLABLE
 import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.createAddCertifiedInspectorArrayOfHandling;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.createAddCertifiedInspectorHandelse;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.createAddCertifiedInspectorHandelseIntressent;
+import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.createAlertCaseManagerEvent;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.createNeighborhoodNotificationArrayOfHandling;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.extractEvent;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.extractIntressentFromEvent;
@@ -144,6 +145,7 @@ public class ByggrService {
 				.withAutoGenereraBeslutNr(false));
 
 		arendeExportClient.saveNewHandelse(saveNewHandelse);
+		arendeExportClient.saveNewHandelse(createAlertCaseManagerEvent(errandNr));
 		openEIntegration.confirmDelivery(byggRCase.getExternalCaseId(), "BYGGR", errandNr);
 		openEIntegration.setStatus(byggRCase.getExternalCaseId(), "BYGGR", errandNr, "Klart");
 	}
@@ -176,7 +178,7 @@ public class ByggrService {
 		openEIntegration.setStatus(byggRCaseDTO.getExternalCaseId(), "BYGGR", errandNr, "Klart");
 	}
 
-	public Remiss filterRemisserByStakeholderIdAndIntressentRoll(final List<Remiss> remisser, final String stakeholderId, final HandelseIntressent intressent) {
+	private Remiss filterRemisserByStakeholderIdAndIntressentRoll(final List<Remiss> remisser, final String stakeholderId, final HandelseIntressent intressent) {
 		return remisser.stream()
 			.filter(remiss -> stakeholderId.equals(remiss.getMottagare().getPersOrgNr()))
 			.filter(remiss -> // Kontrollerar att alla roller i intressenten finns i remissen och vice versa
@@ -185,7 +187,7 @@ public class ByggrService {
 			.findFirst().orElseThrow(() -> Problem.valueOf(BAD_REQUEST, "No remiss with equal rollLista found for stakeholderId %s".formatted(stakeholderId)));
 	}
 
-	public List<Remiss> getRemisserByPersOrgNrAndFilterByDnr(final String persOrgNr, final String dnr) {
+	private List<Remiss> getRemisserByPersOrgNrAndFilterByDnr(final String persOrgNr, final String dnr) {
 		return arendeExportClient.getRemisserByPersOrgNr(new GetRemisserByPersOrgNr()
 				.withPersOrgNr(persOrgNr)
 				.withStatusFilter(RemissStatusFilter.NONE)).getGetRemisserByPersOrgNrResult().getRemiss().stream()

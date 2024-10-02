@@ -77,6 +77,7 @@ import arendeexport.ArendeIntressent;
 import arendeexport.ArrayOfHandelse;
 import arendeexport.Handelse;
 import arendeexport.IntressentAttention;
+import arendeexport.SaveNewHandelse;
 
 class ByggrMapperTest {
 
@@ -1060,6 +1061,33 @@ class ByggrMapperTest {
 			assertThat(dokument.getFil()).satisfies(fil -> {
 				assertThat(fil.getFilBuffer()).isEqualTo(Base64.getDecoder().decode(attachment.getFile().getBytes()));
 				assertThat(fil.getFilAndelse()).isEqualTo(attachment.getExtension());
+			});
+		});
+	}
+
+	@Test
+	void createAlertCaseManagerEvent() {
+		var dnr = "dnr";
+
+		var result = ByggrMapper.createAlertCaseManagerEvent(dnr);
+
+		assertThat(result).isNotNull().isInstanceOf(SaveNewHandelse.class).satisfies(saveNewHandelse -> {
+			assertThat(saveNewHandelse.getMessage()).satisfies(message -> {
+				assertThat(message.getDnr()).isEqualTo(dnr);
+				assertThat(message.getHandlaggarSign()).isEqualTo("SYSTEM");
+				assertThat(message.isAnkomststamplaHandlingar()).isFalse();
+				assertThat(message.isAutoGenereraBeslutNr()).isFalse();
+
+				assertThat(message.getHandelse()).satisfies(handelse -> {
+					assertThat(handelse.getRiktning()).isEqualTo("In");
+					assertThat(handelse.getRubrik()).isEqualTo("Manuell hantering krävs");
+					assertThat(handelse.getStartDatum()).isCloseTo(LocalDateTime.now(), within(2, SECONDS));
+					assertThat(handelse.getHandelseslag()).isEqualTo("MANHANT");
+					assertThat(handelse.getHandelsetyp()).isEqualTo("STATUS");
+					assertThat(handelse.isSekretess()).isFalse();
+					assertThat(handelse.isMakulerad()).isFalse();
+					assertThat(handelse.isArbetsmaterial()).isFalse();
+				});
 			});
 		});
 	}

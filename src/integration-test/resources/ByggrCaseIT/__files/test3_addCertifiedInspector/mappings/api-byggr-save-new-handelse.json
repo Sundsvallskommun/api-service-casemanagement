@@ -1,0 +1,30 @@
+{
+	"name": "api-byggr-save-new-handelse",
+	"request": {
+		"method": "POST",
+		"urlPath": "/TekisArende/ArendeExportWS.svc",
+		"headers": {
+			"Content-Type": {
+				"equalTo": "text/xml;charset=UTF-8"
+			},
+			"SOAPAction": {
+				"equalTo": "www.tekis.se/ServiceContract/V4/IExportArenden/SaveNewHandelse"
+			}
+		},
+		"bodyPatterns": [
+			{
+				"matchesXPath": "//*[local-name()='SaveNewHandelse']"
+			}
+		]
+	},
+	"response": {
+		"headers": {
+			"Content-Type": "application/xml"
+		},
+		"bodyFileName": "test3_addCertifiedInspector/responses/api-byggr-save-new-handelse.xml",
+		"status": 200,
+		"transformers": [
+			"response-template"
+		]
+	}
+}
