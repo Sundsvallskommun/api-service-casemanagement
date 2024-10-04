@@ -90,6 +90,7 @@ import arendeexport.SaveNewRemissvarMessage;
 
 @Service
 public class ByggrService {
+	private static final String SYSTEM = "SYSTEM";
 	private final FbService fbService;
 	private final CitizenService citizenService;
 	private final CaseMappingService caseMappingService;
@@ -139,7 +140,7 @@ public class ByggrService {
 		var saveNewHandelse = new SaveNewHandelse()
 			.withMessage(new SaveNewHandelseMessage()
 				.withDnr(errandNr)
-				.withHandlaggarSign("SYSTEM")
+				.withHandlaggarSign(SYSTEM)
 				.withHandelse(newHandelse)
 				.withHandlingar(arrayOfHandling)
 				.withAnkomststamplaHandlingar(false)
@@ -163,7 +164,7 @@ public class ByggrService {
 		var saveNewHandelse = new SaveNewHandelse()
 			.withMessage(new SaveNewHandelseMessage()
 				.withDnr(errandNr)
-				.withHandlaggarSign("SYSTEM")
+				.withHandlaggarSign(SYSTEM)
 				.withHandelse(newHandelse)
 				.withHandlingar(arrayOfHandling)
 				.withAnkomststamplaHandlingar(false)
@@ -190,7 +191,7 @@ public class ByggrService {
 
 		var saveNewRemissvar = new SaveNewRemissvar()
 			.withMessage(new SaveNewRemissvarMessage()
-				.withHandlaggarSign("SYSTEM")
+				.withHandlaggarSign(SYSTEM)
 				.withErinran(comment.equals("Jag har synpunkter"))
 				.withMeddelande(errandInformation)
 				.withRemissId(remiss.getRemissId())
