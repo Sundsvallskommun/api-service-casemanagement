@@ -13,16 +13,16 @@
 			"roles": [
 				"APPLICANT"
 			],
-			"personId": "7cc6d5ef-e44c-49ee-890e-888bde8863e1",
-			"firstName": "OLA",
-			"lastName": "ENEBRO",
+			"personId": "7cc6d5ef-e44c-49ee-890e-888bda8863e1",
+			"firstName": "Test",
+			"lastName": "Testare",
 			"cellphoneNumber": "0703981881",
-			"emailAddress": "ola.enebro@sundsvall.se",
+			"emailAddress": "test.testare@testsvall.se",
 			"addresses": [
 				{
-					"street": "REBETSKYGATAN 14B",
-					"postalCode": "854 60",
-					"city": "SUNDSVALL",
+					"street": "TestGatan 14B",
+					"postalCode": "123 30",
+					"city": "Testsvall",
 					"addressCategories": [
 						"POSTAL_ADDRESS"
 					]
