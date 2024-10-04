@@ -1,9 +1,7 @@
 package se.sundsvall.casemanagement.integration.opene;
 
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import org.junit.jupiter.api.Test;
@@ -28,8 +26,7 @@ class OpenEIntegrationTest {
 
 		openEIntegration.confirmDelivery("1", "2", "3");
 
-		assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> openeClient.confirmDelivery(any()));
-		verify(openeClient, times(2)).confirmDelivery(any());
+		verify(openeClient).confirmDelivery(any());
 	}
 
 	@Test
@@ -38,8 +35,7 @@ class OpenEIntegrationTest {
 
 		openEIntegration.setStatus("1", "2", "3", "4");
 
-		assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> openeClient.setStatus(any()));
-		verify(openeClient, times(2)).setStatus(any());
+		verify(openeClient).setStatus(any());
 	}
 
 

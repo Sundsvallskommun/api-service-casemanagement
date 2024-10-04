@@ -33,6 +33,14 @@ import static se.sundsvall.casemanagement.integration.byggr.ByggrUtil.containsPr
 import static se.sundsvall.casemanagement.integration.byggr.ByggrUtil.isWithinPlan;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrUtil.parsePropertyDesignation;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrUtil.writeEventNote;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR;
+import static se.sundsvall.casemanagement.util.Constants.COMMENT;
+import static se.sundsvall.casemanagement.util.Constants.DONE;
+import static se.sundsvall.casemanagement.util.Constants.ERRAND_INFORMATION;
+import static se.sundsvall.casemanagement.util.Constants.ERRAND_NR;
+import static se.sundsvall.casemanagement.util.Constants.EVENT_CATEGORY;
+import static se.sundsvall.casemanagement.util.Constants.OTHER_INFORMATION;
+import static se.sundsvall.casemanagement.util.Constants.SYSTEM;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -90,7 +98,8 @@ import arendeexport.SaveNewRemissvarMessage;
 
 @Service
 public class ByggrService {
-	private static final String SYSTEM = "SYSTEM";
+
+
 	private final FbService fbService;
 	private final CitizenService citizenService;
 	private final CaseMappingService caseMappingService;
@@ -129,9 +138,9 @@ public class ByggrService {
 			.max(Comparator.comparing(StakeholderDTO::getType))
 			.orElseThrow(() -> Problem.valueOf(BAD_REQUEST, "No stakeholder found in the incoming request."));
 		var stakeholderId = extractStakeholderId(byggRCase.getStakeholders());
-		var otherInformation = byggRCase.getExtraParameters().get("otherInformation");
-		var errandNr = byggRCase.getExtraParameters().get("errandNr");
-		var handelseslag = byggRCase.getExtraParameters().get("eventCategory");
+		var otherInformation = byggRCase.getExtraParameters().get(OTHER_INFORMATION);
+		var errandNr = byggRCase.getExtraParameters().get(ERRAND_NR);
+		var handelseslag = byggRCase.getExtraParameters().get(EVENT_CATEGORY);
 
 		var handelseIntressent = createAddAdditionalDocumentsHandelseIntressent(stakeholder, stakeholderId);
 		var newHandelse = createAddAdditionalDocumentsHandelse(otherInformation, handelseIntressent, handelseslag);
@@ -147,15 +156,15 @@ public class ByggrService {
 				.withAutoGenereraBeslutNr(false));
 
 		arendeExportClient.saveNewHandelse(saveNewHandelse);
-		openEIntegration.confirmDelivery(byggRCase.getExternalCaseId(), "BYGGR", errandNr);
-		openEIntegration.setStatus(byggRCase.getExternalCaseId(), "BYGGR", errandNr, "Klart");
+		openEIntegration.confirmDelivery(byggRCase.getExternalCaseId(), BYGGR, errandNr);
+		openEIntegration.setStatus(byggRCase.getExternalCaseId(), BYGGR, errandNr, DONE);
 	}
 
 	public void addCertifiedInspector(final ByggRCaseDTO byggRCase) {
 		var stakeholder = byggRCase.getStakeholders().getFirst();
 		var stakeholderId = extractStakeholderId(byggRCase.getStakeholders());
-		var errandNr = byggRCase.getExtraParameters().get("errandNr");
-		var otherInformation = byggRCase.getExtraParameters().get("otherInformation");
+		var errandNr = byggRCase.getExtraParameters().get(ERRAND_NR);
+		var otherInformation = byggRCase.getExtraParameters().get(OTHER_INFORMATION);
 		var arrayOfHandling = createArrayOfHandling(byggRCase);
 
 		var handelseIntressent = createAddCertifiedInspectorHandelseIntressent(stakeholder, stakeholderId, byggRCase.getExtraParameters());
@@ -172,15 +181,15 @@ public class ByggrService {
 
 		arendeExportClient.saveNewHandelse(saveNewHandelse);
 		arendeExportClient.saveNewHandelse(createAlertCaseManagerEvent(errandNr));
-		openEIntegration.confirmDelivery(byggRCase.getExternalCaseId(), "BYGGR", errandNr);
-		openEIntegration.setStatus(byggRCase.getExternalCaseId(), "BYGGR", errandNr, "Klart");
+		openEIntegration.confirmDelivery(byggRCase.getExternalCaseId(), BYGGR, errandNr);
+		openEIntegration.setStatus(byggRCase.getExternalCaseId(), BYGGR, errandNr, DONE);
 	}
 
 	public void respondToNeighborhoodNotification(final ByggRCaseDTO byggRCase) {
 		var stakeholderId = extractStakeholderId(byggRCase.getStakeholders());
-		var comment = byggRCase.getExtraParameters().get("comment");
-		var errandInformation = byggRCase.getExtraParameters().get("errandInformation");
-		var errandNr = byggRCase.getExtraParameters().get("errandNr");
+		var comment = byggRCase.getExtraParameters().get(COMMENT);
+		var errandInformation = byggRCase.getExtraParameters().get(ERRAND_INFORMATION);
+		var errandNr = byggRCase.getExtraParameters().get(ERRAND_NR);
 		var handelseId = Integer.parseInt(errandNr.replaceAll("^[^\\[]*\\[([^]]+)].*", "$1"));
 		var dnr = errandNr.split("\\[")[0].trim();
 		var handelseHandling = createNeighborhoodNotificationArrayOfHandling(byggRCase);
@@ -198,8 +207,8 @@ public class ByggrService {
 				.withHandlingar(handelseHandling));
 
 		arendeExportClient.saveNewRemissvar(saveNewRemissvar);
-		openEIntegration.confirmDelivery(byggRCase.getExternalCaseId(), "BYGGR", errandNr);
-		openEIntegration.setStatus(byggRCase.getExternalCaseId(), "BYGGR", errandNr, "Klart");
+		openEIntegration.confirmDelivery(byggRCase.getExternalCaseId(), BYGGR, errandNr);
+		openEIntegration.setStatus(byggRCase.getExternalCaseId(), BYGGR, errandNr, DONE);
 	}
 
 	private Remiss filterRemisserByStakeholderIdAndIntressentRoll(final List<Remiss> remisser, final String stakeholderId, final HandelseIntressent intressent) {
