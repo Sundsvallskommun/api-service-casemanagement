@@ -559,8 +559,8 @@ public final class ByggrMapper {
 	static HandelseIntressent createAddAdditionalDocumentsHandelseIntressent(final StakeholderDTO stakeholder, final String stakeholderId) {
 		var handelseIntressent = new HandelseIntressent()
 			.withPersOrgNr(stakeholderId)
-			.withAdress(stakeholder.getAddresses().getFirst().getStreet())
-			.withPostNr(stakeholder.getAddresses().getFirst().getPostalCode())
+			.withAdress(Optional.ofNullable(stakeholder.getAddresses()).map(addresses -> addresses.getFirst().getStreet()).orElse(null))
+			.withPostNr(Optional.ofNullable(stakeholder.getAddresses()).map(addresses -> addresses.getFirst().getPostalCode()).orElse(null))
 			.withOrt(stakeholder.getAddresses().getFirst().getCity())
 			.withIntressentKommunikationLista(createArrayOfIntressentKommunikation(stakeholder));
 
@@ -604,7 +604,6 @@ public final class ByggrMapper {
 	}
 
 	static Handelse createAddAdditionalDocumentsHandelse(final String errandInformation, final HandelseIntressent handelseIntressent, final String handelseslag) {
-
 		return new Handelse()
 			.withRiktning("In")
 			.withRubrik("Kompletterande handlingar")
