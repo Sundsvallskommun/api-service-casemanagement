@@ -53,28 +53,28 @@ class ByggRCaseDTOTest {
 		final var extraParameters = Map.of("Key", "Value");
 
 		// Act
-		final var pCase = new ByggRCaseDTO();
-		pCase.setAttachments(attachments);
-		pCase.setStakeholders(stakeholders);
-		pCase.setFacilities(facilities);
-		pCase.setCaseType(caseType);
-		pCase.setCaseTitleAddition(caseTitleAddition);
-		pCase.setDescription(description);
-		pCase.setExternalCaseId(externalCaseId);
-		pCase.setDiaryNumber(diaryNumber);
-		pCase.setExtraParameters(extraParameters);
+		final var byggRCase = new ByggRCaseDTO();
+		byggRCase.setAttachments(attachments);
+		byggRCase.setStakeholders(stakeholders);
+		byggRCase.setFacilities(facilities);
+		byggRCase.setCaseType(caseType);
+		byggRCase.setCaseTitleAddition(caseTitleAddition);
+		byggRCase.setDescription(description);
+		byggRCase.setExternalCaseId(externalCaseId);
+		byggRCase.setDiaryNumber(diaryNumber);
+		byggRCase.setExtraParameters(extraParameters);
 
 		// Assert
-		assertThat(pCase).isNotNull().hasNoNullFieldsOrProperties();
-		assertThat(pCase.getAttachments()).isEqualTo(attachments);
-		assertThat(pCase.getStakeholders()).isEqualTo(stakeholders);
-		assertThat(pCase.getFacilities()).isEqualTo(facilities);
-		assertThat(pCase.getCaseType()).isEqualTo(caseType);
-		assertThat(pCase.getCaseTitleAddition()).isEqualTo(caseTitleAddition);
-		assertThat(pCase.getDescription()).isEqualTo(description);
-		assertThat(pCase.getExternalCaseId()).isEqualTo(externalCaseId);
-		assertThat(pCase.getDiaryNumber()).isEqualTo(diaryNumber);
-		assertThat(pCase.getExtraParameters()).isEqualTo(extraParameters);
+		assertThat(byggRCase).isNotNull().hasNoNullFieldsOrProperties();
+		assertThat(byggRCase.getAttachments()).isEqualTo(attachments);
+		assertThat(byggRCase.getStakeholders()).isEqualTo(stakeholders);
+		assertThat(byggRCase.getFacilities()).isEqualTo(facilities);
+		assertThat(byggRCase.getCaseType()).isEqualTo(caseType);
+		assertThat(byggRCase.getCaseTitleAddition()).isEqualTo(caseTitleAddition);
+		assertThat(byggRCase.getDescription()).isEqualTo(description);
+		assertThat(byggRCase.getExternalCaseId()).isEqualTo(externalCaseId);
+		assertThat(byggRCase.getDiaryNumber()).isEqualTo(diaryNumber);
+		assertThat(byggRCase.getExtraParameters()).isEqualTo(extraParameters);
 	}
 
 	@Test

@@ -17,6 +17,7 @@ import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_KOMPOSTERING;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANSOKAN_TILLSTAND_VARMEPUMP;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.BYGGR_ADDITIONAL_DOCUMENTS;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.BYGGR_ADD_CERTIFIED_INSPECTOR;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.INSTALLATION_VA;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.INSTALLATION_VENTILATION;
@@ -104,7 +105,8 @@ import lombok.experimental.SuperBuilder;
 		MARKLOV_OVRIGT,
 		STRANDSKYDD_OVRIGT,
 		NEIGHBORHOOD_NOTIFICATION,
-		BYGGR_ADD_CERTIFIED_INSPECTOR
+		BYGGR_ADD_CERTIFIED_INSPECTOR,
+		BYGGR_ADDITIONAL_DOCUMENTS
 	}),
 	@Type(value = EcosCaseDTO.class, names = {
 		REGISTRERING_AV_LIVSMEDEL,

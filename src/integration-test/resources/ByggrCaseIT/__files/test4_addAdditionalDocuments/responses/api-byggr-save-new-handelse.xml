@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+    <SOAP-ENV:Header/>
+    <SOAP-ENV:Body>
+        <SaveNewHandelseResponse xmlns="www.tekis.se/ServiceContract">
+            <saveNewHandelseResult>
+                <handelseId>12345</handelseId>
+            </saveNewHandelseResult>
+        </SaveNewHandelseResponse>
+    </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>

@@ -5,6 +5,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOf
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static se.sundsvall.casemanagement.TestUtil.createFacilityDTO;
 
 import java.util.List;
 
@@ -65,7 +66,7 @@ class CaseServiceTest {
 		final var byggRCase = ByggRCaseDTO.builder()
 			.withStakeholders(List.of())
 			.withCaseType(CaseType.ANDRING_ANSOKAN_OM_BYGGLOV.toString())
-			.withFacilities(List.of())
+			.withFacilities(List.of(createFacilityDTO(CaseType.ANDRING_ANSOKAN_OM_BYGGLOV)))
 			.build();
 		// Act
 		caseService.handleCase(byggRCase, MUNICIPALITY_ID);

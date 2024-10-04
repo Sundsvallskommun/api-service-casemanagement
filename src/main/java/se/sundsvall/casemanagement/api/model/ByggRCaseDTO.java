@@ -6,6 +6,7 @@ import java.util.List;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 
+import se.sundsvall.casemanagement.api.validation.ByggRFacilityConstraints;
 import se.sundsvall.casemanagement.api.validation.OnlyOneMainFacility;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -28,10 +29,9 @@ public class ByggRCaseDTO extends CaseDTO implements Serializable {
 	@Schema(description = "The case diary number", example = "2021-1234")
 	private String diaryNumber;
 
-	@NotEmpty
-	@OnlyOneMainFacility(nullable = true)
-	@Valid
+	@NotEmpty(groups = ByggRFacilityConstraints.class)
+	@OnlyOneMainFacility(nullable = true, groups = ByggRFacilityConstraints.class)
 	@Schema(description = "The facilities in the case")
 	private List<@Valid FacilityDTO> facilities;
-
+	
 }

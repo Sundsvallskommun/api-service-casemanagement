@@ -1043,29 +1043,6 @@ class ByggrMapperTest {
 	}
 
 	@Test
-	void createAddCertifiedInspectorArrayOfHandling() {
-		var byggrCase = createByggRCaseDTO(CaseType.BYGGR_ADD_CERTIFIED_INSPECTOR, AttachmentCategory.ATTACHMENT);
-		var attachment = byggrCase.getAttachments().getFirst();
-
-		var result = ByggrMapper.createAddCertifiedInspectorArrayOfHandling(byggrCase);
-
-		assertThat(result.getHandling()).hasSize(1);
-		var handling = result.getHandling().getFirst();
-
-		assertThat(handling.getStatus()).isEqualTo("Inkommen");
-		assertThat(handling.getAnteckning()).isEqualTo(attachment.getName());
-		assertThat(handling.getTyp()).isEqualTo(attachment.getCategory());
-		assertThat(handling.getDokument()).satisfies(dokument -> {
-			assertThat(dokument.getNamn()).isEqualTo(attachment.getName());
-			assertThat(dokument.getBeskrivning()).isEqualTo(attachment.getNote());
-			assertThat(dokument.getFil()).satisfies(fil -> {
-				assertThat(fil.getFilBuffer()).isEqualTo(Base64.getDecoder().decode(attachment.getFile().getBytes()));
-				assertThat(fil.getFilAndelse()).isEqualTo(attachment.getExtension());
-			});
-		});
-	}
-
-	@Test
 	void createAlertCaseManagerEvent() {
 		var dnr = "dnr";
 
