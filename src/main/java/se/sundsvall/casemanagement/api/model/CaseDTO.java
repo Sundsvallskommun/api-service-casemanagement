@@ -15,7 +15,9 @@ import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_INSTALLATION_VARMEPUMP;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_KOMPOSTERING;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_RIVNING;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANSOKAN_RIVNINGSLOV;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANSOKAN_TILLSTAND_VARMEPUMP;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.BYGGR_ADDITIONAL_DOCUMENTS;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.BYGGR_ADD_CERTIFIED_INSPECTOR;
@@ -106,7 +108,9 @@ import lombok.experimental.SuperBuilder;
 		STRANDSKYDD_OVRIGT,
 		NEIGHBORHOOD_NOTIFICATION,
 		BYGGR_ADD_CERTIFIED_INSPECTOR,
-		BYGGR_ADDITIONAL_DOCUMENTS
+		BYGGR_ADDITIONAL_DOCUMENTS,
+		ANSOKAN_RIVNINGSLOV,
+		ANMALAN_RIVNING
 	}),
 	@Type(value = EcosCaseDTO.class, names = {
 		REGISTRERING_AV_LIVSMEDEL,
