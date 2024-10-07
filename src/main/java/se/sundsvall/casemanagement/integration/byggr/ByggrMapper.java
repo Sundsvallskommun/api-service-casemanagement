@@ -561,7 +561,7 @@ public final class ByggrMapper {
 			.withPersOrgNr(stakeholderId)
 			.withAdress(Optional.ofNullable(stakeholder.getAddresses()).map(addresses -> addresses.getFirst().getStreet()).orElse(null))
 			.withPostNr(Optional.ofNullable(stakeholder.getAddresses()).map(addresses -> addresses.getFirst().getPostalCode()).orElse(null))
-			.withOrt(stakeholder.getAddresses().getFirst().getCity())
+			.withOrt(Optional.ofNullable(stakeholder.getAddresses()).map(addresses -> addresses.getFirst().getCity()).orElse(null))
 			.withIntressentKommunikationLista(createArrayOfIntressentKommunikation(stakeholder));
 
 		if (stakeholder instanceof OrganizationDTO organization) {
