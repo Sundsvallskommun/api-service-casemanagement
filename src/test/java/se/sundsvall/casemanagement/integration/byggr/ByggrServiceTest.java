@@ -78,7 +78,7 @@ import se.sundsvall.casemanagement.api.model.enums.FacilityType;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderType;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
-import se.sundsvall.casemanagement.integration.db.CaseTypeRepository;
+import se.sundsvall.casemanagement.integration.db.CaseTypeDataRepository;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.integration.opene.OpenEIntegration;
 import se.sundsvall.casemanagement.service.CaseMappingService;
@@ -123,7 +123,7 @@ class ByggrServiceTest {
 	private static final String MUNICIPALITY_ID = "2281";
 
 	@Mock
-	private CaseTypeRepository caseTypeRepository;
+	private CaseTypeDataRepository caseTypeDataRepository;
 
 	@InjectMocks
 	private ByggrService byggrService;
@@ -263,7 +263,7 @@ class ByggrServiceTest {
 
 	@BeforeEach
 	public void setup() {
-		lenient().when(caseTypeRepository.findAll()).thenReturn(setUpCaseTypes());
+		lenient().when(caseTypeDataRepository.findAll()).thenReturn(setUpCaseTypes());
 		TestUtil.standardMockFb(fbServiceMock);
 		TestUtil.standardMockArendeExport(arendeExportClientMock);
 		TestUtil.standardMockCitizen(citizenServiceMock);
@@ -1105,14 +1105,14 @@ class ByggrServiceTest {
 	void addCertifiedInspectorTest() {
 		var stakeholders = List.of(createStakeholderDTO(StakeholderType.ORGANIZATION, List.of("role")));
 		var errandNr = "some-dnr [123]";
-		var errandInformation = "errandInformation";
+		var otherInformation = "otherInformation";
 		var byggRCaseDTO = mock(ByggRCaseDTO.class);
 		var extraParameterMap = mock(HashMap.class);
 
 		when(byggRCaseDTO.getStakeholders()).thenReturn(stakeholders);
 		when(byggRCaseDTO.getExtraParameters()).thenReturn(extraParameterMap);
 		when(extraParameterMap.get("errandNr")).thenReturn(errandNr);
-		when(extraParameterMap.get("errandInformation")).thenReturn(errandInformation);
+		when(extraParameterMap.get("otherInformation")).thenReturn(otherInformation);
 		when(extraParameterMap.get("certificateValidDate")).thenReturn("2001-01-01");
 		when(extraParameterMap.get("certificateAuthType")).thenReturn("NIVA");
 		when(extraParameterMap.get("certificateIssuer")).thenReturn("issuer");

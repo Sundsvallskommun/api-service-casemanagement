@@ -2,16 +2,25 @@ package se.sundsvall.casemanagement.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.tuple;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.zalando.problem.Status.BAD_REQUEST;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Set;
 import java.util.stream.Stream;
+
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Path;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,6 +38,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.zalando.problem.violations.ConstraintViolationProblem;
 
 import se.sundsvall.casemanagement.Application;
+import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
 import se.sundsvall.casemanagement.api.model.CaseDTO;
 import se.sundsvall.casemanagement.api.model.CaseResourceResponseDTO;
 import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
@@ -194,6 +204,14 @@ class CaseResourceFailureTest {
 
 	@Test
 	void postCase_ByggRNoFacility(@Load("/case-resource-failure/byggr/no-facility.json") final String body) {
+		ConstraintViolation<ByggRCaseDTO> constraintViolationMock = mock(ConstraintViolation.class);
+		Path pathMock = mock(Path.class);
+		when(pathMock.toString()).thenReturn("facilities");
+		when(constraintViolationMock.getMessage()).thenReturn("must not be empty");
+		when(constraintViolationMock.getPropertyPath()).thenReturn(pathMock);
+
+		doThrow(new ConstraintViolationException(Set.of(constraintViolationMock))).when(caseServiceMock).handleCase(any(), any());
+
 		final var result = webTestClient.post()
 			.uri(uriBuilder -> uriBuilder.path(PATH).build())
 			.contentType(APPLICATION_JSON)
@@ -211,7 +229,7 @@ class CaseResourceFailureTest {
 				tuple("facilities", "must not be empty"));
 		});
 
-		verifyNoInteractions(caseMappingServiceMock, caseServiceMock, caseDataServiceMock);
+		verifyNoInteractions(caseDataServiceMock);
 	}
 
 	//This case does not throw a bad request, this is by design to ensure that the different

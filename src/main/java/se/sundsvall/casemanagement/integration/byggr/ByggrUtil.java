@@ -21,17 +21,17 @@ public final class ByggrUtil {
 		// Intentionally empty
 	}
 
-	static boolean containsControlOfficial(final List<StakeholderDTO> stakeholderDTOList) {
+	static boolean containsControlOfficial(final List<StakeholderDTO> stakeholders) {
 
-		return stakeholderDTOList.stream()
+		return stakeholders.stream()
 			.anyMatch(dto -> dto.getRoles().contains(StakeholderRole.CONTROL_OFFICIAL.toString()));
 	}
 
-	static boolean containsPersonDuplicates(final List<StakeholderDTO> stakeholderDTOList) {
-		final List<String> personIdList = filterPersonId(stakeholderDTOList);
+	static boolean containsPersonDuplicates(final List<StakeholderDTO> stakeholders) {
+		final List<String> personIds = filterPersonId(stakeholders);
 		// If the request contains two person with the same personId, it must be handled manually
-		return stakeholderDTOList.stream()
-			.anyMatch(dto -> dto instanceof final PersonDTO personDTO && (personIdList.stream()
+		return stakeholders.stream()
+			.anyMatch(dto -> dto instanceof final PersonDTO personDTO && (personIds.stream()
 				.filter(personId -> personId.equals(personDTO.getPersonId())).count() > 1));
 	}
 
@@ -40,15 +40,15 @@ public final class ByggrUtil {
 			.anyMatch(stakeholder -> stakeholder.getRollLista().getRoll().contains(StakeholderRole.PROPERTY_OWNER.getText()));
 	}
 
-	static String getPropertyDesignation(final List<FacilityDTO> facilityList) {
-		return Optional.ofNullable(getMainOrTheOnlyFacility(facilityList))
+	static String getPropertyDesignation(final List<FacilityDTO> facilities) {
+		return Optional.ofNullable(getMainOrTheOnlyFacility(facilities))
 			.map(planningPermissionFacilityDTO -> planningPermissionFacilityDTO.getAddress()
 				.getPropertyDesignation().trim().toUpperCase())
 			.orElse(null);
 	}
 
-	static Boolean isWithinPlan(final List<FacilityDTO> facilityList) {
-		return facilityList.stream()
+	static Boolean isWithinPlan(final List<FacilityDTO> facilities) {
+		return facilities.stream()
 			.findFirst()
 			.map(FacilityDTO::getAddress)
 			.map(AddressDTO::getIsZoningPlanArea)
@@ -63,15 +63,15 @@ public final class ByggrUtil {
 		return propertyDesignation;
 	}
 
-	static FacilityDTO getMainOrTheOnlyFacility(final List<FacilityDTO> facilityList) {
-		if (facilityList.size() == 1) {
+	static FacilityDTO getMainOrTheOnlyFacility(final List<FacilityDTO> facilities) {
+		if (facilities.size() == 1) {
 			// The list only contains one facility, return it.
-			return facilityList.getFirst();
+			return facilities.getFirst();
 		}
 
 		// If the list contains more than one facility and mainFacility exists, return it.
 		// If the list doesn't contain a mainFacility, return null.
-		return facilityList.stream().anyMatch(FacilityDTO::isMainFacility) ? facilityList.stream().filter(FacilityDTO::isMainFacility).toList().getFirst() : null;
+		return facilities.stream().anyMatch(FacilityDTO::isMainFacility) ? facilities.stream().filter(FacilityDTO::isMainFacility).toList().getFirst() : null;
 	}
 
 	static void writeEventNote(final String note, final StringBuilder byggrAdminMessageSb) {

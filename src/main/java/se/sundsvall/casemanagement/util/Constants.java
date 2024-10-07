@@ -2,6 +2,17 @@ package se.sundsvall.casemanagement.util;
 
 public final class Constants {
 
+
+	// e-service extraparameter keys
+	public static final String SYSTEM = "SYSTEM";
+	public static final String DONE = "Klart";
+	public static final String BYGGR = "BYGGR";
+	public static final String ERRAND_NR = "errandNr";
+	public static final String EVENT_CATEGORY = "eventCategory";
+	public static final String OTHER_INFORMATION = "otherInformation";
+	public static final String ERRAND_INFORMATION = "errandInformation";
+	public static final String COMMENT = "comment";
+
 	public static final String HANDELSETYP_ANSOKAN = "ANSÖKAN";
 
 	////////////////// ByggR

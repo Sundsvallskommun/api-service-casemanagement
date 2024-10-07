@@ -79,11 +79,11 @@ public final class ByggrMapper {
 	private ByggrMapper() {}
 
 
-	static void setStakeholderFields(final StakeholderDTO stakeholderDTO, final List<String> personIdList, final ArendeIntressent intressent) {
+	static void setStakeholderFields(final StakeholderDTO stakeholderDTO, final List<String> personIds, final ArendeIntressent intressent) {
 		switch (stakeholderDTO) {
 			case final PersonDTO personDTO -> {
 				// If the request contains two person with the same personId, it must be handled manually
-				if (personIdList.stream().filter(personId -> personId.equals(personDTO.getPersonId())).count() > 1) {
+				if (personIds.stream().filter(personId -> personId.equals(personDTO.getPersonId())).count() > 1) {
 					return;
 				}
 				setPersonFields(intressent, personDTO);
@@ -135,33 +135,33 @@ public final class ByggrMapper {
 		return handelse;
 	}
 
-	static ArrayOfHandling toArrayOfHandling(final List<AttachmentDTO> attachmentDTOList) {
+	static ArrayOfHandling toArrayOfHandling(final List<AttachmentDTO> attachments) {
 		return new ArrayOfHandling()
-			.withHandling(attachmentDTOList.stream()
+			.withHandling(attachments.stream()
 				.map(ByggrMapper::toHandelseHandling)
 				.toList());
 	}
 
-	static HandelseHandling toHandelseHandling(final AttachmentDTO file) {
+	static HandelseHandling toHandelseHandling(final AttachmentDTO attachment) {
 
 		return new HandelseHandling()
-			.withAnteckning(file.getName()) // Not a typo. They want it like this
+			.withAnteckning(attachment.getName()) // Not a typo. They want it like this
 			.withDokument(new Dokument()
 				.withFil(new DokumentFil()
-					.withFilBuffer(Base64.getDecoder().decode(file.getFile().getBytes()))
-					.withFilAndelse(file.getExtension().toLowerCase()))
-				.withNamn(file.getName())
-				.withBeskrivning(file.getNote()))
+					.withFilBuffer(Base64.getDecoder().decode(attachment.getFile().getBytes()))
+					.withFilAndelse(attachment.getExtension().toLowerCase()))
+				.withNamn(attachment.getName())
+				.withBeskrivning(attachment.getNote()))
 			.withStatus(Constants.BYGGR_HANDLING_STATUS_INKOMMEN)
-			.withTyp(file.getCategory());
+			.withTyp(attachment.getCategory());
 	}
 
-	static SaveNewArende toSaveNewArende(final ByggRCaseDTO caseInput, final CaseTypeData caseType) {
+	static SaveNewArende toSaveNewArende(final ByggRCaseDTO byggRCase, final CaseTypeData caseType) {
 		return new SaveNewArende()
 			.withMessage(new SaveNewArendeMessage()
 				.withAnkomststamplaHandlingar(true)
-				.withHandlingar(toArrayOfHandling(caseInput.getAttachments()))
-				.withHandelse(toHandelse(caseInput, caseType))
+				.withHandlingar(toArrayOfHandling(byggRCase.getAttachments()))
+				.withHandelse(toHandelse(byggRCase, caseType))
 				.withHandlaggarSign(Constants.BYGGR_SYSTEM_HANDLAGGARE_SIGN));
 	}
 
@@ -283,13 +283,13 @@ public final class ByggrMapper {
 	}
 
 
-	static void populateStakeholderListWithPropertyOwnerPersons(final List<PersonDTO> personDTOStakeholderList, final List<StakeholderDTO> stakeholderDTOList, final List<StakeholderDTO> propertyOwnerList) {
-		final List<PersonDTO> personDTOPropertyOwnerList = propertyOwnerList.stream()
+	static void populateStakeholderListWithPropertyOwnerPersons(final List<PersonDTO> persons, final List<StakeholderDTO> stakeholders, final List<StakeholderDTO> propertyOwners) {
+		final List<PersonDTO> personDTOPropertyOwnerList = propertyOwners.stream()
 			.filter(PersonDTO.class::isInstance)
 			.map(PersonDTO.class::cast).toList();
 
 		// All incoming personStakeholders that is also propertyOwners
-		final List<PersonDTO> personDTOStakeholderPropertyOwnerList = personDTOStakeholderList.stream()
+		final List<PersonDTO> personDTOStakeholderPropertyOwnerList = persons.stream()
 			.filter(personStakeholder -> personDTOPropertyOwnerList.stream()
 				.map(PersonDTO::getPersonalNumber).toList()
 				.contains(personStakeholder.getPersonalNumber()))
@@ -303,14 +303,14 @@ public final class ByggrMapper {
 
 		// All personPropertyOwners that does not exist in the incoming request
 		final List<PersonDTO> notExistingPersonPropertyOwnerListDTO = personDTOPropertyOwnerList.stream()
-			.filter(not(personPropertyOwner -> personDTOStakeholderList.stream()
+			.filter(not(personPropertyOwner -> persons.stream()
 				.map(PersonDTO::getPersonalNumber).toList()
 				.contains(personPropertyOwner.getPersonalNumber())))
 			.toList();
 
 		log.debug("All personPropertyOwners that does not exist in the incoming request: {}", notExistingPersonPropertyOwnerListDTO);
 
-		stakeholderDTOList.addAll(notExistingPersonPropertyOwnerListDTO);
+		stakeholders.addAll(notExistingPersonPropertyOwnerListDTO);
 	}
 
 
@@ -514,7 +514,7 @@ public final class ByggrMapper {
 			.withIntressentKommunikation(intressentKommunikationList);
 	}
 
-	static ArrayOfHandling createAddCertifiedInspectorArrayOfHandling(final ByggRCaseDTO byggRCase) {
+	static ArrayOfHandling createArrayOfHandling(final ByggRCaseDTO byggRCase) {
 		List<HandelseHandling> handelseHandlingar = new ArrayList<>();
 		for (var attachment : byggRCase.getAttachments()) {
 			var handelseHandling = new HandelseHandling()
@@ -556,9 +556,30 @@ public final class ByggrMapper {
 		return new ArrayOfHandling().withHandling(handlingar);
 	}
 
+	static HandelseIntressent createAddAdditionalDocumentsHandelseIntressent(final StakeholderDTO stakeholder, final String stakeholderId) {
+		var handelseIntressent = new HandelseIntressent()
+			.withPersOrgNr(stakeholderId)
+			.withAdress(Optional.ofNullable(stakeholder.getAddresses()).map(addresses -> addresses.getFirst().getStreet()).orElse(null))
+			.withPostNr(Optional.ofNullable(stakeholder.getAddresses()).map(addresses -> addresses.getFirst().getPostalCode()).orElse(null))
+			.withOrt(stakeholder.getAddresses().getFirst().getCity())
+			.withIntressentKommunikationLista(createArrayOfIntressentKommunikation(stakeholder));
 
-	static HandelseIntressent createAddCertifiedInspectorHandelseIntressent(
-		final StakeholderDTO stakeholder, final String stakeholderId, final Map<String, String> extraParameters) {
+		if (stakeholder instanceof OrganizationDTO organization) {
+			handelseIntressent
+				.withArForetag(true)
+				.withNamn(organization.getOrganizationName());
+		}
+		if (stakeholder instanceof PersonDTO person) {
+			handelseIntressent
+				.withArForetag(false)
+				.withFornamn(person.getFirstName())
+				.withEfternamn(person.getLastName());
+		}
+
+		return handelseIntressent;
+	}
+
+	static HandelseIntressent createAddCertifiedInspectorHandelseIntressent(final StakeholderDTO stakeholder, final String stakeholderId, final Map<String, String> extraParameters) {
 		var handelseIntressent = new HandelseIntressent()
 			.withPersOrgNr(stakeholderId)
 			.withAdress(stakeholder.getAddresses().getFirst().getStreet())
@@ -580,6 +601,20 @@ public final class ByggrMapper {
 				.withEfternamn(person.getLastName());
 		}
 		return handelseIntressent;
+	}
+
+	static Handelse createAddAdditionalDocumentsHandelse(final String errandInformation, final HandelseIntressent handelseIntressent, final String handelseslag) {
+		return new Handelse()
+			.withRiktning("In")
+			.withRubrik("Kompletterande handlingar")
+			.withStartDatum(LocalDateTime.now())
+			.withAnteckning(errandInformation)
+			.withHandelsetyp("HANDLING")
+			.withHandelseslag(handelseslag)
+			.withSekretess(false)
+			.withMakulerad(false)
+			.withIntressentLista(new ArrayOfHandelseIntressent2().withIntressent(handelseIntressent));
+
 	}
 
 	static Handelse createAddCertifiedInspectorHandelse(final String errandInformation, final HandelseIntressent handelseIntressent) {

@@ -98,8 +98,8 @@ public final class TestUtil {
 			.withCaseType(caseType.toString())
 			.withStartDate(LocalDate.now().plusDays(10))
 			.withEndDate(LocalDate.now().plusDays(365))
-			.withCaseTitleAddition(RandomStringUtils.random(10, true, false))
-			.withDescription(RandomStringUtils.random(10, true, false))
+			.withCaseTitleAddition(RandomStringUtils.secure().next(10, true, false))
+			.withDescription(RandomStringUtils.secure().next(10, true, false))
 			.withExternalCaseId(String.valueOf(new Random().nextInt()))
 			.withExtraParameters(createExtraParameters())
 			.build();
@@ -111,8 +111,8 @@ public final class TestUtil {
 			.withCategory(attachmentCategory.toString())
 			.withExtension(".pdf")
 			.withMimeType("application/pdf")
-			.withName(RandomStringUtils.random(10, true, false))
-			.withNote(RandomStringUtils.random(10, true, false))
+			.withName(RandomStringUtils.secure().next(10, true, false))
+			.withNote(RandomStringUtils.secure().next(10, true, false))
 			.withFile("dGVzdA==")
 			.build();
 	}
@@ -120,8 +120,8 @@ public final class TestUtil {
 	public static FacilityDTO createFacilityDTO(final CaseType caseType) {
 		final var facility = FacilityDTO.builder()
 			.withFacilityType(FacilityType.ONE_FAMILY_HOUSE.toString())
-			.withDescription(RandomStringUtils.random(10, true, false))
-			.withFacilityCollectionName(RandomStringUtils.random(10, true, false))
+			.withDescription(RandomStringUtils.secure().next(10, true, false))
+			.withFacilityCollectionName(RandomStringUtils.secure().next(10, true, false))
 			.withMainFacility(true)
 			.withAddress(createAddressDTO(List.of(AddressCategory.VISITING_ADDRESS)));
 
@@ -141,12 +141,12 @@ public final class TestUtil {
 		stakeholderDTOs.add(createStakeholderDTO(StakeholderType.PERSON, List.of(StakeholderRole.CONTACT_PERSON.toString())));
 
 		return ByggRCaseDTO.builder()
-			.withDiaryNumber(RandomStringUtils.random(5))
+			.withDiaryNumber(RandomStringUtils.secure().next(5))
 			.withFacilities(List.of(createFacilityDTO(true)))
 			.withStakeholders(stakeholderDTOs)
 			.withCaseType(caseType.toString())
-			.withCaseTitleAddition(RandomStringUtils.random(10, true, false))
-			.withDescription(RandomStringUtils.random(10, true, false))
+			.withCaseTitleAddition(RandomStringUtils.secure().next(10, true, false))
+			.withDescription(RandomStringUtils.secure().next(10, true, false))
 			.withExternalCaseId(String.valueOf(new Random().nextLong()))
 			.withExtraParameters(createExtraParameters())
 			.withAttachments(List.of(createAttachmentDTO(attachmentCategory)))
@@ -157,7 +157,7 @@ public final class TestUtil {
 		return FacilityDTO.builder()
 			.withAddress(createAddressDTO(List.of(AddressCategory.VISITING_ADDRESS)))
 			.withFacilityType(FacilityType.ONE_FAMILY_HOUSE.toString())
-			.withDescription(RandomStringUtils.random(10, true, false))
+			.withDescription(RandomStringUtils.secure().next(10, true, false))
 			.withExtraParameters(createExtraParameters())
 			.withMainFacility(mainFacility)
 			.build();
@@ -170,12 +170,12 @@ public final class TestUtil {
 				.withType(StakeholderType.PERSON)
 				.withPersonId(UUID.randomUUID().toString())
 				.withPersonalNumber(generateRandomPersonalNumber())
-				.withFirstName(RandomStringUtils.random(10, true, false))
-				.withLastName(RandomStringUtils.random(10, true, false))
+				.withFirstName(RandomStringUtils.secure().next(10, true, false))
+				.withLastName(RandomStringUtils.secure().next(10, true, false))
 				.withRoles(stakeholderRoles)
-				.withEmailAddress(MessageFormat.format("{0}@{1}.com", RandomStringUtils.random(10, true, false), RandomStringUtils.random(5, true, false)))
-				.withCellphoneNumber(RandomStringUtils.random(10, true, false))
-				.withPhoneNumber(RandomStringUtils.random(10, true, false))
+				.withEmailAddress(MessageFormat.format("{0}@{1}.com", RandomStringUtils.secure().next(10, true, false), RandomStringUtils.secure().next(5, true, false)))
+				.withCellphoneNumber(RandomStringUtils.secure().next(10, true, false))
+				.withPhoneNumber(RandomStringUtils.secure().next(10, true, false))
 				.withAddresses(List.of(createAddressDTO(List.of(AddressCategory.VISITING_ADDRESS, AddressCategory.POSTAL_ADDRESS))))
 				.withExtraParameters(createExtraParameters())
 				.build();
@@ -183,13 +183,13 @@ public final class TestUtil {
 			return OrganizationDTO.builder()
 				.withType(StakeholderType.ORGANIZATION)
 				.withOrganizationNumber(generateRandomOrganizationNumber())
-				.withOrganizationName(RandomStringUtils.random(10, true, false))
+				.withOrganizationName(RandomStringUtils.secure().next(10, true, false))
 				.withRoles(stakeholderRoles)
-				.withEmailAddress(MessageFormat.format("{0}@{1}.com", RandomStringUtils.random(10, true, false), RandomStringUtils.random(5, true, false)))
-				.withCellphoneNumber(RandomStringUtils.random(10, true, false))
-				.withPhoneNumber(RandomStringUtils.random(10, true, false))
+				.withEmailAddress(MessageFormat.format("{0}@{1}.com", RandomStringUtils.secure().next(10, true, false), RandomStringUtils.secure().next(5, true, false)))
+				.withCellphoneNumber(RandomStringUtils.secure().next(10, true, false))
+				.withPhoneNumber(RandomStringUtils.secure().next(10, true, false))
 				.withAddresses(List.of(createAddressDTO(List.of(AddressCategory.VISITING_ADDRESS, AddressCategory.INVOICE_ADDRESS, AddressCategory.POSTAL_ADDRESS))))
-				.withAuthorizedSignatory(RandomStringUtils.random(10, true, false))
+				.withAuthorizedSignatory(RandomStringUtils.secure().next(10, true, false))
 				.withExtraParameters(createExtraParameters())
 				.build();
 		}
@@ -211,16 +211,16 @@ public final class TestUtil {
 	public static AddressDTO createAddressDTO(final List<AddressCategory> addressCategories) {
 		return AddressDTO.builder()
 			.withAddressCategories(addressCategories)
-			.withCity(RandomStringUtils.random(10, true, false))
+			.withCity(RandomStringUtils.secure().next(10, true, false))
 			.withCountry(Constants.SWEDEN)
 			.withPropertyDesignation("SUNDSVALL FILLA 8:185")
-			.withStreet(RandomStringUtils.random(10, true, false))
-			.withHouseNumber(RandomStringUtils.random(10, true, true))
-			.withCareOf(RandomStringUtils.random(10, true, false))
-			.withPostalCode(RandomStringUtils.random(10, false, true))
-			.withAppartmentNumber(RandomStringUtils.random(10, true, true))
-			.withAttention(RandomStringUtils.random(10, true, false))
-			.withInvoiceMarking(RandomStringUtils.random(10, true, true))
+			.withStreet(RandomStringUtils.secure().next(10, true, false))
+			.withHouseNumber(RandomStringUtils.secure().next(10, true, true))
+			.withCareOf(RandomStringUtils.secure().next(10, true, false))
+			.withPostalCode(RandomStringUtils.secure().next(10, false, true))
+			.withAppartmentNumber(RandomStringUtils.secure().next(10, true, true))
+			.withAttention(RandomStringUtils.secure().next(10, true, false))
+			.withInvoiceMarking(RandomStringUtils.secure().next(10, true, true))
 			.withIsZoningPlanArea(false)
 			.withLocation(createCoordinatesDTO())
 			.withExtraParameters(createExtraParameters())
@@ -328,8 +328,8 @@ public final class TestUtil {
 		final String prefix = "CreateSoilHeatingFacilitySvcDto_";
 		TestUtil.setSewageStandardExtraParams(extraParameters, prefix);
 
-		extraParameters.put(prefix + "Manufacturer", RandomStringUtils.random(10, true, false));
-		extraParameters.put(prefix + "Model", RandomStringUtils.random(10, true, false));
+		extraParameters.put(prefix + "Manufacturer", RandomStringUtils.secure().next(10, true, false));
+		extraParameters.put(prefix + "Model", RandomStringUtils.secure().next(10, true, false));
 		extraParameters.put(prefix + "PowerConsumption", String.valueOf(new Random().nextDouble()));
 		extraParameters.put(prefix + "PowerOutput", String.valueOf(new Random().nextDouble()));
 		extraParameters.put(prefix + "Capacity", String.valueOf(new Random().nextDouble()));
@@ -395,9 +395,9 @@ public final class TestUtil {
 
 	public static Map<String, String> createExtraParameters() {
 		final Map<String, String> extraParams = new HashMap<>();
-		extraParams.put(RandomStringUtils.random(10, true, false), RandomStringUtils.random(20, true, false));
-		extraParams.put(RandomStringUtils.random(10, true, false), RandomStringUtils.random(20, true, false));
-		extraParams.put(RandomStringUtils.random(10, true, false), RandomStringUtils.random(20, true, false));
+		extraParams.put(RandomStringUtils.secure().next(10, true, false), RandomStringUtils.secure().next(20, true, false));
+		extraParams.put(RandomStringUtils.secure().next(10, true, false), RandomStringUtils.secure().next(20, true, false));
+		extraParams.put(RandomStringUtils.secure().next(10, true, false), RandomStringUtils.secure().next(20, true, false));
 
 		return extraParams;
 	}

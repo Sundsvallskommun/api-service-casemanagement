@@ -4,10 +4,12 @@ package se.sundsvall.casemanagement.integration.byggr;
 import static java.util.Collections.emptyList;
 import static org.zalando.problem.Status.BAD_REQUEST;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.WITH_NULLABLE_FACILITY_TYPE;
-import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.createAddCertifiedInspectorArrayOfHandling;
+import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.createAddAdditionalDocumentsHandelse;
+import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.createAddAdditionalDocumentsHandelseIntressent;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.createAddCertifiedInspectorHandelse;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.createAddCertifiedInspectorHandelseIntressent;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.createAlertCaseManagerEvent;
+import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.createArrayOfHandling;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.createNeighborhoodNotificationArrayOfHandling;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.extractEvent;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.extractIntressentFromEvent;
@@ -31,9 +33,18 @@ import static se.sundsvall.casemanagement.integration.byggr.ByggrUtil.containsPr
 import static se.sundsvall.casemanagement.integration.byggr.ByggrUtil.isWithinPlan;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrUtil.parsePropertyDesignation;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrUtil.writeEventNote;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR;
+import static se.sundsvall.casemanagement.util.Constants.COMMENT;
+import static se.sundsvall.casemanagement.util.Constants.DONE;
+import static se.sundsvall.casemanagement.util.Constants.ERRAND_INFORMATION;
+import static se.sundsvall.casemanagement.util.Constants.ERRAND_NR;
+import static se.sundsvall.casemanagement.util.Constants.EVENT_CATEGORY;
+import static se.sundsvall.casemanagement.util.Constants.OTHER_INFORMATION;
+import static se.sundsvall.casemanagement.util.Constants.SYSTEM;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -52,7 +63,7 @@ import se.sundsvall.casemanagement.api.model.PersonDTO;
 import se.sundsvall.casemanagement.api.model.StakeholderDTO;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
-import se.sundsvall.casemanagement.integration.db.CaseTypeRepository;
+import se.sundsvall.casemanagement.integration.db.CaseTypeDataRepository;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.integration.db.model.CaseTypeData;
 import se.sundsvall.casemanagement.integration.opene.OpenEIntegration;
@@ -88,57 +99,81 @@ import arendeexport.SaveNewRemissvarMessage;
 @Service
 public class ByggrService {
 
+
 	private final FbService fbService;
-
 	private final CitizenService citizenService;
-
 	private final CaseMappingService caseMappingService;
 
 	private final ArendeExportClient arendeExportClient;
-
 	private final OpenEIntegration openEIntegration;
 
-	private final Map<String, CaseTypeData> caseTypeMap = new HashMap<>();
-
-	private final CaseTypeRepository caseTypeRepository;
+	private final CaseTypeDataRepository caseTypeDataRepository;
 
 	public ByggrService(final FbService fbService,
 		final CitizenService citizenService,
 		final CaseMappingService caseMappingService,
 		final ArendeExportClient arendeExportClient,
 		final OpenEIntegration openEIntegration,
-		final CaseTypeRepository caseTypeRepository) {
+		final CaseTypeDataRepository caseTypeDataRepository) {
 		this.fbService = fbService;
 		this.citizenService = citizenService;
 		this.caseMappingService = caseMappingService;
 		this.arendeExportClient = arendeExportClient;
 		this.openEIntegration = openEIntegration;
-		this.caseTypeRepository = caseTypeRepository;
+		this.caseTypeDataRepository = caseTypeDataRepository;
 	}
 
-	public void updateByggRCase(final ByggRCaseDTO byggRCaseDTO) {
-		switch (byggRCaseDTO.getCaseType()) {
-			case "NEIGHBORHOOD_NOTIFICATION" -> respondToNeighborhoodNotification(byggRCaseDTO);
-			case "BYGGR_ADD_CERTIFIED_INSPECTOR" -> addCertifiedInspector(byggRCaseDTO);
+	public void updateByggRCase(final ByggRCaseDTO byggRCase) {
+		switch (byggRCase.getCaseType()) {
+			case "NEIGHBORHOOD_NOTIFICATION" -> respondToNeighborhoodNotification(byggRCase);
+			case "BYGGR_ADD_CERTIFIED_INSPECTOR" -> addCertifiedInspector(byggRCase);
+			case "BYGGR_ADDITIONAL_DOCUMENTS" -> addAdditionalDocuments(byggRCase);
 			default ->
-				throw Problem.valueOf(BAD_REQUEST, "CaseType %s not supported".formatted(byggRCaseDTO.getCaseType()));
+				throw Problem.valueOf(BAD_REQUEST, "CaseType %s not supported".formatted(byggRCase.getCaseType()));
 		}
+	}
+
+	public void addAdditionalDocuments(final ByggRCaseDTO byggRCase) {
+		var stakeholder = byggRCase.getStakeholders().stream()
+			.max(Comparator.comparing(StakeholderDTO::getType))
+			.orElseThrow(() -> Problem.valueOf(BAD_REQUEST, "No stakeholder found in the incoming request."));
+		var stakeholderId = extractStakeholderId(byggRCase.getStakeholders());
+		var otherInformation = byggRCase.getExtraParameters().get(OTHER_INFORMATION);
+		var errandNr = byggRCase.getExtraParameters().get(ERRAND_NR);
+		var handelseslag = byggRCase.getExtraParameters().get(EVENT_CATEGORY);
+
+		var handelseIntressent = createAddAdditionalDocumentsHandelseIntressent(stakeholder, stakeholderId);
+		var newHandelse = createAddAdditionalDocumentsHandelse(otherInformation, handelseIntressent, handelseslag);
+		var arrayOfHandling = createArrayOfHandling(byggRCase);
+
+		var saveNewHandelse = new SaveNewHandelse()
+			.withMessage(new SaveNewHandelseMessage()
+				.withDnr(errandNr)
+				.withHandlaggarSign(SYSTEM)
+				.withHandelse(newHandelse)
+				.withHandlingar(arrayOfHandling)
+				.withAnkomststamplaHandlingar(false)
+				.withAutoGenereraBeslutNr(false));
+
+		arendeExportClient.saveNewHandelse(saveNewHandelse);
+		openEIntegration.confirmDelivery(byggRCase.getExternalCaseId(), BYGGR, errandNr);
+		openEIntegration.setStatus(byggRCase.getExternalCaseId(), BYGGR, errandNr, DONE);
 	}
 
 	public void addCertifiedInspector(final ByggRCaseDTO byggRCase) {
 		var stakeholder = byggRCase.getStakeholders().getFirst();
 		var stakeholderId = extractStakeholderId(byggRCase.getStakeholders());
-		var errandNr = byggRCase.getExtraParameters().get("errandNr");
-		var errandInformation = byggRCase.getExtraParameters().get("errandInformation");
-		var arrayOfHandling = createAddCertifiedInspectorArrayOfHandling(byggRCase);
+		var errandNr = byggRCase.getExtraParameters().get(ERRAND_NR);
+		var otherInformation = byggRCase.getExtraParameters().get(OTHER_INFORMATION);
+		var arrayOfHandling = createArrayOfHandling(byggRCase);
 
 		var handelseIntressent = createAddCertifiedInspectorHandelseIntressent(stakeholder, stakeholderId, byggRCase.getExtraParameters());
-		var newHandelse = createAddCertifiedInspectorHandelse(errandInformation, handelseIntressent);
+		var newHandelse = createAddCertifiedInspectorHandelse(otherInformation, handelseIntressent);
 
 		var saveNewHandelse = new SaveNewHandelse()
 			.withMessage(new SaveNewHandelseMessage()
 				.withDnr(errandNr)
-				.withHandlaggarSign("SYSTEM")
+				.withHandlaggarSign(SYSTEM)
 				.withHandelse(newHandelse)
 				.withHandlingar(arrayOfHandling)
 				.withAnkomststamplaHandlingar(false)
@@ -146,36 +181,34 @@ public class ByggrService {
 
 		arendeExportClient.saveNewHandelse(saveNewHandelse);
 		arendeExportClient.saveNewHandelse(createAlertCaseManagerEvent(errandNr));
-		openEIntegration.confirmDelivery(byggRCase.getExternalCaseId(), "BYGGR", errandNr);
-		openEIntegration.setStatus(byggRCase.getExternalCaseId(), "BYGGR", errandNr, "Klart");
+		openEIntegration.confirmDelivery(byggRCase.getExternalCaseId(), BYGGR, errandNr);
+		openEIntegration.setStatus(byggRCase.getExternalCaseId(), BYGGR, errandNr, DONE);
 	}
 
-	public void respondToNeighborhoodNotification(final ByggRCaseDTO byggRCaseDTO) {
-		var stakeholderId = extractStakeholderId(byggRCaseDTO.getStakeholders());
-		var errandNr = byggRCaseDTO.getExtraParameters().get("errandNr");
+	public void respondToNeighborhoodNotification(final ByggRCaseDTO byggRCase) {
+		var stakeholderId = extractStakeholderId(byggRCase.getStakeholders());
+		var comment = byggRCase.getExtraParameters().get(COMMENT);
+		var errandInformation = byggRCase.getExtraParameters().get(ERRAND_INFORMATION);
+		var errandNr = byggRCase.getExtraParameters().get(ERRAND_NR);
 		var handelseId = Integer.parseInt(errandNr.replaceAll("^[^\\[]*\\[([^]]+)].*", "$1"));
 		var dnr = errandNr.split("\\[")[0].trim();
-		var comment = byggRCaseDTO.getExtraParameters().get("comment");
-		var errandInformation = byggRCaseDTO.getExtraParameters().get("errandInformation");
-		var handelseHandling = createNeighborhoodNotificationArrayOfHandling(byggRCaseDTO);
-
+		var handelseHandling = createNeighborhoodNotificationArrayOfHandling(byggRCase);
 		var handelse = extractEvent(getByggRCase(dnr), handelseId);
 		var intressent = extractIntressentFromEvent(handelse, stakeholderId);
-
 		var remisser = getRemisserByPersOrgNrAndFilterByDnr(stakeholderId, dnr);
 		var remiss = filterRemisserByStakeholderIdAndIntressentRoll(remisser, stakeholderId, intressent);
 
 		var saveNewRemissvar = new SaveNewRemissvar()
 			.withMessage(new SaveNewRemissvarMessage()
-				.withHandlaggarSign("SYSTEM")
+				.withHandlaggarSign(SYSTEM)
 				.withErinran(comment.equals("Jag har synpunkter"))
 				.withMeddelande(errandInformation)
 				.withRemissId(remiss.getRemissId())
 				.withHandlingar(handelseHandling));
 
 		arendeExportClient.saveNewRemissvar(saveNewRemissvar);
-		openEIntegration.confirmDelivery(byggRCaseDTO.getExternalCaseId(), "BYGGR", errandNr);
-		openEIntegration.setStatus(byggRCaseDTO.getExternalCaseId(), "BYGGR", errandNr, "Klart");
+		openEIntegration.confirmDelivery(byggRCase.getExternalCaseId(), BYGGR, errandNr);
+		openEIntegration.setStatus(byggRCase.getExternalCaseId(), BYGGR, errandNr, DONE);
 	}
 
 	private Remiss filterRemisserByStakeholderIdAndIntressentRoll(final List<Remiss> remisser, final String stakeholderId, final HandelseIntressent intressent) {
@@ -226,24 +259,6 @@ public class ByggrService {
 			.orElseThrow(() -> Problem.valueOf(BAD_REQUEST, "No stakeholder found in the incoming request."));
 	}
 
-	public String extractStakeholderName(final List<StakeholderDTO> stakeholders) {
-		final var organizationName = stakeholders.stream()
-			.filter(OrganizationDTO.class::isInstance)
-			.findFirst()
-			.map(stakeholder -> ((OrganizationDTO) stakeholder).getOrganizationName())
-			.orElse(null);
-
-		if (organizationName != null) {
-			return organizationName;
-		}
-
-		return stakeholders.stream()
-			.filter(PersonDTO.class::isInstance)
-			.findFirst()
-			.map(stakeholder -> ((PersonDTO) stakeholder).getFirstName() + " " + ((PersonDTO) stakeholder).getLastName())
-			.orElseThrow(() -> Problem.valueOf(BAD_REQUEST, "No stakeholder found in the incoming request."));
-	}
-
 	/**
 	 * Fetches a ByggR case based on the case number.
 	 *
@@ -254,17 +269,17 @@ public class ByggrService {
 		return arendeExportClient.getArende(new GetArende().withDnr(dnr)).getGetArendeResult();
 	}
 
-	public SaveNewArendeResponse2 saveNewCase(final ByggRCaseDTO caseInput, final String municipalityId) {
+	public SaveNewArendeResponse2 saveNewCase(final ByggRCaseDTO byggRCase, final String municipalityId) {
+		Map<String, CaseTypeData> caseTypeMap = new HashMap<>();
+		caseTypeDataRepository.findAll().forEach(caseTypeData -> caseTypeMap.put(caseTypeData.getValue(), caseTypeData));
 
-		caseTypeRepository.findAll().forEach(caseTypeData -> caseTypeMap.put(caseTypeData.getValue(), caseTypeData));
-
-		final var saveNewArende = toSaveNewArende(caseInput, caseTypeMap.get(caseInput.getCaseType()));
-		saveNewArende.getMessage().setArende(toArende2(caseInput));
+		final var saveNewArende = toSaveNewArende(byggRCase, caseTypeMap.get(byggRCase.getCaseType()));
+		saveNewArende.getMessage().setArende(toArende2(byggRCase, caseTypeMap.get(byggRCase.getCaseType())));
 
 		final var response = arendeExportClient.saveNewArende(saveNewArende).getSaveNewArendeResult();
 
-		createOccurrence(caseInput, saveNewArende, response);
-		caseMappingService.postCaseMapping(caseInput, response.getDnr(), SystemType.BYGGR, municipalityId);
+		createOccurrence(byggRCase, saveNewArende, response);
+		caseMappingService.postCaseMapping(byggRCase, response.getDnr(), SystemType.BYGGR, municipalityId);
 		return response;
 	}
 
@@ -293,7 +308,8 @@ public class ByggrService {
 	}
 
 	public CaseStatusDTO toByggrStatus(final CaseMapping caseMapping) {
-		return ByggrMapper.toByggrStatus(arendeExportClient.getArende(new GetArende().withDnr(caseMapping.getCaseId())).getGetArendeResult(), caseMapping.getExternalCaseId(), List.of(caseMapping));
+		var getArendeResponse = arendeExportClient.getArende(new GetArende().withDnr(caseMapping.getCaseId()));
+		return ByggrMapper.toByggrStatus(getArendeResponse.getGetArendeResult(), caseMapping.getExternalCaseId(), List.of(caseMapping));
 	}
 
 	public CaseStatusDTO toByggrStatus(final Arende arende, final String externalCaseId, final String municipalityId) {
@@ -321,28 +337,27 @@ public class ByggrService {
 
 		return arrayOfByggrArende.getArende().stream().map(byggrArende -> {
 				final var caseMappingList = caseMappingService.getCaseMapping(null, byggrArende.getDnr(), municipalityId);
-				return toByggrStatus(byggrArende,
-					Optional.ofNullable(caseMappingList)
-						.filter(list -> !list.isEmpty()).map(list -> list.getFirst().getExternalCaseId())
-						.orElse(null), municipalityId);
+				return toByggrStatus(byggrArende, Optional.ofNullable(caseMappingList)
+					.filter(list -> !list.isEmpty())
+					.map(list -> list.getFirst().getExternalCaseId())
+					.orElse(null), municipalityId);
 			})
 			.toList();
 	}
 
-	public ArrayOfArendeIntressent2 getByggrIntressenter(final ByggRCaseDTO pCase) {
+	public ArrayOfArendeIntressent2 getByggrIntressenter(final ByggRCaseDTO byggRCase) {
 
 		// Add all stakeholders from case to the list
-		final var stakeholderDTOList = new ArrayList<>(pCase.getStakeholders());
-		populateStakeholderListWithPropertyOwners(pCase, stakeholderDTOList);
+		final var stakeholders = new ArrayList<>(byggRCase.getStakeholders());
+		populateStakeholderListWithPropertyOwners(byggRCase, stakeholders);
+		final var personIds = filterPersonId(stakeholders);
 
-		final var personIdList = filterPersonId(stakeholderDTOList);
-
-		return new ArrayOfArendeIntressent2().withIntressent(stakeholderDTOList.stream().
+		return new ArrayOfArendeIntressent2().withIntressent(stakeholders.stream().
 			filter(dto -> !dto.getRoles().contains(StakeholderRole.CONTROL_OFFICIAL.toString()))
 			.map(stakeholderDTO -> {
 
 				final var intressent = new ArendeIntressent();
-				setStakeholderFields(stakeholderDTO, personIdList, intressent);
+				setStakeholderFields(stakeholderDTO, personIds, intressent);
 				if (stakeholderDTO.getAddresses() != null) {
 					toAdressDTos(stakeholderDTO, intressent);
 				}
@@ -352,12 +367,11 @@ public class ByggrService {
 			})
 			.filter(intressent -> StringUtils.isNotBlank(intressent.getPersOrgNr()))
 			.toList());
-
 	}
 
-	public void populateStakeholderListWithPropertyOwners(final ByggRCaseDTO pCase, final List<StakeholderDTO> stakeholderDTOList) {
+	public void populateStakeholderListWithPropertyOwners(final ByggRCaseDTO byggRCase, final List<StakeholderDTO> stakeholders) {
 		// Filter all persons
-		final var personDTOStakeholders = stakeholderDTOList.stream()
+		final var persons = stakeholders.stream()
 			.filter(PersonDTO.class::isInstance)
 			.map(obj -> {
 				final var personOjb = (PersonDTO) obj;
@@ -367,7 +381,7 @@ public class ByggrService {
 			.toList();
 
 		// Filter all organizations
-		final var organizationDTOStakeholders = stakeholderDTOList.stream()
+		final var organizations = stakeholders.stream()
 			.filter(OrganizationDTO.class::isInstance)
 			.map(obj -> {
 				final var orgObj = (OrganizationDTO) obj;
@@ -376,10 +390,10 @@ public class ByggrService {
 			})
 			.toList();
 		// Loop through each facility and get the property owners for each one
-		pCase.getFacilities().forEach(facility -> {
-			final var propertyOwnerList = fbService.getPropertyOwnerByPropertyDesignation(facility.getAddress().getPropertyDesignation());
-			populateStakeholderListWithPropertyOwnerPersons(personDTOStakeholders, stakeholderDTOList, propertyOwnerList);
-			populateStakeholderListWithPropertyOwnerOrganizations(organizationDTOStakeholders, stakeholderDTOList, propertyOwnerList);
+		byggRCase.getFacilities().forEach(facility -> {
+			final var propertyOwners = fbService.getPropertyOwnerByPropertyDesignation(facility.getAddress().getPropertyDesignation());
+			populateStakeholderListWithPropertyOwnerPersons(persons, stakeholders, propertyOwners);
+			populateStakeholderListWithPropertyOwnerOrganizations(organizations, stakeholders, propertyOwners);
 		});
 	}
 
@@ -391,12 +405,12 @@ public class ByggrService {
 		return pnr;
 	}
 
-	public ArrayOfAbstractArendeObjekt2 getByggrArendeObjektLista(final ByggRCaseDTO pCase) {
+	public ArrayOfAbstractArendeObjekt2 getByggrArendeObjektLista(final ByggRCaseDTO byggRCase) {
 
 		final var arendeObjektLista = new ArrayOfAbstractArendeObjekt2();
 
 		final var usedPropertyDesignations = new ArrayList<String>();
-		pCase.getFacilities().forEach(facilityDTO -> {
+		byggRCase.getFacilities().forEach(facilityDTO -> {
 			if (usedPropertyDesignations.contains(facilityDTO.getAddress().getPropertyDesignation())) {
 				// If we already have created a "arendeFastighet" with the same propertyDesignation,
 				// we should not create a duplicate. Skip this iteration.
@@ -415,38 +429,36 @@ public class ByggrService {
 		return arendeObjektLista;
 	}
 
-	Arende2 toArende2(final ByggRCaseDTO pCase) {
-
-		final var caseType = caseTypeMap.get(pCase.getCaseType());
+	Arende2 toArende2(final ByggRCaseDTO byggRCase, final CaseTypeData caseTypeData) {
 		final var arende = new Arende2();
 
-		if ((pCase.getFacilities() == null) || (pCase.getFacilities().getFirst() == null)) {
-			arende.withArendeslag(caseType.getArendeSlag());
+		if ((byggRCase.getFacilities() == null) || (byggRCase.getFacilities().getFirst() == null)) {
+			arende.withArendeslag(caseTypeData.getArendeSlag());
 
-		} else if (caseType.getArendeSlag() != null) {
-			arende.withArendeslag(caseType.getArendeSlag());
-			if (!WITH_NULLABLE_FACILITY_TYPE.contains(pCase.getCaseType())) {
-				arende.withArendeklass(getArendeKlass(pCase.getFacilities()));
+		} else if (caseTypeData.getArendeSlag() != null) {
+			arende.withArendeslag(caseTypeData.getArendeSlag());
+			if (!WITH_NULLABLE_FACILITY_TYPE.contains(byggRCase.getCaseType())) {
+				arende.withArendeklass(getArendeKlass(byggRCase.getFacilities()));
 			}
 		} else {
-			arende.withArendeslag(getMainOrOnlyArendeslag(pCase.getFacilities()));
+			arende.withArendeslag(getMainOrOnlyArendeslag(byggRCase.getFacilities()));
 		}
 
 		return arende
-			.withArendegrupp(caseType.getArendeGrupp())
-			.withArendetyp(caseType.getArendeTyp())
+			.withArendegrupp(caseTypeData.getArendeGrupp())
+			.withArendetyp(caseTypeData.getArendeTyp())
 			.withNamndkod(Constants.BYGGR_NAMNDKOD_STADSBYGGNADSNAMNDEN)
 			.withEnhetkod(Constants.BYGGR_ENHETKOD_STADSBYGGNADSKONTORET)
 			.withKommun(Constants.BYGGR_KOMMUNKOD_SUNDSVALL_KOMMUN)
 			.withHandlaggare(new HandlaggareBas().withSignatur(Constants.BYGGR_SYSTEM_HANDLAGGARE_SIGN))
-			.withArInomplan(isWithinPlan(pCase.getFacilities()))
-			.withBeskrivning(getArendeBeskrivning(pCase, caseType.getArendeMening()))
-			.withIntressentLista(getByggrIntressenter(pCase))
-			.withObjektLista(getByggrArendeObjektLista(pCase))
+			.withArInomplan(isWithinPlan(byggRCase.getFacilities()))
+			.withBeskrivning(getArendeBeskrivning(byggRCase, caseTypeData.getArendeMening()))
+			.withIntressentLista(getByggrIntressenter(byggRCase))
+			.withObjektLista(getByggrArendeObjektLista(byggRCase))
 			.withAnkomstDatum(LocalDate.now())
 			// ProjektNummer/FakturaId in ByggR.
-			.withProjektnr(Optional.ofNullable(getInvoiceMarking(pCase))
-				.orElse(parsePropertyDesignation(pCase.getFacilities())));
+			.withProjektnr(Optional.ofNullable(getInvoiceMarking(byggRCase))
+				.orElse(parsePropertyDesignation(byggRCase.getFacilities())));
 	}
 
 }

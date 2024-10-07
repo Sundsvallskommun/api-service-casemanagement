@@ -92,4 +92,14 @@ class ByggrCaseIT extends AbstractAppTest {
 			.sendRequestAndVerifyResponse();
 	}
 
+	@Test
+	void test4_addAdditionalDocuments() {
+		setupCall()
+			.withHttpMethod(POST)
+			.withServicePath(PATH)
+			.withRequest(REQUEST)
+			.withExpectedResponseStatus(OK)
+			.sendRequestAndVerifyResponse();
+	}
+
 }

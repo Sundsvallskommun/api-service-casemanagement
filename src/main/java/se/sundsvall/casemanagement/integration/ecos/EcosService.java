@@ -172,7 +172,8 @@ public class EcosService {
 					createFoodFacility(caseInput, propertyInfo, registerDocumentResult);
 				case ANMALAN_INSTALLATION_VARMEPUMP, ANSOKAN_TILLSTAND_VARMEPUMP ->
 					createHeatPumpFacility(eFacility.getExtraParameters(), propertyInfo, registerDocumentResult);
-				case ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC,
+				case ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP,
+				     ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC,
 				     ANMALAN_ANDRING_AVLOPPSANLAGGNING, ANMALAN_ANDRING_AVLOPPSANORDNING ->
 					createIndividualSewage(eFacility, propertyInfo, registerDocumentResult);
 				case ANMALAN_HALSOSKYDDSVERKSAMHET ->
@@ -224,7 +225,7 @@ public class EcosService {
 		createFoodFacilitySvcDto.setAddress(getAddress(propertyInfo));
 		createFoodFacilitySvcDto.setCase(registerDocumentResult.getCaseId());
 
-		createFoodFacilitySvcDto.setEstateDesignation(getEstateSvcDto(propertyInfo));
+		createFoodFacilitySvcDto.setEstateDesignation(new EstateSvcDto().withFnr(propertyInfo.getFnr()));
 		createFoodFacilitySvcDto.setFacilityCollectionName(eCase.getFacilities().getFirst().getFacilityCollectionName());
 		createFoodFacilitySvcDto.setNote(eCase.getFacilities().getFirst().getDescription());
 
@@ -379,7 +380,7 @@ public class EcosService {
 		svcDto.setAddress(getAddress(propertyInfo));
 		svcDto.setFacilityStatusId(Constants.ECOS_FACILITY_STATUS_ID_ANMALD_ANSOKT);
 		svcDto.setCreatedFromCaseId(registerDocumentResult.getCaseId());
-		svcDto.setEstate(getEstateSvcDto(propertyInfo));
+		svcDto.setEstate(new EstateSvcDto().withFnr(propertyInfo.getFnr()));
 
 		svcDto.setManufacturer(CaseUtil.parseString(extraParameters.get(prefix + "Manufacturer")));
 		svcDto.setModel(CaseUtil.parseString(extraParameters.get(prefix + "Model")));
@@ -396,15 +397,15 @@ public class EcosService {
 
 		createIndividualSewageFacilitySvcDto.setFacilityStatusId(Constants.ECOS_FACILITY_STATUS_ID_ANMALD_ANSOKT);
 		createIndividualSewageFacilitySvcDto.setCreatedFromCaseId(registerDocumentResult.getCaseId());
-		createIndividualSewageFacilitySvcDto.setEstate(getEstateSvcDto(propertyInfo));
+		createIndividualSewageFacilitySvcDto.setEstate(new EstateSvcDto().withFnr(propertyInfo.getFnr()));
 
 		createIndividualSewageFacilitySvcDto.setNote(eFacility.getDescription());
 		createIndividualSewageFacilitySvcDto.setOnGrantLand(CaseUtil.parseBoolean(eFacility.getExtraParameters().get("OnGrantLand")));
-		createIndividualSewageFacilitySvcDto.setProtectionLevelApprovedEnvironmentId(CaseUtil.parseString(eFacility.getExtraParameters().get("ProtectionLevelApprovedEnvironmentId")));
-		createIndividualSewageFacilitySvcDto.setProtectionLevelApprovedHealthId(CaseUtil.parseString(eFacility.getExtraParameters().get("ProtectionLevelApprovedHealthId")));
-		createIndividualSewageFacilitySvcDto.setWastewaterApprovedForId(CaseUtil.parseString(eFacility.getExtraParameters().get("WastewaterApprovedForId")));
-		createIndividualSewageFacilitySvcDto.setWasteWaterInboundId(CaseUtil.parseString(eFacility.getExtraParameters().get("WasteWaterInboundId")));
-		createIndividualSewageFacilitySvcDto.setAccommodationTypeId(CaseUtil.parseString(eFacility.getExtraParameters().get("AccommodationTypeId")));
+		createIndividualSewageFacilitySvcDto.setProtectionLevelApprovedEnvironmentId(eFacility.getExtraParameters().get("ProtectionLevelApprovedEnvironmentId"));
+		createIndividualSewageFacilitySvcDto.setProtectionLevelApprovedHealthId(eFacility.getExtraParameters().get("ProtectionLevelApprovedHealthId"));
+		createIndividualSewageFacilitySvcDto.setWastewaterApprovedForId(eFacility.getExtraParameters().get("WastewaterApprovedForId"));
+		createIndividualSewageFacilitySvcDto.setWasteWaterInboundId(eFacility.getExtraParameters().get("WasteWaterInboundId"));
+		createIndividualSewageFacilitySvcDto.setAccommodationTypeId(eFacility.getExtraParameters().get("AccommodationTypeId"));
 
 		createIndividualSewageFacilitySvcDto.setPurificationSteps(getPurificationSteps(eFacility.getExtraParameters()));
 
@@ -644,7 +645,8 @@ public class EcosService {
 	private String getProcessTypeId(final String caseType) {
 
 		return switch (CaseType.valueOf(caseType)) {
-			case REGISTRERING_AV_LIVSMEDEL -> Constants.ECOS_PROCESS_TYPE_ID_REGISTRERING_AV_LIVSMEDEL;
+			case REGISTRERING_AV_LIVSMEDEL ->
+				Constants.ECOS_PROCESS_TYPE_ID_REGISTRERING_AV_LIVSMEDEL;
 			case ANMALAN_INSTALLATION_VARMEPUMP ->
 				Constants.ECOS_PROCESS_TYPE_ID_ANMALAN_INSTALLATION_VARMEPUMP;
 			case ANSOKAN_TILLSTAND_VARMEPUMP ->
@@ -817,7 +819,7 @@ public class EcosService {
 		final CreateHealthProtectionFacility createHealthProtectionFacility = new CreateHealthProtectionFacility();
 		final CreateHealthProtectionFacilitySvcDto createHealthProtectionFacilitySvcDto = new CreateHealthProtectionFacilitySvcDto();
 		createHealthProtectionFacilitySvcDto.setAddress(getAddress(propertyInfo));
-		createHealthProtectionFacilitySvcDto.setEstateDesignation(getEstateSvcDto(propertyInfo));
+		createHealthProtectionFacilitySvcDto.setEstateDesignation(new EstateSvcDto().withFnr(propertyInfo.getFnr()));
 		createHealthProtectionFacilitySvcDto.setCase(registerDocumentResult.getCaseId());
 		createHealthProtectionFacilitySvcDto.setNote(eFacility.getDescription());
 		createHealthProtectionFacilitySvcDto.setFacilityCollectionName(eFacility.getFacilityCollectionName());
@@ -831,12 +833,4 @@ public class EcosService {
 		}
 		throw Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "Health Protection Facility could not be created");
 	}
-
-
-	private EstateSvcDto getEstateSvcDto(final FbPropertyInfo propertyInfo) {
-		final EstateSvcDto estateSvcDto = new EstateSvcDto();
-		estateSvcDto.setFnr(propertyInfo.getFnr());
-		return estateSvcDto;
-	}
-
 }
