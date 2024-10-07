@@ -559,9 +559,9 @@ public final class ByggrMapper {
 	static HandelseIntressent createAddAdditionalDocumentsHandelseIntressent(final StakeholderDTO stakeholder, final String stakeholderId) {
 		var handelseIntressent = new HandelseIntressent()
 			.withPersOrgNr(stakeholderId)
-			.withAdress(Optional.ofNullable(stakeholder.getAddresses()).map(addresses -> addresses.getFirst().getStreet()).orElse(null))
-			.withPostNr(Optional.ofNullable(stakeholder.getAddresses()).map(addresses -> addresses.getFirst().getPostalCode()).orElse(null))
-			.withOrt(Optional.ofNullable(stakeholder.getAddresses()).map(addresses -> addresses.getFirst().getCity()).orElse(null))
+			.withAdress(Optional.ofNullable(stakeholder.getAddresses()).map(List::getFirst).map(AddressDTO::getStreet).orElse(null))
+			.withPostNr(Optional.ofNullable(stakeholder.getAddresses()).map(List::getFirst).map(AddressDTO::getPostalCode).orElse(null))
+			.withOrt(Optional.ofNullable(stakeholder.getAddresses()).map(List::getFirst).map(AddressDTO::getCity).orElse(null))
 			.withIntressentKommunikationLista(createArrayOfIntressentKommunikation(stakeholder));
 
 		if (stakeholder instanceof OrganizationDTO organization) {
