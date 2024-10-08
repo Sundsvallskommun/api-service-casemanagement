@@ -1,7 +1,7 @@
 {
   "name": "CaseData_PostErrands_201",
   "request": {
-    "urlPathPattern": "/case-data/\\d.\\d/2281/errands",
+    "urlPathPattern": "/case-data/\\d.\\d/2281/(.+)/errands",
     "method": "POST",
     "bodyPatterns": [
       {

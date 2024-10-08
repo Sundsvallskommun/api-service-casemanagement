@@ -1,6 +1,6 @@
 {
   "request": {
-    "urlPathPattern": "/case-data/\\d.\\d/2281/errands/(.+)",
+    "urlPathPattern": "/case-data/\\d.\\d/2281/(.+)/errands/(.+)",
     "method": "PATCH"
   },
   "response": {

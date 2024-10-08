@@ -1,5 +1,10 @@
 package se.sundsvall.casemanagement.integration.casedata;
 
+import static generated.client.casedata.ContactInformation.ContactTypeEnum.CELLPHONE;
+import static generated.client.casedata.ContactInformation.ContactTypeEnum.EMAIL;
+import static generated.client.casedata.ContactInformation.ContactTypeEnum.PHONE;
+import static generated.client.casedata.Stakeholder.TypeEnum.ORGANIZATION;
+import static generated.client.casedata.Stakeholder.TypeEnum.PERSON;
 import static java.util.Collections.emptyList;
 
 import java.util.ArrayList;
@@ -21,9 +26,13 @@ import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
 import se.sundsvall.casemanagement.api.model.PersonDTO;
 import se.sundsvall.casemanagement.api.model.StakeholderDTO;
 
-import generated.client.casedata.ContactInformationDTO;
-import generated.client.casedata.ErrandDTO;
-import generated.client.casedata.PatchErrandDTO;
+import generated.client.casedata.Address;
+import generated.client.casedata.ContactInformation;
+import generated.client.casedata.Coordinates;
+import generated.client.casedata.Errand;
+import generated.client.casedata.Facility;
+import generated.client.casedata.PatchErrand;
+import generated.client.casedata.Stakeholder;
 
 public final class CaseDataMapper {
 
@@ -33,8 +42,8 @@ public final class CaseDataMapper {
 		// Prevent instantiation
 	}
 
-	public static generated.client.casedata.AttachmentDTO toAttachment(final AttachmentDTO attachment, final String errandNumber) {
-		return new generated.client.casedata.AttachmentDTO()
+	public static generated.client.casedata.Attachment toAttachment(final AttachmentDTO attachment, final String errandNumber) {
+		return new generated.client.casedata.Attachment()
 			.category(attachment.getCategory())
 			.note(attachment.getNote())
 			.name(attachment.getName())
@@ -45,51 +54,51 @@ public final class CaseDataMapper {
 			.errandNumber(errandNumber);
 	}
 
-	public static ErrandDTO toErrandDTO(final OtherCaseDTO otherCase) {
-		final var errand = new ErrandDTO()
+	public static Errand toErrand(final OtherCaseDTO otherCase) {
+		final var errand = new Errand()
 			.caseType(otherCase.getCaseType())
 			.externalCaseId(otherCase.getExternalCaseId())
 			.description(otherCase.getDescription())
 			.caseTitleAddition(otherCase.getCaseTitleAddition())
-			.stakeholders(toStakeholderDTOs(otherCase.getStakeholders()))
+			.stakeholders(toStakeholders(otherCase.getStakeholders()))
 			.extraParameters(otherCase.getExtraParameters())
 			.channel(Optional.ofNullable(otherCase.getExternalCaseId())
-				.map(id -> ErrandDTO.ChannelEnum.ESERVICE)
+				.map(id -> Errand.ChannelEnum.ESERVICE)
 				.orElse(null))
 			.facilities(Optional.ofNullable(otherCase.getFacilities())
-				.map(CaseDataMapper::toFacilityDTOs)
+				.map(CaseDataMapper::toFacilities)
 				.orElse(null));
 
 		Optional.ofNullable(otherCase.getExtraParameters())
 			.map(extraParameters -> extraParameters.get(APPLICATION_PRIORITY_KEY))
 			.filter(StringUtils::isNotBlank)
-			.map(ErrandDTO.PriorityEnum::valueOf)
+			.map(Errand.PriorityEnum::valueOf)
 			.ifPresent(errand::setPriority);
 
 		return errand;
 	}
 
-	public static List<generated.client.casedata.FacilityDTO> toFacilityDTOs(final List<FacilityDTO> facilityDTOS) {
+	public static List<Facility> toFacilities(final List<FacilityDTO> facilityDTOS) {
 		return Optional.ofNullable(facilityDTOS)
 			.map(facilities -> facilities.stream()
-				.map(CaseDataMapper::toFacilityDTO)
+				.map(CaseDataMapper::toFacility)
 				.toList())
 			.orElse(emptyList());
 	}
 
-	public static generated.client.casedata.FacilityDTO toFacilityDTO(final FacilityDTO facilityDTO) {
-		return Optional.ofNullable(facilityDTO).map(f -> new generated.client.casedata.FacilityDTO()
+	public static Facility toFacility(final FacilityDTO facilityDTO) {
+		return Optional.ofNullable(facilityDTO).map(f -> new Facility()
 				.mainFacility(f.isMainFacility())
 				.facilityType(f.getFacilityType())
 				.facilityCollectionName(f.getFacilityCollectionName())
 				.description(f.getDescription())
 				.extraParameters(f.getExtraParameters())
-				.address(toFacilityAddressDTO(f.getAddress())))
+				.address(toFacilityAddress(f.getAddress())))
 			.orElse(null);
 	}
 
-	public static generated.client.casedata.AddressDTO toFacilityAddressDTO(final AddressDTO dto) {
-		return Optional.ofNullable(dto).map(address -> new generated.client.casedata.AddressDTO()
+	public static Address toFacilityAddress(final AddressDTO dto) {
+		return Optional.ofNullable(dto).map(address -> new Address()
 				.city(address.getCity())
 				.country(address.getCountry())
 				.postalCode(address.getPostalCode())
@@ -99,21 +108,21 @@ public final class CaseDataMapper {
 				.attention(address.getAttention())
 				.propertyDesignation(address.getPropertyDesignation())
 				.apartmentNumber(address.getAppartmentNumber())
-				.location(toCoordinatesDTO(address.getLocation()))
+				.location(toCoordinates(address.getLocation()))
 				.isZoningPlanArea(address.getIsZoningPlanArea())
 				.invoiceMarking(address.getInvoiceMarking())
 				.addressCategory(Optional.ofNullable(dto.getAddressCategories())
-					.map(a -> generated.client.casedata.AddressDTO.AddressCategoryEnum.VISITING_ADDRESS)
+					.map(a -> Address.AddressCategoryEnum.VISITING_ADDRESS)
 					.orElse(null)))
 			.orElse(null);
 	}
 
 	// Skapar en ny adress för varje AddressCategory som finns i AddressDTO.
-	public static List<generated.client.casedata.AddressDTO> toStakeholderAddressDTOs(final List<AddressDTO> addressDTOs) {
+	public static List<Address> toStakeholderAddresses(final List<AddressDTO> addressDTOs) {
 		return Optional.ofNullable(addressDTOs).orElse(emptyList()).stream()
 			.flatMap(address -> address.getAddressCategories().stream()
-				.map(addressCategory -> new generated.client.casedata.AddressDTO()
-					.addressCategory(generated.client.casedata.AddressDTO.AddressCategoryEnum.fromValue(addressCategory.toString()))
+				.map(addressCategory -> new Address()
+					.addressCategory(Address.AddressCategoryEnum.fromValue(addressCategory.toString()))
 					.street(address.getStreet())
 					.houseNumber(address.getHouseNumber())
 					.postalCode(address.getPostalCode())
@@ -123,83 +132,83 @@ public final class CaseDataMapper {
 					.attention(address.getAttention())
 					.propertyDesignation(address.getPropertyDesignation())
 					.apartmentNumber(address.getAppartmentNumber())
-					.location(toCoordinatesDTO(address.getLocation()))
+					.location(toCoordinates(address.getLocation()))
 					.isZoningPlanArea(address.getIsZoningPlanArea())
 					.invoiceMarking(address.getInvoiceMarking())))
 			.toList();
 	}
 
-	public static PatchErrandDTO toPatchErrandDTO(final OtherCaseDTO otherCaseDTO) {
-		final var errand = new PatchErrandDTO()
-			.caseType(PatchErrandDTO.CaseTypeEnum.fromValue(otherCaseDTO.getCaseType()))
+	public static PatchErrand toPatchErrand(final OtherCaseDTO otherCaseDTO) {
+		final var errand = new PatchErrand()
+			.caseType(PatchErrand.CaseTypeEnum.fromValue(otherCaseDTO.getCaseType()))
 			.externalCaseId(otherCaseDTO.getExternalCaseId())
 			.description(otherCaseDTO.getDescription())
 			.caseTitleAddition(otherCaseDTO.getCaseTitleAddition())
-			.facilities(toFacilityDTOs(otherCaseDTO.getFacilities()))
+			.facilities(toFacilities(otherCaseDTO.getFacilities()))
 			.extraParameters(otherCaseDTO.getExtraParameters());
 
 		Optional.ofNullable(otherCaseDTO.getExtraParameters())
 			.map(extraParameters -> extraParameters.get(APPLICATION_PRIORITY_KEY))
 			.filter(StringUtils::isNotBlank)
-			.map(PatchErrandDTO.PriorityEnum::valueOf)
+			.map(PatchErrand.PriorityEnum::valueOf)
 			.ifPresent(errand::setPriority);
 
 		return errand;
 	}
 
-	public static List<generated.client.casedata.StakeholderDTO> toStakeholderDTOs(final List<StakeholderDTO> stakeholderDTOs) {
-		final var personDTOs = Optional.ofNullable(stakeholderDTOs).orElse(emptyList()).stream()
+	public static List<Stakeholder> toStakeholders(final List<StakeholderDTO> stakeholderDTOs) {
+		final var persons = Optional.ofNullable(stakeholderDTOs).orElse(emptyList()).stream()
 			.filter(PersonDTO.class::isInstance)
 			.map(PersonDTO.class::cast)
-			.map(stakeholder -> new generated.client.casedata.StakeholderDTO()
+			.map(stakeholder -> new Stakeholder()
 				.roles(toRoles(stakeholder.getRoles(), stakeholder.getExtraParameters()))
-				.contactInformation(toContactInformationDTO(stakeholder))
-				.addresses(toStakeholderAddressDTOs(stakeholder.getAddresses()))
+				.contactInformation(toContactInformation(stakeholder))
+				.addresses(toStakeholderAddresses(stakeholder.getAddresses()))
 				.extraParameters(stakeholder.getExtraParameters())
-				.type(generated.client.casedata.StakeholderDTO.TypeEnum.PERSON)
+				.type(PERSON)
 				.firstName(stakeholder.getFirstName())
 				.lastName(stakeholder.getLastName())
 				.personId(stakeholder.getPersonId()));
 
-		final var organizationDTOs = Optional.ofNullable(stakeholderDTOs).orElse(emptyList()).stream()
+		final var organizations = Optional.ofNullable(stakeholderDTOs).orElse(emptyList()).stream()
 			.filter(OrganizationDTO.class::isInstance)
 			.map(OrganizationDTO.class::cast)
-			.map(stakeholder -> new generated.client.casedata.StakeholderDTO()
+			.map(stakeholder -> new Stakeholder()
 				.roles(toRoles(stakeholder.getRoles(), stakeholder.getExtraParameters()))
-				.contactInformation(toContactInformationDTO(stakeholder))
-				.addresses(toStakeholderAddressDTOs(stakeholder.getAddresses()))
+				.contactInformation(toContactInformation(stakeholder))
+				.addresses(toStakeholderAddresses(stakeholder.getAddresses()))
 				.extraParameters(stakeholder.getExtraParameters())
-				.type(generated.client.casedata.StakeholderDTO.TypeEnum.ORGANIZATION)
+				.type(ORGANIZATION)
 				.organizationName(stakeholder.getOrganizationName())
 				.organizationNumber(formatOrganizationNumber(stakeholder.getOrganizationNumber()))
 				.authorizedSignatory(stakeholder.getAuthorizedSignatory()));
 
-		return Stream.concat(organizationDTOs, personDTOs).toList();
+		return Stream.concat(organizations, persons).toList();
 	}
 
-	public static generated.client.casedata.CoordinatesDTO toCoordinatesDTO(final CoordinatesDTO location) {
-		return Optional.ofNullable(location).map(coordinatesDTO -> new generated.client.casedata.CoordinatesDTO()
+	public static Coordinates toCoordinates(final CoordinatesDTO location) {
+		return Optional.ofNullable(location).map(coordinatesDTO -> new Coordinates()
 				.latitude(location.getLatitude())
 				.longitude(location.getLongitude()))
 			.orElse(null);
 	}
 
-	public static List<ContactInformationDTO> toContactInformationDTO(final StakeholderDTO stakeholderDTO) {
-		final var contactInformation = new ArrayList<ContactInformationDTO>();
+	public static List<ContactInformation> toContactInformation(final StakeholderDTO stakeholderDTO) {
+		final var contactInformation = new ArrayList<ContactInformation>();
 
 		Optional.ofNullable(stakeholderDTO.getCellphoneNumber()).ifPresent(cellphoneNumber ->
-			contactInformation.add(new ContactInformationDTO()
-				.contactType(ContactInformationDTO.ContactTypeEnum.CELLPHONE)
+			contactInformation.add(new ContactInformation()
+				.contactType(CELLPHONE)
 				.value(cellphoneNumber)));
 
 		Optional.ofNullable(stakeholderDTO.getPhoneNumber()).ifPresent(phoneNumber ->
-			contactInformation.add(new ContactInformationDTO()
-				.contactType(ContactInformationDTO.ContactTypeEnum.PHONE)
+			contactInformation.add(new ContactInformation()
+				.contactType(PHONE)
 				.value(phoneNumber)));
 
 		Optional.ofNullable(stakeholderDTO.getEmailAddress()).ifPresent(emailAddress ->
-			contactInformation.add(new ContactInformationDTO()
-				.contactType(ContactInformationDTO.ContactTypeEnum.EMAIL)
+			contactInformation.add(new ContactInformation()
+				.contactType(EMAIL)
 				.value(emailAddress)));
 
 		return contactInformation;

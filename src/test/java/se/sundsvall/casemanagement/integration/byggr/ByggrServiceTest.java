@@ -1088,7 +1088,7 @@ class ByggrServiceTest {
 				.withAttention(new IntressentAttention()
 					.withAttention("attention")
 					.withAttentionId(12345))
-				.withKomtyp("Epost")));
+				.withKomtyp("E-Post")));
 
 		when(spy.extractStakeholderId(stakeholders)).thenReturn(stakeholderId);
 		when(spy.getByggRCase(dnr)).thenReturn(arende);
@@ -1103,11 +1103,11 @@ class ByggrServiceTest {
 
 	@Test
 	void addCertifiedInspectorTest() {
-		var stakeholders = List.of(createStakeholderDTO(StakeholderType.ORGANIZATION, List.of("role")));
-		var errandNr = "some-dnr [123]";
-		var otherInformation = "otherInformation";
-		var byggRCaseDTO = mock(ByggRCaseDTO.class);
-		var extraParameterMap = mock(HashMap.class);
+		final var stakeholders = List.of(createStakeholderDTO(StakeholderType.ORGANIZATION, List.of("role")));
+		final var errandNr = "some-dnr [123]";
+		final var otherInformation = "otherInformation";
+		final var byggRCaseDTO = mock(ByggRCaseDTO.class);
+		final HashMap<String, String> extraParameterMap = mock(HashMap.class);
 
 		when(byggRCaseDTO.getStakeholders()).thenReturn(stakeholders);
 		when(byggRCaseDTO.getExtraParameters()).thenReturn(extraParameterMap);
@@ -1155,7 +1155,7 @@ class ByggrServiceTest {
 		organizationStakeholder.setOrganizationNumber(organizationNumberOepFormat);
 
 
-		var stakeholders = List.of(personStakeholder, organizationStakeholder);
+		final var stakeholders = List.of(personStakeholder, organizationStakeholder);
 
 		final var result = byggrService.extractStakeholderId(stakeholders);
 
@@ -1175,7 +1175,7 @@ class ByggrServiceTest {
 		final var organizationNumberOepFormat = "1234561234";
 		organizationStakeholder.setOrganizationNumber(organizationNumberOepFormat);
 
-		var stakeholders = List.of(personStakeholder, organizationStakeholder);
+		final var stakeholders = List.of(personStakeholder, organizationStakeholder);
 
 		final var result = byggrService.extractStakeholderId(stakeholders);
 

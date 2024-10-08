@@ -28,12 +28,16 @@ import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 	"/db/scripts/testdata-it.sql"
 })
 @DirtiesContext
-public class CaseDataIT extends AbstractAppTest {
+class CaseDataIT extends AbstractAppTest {
 
 	private static final String REQUEST = "request.json";
+
 	private static final String RESPONSE = "response.json";
+
 	private static final String CASE_DATA_ID = "24";
+
 	private static final String MUNICIPALITY_ID = "2281";
+
 	private static final String PATH = "/" + MUNICIPALITY_ID + "/cases";
 
 	@Autowired

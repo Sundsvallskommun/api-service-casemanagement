@@ -96,7 +96,7 @@ class AttachmentResourceTest {
 			.exchange()
 			.expectStatus().isNoContent();
 
-		verify(caseDataService).patchErrandWithAttachment(caseMapping.getExternalCaseId(), attachments, MUNICIPALITY_ID);
+		verify(caseDataService).patchErrandWithAttachment(caseMapping, attachments, MUNICIPALITY_ID);
 		verifyNoInteractions(byggrService, ecosService);
 	}
 

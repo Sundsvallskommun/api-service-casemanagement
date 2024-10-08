@@ -1,11 +1,11 @@
 {
   "request": {
-    "urlPathPattern": "/case-data/\\d.\\d/2281/(.+)/attachments/errand/(.+)",
+    "urlPathPattern": "/case-data/\\d.\\d/2281/(.+)/errands/24",
     "method": "GET"
   },
   "response": {
     "status": 200,
-    "bodyFileName": "test3_updateCase/response/casedata_getAttachments.json",
+    "bodyFileName": "test3_postCasedataAttachment/response/CaseData_GetErrandWithId.json",
     "headers": {
       "Content-Type": [
         "application/json"

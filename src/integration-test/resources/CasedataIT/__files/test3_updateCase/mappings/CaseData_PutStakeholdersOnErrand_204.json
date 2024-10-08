@@ -1,6 +1,6 @@
 {
   "request": {
-    "urlPathPattern": "/case-data/\\d.\\d/2281/errands/(.+)/stakeholders",
+    "urlPathPattern": "/case-data/\\d.\\d/2281/(.+)/errands/(.+)/stakeholders",
     "method": "PUT"
   },
   "response": {

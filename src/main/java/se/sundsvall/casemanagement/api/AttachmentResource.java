@@ -75,11 +75,10 @@ class AttachmentResource {
 				byggrService.saveNewIncomingAttachmentHandelse(caseMapping.getCaseId(), attachmentDTOList);
 			case ECOS -> ecosService.addDocumentsToCase(caseMapping.getCaseId(), attachmentDTOList);
 			case CASE_DATA ->
-				caseDataService.patchErrandWithAttachment(caseMapping.getExternalCaseId(), attachmentDTOList, municipalityId);
+				caseDataService.patchErrandWithAttachment(caseMapping, attachmentDTOList, municipalityId);
 			default ->
 				throw Problem.valueOf(Status.BAD_REQUEST, "It should not be possible to reach this row. systemType was: " + caseMapping.getSystem());
 		}
-
 		return ResponseEntity.noContent().build();
 	}
 

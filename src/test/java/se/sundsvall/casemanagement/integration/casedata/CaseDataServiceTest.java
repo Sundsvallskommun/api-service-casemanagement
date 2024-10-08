@@ -48,10 +48,9 @@ import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.service.CaseMappingService;
 import se.sundsvall.casemanagement.util.Constants;
 
-import generated.client.casedata.ErrandDTO;
-import generated.client.casedata.ErrandDTO.ChannelEnum;
-import generated.client.casedata.PatchErrandDTO;
-import generated.client.casedata.StatusDTO;
+import generated.client.casedata.Errand;
+import generated.client.casedata.Errand.ChannelEnum;
+import generated.client.casedata.PatchErrand;
 
 @ExtendWith(MockitoExtension.class)
 class CaseDataServiceTest {
@@ -68,16 +67,16 @@ class CaseDataServiceTest {
 	private CaseDataClient caseDataClientMock;
 
 	@Captor
-	private ArgumentCaptor<PatchErrandDTO> patchErrandDTOArgumentCaptor;
+	private ArgumentCaptor<PatchErrand> patchErrandArgumentCaptor;
 
 	@Captor
-	private ArgumentCaptor<List<StatusDTO>> statusDTOListArgumentCaptor;
+	private ArgumentCaptor<List<generated.client.casedata.Status>> statusListArgumentCaptor;
 
 	@Captor
-	private ArgumentCaptor<List<generated.client.casedata.StakeholderDTO>> stakeholderDTOListArgumentCaptor;
+	private ArgumentCaptor<List<generated.client.casedata.Stakeholder>> stakeholderListArgumentCaptor;
 
 	@Captor
-	private ArgumentCaptor<generated.client.casedata.AttachmentDTO> attachmentDTOArgumentCaptor;
+	private ArgumentCaptor<generated.client.casedata.Attachment> attachmentArgumentCaptor;
 
 	@ParameterizedTest
 	@EnumSource(value = CaseType.class, names = {PARKING_PERMIT, LOST_PARKING_PERMIT, PARKING_PERMIT_RENEWAL})
@@ -85,14 +84,15 @@ class CaseDataServiceTest {
 		// Arrange
 		final var errandId = new Random().nextLong();
 		final var uri = new URI("https://sundsvall-test.se/errands/" + errandId);
-		final var getErrandDTO = new ErrandDTO();
-		getErrandDTO.setErrandNumber("Inskickat");
+		final var getErrand = new Errand();
+		getErrand.setErrandNumber("Inskickat");
 		final var inputCase = createCase(caseType);
 		final var municipalityId = "2281";
+		final var namspace = "PRH";
 
 		// Mock
-		when(caseDataClientMock.postErrands(eq(MUNICIPALITY_ID), any())).thenReturn(ResponseEntity.created(uri).build());
-		when(caseDataClientMock.getErrand(MUNICIPALITY_ID, errandId)).thenReturn(getErrandDTO);
+		when(caseDataClientMock.postErrands(eq(MUNICIPALITY_ID), eq(namspace), any())).thenReturn(ResponseEntity.created(uri).build());
+		when(caseDataClientMock.getErrand(MUNICIPALITY_ID, namspace, errandId)).thenReturn(getErrand);
 
 		// Act
 		final var response = caseDataService.postErrand(inputCase, municipalityId);
@@ -100,31 +100,31 @@ class CaseDataServiceTest {
 		// Assert
 		assertThat(response).isEqualTo("Inskickat");
 
-		final var errandDTOArgumentCaptor = ArgumentCaptor.forClass(ErrandDTO.class);
-		verify(caseDataClientMock).postErrands(eq(MUNICIPALITY_ID), errandDTOArgumentCaptor.capture());
-		final var errandDTO = errandDTOArgumentCaptor.getValue();
+		final var errandArgumentCaptor = ArgumentCaptor.forClass(Errand.class);
+		verify(caseDataClientMock).postErrands(eq(MUNICIPALITY_ID), eq(namspace), errandArgumentCaptor.capture());
+		final var errand = errandArgumentCaptor.getValue();
 
-		assertThat(errandDTO.getCaseTitleAddition()).isEqualTo(inputCase.getCaseTitleAddition());
-		assertThat(errandDTO.getCaseType()).isEqualTo(inputCase.getCaseType());
-		assertThat(errandDTO.getChannel()).isEqualTo(ChannelEnum.ESERVICE);
-		assertThat(errandDTO.getDescription()).isEqualTo(inputCase.getDescription());
-		assertThat(errandDTO.getExtraParameters()).isEqualTo(inputCase.getExtraParameters());
-		assertThat(errandDTO.getExternalCaseId()).isEqualTo(inputCase.getExternalCaseId());
-		assertThat(errandDTO.getPhase()).isEqualTo("Aktualisering");
-		assertThat(errandDTO.getPriority()).isEqualTo(ErrandDTO.PriorityEnum.HIGH);
-		assertThat(errandDTO.getStakeholders()).hasSameSizeAs(inputCase.getStakeholders());
-		assertThat(errandDTO.getStatuses().getFirst().getStatusType()).isEqualTo("Ärende inkommit");
-		assertThat(errandDTO.getStatuses().getFirst().getDateTime()).isNotNull();
+		assertThat(errand.getCaseTitleAddition()).isEqualTo(inputCase.getCaseTitleAddition());
+		assertThat(errand.getCaseType()).isEqualTo(inputCase.getCaseType());
+		assertThat(errand.getChannel()).isEqualTo(ChannelEnum.ESERVICE);
+		assertThat(errand.getDescription()).isEqualTo(inputCase.getDescription());
+		assertThat(errand.getExtraParameters()).isEqualTo(inputCase.getExtraParameters());
+		assertThat(errand.getExternalCaseId()).isEqualTo(inputCase.getExternalCaseId());
+		assertThat(errand.getPhase()).isEqualTo("Aktualisering");
+		assertThat(errand.getPriority()).isEqualTo(Errand.PriorityEnum.HIGH);
+		assertThat(errand.getStakeholders()).hasSameSizeAs(inputCase.getStakeholders());
+		assertThat(errand.getStatuses().getFirst().getStatusType()).isEqualTo("Ärende inkommit");
+		assertThat(errand.getStatuses().getFirst().getDateTime()).isNotNull();
 
-		attachmentDTOArgumentCaptor = ArgumentCaptor.forClass(generated.client.casedata.AttachmentDTO.class);
-		verify(caseDataClientMock, times(3)).postAttachment(eq(MUNICIPALITY_ID), attachmentDTOArgumentCaptor.capture());
-		final var attachmentDTO = attachmentDTOArgumentCaptor.getValue();
-		assertThat(attachmentDTO).isNotNull();
-		assertThat(attachmentDTO.getCategory()).isEqualTo(AttachmentCategory.ANMALAN_VARMEPUMP.toString());
+		attachmentArgumentCaptor = ArgumentCaptor.forClass(generated.client.casedata.Attachment.class);
+		verify(caseDataClientMock, times(3)).postAttachment(eq(MUNICIPALITY_ID), eq(namspace), eq(errandId), attachmentArgumentCaptor.capture());
+		final var attachment = attachmentArgumentCaptor.getValue();
+		assertThat(attachment).isNotNull();
+		assertThat(attachment.getCategory()).isEqualTo(AttachmentCategory.ANMALAN_VARMEPUMP.toString());
 
-		final var caseDTOArgumentCaptor = ArgumentCaptor.forClass(CaseDTO.class);
-		verify(caseMappingServiceMock).postCaseMapping(caseDTOArgumentCaptor.capture(), any(String.class), any(SystemType.class), eq(MUNICIPALITY_ID));
-		final var caseMapping = caseDTOArgumentCaptor.getValue();
+		final var caseArgumentCaptor = ArgumentCaptor.forClass(CaseDTO.class);
+		verify(caseMappingServiceMock).postCaseMapping(caseArgumentCaptor.capture(), any(String.class), any(SystemType.class), eq(MUNICIPALITY_ID));
+		final var caseMapping = caseArgumentCaptor.getValue();
 		assertThat(caseMapping.getExternalCaseId()).isEqualTo(inputCase.getExternalCaseId());
 		assertThat(caseMapping.getCaseType()).isEqualTo(inputCase.getCaseType());
 		assertThat(caseMapping.getExtraParameters().get(SERVICE_NAME)).isNull();
@@ -136,63 +136,64 @@ class CaseDataServiceTest {
 		// Arrange
 		final var errandId = new Random().nextLong();
 		final var inputCase = createCase(CaseType.PARKING_PERMIT);
-
+		final var namspace = "PRH";
 		// Mock
-		when(caseDataClientMock.patchErrand(eq(MUNICIPALITY_ID), any(), any())).thenReturn(null);
-		when(caseDataClientMock.putStatusOnErrand(eq(MUNICIPALITY_ID), any(), any())).thenReturn(null);
-		when(caseDataClientMock.putStakeholdersOnErrand(eq(MUNICIPALITY_ID), any(), any())).thenReturn(null);
-		when(caseDataClientMock.postAttachment(eq(MUNICIPALITY_ID), any())).thenReturn(null);
+		when(caseDataClientMock.patchErrand(eq(MUNICIPALITY_ID), eq(namspace), any(), any())).thenReturn(null);
+		when(caseDataClientMock.putStatusOnErrand(eq(MUNICIPALITY_ID), eq(namspace), any(), any())).thenReturn(null);
+		when(caseDataClientMock.putStakeholdersOnErrand(eq(MUNICIPALITY_ID), eq(namspace), any(), any())).thenReturn(null);
+		when(caseDataClientMock.postAttachment(eq(MUNICIPALITY_ID), eq(namspace), eq(errandId), any())).thenReturn(null);
 
 		// Act
 		caseDataService.putErrand(errandId, inputCase, MUNICIPALITY_ID);
 
 		// Assert
-		verify(caseDataClientMock, times(1)).patchErrand(eq(MUNICIPALITY_ID), eq(errandId), patchErrandDTOArgumentCaptor.capture());
-		verify(caseDataClientMock, times(1)).putStakeholdersOnErrand(eq(MUNICIPALITY_ID), eq(errandId), stakeholderDTOListArgumentCaptor.capture());
-		verify(caseDataClientMock, times(3)).postAttachment(eq(MUNICIPALITY_ID), attachmentDTOArgumentCaptor.capture());
-		verify(caseDataClientMock, times(1)).putStatusOnErrand(eq(MUNICIPALITY_ID), eq(errandId), statusDTOListArgumentCaptor.capture());
+		verify(caseDataClientMock, times(1)).patchErrand(eq(MUNICIPALITY_ID), eq(namspace), eq(errandId), patchErrandArgumentCaptor.capture());
+		verify(caseDataClientMock, times(1)).putStakeholdersOnErrand(eq(MUNICIPALITY_ID), eq(namspace), eq(errandId), stakeholderListArgumentCaptor.capture());
+		verify(caseDataClientMock, times(3)).postAttachment(eq(MUNICIPALITY_ID), eq(namspace), eq(errandId), attachmentArgumentCaptor.capture());
+		verify(caseDataClientMock, times(1)).putStatusOnErrand(eq(MUNICIPALITY_ID), eq(namspace), eq(errandId), statusListArgumentCaptor.capture());
 
-		final var patchErrandDTO = patchErrandDTOArgumentCaptor.getValue();
-		assertThat(patchErrandDTO.getCaseType()).isEqualTo(PatchErrandDTO.CaseTypeEnum.fromValue(inputCase.getCaseType()));
-		assertThat(patchErrandDTO.getExternalCaseId()).isEqualTo(inputCase.getExternalCaseId());
-		assertThat(patchErrandDTO.getDescription()).isEqualTo(inputCase.getDescription());
-		assertThat(patchErrandDTO.getCaseTitleAddition()).isEqualTo(inputCase.getCaseTitleAddition());
-		assertThat(patchErrandDTO.getExtraParameters()).isEqualTo(inputCase.getExtraParameters());
-		assertThat(patchErrandDTO.getPriority()).isEqualTo(PatchErrandDTO.PriorityEnum.HIGH);
-		assertThat(patchErrandDTO.getPhase()).isNull();
-		assertThat(patchErrandDTO.getDiaryNumber()).isNull();
-		assertThat(patchErrandDTO.getStartDate()).isNull();
-		assertThat(patchErrandDTO.getEndDate()).isNull();
-		assertThat(patchErrandDTO.getApplicationReceived()).isNull();
+		final var patchErrand = patchErrandArgumentCaptor.getValue();
+		assertThat(patchErrand.getCaseType()).isEqualTo(PatchErrand.CaseTypeEnum.fromValue(inputCase.getCaseType()));
+		assertThat(patchErrand.getExternalCaseId()).isEqualTo(inputCase.getExternalCaseId());
+		assertThat(patchErrand.getDescription()).isEqualTo(inputCase.getDescription());
+		assertThat(patchErrand.getCaseTitleAddition()).isEqualTo(inputCase.getCaseTitleAddition());
+		assertThat(patchErrand.getExtraParameters()).isEqualTo(inputCase.getExtraParameters());
+		assertThat(patchErrand.getPriority()).isEqualTo(PatchErrand.PriorityEnum.HIGH);
+		assertThat(patchErrand.getPhase()).isNull();
+		assertThat(patchErrand.getDiaryNumber()).isNull();
+		assertThat(patchErrand.getStartDate()).isNull();
+		assertThat(patchErrand.getEndDate()).isNull();
+		assertThat(patchErrand.getApplicationReceived()).isNull();
 
-		final var statusDTOs = statusDTOListArgumentCaptor.getValue();
-		assertThat(statusDTOs).hasSize(1);
-		assertThat(statusDTOs.getFirst().getStatusType()).isEqualTo("Komplettering inkommen");
-		assertThat(statusDTOs.getFirst().getDateTime()).isNotNull();
+		final var status = statusListArgumentCaptor.getValue();
+		assertThat(status).hasSize(1);
+		assertThat(status.getFirst().getStatusType()).isEqualTo("Komplettering inkommen");
+		assertThat(status.getFirst().getDateTime()).isNotNull();
 
-		assertThat(stakeholderDTOListArgumentCaptor.getValue()).hasSameSizeAs(inputCase.getStakeholders());
-		assertThat(attachmentDTOArgumentCaptor.getValue().getCategory()).isEqualTo(AttachmentCategory.ANMALAN_VARMEPUMP.toString());
+		assertThat(stakeholderListArgumentCaptor.getValue()).hasSameSizeAs(inputCase.getStakeholders());
+		assertThat(attachmentArgumentCaptor.getValue().getCategory()).isEqualTo(AttachmentCategory.ANMALAN_VARMEPUMP.toString());
 	}
 
 	@Test
 	void testGetStatus() {
 		// Arrange
 		final var caseId = new Random().nextLong();
-		final var errandDTOMock = new ErrandDTO();
-		errandDTOMock.setId(caseId);
-		final var statusDTOMock1 = new StatusDTO()
+		final var errandMock = new Errand();
+		final var namespace = "PRH";
+		errandMock.setId(caseId);
+		final var statusMock1 = new generated.client.casedata.Status()
 			.statusType(RandomStringUtils.random(10, true, false))
 			.dateTime(OffsetDateTime.now().minusDays(10))
 			.description(RandomStringUtils.random(10, true, false));
-		final var statusDTOMock2 = new StatusDTO()
+		final var statusMock2 = new generated.client.casedata.Status()
 			.statusType(RandomStringUtils.random(10, true, false))
 			.dateTime(OffsetDateTime.now().minusDays(5))
 			.description(RandomStringUtils.random(10, true, false));
-		final var statusDTOMock3 = new StatusDTO()
+		final var statusMock3 = new generated.client.casedata.Status()
 			.statusType(RandomStringUtils.random(10, true, false))
 			.dateTime(OffsetDateTime.now().minusDays(20))
 			.description(RandomStringUtils.random(10, true, false));
-		errandDTOMock.setStatuses(List.of(statusDTOMock1, statusDTOMock2, statusDTOMock3));
+		errandMock.setStatuses(List.of(statusMock1, statusMock2, statusMock3));
 
 		final var caseMapping = CaseMapping.builder()
 			.withCaseId(String.valueOf(caseId))
@@ -202,7 +203,7 @@ class CaseDataServiceTest {
 			.withServiceName(RandomStringUtils.random(10, true, false))
 			.build();
 		// Mock
-		when(caseDataClientMock.getErrand(MUNICIPALITY_ID, caseId)).thenReturn(errandDTOMock);
+		when(caseDataClientMock.getErrand(MUNICIPALITY_ID, namespace, caseId)).thenReturn(errandMock);
 
 		// Act
 		final var result = caseDataService.getStatus(caseMapping, MUNICIPALITY_ID);
@@ -213,16 +214,17 @@ class CaseDataServiceTest {
 		assertThat(result.getCaseType()).isEqualTo(caseMapping.getCaseType());
 		assertThat(result.getSystem()).isEqualTo(caseMapping.getSystem());
 		assertThat(result.getServiceName()).isEqualTo(caseMapping.getServiceName());
-		assertThat(result.getStatus()).isEqualTo(statusDTOMock2.getStatusType());
-		assertThat(result.getTimestamp()).isEqualTo(statusDTOMock2.getDateTime().atZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime());
+		assertThat(result.getStatus()).isEqualTo(statusMock2.getStatusType());
+		assertThat(result.getTimestamp()).isEqualTo(statusMock2.getDateTime().atZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime());
 	}
 
 	@Test
 	void testGetStatusErrandNotFound() {
 		// Arrange
 		final var caseMapping = CaseMapping.builder().withCaseId("1").build();
+		final var namespace = "OTHER";
 		// Mock
-		when(caseDataClientMock.getErrand(eq(MUNICIPALITY_ID), any())).thenThrow(Problem.valueOf(Status.NOT_FOUND));
+		when(caseDataClientMock.getErrand(eq(MUNICIPALITY_ID), eq(namespace), any())).thenThrow(Problem.valueOf(Status.NOT_FOUND));
 		// Act
 		assertThatThrownBy(() -> caseDataService.getStatus(caseMapping, MUNICIPALITY_ID)
 		)
@@ -245,14 +247,19 @@ class CaseDataServiceTest {
 	@Test
 	void patchErrandWithAttachmentNotFound() {
 		final var errandNumber = UUID.randomUUID().toString();
-		final var attachmentDTO = new se.sundsvall.casemanagement.api.model.AttachmentDTO();
-		final var attachments = List.of(attachmentDTO);
-		when(caseDataClientMock.postAttachment(MUNICIPALITY_ID, toAttachment(attachmentDTO, errandNumber))).thenThrow(Problem.valueOf(Status.NOT_FOUND));
+		final var errandId = new Random().nextLong();
+		final var attachment = new se.sundsvall.casemanagement.api.model.AttachmentDTO();
+		final var attachments = List.of(attachment);
+		final var namespace = "OTHER";
+		final var caseMapping = CaseMapping.builder().withCaseId(String.valueOf(errandId)).withExternalCaseId(errandNumber).build();
 
-		assertThatThrownBy(() -> caseDataService.patchErrandWithAttachment(errandNumber, attachments, MUNICIPALITY_ID))
+		when(caseDataClientMock.getErrand(MUNICIPALITY_ID, namespace, errandId)).thenReturn(new Errand());
+		when(caseDataClientMock.postAttachment(MUNICIPALITY_ID, namespace, errandId, toAttachment(attachment, null))).thenThrow(Problem.valueOf(Status.NOT_FOUND));
+
+		assertThatThrownBy(() -> caseDataService.patchErrandWithAttachment(caseMapping, attachments, MUNICIPALITY_ID))
 			.isInstanceOf(ThrowableProblem.class)
 			.hasFieldOrPropertyWithValue("status", Status.NOT_FOUND)
-			.hasFieldOrPropertyWithValue("detail", "No case was found in CaseData with caseId: " + errandNumber);
+			.hasFieldOrPropertyWithValue("detail", "No case was found in CaseData with caseId: " + errandId);
 	}
 
 	private OtherCaseDTO createCase(final CaseType caseType) {
