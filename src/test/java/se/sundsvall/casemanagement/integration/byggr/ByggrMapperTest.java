@@ -1012,7 +1012,6 @@ class ByggrMapperTest {
 			"certificateIssuer", "certificateIssuer", "certificateValidDate", "2020-01-01");
 
 		var result = ByggrMapper.createAddCertifiedInspectorHandelseIntressent(stakeholder, "stakeholderId", extraParameters);
-		System.out.println(result.getAdress());
 
 		assertThat(result.getPersOrgNr()).isEqualTo("stakeholderId");
 		assertThat(result.getAdress()).isEqualTo(stakeholder.getAddresses().getFirst().getStreet());
