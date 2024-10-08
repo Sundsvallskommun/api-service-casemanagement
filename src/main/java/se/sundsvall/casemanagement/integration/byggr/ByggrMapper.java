@@ -185,6 +185,7 @@ public final class ByggrMapper {
 			.filter(Objects::nonNull)
 			.filter(stakeholder -> stakeholder.getAddresses() != null)
 			.flatMap(stakeholder -> stakeholder.getAddresses().stream())
+			.filter(address -> address.getAddressCategories() != null)
 			.filter(address -> address.getAddressCategories().contains(AddressCategory.INVOICE_ADDRESS))
 			.map(AddressDTO::getInvoiceMarking)
 			.filter(StringUtils::isNotBlank)
@@ -493,21 +494,21 @@ public final class ByggrMapper {
 			intressentKommunikationList.add(new IntressentKommunikation()
 				.withArAktiv(true)
 				.withKomtyp(BYGGR_KOMTYP_HEMTELEFON)
-				.withAttention(new IntressentAttention().withAttention(stakeholder.getAddresses().getFirst().getAttention()))
+				.withAttention(new IntressentAttention().withAttention(Optional.ofNullable(stakeholder.getAddresses()).map(List::getFirst).map(AddressDTO::getAttention).orElse(null)))
 				.withBeskrivning(stakeholder.getPhoneNumber()));
 		}
 		if (stakeholder.getCellphoneNumber() != null) {
 			intressentKommunikationList.add(new IntressentKommunikation()
 				.withArAktiv(true)
 				.withKomtyp(BYGGR_KOMTYP_MOBIL)
-				.withAttention(new IntressentAttention().withAttention(stakeholder.getAddresses().getFirst().getAttention()))
+				.withAttention(new IntressentAttention().withAttention(Optional.ofNullable(stakeholder.getAddresses()).map(List::getFirst).map(AddressDTO::getAttention).orElse(null)))
 				.withBeskrivning(stakeholder.getCellphoneNumber()));
 		}
 		if (stakeholder.getEmailAddress() != null) {
 			intressentKommunikationList.add(new IntressentKommunikation()
 				.withArAktiv(true)
 				.withKomtyp(BYGGR_KOMTYP_EPOST)
-				.withAttention(new IntressentAttention().withAttention(stakeholder.getAddresses().getFirst().getAttention()))
+				.withAttention(new IntressentAttention().withAttention(Optional.ofNullable(stakeholder.getAddresses()).map(List::getFirst).map(AddressDTO::getAttention).orElse(null)))
 				.withBeskrivning(stakeholder.getEmailAddress()));
 		}
 		return new ArrayOfIntressentKommunikation()
@@ -582,9 +583,9 @@ public final class ByggrMapper {
 	static HandelseIntressent createAddCertifiedInspectorHandelseIntressent(final StakeholderDTO stakeholder, final String stakeholderId, final Map<String, String> extraParameters) {
 		var handelseIntressent = new HandelseIntressent()
 			.withPersOrgNr(stakeholderId)
-			.withAdress(stakeholder.getAddresses().getFirst().getStreet())
-			.withPostNr(stakeholder.getAddresses().getFirst().getPostalCode())
-			.withOrt(stakeholder.getAddresses().getFirst().getCity())
+			.withAdress(Optional.ofNullable(stakeholder.getAddresses()).map(List::getFirst).map(AddressDTO::getStreet).orElse(null))
+			.withPostNr(Optional.ofNullable(stakeholder.getAddresses()).map(List::getFirst).map(AddressDTO::getPostalCode).orElse(null))
+			.withOrt(Optional.ofNullable(stakeholder.getAddresses()).map(List::getFirst).map(AddressDTO::getCity).orElse(null))
 			.withIntressentKommunikationLista(createArrayOfIntressentKommunikation(stakeholder))
 			.withAktorbehorighetLista(createAddCertifiedInspectorArrayOfAktorbehorighet(extraParameters))
 			.withRollLista(new ArrayOfString2().withRoll("KOA"));

@@ -194,4 +194,21 @@ class CaseResourceTest {
 		verifyNoInteractions(caseMappingService, caseDataService, caseService);
 	}
 
+	@Test
+	void postCase_addAdditionalDocuments(@Load("/case-resource/byggr-add-additional-documents.json") final String body) {
+		webTestClient.post()
+			.uri(uriBuilder -> uriBuilder.path(PATH).build())
+			.contentType(APPLICATION_JSON)
+			.bodyValue(body)
+			.exchange()
+			.expectStatus().isOk()
+			.expectBody(CaseResourceResponseDTO.class)
+			.returnResult();
+
+		verify(caseMappingService).validateUniqueCase(caseDTOCaptor.capture(), eq(MUNICIPALITY_ID));
+		final var caseDTO = caseDTOCaptor.getValue();
+		assertThat(caseDTO).isInstanceOf(ByggRCaseDTO.class);
+		verify(caseService).handleCase(caseDTO, MUNICIPALITY_ID);
+	}
+
 }
