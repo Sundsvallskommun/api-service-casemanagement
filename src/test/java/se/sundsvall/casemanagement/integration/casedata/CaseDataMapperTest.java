@@ -1,7 +1,6 @@
 package se.sundsvall.casemanagement.integration.casedata;
 
-import static generated.client.casedata.StakeholderDTO.TypeEnum;
-import static generated.client.casedata.StakeholderDTO.TypeEnum.ORGANIZATION;
+import static generated.client.casedata.Stakeholder.TypeEnum.ORGANIZATION;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static se.sundsvall.casemanagement.TestUtil.createAddressDTO;
@@ -11,7 +10,7 @@ import static se.sundsvall.casemanagement.TestUtil.createExtraParameters;
 import static se.sundsvall.casemanagement.TestUtil.createFacilityDTO;
 import static se.sundsvall.casemanagement.TestUtil.createOtherCaseDTO;
 import static se.sundsvall.casemanagement.TestUtil.createStakeholderDTO;
-import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toContactInformationDTO;
+import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toContactInformation;
 
 import java.util.List;
 import java.util.Map;
@@ -27,10 +26,10 @@ import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
 import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderType;
 
-import generated.client.casedata.ContactInformationDTO;
-import generated.client.casedata.ErrandDTO;
-import generated.client.casedata.PatchErrandDTO;
-import generated.client.casedata.StakeholderDTO;
+import generated.client.casedata.ContactInformation;
+import generated.client.casedata.Errand;
+import generated.client.casedata.PatchErrand;
+import generated.client.casedata.Stakeholder;
 
 class CaseDataMapperTest {
 
@@ -60,7 +59,7 @@ class CaseDataMapperTest {
 	}
 
 	@Test
-	void toErrandDTO() {
+	void toErrand() {
 		final var otherCase = new OtherCaseDTO();
 		final var attachmentDTO = createAttachmentDTO(AttachmentCategory.ANMALAN_VARMEPUMP);
 		final PersonDTO stakeholderDTO = (PersonDTO) createStakeholderDTO(StakeholderType.PERSON, List.of("someRole"));
@@ -75,37 +74,37 @@ class CaseDataMapperTest {
 		otherCase.setExternalCaseId("externalCaseId");
 		otherCase.setExtraParameters(createExtraParameters());
 
-		final var result = CaseDataMapper.toErrandDTO(otherCase);
+		final var result = CaseDataMapper.toErrand(otherCase);
 
 		assertThat(result.getCaseType()).isEqualTo(otherCase.getCaseType());
 		assertThat(result.getCaseTitleAddition()).isEqualTo(otherCase.getCaseTitleAddition());
 		assertThat(result.getDescription()).isEqualTo(otherCase.getDescription());
 		assertThat(result.getExternalCaseId()).isEqualTo(otherCase.getExternalCaseId());
 		assertThat(result.getExtraParameters()).isEqualTo(otherCase.getExtraParameters());
-		assertThat(result.getPriority()).isEqualTo(ErrandDTO.PriorityEnum.MEDIUM);
+		assertThat(result.getPriority()).isEqualTo(Errand.PriorityEnum.MEDIUM);
 
-		assertThat(result.getStakeholders()).isEqualTo(CaseDataMapper.toStakeholderDTOs(otherCase.getStakeholders()));
-		assertThat(result.getFacilities()).isEqualTo(CaseDataMapper.toFacilityDTOs(otherCase.getFacilities()));
+		assertThat(result.getStakeholders()).isEqualTo(CaseDataMapper.toStakeholders(otherCase.getStakeholders()));
+		assertThat(result.getFacilities()).isEqualTo(CaseDataMapper.toFacilities(otherCase.getFacilities()));
 	}
 
 	@Test
-	void toFacilityDTOs() {
+	void toFacilities() {
 		final var facilities = List.of(createFacilityDTO(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP), createFacilityDTO(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP));
 
-		final var result = CaseDataMapper.toFacilityDTOs(facilities);
+		final var result = CaseDataMapper.toFacilities(facilities);
 
 		assertThat(result).hasSize(facilities.size());
 
 		for (final var dto : result) {
-			assertThat(dto).isEqualTo(CaseDataMapper.toFacilityDTO(facilities.get(result.indexOf(dto))));
+			assertThat(dto).isEqualTo(CaseDataMapper.toFacility(facilities.get(result.indexOf(dto))));
 		}
 	}
 
 	@Test
-	void toFacilityDTO() {
+	void toFacility() {
 		final var facilityDTO = createFacilityDTO(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP);
 
-		final var result = CaseDataMapper.toFacilityDTO(facilityDTO);
+		final var result = CaseDataMapper.toFacility(facilityDTO);
 
 		assertThat(result).satisfies(facility -> {
 			assertThat(facility.getMainFacility()).isEqualTo(facilityDTO.isMainFacility());
@@ -121,21 +120,21 @@ class CaseDataMapperTest {
 		final var otherCaseDTO = createOtherCaseDTO();
 		otherCaseDTO.getExtraParameters().put("application.priority", "HIGH");
 
-		final var result = CaseDataMapper.toPatchErrandDTO(otherCaseDTO);
+		final var result = CaseDataMapper.toPatchErrand(otherCaseDTO);
 
 		assertThat(result).satisfies(errandDTO -> {
-			assertThat(errandDTO.getCaseType()).isEqualTo(PatchErrandDTO.CaseTypeEnum.fromValue(otherCaseDTO.getCaseType()));
+			assertThat(errandDTO.getCaseType()).isEqualTo(PatchErrand.CaseTypeEnum.fromValue(otherCaseDTO.getCaseType()));
 			assertThat(errandDTO.getCaseTitleAddition()).isEqualTo(otherCaseDTO.getCaseTitleAddition());
 			assertThat(errandDTO.getDescription()).isEqualTo(otherCaseDTO.getDescription());
 			assertThat(errandDTO.getExternalCaseId()).isEqualTo(otherCaseDTO.getExternalCaseId());
 			assertThat(errandDTO.getExtraParameters()).isEqualTo(otherCaseDTO.getExtraParameters());
-			assertThat(errandDTO.getPriority()).isEqualTo(PatchErrandDTO.PriorityEnum.HIGH);
-			assertThat(errandDTO.getFacilities()).isEqualTo(CaseDataMapper.toFacilityDTOs(otherCaseDTO.getFacilities()));
+			assertThat(errandDTO.getPriority()).isEqualTo(PatchErrand.PriorityEnum.HIGH);
+			assertThat(errandDTO.getFacilities()).isEqualTo(CaseDataMapper.toFacilities(otherCaseDTO.getFacilities()));
 		});
 	}
 
 	@Test
-	void toStakeholderDTOs() {
+	void toStakeholders() {
 
 		//Arrange
 		final var organizationDTOOrgnumberWithoutHyphen = (OrganizationDTO) createStakeholderDTO(StakeholderType.ORGANIZATION, List.of("someRole"));
@@ -155,23 +154,23 @@ class CaseDataMapperTest {
 		final var personDTO = (PersonDTO) stakeholders.getLast();
 
 		//Act
-		final var result = CaseDataMapper.toStakeholderDTOs(stakeholders);
+		final var result = CaseDataMapper.toStakeholders(stakeholders);
 
 		assertThat(result).hasSize(3).extracting(
-			StakeholderDTO::getRoles,
-			StakeholderDTO::getContactInformation,
-			StakeholderDTO::getAddresses,
-			StakeholderDTO::getExtraParameters,
-			StakeholderDTO::getOrganizationNumber,
-			StakeholderDTO::getOrganizationName,
-			StakeholderDTO::getAuthorizedSignatory,
-			StakeholderDTO::getPersonId,
-			StakeholderDTO::getFirstName,
-			StakeholderDTO::getLastName,
-			StakeholderDTO::getType).containsExactly(
+			Stakeholder::getRoles,
+			Stakeholder::getContactInformation,
+			Stakeholder::getAddresses,
+			Stakeholder::getExtraParameters,
+			Stakeholder::getOrganizationNumber,
+			Stakeholder::getOrganizationName,
+			Stakeholder::getAuthorizedSignatory,
+			Stakeholder::getPersonId,
+			Stakeholder::getFirstName,
+			Stakeholder::getLastName,
+			Stakeholder::getType).containsExactly(
 			tuple(List.of(role2, role3, role),
-				toContactInformationDTO(organizationDTO),
-				CaseDataMapper.toStakeholderAddressDTOs(organizationDTO.getAddresses()),
+				toContactInformation(organizationDTO),
+				CaseDataMapper.toStakeholderAddresses(organizationDTO.getAddresses()),
 				organizationDTO.getExtraParameters(),
 				organizationDTO.getOrganizationNumber(),
 				organizationDTO.getOrganizationName(),
@@ -181,8 +180,8 @@ class CaseDataMapperTest {
 				null,
 				ORGANIZATION),
 			tuple(List.of(role2, role3, role),
-				toContactInformationDTO(organizationDTOOrgnumberWithoutHyphen),
-				CaseDataMapper.toStakeholderAddressDTOs(organizationDTOOrgnumberWithoutHyphen.getAddresses()),
+				toContactInformation(organizationDTOOrgnumberWithoutHyphen),
+				CaseDataMapper.toStakeholderAddresses(organizationDTOOrgnumberWithoutHyphen.getAddresses()),
 				organizationDTOOrgnumberWithoutHyphen.getExtraParameters(),
 				organizationDTOOrgnumberWithoutHyphen.getOrganizationNumber().substring(0, 6) + "-" + organizationDTOOrgnumberWithoutHyphen.getOrganizationNumber().substring(6),
 				organizationDTOOrgnumberWithoutHyphen.getOrganizationName(),
@@ -192,8 +191,8 @@ class CaseDataMapperTest {
 				null,
 				ORGANIZATION),
 			tuple(List.of(role2, role3, role),
-				toContactInformationDTO(personDTO),
-				CaseDataMapper.toStakeholderAddressDTOs(personDTO.getAddresses()),
+				toContactInformation(personDTO),
+				CaseDataMapper.toStakeholderAddresses(personDTO.getAddresses()),
 				personDTO.getExtraParameters(),
 				null,
 				null,
@@ -201,15 +200,15 @@ class CaseDataMapperTest {
 				personDTO.getPersonId(),
 				personDTO.getFirstName(),
 				personDTO.getLastName(),
-				TypeEnum.PERSON)
+				Stakeholder.TypeEnum.PERSON)
 		);
 	}
 
 	@Test
-	void toFacilityAddressDTO() {
+	void toFacilityAddress() {
 		final var addressDTO = createAddressDTO(List.of(AddressCategory.POSTAL_ADDRESS));
 
-		final var result = CaseDataMapper.toFacilityAddressDTO(addressDTO);
+		final var result = CaseDataMapper.toFacilityAddress(addressDTO);
 
 		assertThat(result).satisfies(address -> {
 			assertThat(address.getCity()).isEqualTo(addressDTO.getCity());
@@ -221,22 +220,22 @@ class CaseDataMapperTest {
 			assertThat(address.getAttention()).isEqualTo(addressDTO.getAttention());
 			assertThat(address.getPropertyDesignation()).isEqualTo(addressDTO.getPropertyDesignation());
 			assertThat(address.getApartmentNumber()).isEqualTo(addressDTO.getAppartmentNumber());
-			assertThat(address.getLocation()).isEqualTo(CaseDataMapper.toCoordinatesDTO(addressDTO.getLocation()));
+			assertThat(address.getLocation()).isEqualTo(CaseDataMapper.toCoordinates(addressDTO.getLocation()));
 			assertThat(address.getIsZoningPlanArea()).isEqualTo(addressDTO.getIsZoningPlanArea());
 			assertThat(address.getInvoiceMarking()).isEqualTo(addressDTO.getInvoiceMarking());
-			assertThat(address.getAddressCategory()).isEqualTo(generated.client.casedata.AddressDTO.AddressCategoryEnum.VISITING_ADDRESS);
+			assertThat(address.getAddressCategory()).isEqualTo(generated.client.casedata.Address.AddressCategoryEnum.VISITING_ADDRESS);
 		});
 	}
 
 	@Test
-	void toStakeholderAddressDTOs() {
+	void toStakeholderAddresses() {
 		final var address = createAddressDTO(List.of(AddressCategory.POSTAL_ADDRESS, AddressCategory.INVOICE_ADDRESS, AddressCategory.VISITING_ADDRESS));
 
-		final var result = CaseDataMapper.toStakeholderAddressDTOs(List.of(address));
+		final var result = CaseDataMapper.toStakeholderAddresses(List.of(address));
 
 		assertThat(result).hasSize(3);
 		for (final var dto : result) {
-			assertThat(dto.getAddressCategory()).isInstanceOf(generated.client.casedata.AddressDTO.AddressCategoryEnum.class);
+			assertThat(dto.getAddressCategory()).isInstanceOf(generated.client.casedata.Address.AddressCategoryEnum.class);
 			assertThat(dto.getStreet()).isEqualTo(address.getStreet());
 			assertThat(dto.getHouseNumber()).isEqualTo(address.getHouseNumber());
 			assertThat(dto.getApartmentNumber()).isEqualTo(address.getAppartmentNumber());
@@ -246,17 +245,17 @@ class CaseDataMapperTest {
 			assertThat(dto.getCareOf()).isEqualTo(address.getCareOf());
 			assertThat(dto.getAttention()).isEqualTo(address.getAttention());
 			assertThat(dto.getPropertyDesignation()).isEqualTo(address.getPropertyDesignation());
-			assertThat(dto.getLocation()).isEqualTo(CaseDataMapper.toCoordinatesDTO(address.getLocation()));
+			assertThat(dto.getLocation()).isEqualTo(CaseDataMapper.toCoordinates(address.getLocation()));
 			assertThat(dto.getIsZoningPlanArea()).isEqualTo(address.getIsZoningPlanArea());
 			assertThat(dto.getInvoiceMarking()).isEqualTo(address.getInvoiceMarking());
 		}
 	}
 
 	@Test
-	void toCoordinatesDTO() {
+	void toCoordinates() {
 		final var coordinates = createCoordinatesDTO();
 
-		final var result = CaseDataMapper.toCoordinatesDTO(coordinates);
+		final var result = CaseDataMapper.toCoordinates(coordinates);
 
 		assertThat(result).satisfies(coord -> {
 			assertThat(coord.getLatitude()).isEqualTo(coordinates.getLatitude());
@@ -278,14 +277,14 @@ class CaseDataMapperTest {
 	void toContactInformationDTOs() {
 		final var stakeholder = createStakeholderDTO(StakeholderType.PERSON, List.of("someRole"));
 
-		final var result = toContactInformationDTO(stakeholder);
+		final var result = toContactInformation(stakeholder);
 
 		assertThat(result).hasSize(3);
-		assertThat(result.getFirst().getContactType()).isEqualTo(ContactInformationDTO.ContactTypeEnum.CELLPHONE);
+		assertThat(result.getFirst().getContactType()).isEqualTo(ContactInformation.ContactTypeEnum.CELLPHONE);
 		assertThat(result.getFirst().getValue()).isEqualTo(stakeholder.getCellphoneNumber());
-		assertThat(result.get(1).getContactType()).isEqualTo(ContactInformationDTO.ContactTypeEnum.PHONE);
+		assertThat(result.get(1).getContactType()).isEqualTo(ContactInformation.ContactTypeEnum.PHONE);
 		assertThat(result.get(1).getValue()).isEqualTo(stakeholder.getPhoneNumber());
-		assertThat(result.getLast().getContactType()).isEqualTo(ContactInformationDTO.ContactTypeEnum.EMAIL);
+		assertThat(result.getLast().getContactType()).isEqualTo(ContactInformation.ContactTypeEnum.EMAIL);
 		assertThat(result.getLast().getValue()).isEqualTo(stakeholder.getEmailAddress());
 	}
 

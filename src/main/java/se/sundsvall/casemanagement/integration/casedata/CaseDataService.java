@@ -3,9 +3,9 @@ package se.sundsvall.casemanagement.integration.casedata;
 import static java.util.Collections.emptyList;
 import static org.zalando.problem.Status.NOT_FOUND;
 import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toAttachment;
-import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toErrandDTO;
-import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toPatchErrandDTO;
-import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toStakeholderDTOs;
+import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toErrand;
+import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toPatchErrand;
+import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toStakeholders;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -22,13 +22,14 @@ import org.zalando.problem.ThrowableProblem;
 import se.sundsvall.casemanagement.api.model.AttachmentDTO;
 import se.sundsvall.casemanagement.api.model.CaseStatusDTO;
 import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
+import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.service.CaseMappingService;
 import se.sundsvall.casemanagement.util.Constants;
 
-import generated.client.casedata.ErrandDTO;
-import generated.client.casedata.StatusDTO;
+import generated.client.casedata.Errand;
+import generated.client.casedata.Status;
 
 @Service
 public class CaseDataService {
@@ -57,9 +58,9 @@ public class CaseDataService {
 	 * @return errandNumber (example: PRH-2022-000001)
 	 */
 	public String postErrand(final OtherCaseDTO otherCase, final String municipalityId) {
-		final var errandDTO = toErrandDTO(otherCase);
+		final var errandDTO = toErrand(otherCase);
 		errandDTO.setPhase(AKTUALISERING_PHASE);
-		final var statusDTO = new StatusDTO();
+		final var statusDTO = new Status();
 		statusDTO.setStatusType(ARENDE_INKOMMIT_STATUS);
 		statusDTO.setDateTime(OffsetDateTime.now());
 		errandDTO.setStatuses(List.of(statusDTO));
@@ -70,37 +71,43 @@ public class CaseDataService {
 		errandDTO.setDecisions(emptyList());
 		errandDTO.setNotes(emptyList());
 
-		final var result = caseDataClient.postErrands(municipalityId, errandDTO);
+		final var namespace = mapNamespace(otherCase.getCaseType());
+
+		final var result = caseDataClient.postErrands(municipalityId, namespace, errandDTO);
 		final var location = String.valueOf(result.getHeaders().getFirst(HttpHeaders.LOCATION));
 		final var id = Long.valueOf(location.substring(location.lastIndexOf("/") + 1));
 
-		final var errandNumber = getErrand(id, municipalityId).getErrandNumber();
+		final var errandNumber = getErrand(id, municipalityId, namespace).getErrandNumber();
 
 		if (errandNumber != null) {
 			otherCase.getAttachments().stream().map(
 					attachment -> toAttachment(attachment, errandNumber))
-				.forEach(attachmentDTO -> caseDataClient.postAttachment(municipalityId, attachmentDTO));
+				.forEach(attachmentDTO -> caseDataClient.postAttachment(municipalityId, namespace, id, attachmentDTO));
 		}
 		caseMappingService.postCaseMapping(otherCase, String.valueOf(id), SystemType.CASE_DATA, municipalityId);
 
 		return errandNumber;
 	}
 
-	public void patchErrandWithAttachment(final String errandNumber, final List<AttachmentDTO> attachmentDTOS, final String municipalityId) {
+	public void patchErrandWithAttachment(final CaseMapping caseMapping, final List<AttachmentDTO> attachmentDTOS, final String municipalityId) {
+
+		final var errandId = Long.valueOf(caseMapping.getCaseId());
+		final var namespace = mapNamespace(caseMapping.getCaseType());
+		final var errandNumber = getErrand(errandId, municipalityId, namespace).getErrandNumber();
 		try {
-			attachmentDTOS.forEach(attachment -> caseDataClient.postAttachment(municipalityId, toAttachment(attachment, errandNumber)));
+			attachmentDTOS.forEach(attachment -> caseDataClient.postAttachment(municipalityId, namespace, errandId, toAttachment(attachment, errandNumber)));
 		} catch (final ThrowableProblem e) {
 			if (Objects.equals(e.getStatus(), NOT_FOUND)) {
-				throw Problem.valueOf(NOT_FOUND, NO_CASE_WAS_FOUND_IN_CASE_DATA_WITH_CASE_ID + errandNumber);
+				throw Problem.valueOf(NOT_FOUND, NO_CASE_WAS_FOUND_IN_CASE_DATA_WITH_CASE_ID + errandId);
 			} else {
 				throw e;
 			}
 		}
 	}
 
-	private ErrandDTO getErrand(final Long id, final String municipalityId) {
+	private Errand getErrand(final Long id, final String municipalityId, final String namespace) {
 		try {
-			return caseDataClient.getErrand(municipalityId, id);
+			return caseDataClient.getErrand(municipalityId, namespace, id);
 		} catch (final ThrowableProblem e) {
 			if (Objects.equals(e.getStatus(), NOT_FOUND)) {
 				throw Problem.valueOf(NOT_FOUND, NO_CASE_WAS_FOUND_IN_CASE_DATA_WITH_CASE_ID + id);
@@ -111,14 +118,16 @@ public class CaseDataService {
 	}
 
 	public CaseStatusDTO getStatus(final CaseMapping caseMapping, final String municipalityId) {
-		final var errandDTO = getErrand(Long.valueOf(caseMapping.getCaseId()), municipalityId);
+		final var namespace = mapNamespace(caseMapping.getCaseType());
+
+		final var errandDTO = getErrand(Long.valueOf(caseMapping.getCaseId()), municipalityId, namespace);
 
 		final var latestStatus = Optional.ofNullable(Optional.ofNullable(errandDTO)
-				.orElse(new ErrandDTO())
+				.orElse(new Errand())
 				.getStatuses())
 			.orElse(List.of())
 			.stream()
-			.max(Comparator.comparing(StatusDTO::getDateTime))
+			.max(Comparator.comparing(Status::getDateTime))
 			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, Constants.ERR_MSG_STATUS_NOT_FOUND));
 
 		return CaseStatusDTO.builder()
@@ -142,20 +151,36 @@ public class CaseDataService {
 	 * @param otherCaseDTO The updated case from OpenE.
 	 */
 	public void putErrand(final Long caseId, final OtherCaseDTO otherCaseDTO, final String municipalityId) {
-		caseDataClient.patchErrand(municipalityId, caseId, toPatchErrandDTO(otherCaseDTO));
+		final var namespace = mapNamespace(otherCaseDTO.getCaseType());
 
-		final var statusDTO = new StatusDTO();
+		caseDataClient.patchErrand(municipalityId, namespace, caseId, toPatchErrand(otherCaseDTO));
+
+		final var statusDTO = new Status();
 		statusDTO.setStatusType(KOMPLETTERING_INKOMMEN_STATUS);
 		statusDTO.setDateTime(OffsetDateTime.now());
-		caseDataClient.putStatusOnErrand(municipalityId, caseId, List.of(statusDTO));
-		caseDataClient.putStakeholdersOnErrand(municipalityId, caseId, toStakeholderDTOs(otherCaseDTO.getStakeholders()));
+		caseDataClient.putStatusOnErrand(municipalityId, namespace, caseId, List.of(statusDTO));
+		caseDataClient.putStakeholdersOnErrand(municipalityId, namespace, caseId, toStakeholders(otherCaseDTO.getStakeholders()));
 
-		final var result = caseDataClient.getAttachmentsByErrandNumber(municipalityId, otherCaseDTO.getExternalCaseId());
+		final var result = caseDataClient.getAttachmentsByErrandNumber(municipalityId, namespace, otherCaseDTO.getExternalCaseId());
 		if (result != null) {
-			result.forEach(attachment -> caseDataClient.deleteAttachment(municipalityId, attachment.getId()));
+			result.forEach(attachment -> caseDataClient.deleteAttachment(municipalityId, namespace, caseId, attachment.getId()));
 		}
 		otherCaseDTO.getAttachments().stream().map(attachment -> toAttachment(attachment, otherCaseDTO.getExternalCaseId()))
-			.forEach(attachmentDTO -> caseDataClient.postAttachment(municipalityId, attachmentDTO));
+			.forEach(attachmentDTO -> caseDataClient.postAttachment(municipalityId, namespace, caseId, attachmentDTO));
+	}
+
+	public String mapNamespace(final String caseType) {
+		if (caseType == null) {
+			return "OTHER";
+		}
+		final var enumValue = CaseType.valueOf(caseType);
+		if (CaseType.MEX_CASE_TYPES.contains(enumValue)) {
+			return "MEX";
+		}
+		if (CaseType.PRH_CASE_TYPES.contains(enumValue)) {
+			return "PRH";
+		}
+		return "OTHER";
 	}
 
 }
