@@ -1,9 +1,9 @@
 package se.sundsvall.casemanagement.api.model.enums;
 
-import java.util.Arrays;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
+
+import java.util.Arrays;
 
 @Getter
 @Schema(description = "Attachment category")
@@ -241,6 +241,7 @@ public enum AttachmentCategory {
 	PLUMBING_HANDLING("VS", "VS-handling"),
 	HVAC_HANDLING("VVSH", "VVS-handling"),
 	GROUND_SECTION_DRAWING("MASE", "Marksektionsritning"),
+	FSSI("FSSI", "FSSI"),
 	///////////////////////////////////
 	// ECOS
 	///////////////////////////////////
@@ -283,7 +284,6 @@ public enum AttachmentCategory {
 	ROAD_ALLOWANCE_APPROVAL("ROAD_ALLOWANCE_APPROVAL", "Godkännande för vägbidrag"),
 	MEX_PROTOCOL("PROTOCOL", "Protokoll"),
 	PREVIOUS_AGREEMENT("PREVIOUS_AGREEMENT", "Tidigare avtal");
-
 
 	private final String description;
 
