@@ -1,26 +1,8 @@
 package se.sundsvall.casemanagement.integration.casedata;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.LOST_PARKING_PERMIT;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARKING_PERMIT;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARKING_PERMIT_RENEWAL;
-import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toAttachment;
-import static se.sundsvall.casemanagement.util.Constants.SERVICE_NAME;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
-
+import generated.client.casedata.Errand;
+import generated.client.casedata.Errand.ChannelEnum;
+import generated.client.casedata.PatchErrand;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -35,22 +17,30 @@ import org.testcontainers.shaded.org.apache.commons.lang3.RandomStringUtils;
 import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
 import org.zalando.problem.ThrowableProblem;
-
 import se.sundsvall.casemanagement.TestUtil;
 import se.sundsvall.casemanagement.api.model.CaseDTO;
 import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
-import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
-import se.sundsvall.casemanagement.api.model.enums.CaseType;
-import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
-import se.sundsvall.casemanagement.api.model.enums.StakeholderType;
-import se.sundsvall.casemanagement.api.model.enums.SystemType;
+import se.sundsvall.casemanagement.api.model.enums.*;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.service.CaseMappingService;
 import se.sundsvall.casemanagement.util.Constants;
 
-import generated.client.casedata.Errand;
-import generated.client.casedata.Errand.ChannelEnum;
-import generated.client.casedata.PatchErrand;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.*;
+import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toAttachment;
+import static se.sundsvall.casemanagement.util.Constants.SERVICE_NAME;
 
 @ExtendWith(MockitoExtension.class)
 class CaseDataServiceTest {
@@ -79,7 +69,7 @@ class CaseDataServiceTest {
 	private ArgumentCaptor<generated.client.casedata.Attachment> attachmentArgumentCaptor;
 
 	@ParameterizedTest
-	@EnumSource(value = CaseType.class, names = {PARKING_PERMIT, LOST_PARKING_PERMIT, PARKING_PERMIT_RENEWAL})
+	@EnumSource(value = CaseType.class, names = { PARKING_PERMIT, LOST_PARKING_PERMIT, PARKING_PERMIT_RENEWAL })
 	void testPostCases(final CaseType caseType) throws URISyntaxException {
 		// Arrange
 		final var errandId = new Random().nextLong();
@@ -108,7 +98,13 @@ class CaseDataServiceTest {
 		assertThat(errand.getCaseType()).isEqualTo(inputCase.getCaseType());
 		assertThat(errand.getChannel()).isEqualTo(ChannelEnum.ESERVICE);
 		assertThat(errand.getDescription()).isEqualTo(inputCase.getDescription());
-		assertThat(errand.getExtraParameters()).isEqualTo(inputCase.getExtraParameters());
+
+		assertThat(errand.getExtraParameters()).hasSize(4);
+		assertThat(errand.getExtraParameters().stream().filter(param -> param.getKey().equals("application.priority"))
+			.findFirst()
+			.orElseThrow()
+			.getValues().getFirst()).isEqualTo("HIGH");
+
 		assertThat(errand.getExternalCaseId()).isEqualTo(inputCase.getExternalCaseId());
 		assertThat(errand.getPhase()).isEqualTo("Aktualisering");
 		assertThat(errand.getPriority()).isEqualTo(Errand.PriorityEnum.HIGH);
@@ -157,7 +153,11 @@ class CaseDataServiceTest {
 		assertThat(patchErrand.getExternalCaseId()).isEqualTo(inputCase.getExternalCaseId());
 		assertThat(patchErrand.getDescription()).isEqualTo(inputCase.getDescription());
 		assertThat(patchErrand.getCaseTitleAddition()).isEqualTo(inputCase.getCaseTitleAddition());
-		assertThat(patchErrand.getExtraParameters()).isEqualTo(inputCase.getExtraParameters());
+		assertThat(patchErrand.getExtraParameters()).hasSize(4);
+		assertThat(patchErrand.getExtraParameters().stream().filter(param -> param.getKey().equals("application.priority"))
+			.findFirst()
+			.orElseThrow()
+			.getValues().getFirst()).isEqualTo("HIGH");
 		assertThat(patchErrand.getPriority()).isEqualTo(PatchErrand.PriorityEnum.HIGH);
 		assertThat(patchErrand.getPhase()).isNull();
 		assertThat(patchErrand.getDiaryNumber()).isNull();

@@ -3,22 +3,92 @@
   "version": 1,
   "created": "2022-10-25T11:20:28.87958+02:00",
   "updated": "2022-10-25T11:20:29.363269+02:00",
-  "extraParameters": {
-    "disability.walkingAbility": "true",
-    "application.applicant.testimonial": "true",
-    "consent.view.transportationServiceDetails": "false",
-    "disability.aid": "Inget",
-    "disability.canBeAloneWhileParking": "true",
-    "application.role": "SELF",
-    "application.applicant.capacity": "DRIVER",
-    "application.applicant.signingAbility": "false",
-    "disability.walkingDistance.max": "",
-    "disability.walkingDistance.beforeRest": "",
-    "consent.contact.doctor": "false",
-    "application.reason": "",
-    "disability.canBeAloneWhileParking.note": "",
-    "disability.duration": "P6M"
-  },
+  "extraParameters": [
+    {
+      "key": "disability.walkingAbility",
+      "values": [
+        "true"
+      ]
+    },
+    {
+      "key": "application.applicant.testimonial",
+      "values": [
+        "true"
+      ]
+    },
+    {
+      "key": "consent.view.transportationServiceDetails",
+      "values": [
+        "false"
+      ]
+    },
+    {
+      "key": "disability.aid",
+      "values": [
+        "Inget"
+      ]
+    },
+    {
+      "key": "disability.canBeAloneWhileParking",
+      "values": [
+        "true"
+      ]
+    },
+    {
+      "key": "application.role",
+      "values": [
+        "SELF"
+      ]
+    },
+    {
+      "key": "application.applicant.capacity",
+      "values": [
+        "DRIVER"
+      ]
+    },
+    {
+      "key": "application.applicant.signingAbility",
+      "values": [
+        "false"
+      ]
+    },
+    {
+      "key": "disability.walkingDistance.max",
+      "values": [
+        ""
+      ]
+    },
+    {
+      "key": "disability.walkingDistance.beforeRest",
+      "values": [
+        ""
+      ]
+    },
+    {
+      "key": "consent.contact.doctor",
+      "values": [
+        "false"
+      ]
+    },
+    {
+      "key": "application.reason",
+      "values": [
+        ""
+      ]
+    },
+    {
+      "key": "disability.canBeAloneWhileParking.note",
+      "values": [
+        ""
+      ]
+    },
+    {
+      "key": "disability.duration",
+      "values": [
+        "P6M"
+      ]
+    }
+  ],
   "errandNumber": "PRH-2022-000001",
   "caseType": "PARKING_PERMIT",
   "priority": "HIGH",

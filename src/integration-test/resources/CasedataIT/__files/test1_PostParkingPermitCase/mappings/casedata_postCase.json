@@ -177,11 +177,26 @@
           "appeals": [],
           "notes": [],
           "messageIds": [],
-          "extraParameters": {
-            "LhUaLSfVLl": "qugLdBiGNLoJCiSSEwRk",
-            "EiBDnjwIGQ": "YHHXclnbOMnviIuqzsyL",
-            "NxWjNUnpnI": "jQPMKOXLGQxeoIVXgeEt"
-          }
+          "extraParameters": [
+            {
+              "key": "LhUaLSfVLl",
+              "values": [
+                "qugLdBiGNLoJCiSSEwRk"
+              ]
+            },
+            {
+              "key": "EiBDnjwIGQ",
+              "values": [
+                "YHHXclnbOMnviIuqzsyL"
+              ]
+            },
+            {
+              "key": "NxWjNUnpnI",
+              "values": [
+                "jQPMKOXLGQxeoIVXgeEt"
+              ]
+            }
+          ]
         }
       }
     ]
