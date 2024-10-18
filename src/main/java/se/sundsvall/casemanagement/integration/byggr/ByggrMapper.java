@@ -542,11 +542,10 @@ public final class ByggrMapper {
 	 */
 	static ArrayOfHandling createNeighborhoodNotificationArrayOfHandling(final ByggRCaseDTO byggRCase) {
 		var handlingar = byggRCase.getAttachments().stream()
-			.filter(attachmentDTO -> attachmentDTO.getCategory().equalsIgnoreCase("BIL"))
 			.map(attachment -> new HandelseHandling()
 				.withAnteckning(attachment.getName())
 				.withStatus(Constants.BYGGR_HANDLING_STATUS_INKOMMEN)
-				.withTyp("UNDERE")
+				.withTyp(mapCategoryToTyp(attachment.getCategory()))
 				.withDokument(new Dokument()
 					.withNamn(attachment.getName())
 					.withBeskrivning(attachment.getNote())
@@ -555,6 +554,14 @@ public final class ByggrMapper {
 						.withFilAndelse(attachment.getExtension().toLowerCase()))))
 			.toList();
 		return new ArrayOfHandling().withHandling(handlingar);
+	}
+
+	private static String mapCategoryToTyp(final String category) {
+		return switch (category) {
+			case "GRASV" -> "GRASV";
+			case "UNDERE" -> "UNDERE";
+			default -> "BIL";
+		};
 	}
 
 	static HandelseIntressent createAddAdditionalDocumentsHandelseIntressent(final StakeholderDTO stakeholder, final String stakeholderId) {
@@ -607,7 +614,7 @@ public final class ByggrMapper {
 	static Handelse createAddAdditionalDocumentsHandelse(final String errandInformation, final HandelseIntressent handelseIntressent, final String handelseslag) {
 		return new Handelse()
 			.withRiktning("In")
-			.withRubrik("Kompletterande handlingar")
+			.withRubrik(mapHandelseslagToRubrik(handelseslag))
 			.withStartDatum(LocalDateTime.now())
 			.withAnteckning(errandInformation)
 			.withHandelsetyp("HANDLING")
@@ -615,8 +622,16 @@ public final class ByggrMapper {
 			.withSekretess(false)
 			.withMakulerad(false)
 			.withIntressentLista(new ArrayOfHandelseIntressent2().withIntressent(handelseIntressent));
-
 	}
+
+	private static String mapHandelseslagToRubrik(final String handelseslag) {
+		return switch (handelseslag) {
+			case "KOMPBYGG" -> "Kompletterande bygglovshandlingar";
+			case "KOMPTEK" -> "Kompletterande tekniska handlingar";
+			default -> "Kompletterande handlingar";
+		};
+	}
+
 
 	static Handelse createAddCertifiedInspectorHandelse(final String errandInformation, final HandelseIntressent handelseIntressent) {
 		return new Handelse()
