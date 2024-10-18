@@ -53,6 +53,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.zalando.problem.AbstractThrowableProblem;
 
 import se.sundsvall.casemanagement.TestUtil;
@@ -76,6 +77,7 @@ import arendeexport.Arende;
 import arendeexport.ArendeIntressent;
 import arendeexport.ArrayOfHandelse;
 import arendeexport.Handelse;
+import arendeexport.HandelseIntressent;
 import arendeexport.IntressentAttention;
 import arendeexport.SaveNewHandelse;
 
@@ -923,14 +925,19 @@ class ByggrMapperTest {
 		assertThat(result.getMessage().getHandlingar().getHandling()).isEqualTo(arrayOfHandling.getHandling());
 	}
 
-	@Test
-	void createNeighborhoodNotificationArrayOfHandling() {
+	@ParameterizedTest
+	@ValueSource(strings = {"GRASV", "UNDERE", "BIL"})
+	void createNeighborhoodNotificationArrayOfHandling(String category) {
 		var byggRCase = createByggRCaseDTO(CaseType.NEIGHBORHOOD_NOTIFICATION, AttachmentCategory.ATTACHMENT);
+		for (var attachment : byggRCase.getAttachments()) {
+			attachment.setCategory(category);
+		}
 		var attachment = byggRCase.getAttachments().getFirst();
 
 		var result = ByggrMapper.createNeighborhoodNotificationArrayOfHandling(byggRCase);
 
 		assertThat(result.getHandling()).hasSize(1);
+		assertThat(result.getHandling().getFirst().getTyp()).isEqualTo(category);
 		assertThat(result.getHandling().getFirst().getDokument().getFil().getFilAndelse()).isEqualTo(attachment.getExtension());
 		assertThat(result.getHandling().getFirst().getDokument().getFil().getFilBuffer()).isEqualTo(Base64.getDecoder().decode(attachment.getFile().getBytes()));
 	}
@@ -982,6 +989,33 @@ class ByggrMapperTest {
 
 		assertThat(result).isNotNull();
 		assertThat(result.getHandelseId()).isEqualTo(handelseId);
+	}
+
+	@ParameterizedTest
+	@MethodSource("addAdditionalDocumentsHandelseArgumentProvider")
+	void createAddAdditionalDocumentsHandelse(String handelseslag, String rubrik) {
+		var handelseIntressent = new HandelseIntressent();
+		var errandInformation = "errandInformation";
+
+		var result = ByggrMapper.createAddAdditionalDocumentsHandelse(errandInformation, handelseIntressent, handelseslag);
+
+		assertThat(result).isNotNull().satisfies(handelse -> {
+			assertThat(handelse.getRiktning()).isEqualTo("In");
+			assertThat(handelse.getRubrik()).isEqualTo(rubrik);
+			assertThat(handelse.getStartDatum()).isCloseTo(LocalDateTime.now(), within(10, SECONDS));
+			assertThat(handelse.getAnteckning()).isEqualTo(errandInformation);
+			assertThat(handelse.getHandelsetyp()).isEqualTo("HANDLING");
+			assertThat(handelse.getHandelseslag()).isEqualTo(handelseslag);
+			assertThat(handelse.getIntressentLista().getIntressent()).isEqualTo(List.of(handelseIntressent));
+		});
+	}
+
+	private static Stream<Arguments> addAdditionalDocumentsHandelseArgumentProvider() {
+		return Stream.of(
+			Arguments.of("GRASV", "Kompletterande handlingar"),
+			Arguments.of("KOMPBYGG", "Kompletterande bygglovshandlingar"),
+			Arguments.of("KOMPTEK", "Kompletterande tekniska handlingar")
+		);
 	}
 
 	@Test
