@@ -20,7 +20,12 @@ import org.zalando.problem.ThrowableProblem;
 import se.sundsvall.casemanagement.TestUtil;
 import se.sundsvall.casemanagement.api.model.CaseDTO;
 import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
-import se.sundsvall.casemanagement.api.model.enums.*;
+import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
+import se.sundsvall.casemanagement.api.model.enums.CaseType;
+import se.sundsvall.casemanagement.api.model.enums.Namespace;
+import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
+import se.sundsvall.casemanagement.api.model.enums.StakeholderType;
+import se.sundsvall.casemanagement.api.model.enums.SystemType;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.service.CaseMappingService;
 import se.sundsvall.casemanagement.util.Constants;
@@ -37,8 +42,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.LOST_PARKING_PERMIT;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARKING_PERMIT;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARKING_PERMIT_RENEWAL;
 import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toAttachment;
 import static se.sundsvall.casemanagement.util.Constants.SERVICE_NAME;
 
@@ -78,11 +87,11 @@ class CaseDataServiceTest {
 		getErrand.setErrandNumber("Inskickat");
 		final var inputCase = createCase(caseType);
 		final var municipalityId = "2281";
-		final var namspace = "PRH";
+		final var namespace = Namespace.SBK_PARKINGPERMIT.name();
 
 		// Mock
-		when(caseDataClientMock.postErrands(eq(MUNICIPALITY_ID), eq(namspace), any())).thenReturn(ResponseEntity.created(uri).build());
-		when(caseDataClientMock.getErrand(MUNICIPALITY_ID, namspace, errandId)).thenReturn(getErrand);
+		when(caseDataClientMock.postErrands(eq(MUNICIPALITY_ID), eq(namespace), any())).thenReturn(ResponseEntity.created(uri).build());
+		when(caseDataClientMock.getErrand(MUNICIPALITY_ID, namespace, errandId)).thenReturn(getErrand);
 
 		// Act
 		final var response = caseDataService.postErrand(inputCase, municipalityId);
@@ -91,7 +100,7 @@ class CaseDataServiceTest {
 		assertThat(response).isEqualTo("Inskickat");
 
 		final var errandArgumentCaptor = ArgumentCaptor.forClass(Errand.class);
-		verify(caseDataClientMock).postErrands(eq(MUNICIPALITY_ID), eq(namspace), errandArgumentCaptor.capture());
+		verify(caseDataClientMock).postErrands(eq(MUNICIPALITY_ID), eq(namespace), errandArgumentCaptor.capture());
 		final var errand = errandArgumentCaptor.getValue();
 
 		assertThat(errand.getCaseTitleAddition()).isEqualTo(inputCase.getCaseTitleAddition());
@@ -113,7 +122,7 @@ class CaseDataServiceTest {
 		assertThat(errand.getStatuses().getFirst().getDateTime()).isNotNull();
 
 		attachmentArgumentCaptor = ArgumentCaptor.forClass(generated.client.casedata.Attachment.class);
-		verify(caseDataClientMock, times(3)).postAttachment(eq(MUNICIPALITY_ID), eq(namspace), eq(errandId), attachmentArgumentCaptor.capture());
+		verify(caseDataClientMock, times(3)).postAttachment(eq(MUNICIPALITY_ID), eq(namespace), eq(errandId), attachmentArgumentCaptor.capture());
 		final var attachment = attachmentArgumentCaptor.getValue();
 		assertThat(attachment).isNotNull();
 		assertThat(attachment.getCategory()).isEqualTo(AttachmentCategory.ANMALAN_VARMEPUMP.toString());
@@ -132,21 +141,22 @@ class CaseDataServiceTest {
 		// Arrange
 		final var errandId = new Random().nextLong();
 		final var inputCase = createCase(CaseType.PARKING_PERMIT);
-		final var namspace = "PRH";
+		final var namespace = Namespace.SBK_PARKINGPERMIT.name();
+
 		// Mock
-		when(caseDataClientMock.patchErrand(eq(MUNICIPALITY_ID), eq(namspace), any(), any())).thenReturn(null);
-		when(caseDataClientMock.putStatusOnErrand(eq(MUNICIPALITY_ID), eq(namspace), any(), any())).thenReturn(null);
-		when(caseDataClientMock.putStakeholdersOnErrand(eq(MUNICIPALITY_ID), eq(namspace), any(), any())).thenReturn(null);
-		when(caseDataClientMock.postAttachment(eq(MUNICIPALITY_ID), eq(namspace), eq(errandId), any())).thenReturn(null);
+		when(caseDataClientMock.patchErrand(eq(MUNICIPALITY_ID), eq(namespace), any(), any())).thenReturn(null);
+		when(caseDataClientMock.putStatusOnErrand(eq(MUNICIPALITY_ID), eq(namespace), any(), any())).thenReturn(null);
+		when(caseDataClientMock.putStakeholdersOnErrand(eq(MUNICIPALITY_ID), eq(namespace), any(), any())).thenReturn(null);
+		when(caseDataClientMock.postAttachment(eq(MUNICIPALITY_ID), eq(namespace), eq(errandId), any())).thenReturn(null);
 
 		// Act
 		caseDataService.putErrand(errandId, inputCase, MUNICIPALITY_ID);
 
 		// Assert
-		verify(caseDataClientMock, times(1)).patchErrand(eq(MUNICIPALITY_ID), eq(namspace), eq(errandId), patchErrandArgumentCaptor.capture());
-		verify(caseDataClientMock, times(1)).putStakeholdersOnErrand(eq(MUNICIPALITY_ID), eq(namspace), eq(errandId), stakeholderListArgumentCaptor.capture());
-		verify(caseDataClientMock, times(3)).postAttachment(eq(MUNICIPALITY_ID), eq(namspace), eq(errandId), attachmentArgumentCaptor.capture());
-		verify(caseDataClientMock, times(1)).putStatusOnErrand(eq(MUNICIPALITY_ID), eq(namspace), eq(errandId), statusListArgumentCaptor.capture());
+		verify(caseDataClientMock, times(1)).patchErrand(eq(MUNICIPALITY_ID), eq(namespace), eq(errandId), patchErrandArgumentCaptor.capture());
+		verify(caseDataClientMock, times(1)).putStakeholdersOnErrand(eq(MUNICIPALITY_ID), eq(namespace), eq(errandId), stakeholderListArgumentCaptor.capture());
+		verify(caseDataClientMock, times(3)).postAttachment(eq(MUNICIPALITY_ID), eq(namespace), eq(errandId), attachmentArgumentCaptor.capture());
+		verify(caseDataClientMock, times(1)).putStatusOnErrand(eq(MUNICIPALITY_ID), eq(namespace), eq(errandId), statusListArgumentCaptor.capture());
 
 		final var patchErrand = patchErrandArgumentCaptor.getValue();
 		assertThat(patchErrand.getCaseType()).isEqualTo(PatchErrand.CaseTypeEnum.fromValue(inputCase.getCaseType()));
@@ -179,7 +189,7 @@ class CaseDataServiceTest {
 		// Arrange
 		final var caseId = new Random().nextLong();
 		final var errandMock = new Errand();
-		final var namespace = "PRH";
+		final var namespace = Namespace.SBK_PARKINGPERMIT.name();
 		errandMock.setId(caseId);
 		final var statusMock1 = new generated.client.casedata.Status()
 			.statusType(RandomStringUtils.random(10, true, false))
