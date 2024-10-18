@@ -1,15 +1,20 @@
 package se.sundsvall.casemanagement.integration.byggr;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.stream.Collectors;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
+import arendeexport.SaveNewArendeResponse2;
+import dev.failsafe.Failsafe;
+import dev.failsafe.RetryPolicy;
 import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
 import se.sundsvall.casemanagement.configuration.RetryProperties;
 import se.sundsvall.casemanagement.integration.db.CaseMappingRepository;
@@ -19,10 +24,6 @@ import se.sundsvall.casemanagement.integration.opene.OpenEIntegration;
 import se.sundsvall.casemanagement.service.event.IncomingByggrCase;
 import se.sundsvall.casemanagement.util.Processor;
 
-import arendeexport.SaveNewArendeResponse2;
-import dev.failsafe.Failsafe;
-import dev.failsafe.RetryPolicy;
-
 @Component
 class ByggrProcessor extends Processor {
 
@@ -30,9 +31,16 @@ class ByggrProcessor extends Processor {
 
 	private final RetryPolicy<SaveNewArendeResponse2> retryPolicy;
 
-	ByggrProcessor(final OpenEIntegration openEIntegration, final CaseRepository caseRepository,
-		final RetryProperties retryProperties, final ByggrService service, final CaseMappingRepository caseMappingRepository, final MessagingIntegration messagingIntegration) {
-		super(openEIntegration, caseRepository, caseMappingRepository, messagingIntegration);
+	ByggrProcessor(
+		final OpenEIntegration openEIntegration,
+		final CaseRepository caseRepository,
+		final RetryProperties retryProperties,
+		final ByggrService service,
+		final CaseMappingRepository caseMappingRepository,
+		final MessagingIntegration messagingIntegration,
+		final Environment environment) {
+
+		super(openEIntegration, caseRepository, caseMappingRepository, messagingIntegration, environment);
 		this.service = service;
 
 		retryPolicy = RetryPolicy.<SaveNewArendeResponse2>builder()
@@ -46,7 +54,7 @@ class ByggrProcessor extends Processor {
 	}
 
 	@EventListener(IncomingByggrCase.class)
-	public void handleIncomingErrand(final IncomingByggrCase event) throws JsonProcessingException, SQLException {
+	public void handleIncomingErrand(final IncomingByggrCase event) throws SQLException, IOException {
 
 		final var caseEntity = caseRepository.findByIdAndMunicipalityId(event.getPayload().getExternalCaseId(), event.getMunicipalityId()).orElse(null);
 
@@ -55,7 +63,12 @@ class ByggrProcessor extends Processor {
 			log.warn("Unable to process byggR errand {}", event.getPayload());
 			return;
 		}
-		final String json = new BufferedReader(caseEntity.getDto().getCharacterStream()).lines().collect(Collectors.joining());
+
+		final String json;
+		try (BufferedReader reader = new BufferedReader(caseEntity.getDto().getCharacterStream())) {
+			json = reader.lines().collect(Collectors.joining());
+		}
+
 		final var objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 		final var byggRCaseDTO = objectMapper.readValue(json, ByggRCaseDTO.class);
 

@@ -4,29 +4,30 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
-
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import se.sundsvall.casemanagement.api.validation.ByggRConstraints;
-
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
+import se.sundsvall.casemanagement.api.validation.ByggRConstraints;
 
 @Getter
 @Setter
 @Builder(setterPrefix = "with")
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonPropertyOrder({"facilityType", "description", "address", "facilityCollectionName", "mainFacility", "extraParameters"})
+@JsonPropertyOrder({
+	"facilityType", "description", "address", "facilityCollectionName", "mainFacility", "extraParameters"
+})
 @Schema(description = "Facility model")
 public class FacilityDTO implements Serializable {
+
+	private static final long serialVersionUID = -2904255346222794001L;
 
 	@Schema(description = "Description of the facility", example = "En fritextbeskrivning av facility.")
 	private String description;

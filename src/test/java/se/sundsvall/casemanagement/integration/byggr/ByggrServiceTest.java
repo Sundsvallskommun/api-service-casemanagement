@@ -63,29 +63,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.zalando.problem.Status;
 import org.zalando.problem.ThrowableProblem;
 
-import se.sundsvall.casemanagement.TestUtil;
-import se.sundsvall.casemanagement.api.model.AttachmentDTO;
-import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
-import se.sundsvall.casemanagement.api.model.CaseStatusDTO;
-import se.sundsvall.casemanagement.api.model.FacilityDTO;
-import se.sundsvall.casemanagement.api.model.OrganizationDTO;
-import se.sundsvall.casemanagement.api.model.PersonDTO;
-import se.sundsvall.casemanagement.api.model.StakeholderDTO;
-import se.sundsvall.casemanagement.api.model.enums.AddressCategory;
-import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
-import se.sundsvall.casemanagement.api.model.enums.CaseType;
-import se.sundsvall.casemanagement.api.model.enums.FacilityType;
-import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
-import se.sundsvall.casemanagement.api.model.enums.StakeholderType;
-import se.sundsvall.casemanagement.api.model.enums.SystemType;
-import se.sundsvall.casemanagement.integration.db.CaseTypeDataRepository;
-import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
-import se.sundsvall.casemanagement.integration.opene.OpenEIntegration;
-import se.sundsvall.casemanagement.service.CaseMappingService;
-import se.sundsvall.casemanagement.service.CitizenService;
-import se.sundsvall.casemanagement.service.FbService;
-import se.sundsvall.casemanagement.util.Constants;
-
 import arendeexport.AbstractArendeObjekt;
 import arendeexport.Arende;
 import arendeexport.Arende2;
@@ -114,6 +91,28 @@ import arendeexport.SaveNewArendeMessage;
 import arendeexport.SaveNewArendeResponse2;
 import arendeexport.SaveNewHandelse;
 import arendeexport.SaveNewHandelseMessage;
+import se.sundsvall.casemanagement.TestUtil;
+import se.sundsvall.casemanagement.api.model.AttachmentDTO;
+import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
+import se.sundsvall.casemanagement.api.model.CaseStatusDTO;
+import se.sundsvall.casemanagement.api.model.FacilityDTO;
+import se.sundsvall.casemanagement.api.model.OrganizationDTO;
+import se.sundsvall.casemanagement.api.model.PersonDTO;
+import se.sundsvall.casemanagement.api.model.StakeholderDTO;
+import se.sundsvall.casemanagement.api.model.enums.AddressCategory;
+import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
+import se.sundsvall.casemanagement.api.model.enums.CaseType;
+import se.sundsvall.casemanagement.api.model.enums.FacilityType;
+import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
+import se.sundsvall.casemanagement.api.model.enums.StakeholderType;
+import se.sundsvall.casemanagement.api.model.enums.SystemType;
+import se.sundsvall.casemanagement.integration.db.CaseTypeDataRepository;
+import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
+import se.sundsvall.casemanagement.integration.opene.OpenEIntegration;
+import se.sundsvall.casemanagement.service.CaseMappingService;
+import se.sundsvall.casemanagement.service.CitizenService;
+import se.sundsvall.casemanagement.service.FbService;
+import se.sundsvall.casemanagement.util.Constants;
 
 @ExtendWith(MockitoExtension.class)
 class ByggrServiceTest {
@@ -153,7 +152,8 @@ class ByggrServiceTest {
 		assertThat(getStatusResult.getTimestamp()).isEqualTo(dateTime);
 	}
 
-	private static void assertHandelse(final String dnr, final SaveNewHandelseMessage saveNewHandelseMessage, final List<String> notesToContain, final String handelseRubrik, final String handelstyp, final String handelseslag, final List<AttachmentDTO> attachments) {
+	private static void assertHandelse(final String dnr, final SaveNewHandelseMessage saveNewHandelseMessage, final List<String> notesToContain, final String handelseRubrik, final String handelstyp, final String handelseslag,
+		final List<AttachmentDTO> attachments) {
 		assertThat(saveNewHandelseMessage.getDnr()).isEqualTo(dnr);
 		assertThat(saveNewHandelseMessage.getHandlaggarSign()).isEqualTo(Constants.BYGGR_SYSTEM_HANDLAGGARE_SIGN);
 		assertThat(saveNewHandelseMessage.getHandelse().getRubrik()).isEqualTo(handelseRubrik);
@@ -235,7 +235,7 @@ class ByggrServiceTest {
 	private static void assertThatArendeIsEqual(final Arende2 arende, final String arendeTyp, final FacilityDTO inputFacility) {
 		assertThat(arende.getArendetyp()).isEqualTo(arendeTyp);
 
-		if (arendeTyp.equals(STRANDSKYDD)) {
+		if (STRANDSKYDD.equals(arendeTyp)) {
 			assertThat(arende.getArendegrupp()).isEqualTo(Constants.BYGGR_ARENDEGRUPP_STRANDSKYDD);
 		} else {
 			assertThat(arende.getArendegrupp()).isEqualTo(Constants.BYGGR_ARENDEGRUPP_LOV_ANMALNINGSARENDE);
@@ -269,18 +269,19 @@ class ByggrServiceTest {
 		TestUtil.standardMockCitizen(citizenServiceMock);
 	}
 
-	//ANSOKAN_OM_BYGGLOV
+	// ANSOKAN_OM_BYGGLOV
 	@ParameterizedTest
-	@EnumSource(value = CaseType.class, names = {"STRANDSKYDD_NYBYGGNAD",
+	@EnumSource(value = CaseType.class, names = {
+		"STRANDSKYDD_NYBYGGNAD",
 		"STRANDSKYDD_ANLAGGANDE", "STRANDSKYDD_ANORDNANDE",
-		"STRANDSKYDD_ANDRAD_ANVANDNING"})
+		"STRANDSKYDD_ANDRAD_ANVANDNING"
+	})
 	void testStrandskyddCaseType(final CaseType caseType) {
 		final var caseTypes = Map.of(
 			STRANDSKYDD_NYBYGGNAD, BYGGR_ARENDEMENING_STRANDSKYDD_FOR_NYBYGGNAD,
 			STRANDSKYDD_ANLAGGANDE, BYGGR_ARENDEMENING_STRANDSKYDD_FOR_ANLAGGANDE,
 			STRANDSKYDD_ANORDNANDE, BYGGR_ARENDEMENING_STRANDSKYDD_FOR_ANORDNANDE,
-			STRANDSKYDD_ANDRAD_ANVANDNING, BYGGR_ARENDEMENING_STRANDSKYDD_FOR_ANDRAD_ANVANDNING
-		);
+			STRANDSKYDD_ANDRAD_ANVANDNING, BYGGR_ARENDEMENING_STRANDSKYDD_FOR_ANDRAD_ANVANDNING);
 
 		final var input = createByggRCaseDTO(caseType, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		final var inputFacility = input.getFacilities().getFirst();
@@ -314,9 +315,7 @@ class ByggrServiceTest {
 				final var arendeFastighet = (ArendeFastighet) abstractArendeObjekt;
 				assertThat(arendeFastighet.isArHuvudObjekt()).isEqualTo(inputFacility.isMainFacility());
 				assertThat(arendeFastighet.getFastighet().getFnr()).isEqualTo(FNR);
-			}
-		);
-
+			});
 
 		// Handlingar
 		assertThat(handlingar.getHandling()).hasSize(1);
@@ -337,10 +336,12 @@ class ByggrServiceTest {
 		assertThat(handelse.getHandelseslag()).isEqualTo(HANDELSESLAG_STRANDSKYDD);
 	}
 
-	//ANSOKAN_OM_BYGGLOV
+	// ANSOKAN_OM_BYGGLOV
 	@ParameterizedTest
-	@EnumSource(value = CaseType.class, names = {"NYBYGGNAD_ANSOKAN_OM_BYGGLOV",
-		"ANDRING_ANSOKAN_OM_BYGGLOV", "TILLBYGGNAD_ANSOKAN_OM_BYGGLOV"})
+	@EnumSource(value = CaseType.class, names = {
+		"NYBYGGNAD_ANSOKAN_OM_BYGGLOV",
+		"ANDRING_ANSOKAN_OM_BYGGLOV", "TILLBYGGNAD_ANSOKAN_OM_BYGGLOV"
+	})
 	void testPostNybyggnad(final CaseType caseType) {
 		// Arrange
 		final var input = createByggRCaseDTO(caseType, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
@@ -366,7 +367,7 @@ class ByggrServiceTest {
 
 		// Arende
 
-		if (!caseType.equals(ANDRING_ANSOKAN_OM_BYGGLOV)) {
+		if (!ANDRING_ANSOKAN_OM_BYGGLOV.equals(caseType)) {
 			assertThat(arende.getArendeklass()).isEqualTo(FacilityType.valueOf(inputFacility.getFacilityType()).getValue());
 		} else {
 			assertThat(arende.getArendeslag()).isEqualTo(FacilityType.valueOf(inputFacility.getFacilityType()).getValue());
@@ -523,7 +524,6 @@ class ByggrServiceTest {
 		final var arende = saveNewArendeMessage.getArende();
 		final var handelse = saveNewArendeMessage.getHandelse();
 
-
 		// SaveNewArendeMessage
 		assertThat(saveNewArendeMessage.getHandlaggarSign()).isEqualTo(Constants.BYGGR_SYSTEM_HANDLAGGARE_SIGN);
 
@@ -642,7 +642,7 @@ class ByggrServiceTest {
 	@Test
 	void testSetPersonFields() {
 
-		//Arrange
+		// Arrange
 		final ByggRCaseDTO input = createByggRCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		final PersonDTO applicant = (PersonDTO) TestUtil.createStakeholderDTO(StakeholderType.PERSON, List.of(StakeholderRole.APPLICANT.toString()));
 		input.setStakeholders(List.of(applicant));
@@ -657,7 +657,6 @@ class ByggrServiceTest {
 		final var intressenter = arende.getIntressentLista().getIntressent();
 
 		assertThat(intressenter).hasSize(1);
-
 
 		final var applicants = intressenter.stream()
 			.filter(intressent -> intressent.getRollLista().getRoll()
@@ -967,7 +966,6 @@ class ByggrServiceTest {
 
 		final List<CaseMapping> caseMappingList2 = new ArrayList<>();
 
-
 		caseMappingList2.add(CaseMapping.builder()
 			.withExternalCaseId(externalCaseID2)
 			.withCaseId(caseId2)
@@ -1045,7 +1043,7 @@ class ByggrServiceTest {
 		final var spy = Mockito.spy(byggrService);
 		final var byggRCaseDTO = mock(ByggRCaseDTO.class);
 
-		final var extraParameterMap = mock(HashMap.class);
+		final HashMap<String, String> extraParameterMap = mock();
 
 		// ByggR Mocks
 		final var remiss = mock(Remiss.class);
@@ -1107,7 +1105,8 @@ class ByggrServiceTest {
 		final var errandNr = "some-dnr [123]";
 		final var otherInformation = "otherInformation";
 		final var byggRCaseDTO = mock(ByggRCaseDTO.class);
-		final HashMap<String, String> extraParameterMap = mock(HashMap.class);
+
+		final HashMap<String, String> extraParameterMap = mock();
 
 		when(byggRCaseDTO.getStakeholders()).thenReturn(stakeholders);
 		when(byggRCaseDTO.getExtraParameters()).thenReturn(extraParameterMap);
@@ -1124,7 +1123,6 @@ class ByggrServiceTest {
 		verify(openEIntegrationMock).confirmDelivery(any(), any(), any());
 		verify(openEIntegrationMock).setStatus(any(), any(), any(), any());
 	}
-
 
 	/**
 	 * Test scenario where there is 1 person stakeholder.
@@ -1154,7 +1152,6 @@ class ByggrServiceTest {
 		final var organizationNumberOepFormat = "123456781234";
 		organizationStakeholder.setOrganizationNumber(organizationNumberOepFormat);
 
-
 		final var stakeholders = List.of(personStakeholder, organizationStakeholder);
 
 		final var result = byggrService.extractStakeholderId(stakeholders);
@@ -1182,6 +1179,5 @@ class ByggrServiceTest {
 		assertThat(result).isEqualTo("16123456-1234");
 		verifyNoInteractions(citizenServiceMock);
 	}
-
 
 }

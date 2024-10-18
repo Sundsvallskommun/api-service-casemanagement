@@ -10,13 +10,11 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static se.sundsvall.casemanagement.TestUtil.createByggRCaseDTO;
 
+import java.io.IOException;
 import java.sql.SQLException;
 
 import javax.sql.rowset.serial.SerialClob;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -24,6 +22,11 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
+import arendeexport.SaveNewArendeResponse2;
+import dev.failsafe.RetryPolicy;
 import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
 import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
 import se.sundsvall.casemanagement.api.model.enums.CaseType;
@@ -31,9 +34,6 @@ import se.sundsvall.casemanagement.configuration.RetryProperties;
 import se.sundsvall.casemanagement.integration.db.CaseRepository;
 import se.sundsvall.casemanagement.integration.db.model.CaseEntity;
 import se.sundsvall.casemanagement.service.event.IncomingByggrCase;
-
-import arendeexport.SaveNewArendeResponse2;
-import dev.failsafe.RetryPolicy;
 
 @ExtendWith(MockitoExtension.class)
 class ByggrProcessorTest {
@@ -56,7 +56,7 @@ class ByggrProcessorTest {
 	private CaseRepository caseRepository;
 
 	@Test
-	void testHandleIncomingErrand() throws SQLException, JsonProcessingException {
+	void testHandleIncomingErrand() throws SQLException, IOException {
 		final var event = new IncomingByggrCase(ByggrProcessorTest.class, createByggRCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION), MUNICIPALITY_ID);
 
 		final var objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
@@ -75,7 +75,7 @@ class ByggrProcessorTest {
 	}
 
 	@Test
-	void testHandleIncomingErrand_NoErrandFound() throws SQLException, JsonProcessingException {
+	void testHandleIncomingErrand_NoErrandFound() throws SQLException, IOException {
 		final var event = new IncomingByggrCase(ByggrProcessorTest.class, new ByggRCaseDTO(), MUNICIPALITY_ID);
 
 		byggrProcessor.handleIncomingErrand(event);
@@ -87,7 +87,7 @@ class ByggrProcessorTest {
 	}
 
 	@Test
-	void testHandleIncomingErrand_maximumFound() throws SQLException, JsonProcessingException {
+	void testHandleIncomingErrand_maximumFound() throws SQLException, IOException {
 		final var event = new IncomingByggrCase(ByggrProcessorTest.class, createByggRCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION), MUNICIPALITY_ID);
 
 		final var objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
