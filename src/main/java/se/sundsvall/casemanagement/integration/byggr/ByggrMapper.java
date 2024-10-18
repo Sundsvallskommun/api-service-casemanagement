@@ -632,7 +632,6 @@ public final class ByggrMapper {
 		};
 	}
 
-
 	static Handelse createAddCertifiedInspectorHandelse(final String errandInformation, final HandelseIntressent handelseIntressent) {
 		return new Handelse()
 			.withRiktning("In")
