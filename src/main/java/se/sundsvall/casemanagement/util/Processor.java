@@ -2,6 +2,7 @@ package se.sundsvall.casemanagement.util;
 
 import static java.lang.String.join;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -61,10 +62,17 @@ public abstract class Processor {
 		log.info("Exceeded max sending attempts case with externalCaseId {}", entity.getId());
 		caseRepository.save(entity.withDeliveryStatus(DeliveryStatus.FAILED));
 
-		final var subject = "Incident from CaseManagement [%s]".formatted(join(",", environment.getActiveProfiles()));
+		final var subject = "Incident from CaseManagement [%s]".formatted(extractEnvironment());
 		final var message = "[" + municipalityId + "][" + system + "]" + "Exceeded max sending attempts case with externalCaseId " + entity.getId() + " Exception: " + failureEvent.getMessage();
 
 		messagingIntegration.sendSlack(message, municipalityId);
 		messagingIntegration.sendMail(subject, message, municipalityId);
+	}
+
+	private String extractEnvironment() {
+		return Arrays.stream(environment.getActiveProfiles())
+			.filter(string -> string.matches("^(?i)(test|production|it|junit)$"))
+			.findFirst()
+			.orElse(join(",", environment.getActiveProfiles()));
 	}
 }
