@@ -1,15 +1,19 @@
 package se.sundsvall.casemanagement.integration.casedata;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.stream.Collectors;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
+import dev.failsafe.Failsafe;
+import dev.failsafe.RetryPolicy;
 import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
 import se.sundsvall.casemanagement.configuration.RetryProperties;
 import se.sundsvall.casemanagement.integration.db.CaseMappingRepository;
@@ -18,9 +22,6 @@ import se.sundsvall.casemanagement.integration.messaging.MessagingIntegration;
 import se.sundsvall.casemanagement.integration.opene.OpenEIntegration;
 import se.sundsvall.casemanagement.service.event.IncomingOtherCase;
 import se.sundsvall.casemanagement.util.Processor;
-
-import dev.failsafe.Failsafe;
-import dev.failsafe.RetryPolicy;
 
 @Component
 class CasedataProcessor extends Processor {
@@ -34,8 +35,9 @@ class CasedataProcessor extends Processor {
 		final CaseDataService service,
 		final RetryProperties retryProperties,
 		final CaseMappingRepository caseMappingRepository,
-		final MessagingIntegration messagingIntegration) {
-		super(openEIntegration, caseRepository, caseMappingRepository, messagingIntegration);
+		final MessagingIntegration messagingIntegration,
+		final Environment environment) {
+		super(openEIntegration, caseRepository, caseMappingRepository, messagingIntegration, environment);
 		this.service = service;
 		this.retryPolicy = RetryPolicy.<String>builder()
 			.withMaxAttempts(retryProperties.maxAttempts())
@@ -48,7 +50,7 @@ class CasedataProcessor extends Processor {
 	}
 
 	@EventListener(IncomingOtherCase.class)
-	public void handleIncomingErrand(final IncomingOtherCase event) throws SQLException, JsonProcessingException {
+	public void handleIncomingErrand(final IncomingOtherCase event) throws SQLException, IOException {
 
 		final var caseEntity = caseRepository.findById(event.getPayload().getExternalCaseId()).orElse(null);
 
@@ -57,7 +59,12 @@ class CasedataProcessor extends Processor {
 			log.warn("Unable to process CaseData errand {}", event.getPayload());
 			return;
 		}
-		final String json = new BufferedReader(caseEntity.getDto().getCharacterStream()).lines().collect(Collectors.joining());
+
+		final String json;
+		try (BufferedReader reader = new BufferedReader(caseEntity.getDto().getCharacterStream())) {
+			json = reader.lines().collect(Collectors.joining());
+		}
+
 		final var objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 		final var otherCaseDTO = objectMapper.readValue(json, OtherCaseDTO.class);
 
@@ -72,5 +79,4 @@ class CasedataProcessor extends Processor {
 			log.warn("Unable to create CaseData errand {}: {}", event.getPayload(), e.getMessage());
 		}
 	}
-
 }
