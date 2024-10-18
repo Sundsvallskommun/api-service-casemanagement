@@ -1,13 +1,13 @@
 {
-  "name": "messaging",
-  "request": {
-    "urlPathPattern": "/messaging/3.1/2281/email",
-    "method": "POST"
-  },
-  "response": {
-    "headers": {
-      "Content-Type": "application/json"
-    },
-    "status": 200
-  }
+	"name": "messaging-slack",
+	"request": {
+		"urlPathPattern": "/messaging/3.1/2281/slack",
+		"method": "POST"
+	},
+	"response": {
+		"headers": {
+			"Content-Type": "application/json"
+		},
+		"status": 200
+	}
 }

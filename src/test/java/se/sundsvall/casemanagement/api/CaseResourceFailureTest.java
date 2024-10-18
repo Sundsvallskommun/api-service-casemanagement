@@ -18,10 +18,6 @@ import java.nio.charset.Charset;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
-import jakarta.validation.Path;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -37,6 +33,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.zalando.problem.violations.ConstraintViolationProblem;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Path;
 import se.sundsvall.casemanagement.Application;
 import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
 import se.sundsvall.casemanagement.api.model.CaseDTO;
@@ -82,24 +81,21 @@ class CaseResourceFailureTest {
 		return Stream.of(
 			Arguments.of("/case-resource-failure/ecos/no-externalCaseId.json"),
 			Arguments.of("/case-resource-failure/byggr/no-externalCaseId.json"),
-			Arguments.of("/case-resource-failure/other/no-externalCaseId.json")
-		);
+			Arguments.of("/case-resource-failure/other/no-externalCaseId.json"));
 	}
 
 	private static Stream<Arguments> emptyAttachments() {
 		return Stream.of(
 			Arguments.of("/case-resource-failure/ecos/no-attachment.json"),
 			Arguments.of("/case-resource-failure/byggr/no-attachment.json"),
-			Arguments.of("/case-resource-failure/other/no-attachment.json")
-		);
+			Arguments.of("/case-resource-failure/other/no-attachment.json"));
 	}
 
 	private static Stream<Arguments> emptyStakeholders() {
 		return Stream.of(
 			Arguments.of("/case-resource-failure/ecos/no-stakeholder.json"),
 			Arguments.of("/case-resource-failure/byggr/no-stakeholder.json"),
-			Arguments.of("/case-resource-failure/other/no-stakeholder.json")
-		);
+			Arguments.of("/case-resource-failure/other/no-stakeholder.json"));
 	}
 
 	@ParameterizedTest
@@ -204,8 +200,8 @@ class CaseResourceFailureTest {
 
 	@Test
 	void postCase_ByggRNoFacility(@Load("/case-resource-failure/byggr/no-facility.json") final String body) {
-		ConstraintViolation<ByggRCaseDTO> constraintViolationMock = mock(ConstraintViolation.class);
-		Path pathMock = mock(Path.class);
+		final ConstraintViolation<ByggRCaseDTO> constraintViolationMock = mock();
+		final Path pathMock = mock(Path.class);
 		when(pathMock.toString()).thenReturn("facilities");
 		when(constraintViolationMock.getMessage()).thenReturn("must not be empty");
 		when(constraintViolationMock.getPropertyPath()).thenReturn(pathMock);
@@ -232,8 +228,8 @@ class CaseResourceFailureTest {
 		verifyNoInteractions(caseDataServiceMock);
 	}
 
-	//This case does not throw a bad request, this is by design to ensure that the different
-	//sub-classes of caseDTO are handled  individually.
+	// This case does not throw a bad request, this is by design to ensure that the different
+	// sub-classes of caseDTO are handled individually.
 	@Test
 	void postCase_OtherNoFacility(@Load("/case-resource-failure/other/no-facility.json") final String body) {
 		final var result = webTestClient

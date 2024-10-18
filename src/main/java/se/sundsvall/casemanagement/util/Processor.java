@@ -1,10 +1,13 @@
 package se.sundsvall.casemanagement.util;
 
+import static java.lang.String.join;
+
 import java.util.List;
 import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
 
 import se.sundsvall.casemanagement.api.model.AttachmentDTO;
 import se.sundsvall.casemanagement.api.model.CaseDTO;
@@ -21,19 +24,18 @@ public abstract class Processor {
 	protected final Logger log = LoggerFactory.getLogger(getClass());
 
 	protected final OpenEIntegration openEIntegration;
-
 	protected final CaseRepository caseRepository;
-
 	protected final CaseMappingRepository caseMappingRepository;
-
 	private final MessagingIntegration messagingIntegration;
+	private final Environment environment;
 
 	protected Processor(final OpenEIntegration openEIntegration, final CaseRepository caseRepository,
-		final CaseMappingRepository caseMappingRepository, final MessagingIntegration messagingIntegration) {
+		final CaseMappingRepository caseMappingRepository, final MessagingIntegration messagingIntegration, final Environment environment) {
 		this.openEIntegration = openEIntegration;
 		this.caseRepository = caseRepository;
 		this.caseMappingRepository = caseMappingRepository;
 		this.messagingIntegration = messagingIntegration;
+		this.environment = environment;
 	}
 
 	public void cleanAttachmentBase64(final Event<?> event) {
@@ -59,11 +61,10 @@ public abstract class Processor {
 		log.info("Exceeded max sending attempts case with externalCaseId {}", entity.getId());
 		caseRepository.save(entity.withDeliveryStatus(DeliveryStatus.FAILED));
 
+		final var subject = "Incident from CaseManagement [%s]".formatted(join(",", environment.getActiveProfiles()));
 		final var message = "[" + municipalityId + "][" + system + "]" + "Exceeded max sending attempts case with externalCaseId " + entity.getId() + " Exception: " + failureEvent.getMessage();
 
-
 		messagingIntegration.sendSlack(message, municipalityId);
-		messagingIntegration.sendMail("Incident from CaseManagement", message, municipalityId);
+		messagingIntegration.sendMail(subject, message, municipalityId);
 	}
-
 }

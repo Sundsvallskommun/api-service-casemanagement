@@ -20,7 +20,8 @@ import lombok.experimental.SuperBuilder;
 @Schema(description = "Other case model")
 public class OtherCaseDTO extends CaseDTO implements Serializable {
 
+	private static final long serialVersionUID = -1627503596853775503L;
+
 	@Schema(description = "The facilities in the case")
 	private List<FacilityDTO> facilities;
-
 }

@@ -15,6 +15,8 @@ import lombok.NoArgsConstructor;
 @Schema(description = "Coordinates model")
 public class CoordinatesDTO implements Serializable {
 
+	private static final long serialVersionUID = 3543604692890119457L;
+
 	@Schema(description = "Decimal Degrees (DD)", example = "62.390205")
 	private double latitude;
 

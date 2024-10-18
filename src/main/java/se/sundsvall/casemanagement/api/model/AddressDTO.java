@@ -4,19 +4,17 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
-
-import se.sundsvall.casemanagement.api.model.enums.AddressCategory;
-import se.sundsvall.casemanagement.api.validation.ByggRConstraints;
-import se.sundsvall.casemanagement.api.validation.EcosConstraints;
-import se.sundsvall.casemanagement.util.Constants;
-
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import se.sundsvall.casemanagement.api.model.enums.AddressCategory;
+import se.sundsvall.casemanagement.api.validation.ByggRConstraints;
+import se.sundsvall.casemanagement.api.validation.EcosConstraints;
+import se.sundsvall.casemanagement.util.Constants;
 
 @Data
 @Builder(setterPrefix = "with")
@@ -24,6 +22,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Schema(description = "Address model")
 public class AddressDTO implements Serializable {
+
+	private static final long serialVersionUID = 7944510843548085883L;
 
 	@NotEmpty
 	@Schema(description = "An address can have one or more address categories. For example, it can be the same address that is to be used for mail and invoices.")
@@ -50,7 +50,9 @@ public class AddressDTO implements Serializable {
 	@Schema(example = "Test Testorsson")
 	private String attention;
 
-	@NotBlank(groups = {EcosConstraints.class, ByggRConstraints.class})
+	@NotBlank(groups = {
+		EcosConstraints.class, ByggRConstraints.class
+	})
 	@Schema(example = "SUNDSVALL BALDER 7:2")
 	private String propertyDesignation;
 
