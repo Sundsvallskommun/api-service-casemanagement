@@ -1,9 +1,9 @@
 package se.sundsvall.casemanagement.api.model.enums;
 
+import java.util.Arrays;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
-
-import java.util.Arrays;
 
 @Getter
 @Schema(description = "Attachment category")
@@ -242,6 +242,8 @@ public enum AttachmentCategory {
 	HVAC_HANDLING("VVSH", "VVS-handling"),
 	GROUND_SECTION_DRAWING("MASE", "Marksektionsritning"),
 	FSSI("FSSI", "FSSI"),
+	NEIGHBORHOOD_NOTIFICATION_RESPONSE("GRASV", "Svar på grannehörande, utan erinran"),
+	NEIGHBORHOOD_NOTIFICATION_RESPONSE_NOK("UNDERE", "Svar på grannehörende, med erinran"),
 	///////////////////////////////////
 	// ECOS
 	///////////////////////////////////
