@@ -1,11 +1,11 @@
 {
 	"caseType": "NEIGHBORHOOD_NOTIFICATION",
-	"externalCaseId": 4301,
+	"externalCaseId": 4565,
 	"extraParameters": {
 		"comment": "Jag har inga synpunkter",
 		"errandNr": "BYGG 2024-000019 [12345]",
-		"serviceName": "Lämna svar på grannehörande - TEST",
-		"oepAction": "PUT"
+		"oepAction": "PUT",
+		"serviceName": "Lämna svar på grannehörande - TEST"
 	},
 	"stakeholders": [
 		{
@@ -14,26 +14,15 @@
 				"APPLICANT"
 			],
 			"personId": "97ed4de2-9f80-427d-b010-5d81267ef96b",
-			"firstName": "Testare",
-			"lastName": "Testarsson"
-		}
-	],
-	"facilities": [
-		{
-			"mainFacility": true,
-			"facilityType": "OTHER",
-			"address": {
-				"propertyDesignation": "SUNDSVALL BALDER 1",
-				"addressCategories": [
-					"VISITING_ADDRESS"
-				]
-			}
+			"firstName": "o",
+			"lastName": "o",
+			"emailAddress": "o@o.se"
 		}
 	],
 	"attachments": [
 		{
-			"category": "ANM",
-			"name": "16520.pdf",
+			"category": "GRASV",
+			"name": "16942.pdf",
 			"extension": ".pdf",
 			"mimeType": "application/pdf",
 			"file": "base64"
