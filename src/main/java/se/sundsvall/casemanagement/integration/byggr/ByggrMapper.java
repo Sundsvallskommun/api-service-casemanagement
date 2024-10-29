@@ -687,18 +687,9 @@ public final class ByggrMapper {
 			.filter(intressent1 -> (intressent1.getPersOrgNr().equals(stakeholderId) || intressent1.getPersOrgNr().equals(stakeholderId.substring(2))))
 			.findFirst().orElseThrow(() -> Problem.valueOf(BAD_REQUEST, "Stakeholder with id %s not found in ByggRCase".formatted(stakeholderId)));
 
-		var intressentKommunkationLista = new ArrayOfIntressentKommunikation()
-			.withIntressentKommunikation(intressent.getIntressentKommunikationLista().getIntressentKommunikation().stream()
-				.map(intressentKommunikation -> new IntressentKommunikation()
-					.withBeskrivning(intressentKommunikation.getBeskrivning())
-					.withAttention(new IntressentAttention().withAttention(Optional.ofNullable(intressentKommunikation.getAttention()).map(IntressentAttention::getAttention).orElse(null)))
-					.withKomtyp(intressentKommunikation.getKomtyp()))
-				.toList());
-
 		return new HandelseIntressent()
 			.withIntressentId(intressent.getIntressentId())
 			.withIntressentVersionId(intressent.getIntressentVersionId())
-			.withIntressentKommunikationLista(intressentKommunkationLista)
 			.withRollLista(intressent.getRollLista());
 	}
 
