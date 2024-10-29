@@ -63,34 +63,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.zalando.problem.Status;
 import org.zalando.problem.ThrowableProblem;
 
-import arendeexport.AbstractArendeObjekt;
-import arendeexport.Arende;
-import arendeexport.Arende2;
-import arendeexport.ArendeFastighet;
-import arendeexport.ArendeIntressent;
-import arendeexport.ArrayOfArende1;
-import arendeexport.ArrayOfHandelse;
-import arendeexport.ArrayOfHandelseIntressent2;
-import arendeexport.ArrayOfHandling;
-import arendeexport.ArrayOfIntressentKommunikation;
-import arendeexport.ArrayOfRemiss;
-import arendeexport.ArrayOfString2;
-import arendeexport.GetArende;
-import arendeexport.GetArendeResponse;
-import arendeexport.GetRelateradeArendenByPersOrgNrAndRole;
-import arendeexport.GetRelateradeArendenByPersOrgNrAndRoleResponse;
-import arendeexport.GetRemisserByPersOrgNrResponse;
-import arendeexport.Handelse;
-import arendeexport.HandelseHandling;
-import arendeexport.HandelseIntressent;
-import arendeexport.IntressentAttention;
-import arendeexport.IntressentKommunikation;
-import arendeexport.Remiss;
-import arendeexport.SaveNewArende;
-import arendeexport.SaveNewArendeMessage;
-import arendeexport.SaveNewArendeResponse2;
-import arendeexport.SaveNewHandelse;
-import arendeexport.SaveNewHandelseMessage;
 import se.sundsvall.casemanagement.TestUtil;
 import se.sundsvall.casemanagement.api.model.AttachmentDTO;
 import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
@@ -113,6 +85,32 @@ import se.sundsvall.casemanagement.service.CaseMappingService;
 import se.sundsvall.casemanagement.service.CitizenService;
 import se.sundsvall.casemanagement.service.FbService;
 import se.sundsvall.casemanagement.util.Constants;
+
+import arendeexport.AbstractArendeObjekt;
+import arendeexport.Arende;
+import arendeexport.Arende2;
+import arendeexport.ArendeFastighet;
+import arendeexport.ArendeIntressent;
+import arendeexport.ArrayOfArende1;
+import arendeexport.ArrayOfHandelse;
+import arendeexport.ArrayOfHandelseIntressent2;
+import arendeexport.ArrayOfHandling;
+import arendeexport.ArrayOfRemiss;
+import arendeexport.ArrayOfString2;
+import arendeexport.GetArende;
+import arendeexport.GetArendeResponse;
+import arendeexport.GetRelateradeArendenByPersOrgNrAndRole;
+import arendeexport.GetRelateradeArendenByPersOrgNrAndRoleResponse;
+import arendeexport.GetRemisserByPersOrgNrResponse;
+import arendeexport.Handelse;
+import arendeexport.HandelseHandling;
+import arendeexport.HandelseIntressent;
+import arendeexport.Remiss;
+import arendeexport.SaveNewArende;
+import arendeexport.SaveNewArendeMessage;
+import arendeexport.SaveNewArendeResponse2;
+import arendeexport.SaveNewHandelse;
+import arendeexport.SaveNewHandelseMessage;
 
 @ExtendWith(MockitoExtension.class)
 class ByggrServiceTest {
@@ -1080,13 +1078,6 @@ class ByggrServiceTest {
 		when(handelse.getHandelseId()).thenReturn(123);
 		when(arrayOfHandelseIntressent2.getIntressent()).thenReturn(List.of(handelseIntressent));
 		when(handelseIntressent.getPersOrgNr()).thenReturn(stakeholderId);
-		when(handelseIntressent.getIntressentKommunikationLista()).thenReturn(new ArrayOfIntressentKommunikation()
-			.withIntressentKommunikation(new IntressentKommunikation()
-				.withBeskrivning("Testkommunikation")
-				.withAttention(new IntressentAttention()
-					.withAttention("attention")
-					.withAttentionId(12345))
-				.withKomtyp("E-Post")));
 
 		when(spy.extractStakeholderId(stakeholders)).thenReturn(stakeholderId);
 		when(spy.getByggRCase(dnr)).thenReturn(arende);
