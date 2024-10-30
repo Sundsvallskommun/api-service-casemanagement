@@ -51,9 +51,9 @@ public class CaseDataService {
 	}
 
 	/**
-	 * @param otherCase The case to be created in CaseData
-	 * @param municipalityId The municipalityId to be used in CaseData
-	 * @return errandNumber (example: PRH-2022-000001)
+	 * @param  otherCase      The case to be created in CaseData
+	 * @param  municipalityId The municipalityId to be used in CaseData
+	 * @return                errandNumber (example: PRH-2022-000001)
 	 */
 	public String postErrand(final OtherCaseDTO otherCase, final String municipalityId) {
 		final var errandDTO = toErrand(otherCase);
@@ -79,7 +79,7 @@ public class CaseDataService {
 
 		if (errandNumber != null) {
 			otherCase.getAttachments().stream().map(
-					attachment -> toAttachment(attachment, errandNumber))
+				attachment -> toAttachment(attachment, errandNumber))
 				.forEach(attachmentDTO -> caseDataClient.postAttachment(municipalityId, namespace, id, attachmentDTO));
 		}
 		caseMappingService.postCaseMapping(otherCase, String.valueOf(id), SystemType.CASE_DATA, municipalityId);
@@ -121,8 +121,8 @@ public class CaseDataService {
 		final var errandDTO = getErrand(Long.valueOf(caseMapping.getCaseId()), municipalityId, namespace);
 
 		final var latestStatus = Optional.ofNullable(Optional.ofNullable(errandDTO)
-				.orElse(new Errand())
-				.getStatuses())
+			.orElse(new Errand())
+			.getStatuses())
 			.orElse(List.of())
 			.stream()
 			.max(Comparator.comparing(Status::getDateTime))
@@ -140,12 +140,15 @@ public class CaseDataService {
 	}
 
 	/**
-	 * This is unfortunately not a complete PUT-operation because of restrictions in OpenE. They need to send the complete object every time. And because we don't want to write over some data, like decisions, in CaseData, we need to do the update like
+	 * This is unfortunately not a complete PUT-operation because of restrictions in OpenE. They need to send the complete
+	 * object every time. And because we don't want to write over some data, like decisions, in CaseData, we need to do the
+	 * update like
 	 * this.
 	 * <p>
-	 * This method will first do a patch on all ErrandDTO-fields. After that it will do PUT on Statuses, Stakeholders and Attachments.
+	 * This method will first do a patch on all ErrandDTO-fields. After that it will do PUT on Statuses, Stakeholders and
+	 * Attachments.
 	 *
-	 * @param caseId The ID from CaseData.
+	 * @param caseId       The ID from CaseData.
 	 * @param otherCaseDTO The updated case from OpenE.
 	 */
 	public void putErrand(final Long caseId, final OtherCaseDTO otherCaseDTO, final String municipalityId) {

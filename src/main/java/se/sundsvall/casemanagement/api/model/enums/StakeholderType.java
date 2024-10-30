@@ -7,8 +7,7 @@ public enum StakeholderType {
 
 	PERSON(), ORGANIZATION();
 
-	StakeholderType() {
-	}
+	StakeholderType() {}
 
 	public static final class Constants {
 

@@ -1,6 +1,5 @@
 package se.sundsvall.casemanagement.integration.byggr;
 
-
 import static java.util.Collections.emptyList;
 import static org.zalando.problem.Status.BAD_REQUEST;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.WITH_NULLABLE_FACILITY_TYPE;
@@ -99,7 +98,6 @@ import arendeexport.SaveNewRemissvarMessage;
 @Service
 public class ByggrService {
 
-
 	private final FbService fbService;
 	private final CitizenService citizenService;
 	private final CaseMappingService caseMappingService;
@@ -128,8 +126,7 @@ public class ByggrService {
 			case "NEIGHBORHOOD_NOTIFICATION" -> respondToNeighborhoodNotification(byggRCase);
 			case "BYGGR_ADD_CERTIFIED_INSPECTOR" -> addCertifiedInspector(byggRCase);
 			case "BYGGR_ADDITIONAL_DOCUMENTS" -> addAdditionalDocuments(byggRCase);
-			default ->
-				throw Problem.valueOf(BAD_REQUEST, "CaseType %s not supported".formatted(byggRCase.getCaseType()));
+			default -> throw Problem.valueOf(BAD_REQUEST, "CaseType %s not supported".formatted(byggRCase.getCaseType()));
 		}
 	}
 
@@ -215,15 +212,15 @@ public class ByggrService {
 		return remisser.stream()
 			.filter(remiss -> stakeholderId.equals(remiss.getMottagare().getPersOrgNr()))
 			.filter(remiss -> // Kontrollerar att alla roller i intressenten finns i remissen och vice versa
-				new HashSet<>(intressent.getRollLista().getRoll()).containsAll(remiss.getMottagare().getRollLista().getRoll()) &&
-					new HashSet<>(remiss.getMottagare().getRollLista().getRoll()).containsAll(intressent.getRollLista().getRoll()))
+			new HashSet<>(intressent.getRollLista().getRoll()).containsAll(remiss.getMottagare().getRollLista().getRoll()) &&
+				new HashSet<>(remiss.getMottagare().getRollLista().getRoll()).containsAll(intressent.getRollLista().getRoll()))
 			.findFirst().orElseThrow(() -> Problem.valueOf(BAD_REQUEST, "No remiss with equal rollLista found for stakeholderId %s".formatted(stakeholderId)));
 	}
 
 	private List<Remiss> getRemisserByPersOrgNrAndFilterByDnr(final String persOrgNr, final String dnr) {
 		return arendeExportClient.getRemisserByPersOrgNr(new GetRemisserByPersOrgNr()
-				.withPersOrgNr(persOrgNr)
-				.withStatusFilter(RemissStatusFilter.NONE)).getGetRemisserByPersOrgNrResult().getRemiss().stream()
+			.withPersOrgNr(persOrgNr)
+			.withStatusFilter(RemissStatusFilter.NONE)).getGetRemisserByPersOrgNrResult().getRemiss().stream()
 			.filter(remiss -> remiss.getDnr().equals(dnr))
 			.toList();
 	}
@@ -234,8 +231,8 @@ public class ByggrService {
 	 * If no organization is found, we should use the personId to fetch a personal number from
 	 * citizenService and use this personal number as the stakeholder id.
 	 *
-	 * @param stakeholders List of stakeholders
-	 * @return String, organization number or personal number of the stakeholder.
+	 * @param  stakeholders List of stakeholders
+	 * @return              String, organization number or personal number of the stakeholder.
 	 */
 	public String extractStakeholderId(final List<StakeholderDTO> stakeholders) {
 		final var organizationId = stakeholders.stream()
@@ -262,8 +259,8 @@ public class ByggrService {
 	/**
 	 * Fetches a ByggR case based on the case number.
 	 *
-	 * @param dnr the case number
-	 * @return Arende, a ByggR case
+	 * @param  dnr the case number
+	 * @return     Arende, a ByggR case
 	 */
 	public Arende getByggRCase(final String dnr) {
 		return arendeExportClient.getArende(new GetArende().withDnr(dnr)).getGetArendeResult();
@@ -336,12 +333,12 @@ public class ByggrService {
 		}
 
 		return arrayOfByggrArende.getArende().stream().map(byggrArende -> {
-				final var caseMappingList = caseMappingService.getCaseMapping(null, byggrArende.getDnr(), municipalityId);
-				return toByggrStatus(byggrArende, Optional.ofNullable(caseMappingList)
-					.filter(list -> !list.isEmpty())
-					.map(list -> list.getFirst().getExternalCaseId())
-					.orElse(null), municipalityId);
-			})
+			final var caseMappingList = caseMappingService.getCaseMapping(null, byggrArende.getDnr(), municipalityId);
+			return toByggrStatus(byggrArende, Optional.ofNullable(caseMappingList)
+				.filter(list -> !list.isEmpty())
+				.map(list -> list.getFirst().getExternalCaseId())
+				.orElse(null), municipalityId);
+		})
 			.toList();
 	}
 
@@ -352,8 +349,7 @@ public class ByggrService {
 		populateStakeholderListWithPropertyOwners(byggRCase, stakeholders);
 		final var personIds = filterPersonId(stakeholders);
 
-		return new ArrayOfArendeIntressent2().withIntressent(stakeholders.stream().
-			filter(dto -> !dto.getRoles().contains(StakeholderRole.CONTROL_OFFICIAL.toString()))
+		return new ArrayOfArendeIntressent2().withIntressent(stakeholders.stream().filter(dto -> !dto.getRoles().contains(StakeholderRole.CONTROL_OFFICIAL.toString()))
 			.map(stakeholderDTO -> {
 
 				final var intressent = new ArendeIntressent();

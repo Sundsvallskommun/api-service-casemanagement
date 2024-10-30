@@ -60,24 +60,22 @@ class AttachmentResource {
 		this.caseMappingService = caseMappingService;
 	}
 
-	@PostMapping(path = "cases/{externalCaseId}/attachments", consumes = MediaType.APPLICATION_JSON_VALUE, produces = {MediaType.APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE})
+	@PostMapping(path = "cases/{externalCaseId}/attachments", consumes = MediaType.APPLICATION_JSON_VALUE, produces = {
+		MediaType.APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
+	})
 	@ApiResponse(responseCode = "204", description = "No content - Successful request.")
 	public ResponseEntity<Void> postAttachmentsToCase(
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable(name = "municipalityId") final String municipalityId,
 		@Parameter(name = "externalCaseId", description = "External case id", example = "1234") @PathVariable(name = "externalCaseId") final String externalCaseId,
-		@NotNull(message = Constants.REQUEST_BODY_MUST_NOT_BE_NULL)
-		@RequestBody @Valid final List<AttachmentDTO> attachmentDTOList) {
+		@NotNull(message = Constants.REQUEST_BODY_MUST_NOT_BE_NULL) @RequestBody @Valid final List<AttachmentDTO> attachmentDTOList) {
 
 		final CaseMapping caseMapping = caseMappingService.getCaseMapping(externalCaseId, municipalityId);
 
 		switch (caseMapping.getSystem()) {
-			case BYGGR ->
-				byggrService.saveNewIncomingAttachmentHandelse(caseMapping.getCaseId(), attachmentDTOList);
+			case BYGGR -> byggrService.saveNewIncomingAttachmentHandelse(caseMapping.getCaseId(), attachmentDTOList);
 			case ECOS -> ecosService.addDocumentsToCase(caseMapping.getCaseId(), attachmentDTOList);
-			case CASE_DATA ->
-				caseDataService.patchErrandWithAttachment(caseMapping, attachmentDTOList, municipalityId);
-			default ->
-				throw Problem.valueOf(Status.BAD_REQUEST, "It should not be possible to reach this row. systemType was: " + caseMapping.getSystem());
+			case CASE_DATA -> caseDataService.patchErrandWithAttachment(caseMapping, attachmentDTOList, municipalityId);
+			default -> throw Problem.valueOf(Status.BAD_REQUEST, "It should not be possible to reach this row. systemType was: " + caseMapping.getSystem());
 		}
 		return ResponseEntity.noContent().build();
 	}

@@ -11,7 +11,9 @@ import jakarta.validation.Payload;
 import se.sundsvall.casemanagement.api.validation.impl.EcosCaseDateOrderValidator;
 import se.sundsvall.casemanagement.util.Constants;
 
-@Target({ElementType.TYPE})
+@Target({
+	ElementType.TYPE
+})
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = EcosCaseDateOrderValidator.class)
 public @interface EcosCaseDateOrder {

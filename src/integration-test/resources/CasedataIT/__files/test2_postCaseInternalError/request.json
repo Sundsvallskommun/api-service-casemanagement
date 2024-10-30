@@ -1,135 +1,131 @@
 {
-  "externalCaseId": "40621445",
-  "caseType": "PARKING_PERMIT_RENEWAL",
-  "description": "INTERNAL_SERVER_ERROR",
-  "caseTitleAddition": "INTERNAL_SERVER_ERROR",
-  "stakeholders": [
-    {
-      "type": "ORGANIZATION",
-      "roles": [
-        "APPLICANT",
-        "CONTACT_PERSON"
-      ],
-      "organizationName": "qxGcptQJOA",
-      "organizationNumber": "640985-6759",
-      "phoneNumber": "DPsZuCEhDi",
-      "emailAddress": "KBCfWqLVwB@lWidg.com",
-      "cellphoneNumber": "uMpEjQcxzu",
-      "addresses": [
-        {
-          "addressCategories": [
-            "VISITING_ADDRESS",
-            "INVOICE_ADDRESS",
-            "POSTAL_ADDRESS"
-          ],
-          "street": "utYfEUODyB",
-          "houseNumber": "btWANrSEnf",
-          "postalCode": "3461947197",
-          "city": "FGoeloBuNE",
-          "country": "Sverige",
-          "careOf": "MktBDpEUDR",
-          "attention": "TlKwrGVcQs",
-          "propertyDesignation": "SUNDSVALL FILLA 8:185",
-          "appartmentNumber": "zserWrCVdg",
-          "location": {
-            "latitude": 0.36886540946703694,
-            "longitude": 0.41913652850045635
-          },
-          "isZoningPlanArea": false,
-          "invoiceMarking": "NtCSzQX38U",
-          "extraParameters": {
-            "yYAyVsrGue": "dnjVCMlKKstPQRVlqnhV",
-            "QwELuzsfhX": "dkznNuhznUggmABZVahK",
-            "IQUKbtPNGU": "yTJtupXCvdJbSuuNGEzZ"
-          }
-        }
-      ],
-      "extraParameters": {
-        "SIoHyIfMqA": "uoTwOEAoMdrtpLKWmdqu",
-        "sanOtDndvu": "tKGXeDJkCSBSivYGpQzr",
-        "NSAhKVBVhn": "wgczUTMuuUdAhvcQqjbq"
-      },
-      "authorizedSignatory": "OWMsXwvDcz"
-    },
-    {
-      "type": "PERSON",
-      "roles": [
-        "PAYMENT_PERSON",
-        "INVOICE_RECIPENT"
-      ],
-      "firstName": "FnmTsYKkDz",
-      "lastName": "EKWIiBUaAx",
-      "personId": "ae2c41f2-aebe-4d8d-a60c-95f73098f217",
-      "phoneNumber": "UZaqZCJKfV",
-      "emailAddress": "yUwblfsgJb@WdkUi.com",
-      "cellphoneNumber": "QovjWZiTWt",
-      "addresses": [
-        {
-          "addressCategories": [
-            "VISITING_ADDRESS",
-            "POSTAL_ADDRESS"
-          ],
-          "street": "kYrJfQNpzO",
-          "houseNumber": "SYbarjoKV8",
-          "postalCode": "4924294256",
-          "city": "dbgWawwJmh",
-          "country": "Sverige",
-          "careOf": "GVDwzWoMVt",
-          "attention": "KlXbPtoOvx",
-          "propertyDesignation": "SUNDSVALL FILLA 8:185",
-          "appartmentNumber": "5N3lLJnVxG",
-          "location": {
-            "latitude": 0.3464416310177606,
-            "longitude": 0.27958446787932867
-          },
-          "isZoningPlanArea": false,
-          "invoiceMarking": "Vqf7LW8u7z",
-          "extraParameters": {
-            "wkACSdIbrd": "tQelkfBjuQDPVGnmkexW",
-            "YxIYJxCfzE": "NLjnMYLBYwfnSMAdsTOm",
-            "PhaLEGQGBX": "emgTNUuVyCdPbECnuBGD"
-          }
-        }
-      ],
-      "extraParameters": {
-        "DfHsCgSlar": "hsUSJKiVWCFJebUJnrgR",
-        "TYiUtbTDsH": "MqkcMNascLVAhviCLxsy",
-        "CSrAXFptgI": "AqiWGFFifNYZhdDYqFul"
-      },
-      "personalNumber": "199901067153"
-    }
-  ],
-  "attachments": [
-    {
-      "category": "ANS",
-      "name": "Some attachment name.pdf",
-      "note": "Some attachment note",
-      "extension": ".pdf",
-      "mimeType": "application/pdf",
-      "file": "dGVzdA==",
-      "extraParameters": {
-        "pMisKGeWKG": "kHxLJDgPeNuGIQOQFrkG",
-        "sKAfwFxGAD": "XZGHGtZMJzpDVWYzVKsM",
-        "pvWnBbedAN": "uRCyBpHJCsrFDyYKMXnv"
-      }
-    },
-    {
-      "category": "ANMALAN_VARMEPUMP",
-      "name": "Some attachment name.pdf",
-      "note": "Some attachment note",
-      "extension": ".pdf",
-      "mimeType": "application/pdf",
-      "file": "dGVzdA==",
-      "extraParameters": {
-        "lLwOaZFizf": "zMffFwHxaCHEyoIrlDWX",
-        "seYiIOjjdb": "CwvpHTxTsitQfllxtYgo",
-        "FkwHAOaSnj": "oZLwKhzqdAyERWMaOkjF"
-      }
-    }
-  ],
-  "extraParameters": {
-    "utZDrMOalr": "iordQxbumvNLqUGNPNaS",
-    "obVdBrpFtI": "hdNumweXwDGWeBbBdbXD",
-    "ZCvSWHSZMp": "EIdIsvrwnnSuoTOitQJP"
-  }
+	"externalCaseId": "40621445",
+	"attachments": [
+		{
+			"note": "Some attachment note",
+			"extension": ".pdf",
+			"file": "dGVzdA==",
+			"name": "Some attachment name.pdf",
+			"extraParameters": {
+				"pMisKGeWKG": "kHxLJDgPeNuGIQOQFrkG",
+				"sKAfwFxGAD": "XZGHGtZMJzpDVWYzVKsM",
+				"pvWnBbedAN": "uRCyBpHJCsrFDyYKMXnv"
+			},
+			"mimeType": "application/pdf",
+			"category": "ANS"
+		},
+		{
+			"note": "Some attachment note",
+			"extension": ".pdf",
+			"file": "dGVzdA==",
+			"name": "Some attachment name.pdf",
+			"extraParameters": {
+				"lLwOaZFizf": "zMffFwHxaCHEyoIrlDWX",
+				"seYiIOjjdb": "CwvpHTxTsitQfllxtYgo",
+				"FkwHAOaSnj": "oZLwKhzqdAyERWMaOkjF"
+			},
+			"mimeType": "application/pdf",
+			"category": "ANMALAN_VARMEPUMP"
+		}
+	],
+	"caseTitleAddition": "INTERNAL_SERVER_ERROR",
+	"description": "INTERNAL_SERVER_ERROR",
+	"extraParameters": {
+		"utZDrMOalr": "iordQxbumvNLqUGNPNaS",
+		"obVdBrpFtI": "hdNumweXwDGWeBbBdbXD",
+		"ZCvSWHSZMp": "EIdIsvrwnnSuoTOitQJP"
+	},
+	"stakeholders": [
+		{
+			"emailAddress": "KBCfWqLVwB@lWidg.com",
+			"cellphoneNumber": "uMpEjQcxzu",
+			"addresses": [{
+				"country": "Sverige",
+				"city": "FGoeloBuNE",
+				"postalCode": "3461947197",
+				"houseNumber": "btWANrSEnf",
+				"extraParameters": {
+					"yYAyVsrGue": "dnjVCMlKKstPQRVlqnhV",
+					"QwELuzsfhX": "dkznNuhznUggmABZVahK",
+					"IQUKbtPNGU": "yTJtupXCvdJbSuuNGEzZ"
+				},
+				"appartmentNumber": "zserWrCVdg",
+				"isZoningPlanArea": false,
+				"invoiceMarking": "NtCSzQX38U",
+				"careOf": "MktBDpEUDR",
+				"addressCategories": [
+					"VISITING_ADDRESS",
+					"INVOICE_ADDRESS",
+					"POSTAL_ADDRESS"
+				],
+				"street": "utYfEUODyB",
+				"attention": "TlKwrGVcQs",
+				"propertyDesignation": "SUNDSVALL FILLA 8:185",
+				"location": {
+					"latitude": 0.36886540946703694,
+					"longitude": 0.41913652850045635
+				}
+			}],
+			"phoneNumber": "DPsZuCEhDi",
+			"organizationName": "qxGcptQJOA",
+			"organizationNumber": "640985-6759",
+			"authorizedSignatory": "OWMsXwvDcz",
+			"roles": [
+				"APPLICANT",
+				"CONTACT_PERSON"
+			],
+			"extraParameters": {
+				"SIoHyIfMqA": "uoTwOEAoMdrtpLKWmdqu",
+				"sanOtDndvu": "tKGXeDJkCSBSivYGpQzr",
+				"NSAhKVBVhn": "wgczUTMuuUdAhvcQqjbq"
+			},
+			"type": "ORGANIZATION"
+		},
+		{
+			"firstName": "FnmTsYKkDz",
+			"lastName": "EKWIiBUaAx",
+			"emailAddress": "yUwblfsgJb@WdkUi.com",
+			"cellphoneNumber": "QovjWZiTWt",
+			"addresses": [{
+				"country": "Sverige",
+				"city": "dbgWawwJmh",
+				"postalCode": "4924294256",
+				"houseNumber": "SYbarjoKV8",
+				"extraParameters": {
+					"wkACSdIbrd": "tQelkfBjuQDPVGnmkexW",
+					"YxIYJxCfzE": "NLjnMYLBYwfnSMAdsTOm",
+					"PhaLEGQGBX": "emgTNUuVyCdPbECnuBGD"
+				},
+				"appartmentNumber": "5N3lLJnVxG",
+				"isZoningPlanArea": false,
+				"invoiceMarking": "Vqf7LW8u7z",
+				"careOf": "GVDwzWoMVt",
+				"addressCategories": [
+					"VISITING_ADDRESS",
+					"POSTAL_ADDRESS"
+				],
+				"street": "kYrJfQNpzO",
+				"attention": "KlXbPtoOvx",
+				"propertyDesignation": "SUNDSVALL FILLA 8:185",
+				"location": {
+					"latitude": 0.3464416310177606,
+					"longitude": 0.27958446787932867
+				}
+			}],
+			"phoneNumber": "UZaqZCJKfV",
+			"roles": [
+				"PAYMENT_PERSON",
+				"INVOICE_RECIPENT"
+			],
+			"extraParameters": {
+				"DfHsCgSlar": "hsUSJKiVWCFJebUJnrgR",
+				"TYiUtbTDsH": "MqkcMNascLVAhviCLxsy",
+				"CSrAXFptgI": "AqiWGFFifNYZhdDYqFul"
+			},
+			"personId": "ae2c41f2-aebe-4d8d-a60c-95f73098f217",
+			"personalNumber": "199901067153",
+			"type": "PERSON"
+		}
+	],
+	"caseType": "PARKING_PERMIT_RENEWAL"
 }

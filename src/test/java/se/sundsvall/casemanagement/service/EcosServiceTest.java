@@ -742,7 +742,7 @@ class EcosServiceTest {
 			.withOccurrences(arrayOfOccurrenceListItemSvcDto);
 
 		final var getCaseResponse = new GetCaseResponse().withGetCaseResult(caseSvcDto);
-		//Mock
+		// Mock
 		when(caseMappingServiceMock.getCaseMapping(externalCaseID, caseId, MUNICIPALITY_ID)).thenReturn(List.of(caseMapping));
 		when(minutMiljoClientMock.getCase(any())).thenReturn(getCaseResponse);
 
@@ -870,20 +870,18 @@ class EcosServiceTest {
 		// Assert
 		assertThat(addDocumentsToCaseArgumentCaptor.getValue().getAddDocumentToCaseSvcDto())
 			.satisfies(addDocumentToCaseSvcDto -> {
-					assertThat(addDocumentToCaseSvcDto.getCaseId()).isEqualTo(caseId);
-					assertThat(addDocumentToCaseSvcDto.getOccurrenceTypeId()).isEqualTo(Constants.ECOS_OCCURRENCE_TYPE_ID_KOMPLETTERING);
-					assertThat(addDocumentToCaseSvcDto.getDocumentStatusId()).isEqualTo(Constants.ECOS_DOCUMENT_STATUS_INKOMMEN);
-					assertThat(addDocumentToCaseSvcDto.getDocuments().getDocumentSvcDto().getFirst())
-						.satisfies(document -> {
-								assertThat(document.getFilename()).isEqualTo(fileName + extension);
-								assertThat(document.getContentType()).isEqualTo(mimeType);
-								assertThat(document.getData()).isEqualTo(Base64.getDecoder().decode(file.getBytes(StandardCharsets.UTF_8)));
-								assertThat(document.getDocumentTypeId()).contains(AttachmentCategory.fromCode(category).getDescription());
-								assertThat(document.getNote()).isEqualTo(note);
-							}
-						);
-				}
-			);
+				assertThat(addDocumentToCaseSvcDto.getCaseId()).isEqualTo(caseId);
+				assertThat(addDocumentToCaseSvcDto.getOccurrenceTypeId()).isEqualTo(Constants.ECOS_OCCURRENCE_TYPE_ID_KOMPLETTERING);
+				assertThat(addDocumentToCaseSvcDto.getDocumentStatusId()).isEqualTo(Constants.ECOS_DOCUMENT_STATUS_INKOMMEN);
+				assertThat(addDocumentToCaseSvcDto.getDocuments().getDocumentSvcDto().getFirst())
+					.satisfies(document -> {
+						assertThat(document.getFilename()).isEqualTo(fileName + extension);
+						assertThat(document.getContentType()).isEqualTo(mimeType);
+						assertThat(document.getData()).isEqualTo(Base64.getDecoder().decode(file.getBytes(StandardCharsets.UTF_8)));
+						assertThat(document.getDocumentTypeId()).contains(AttachmentCategory.fromCode(category).getDescription());
+						assertThat(document.getNote()).isEqualTo(note);
+					});
+			});
 
 	}
 

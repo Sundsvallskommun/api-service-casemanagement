@@ -1,5 +1,5 @@
 {
-  "title": "Not Found",
-  "status": 404,
-  "detail": "Case not found"
+	"detail": "Case not found",
+	"title": "Not Found",
+	"status": 404
 }

@@ -1,32 +1,26 @@
 {
-  "id": "e19981ad-34b2-4e14-88f5-133f61ca85aa",
-  "name": "fbservice_adress_search_fastighet_uuid",
-  "request": {
-    "urlPath": "/fbservice/adress/search/fastighet/uuid",
-    "method": "POST",
-    "queryParameters": {
-      "Database": {
-        "matches": "\\w+"
-      },
-      "User": {
-        "matches": "\\w+"
-      },
-      "Password": {
-        "matches": "\\w+"
-      }
-    }
-  },
-  "response": {
-    "status": 200,
-    "bodyFileName": "test3_Livsmedel500Response/response/fbservice_searchFastighet.json",
-    "headers": {
-      "Content-Type": "application/json; charset=utf-8",
-      "Server": "Kestrel",
-      "X-Powered-By": "ASP.NET",
-      "Date": "Tue, 27 Jul 2021 13:51:17 GMT"
-    }
-  },
-  "uuid": "e19981ad-34b2-4e14-88f5-133f61ca85aa",
-  "persistent": true,
-  "insertionIndex": 15
+	"request": {
+		"method": "POST",
+		"queryParameters": {
+			"User": {"matches": "\\w+"},
+			"Database": {"matches": "\\w+"},
+			"Password": {"matches": "\\w+"}
+		},
+		"urlPath": "/fbservice/adress/search/fastighet/uuid"
+	},
+	"response": {
+		"headers": {
+			"Server": "Kestrel",
+			"Date": "Tue, 27 Jul 2021 13:51:17 GMT",
+			"Content-Type": "application/json; charset=utf-8",
+			"X-Powered-By": "ASP.NET"
+		},
+		"bodyFileName": "test3_Livsmedel500Response/response/fbservice_searchFastighet.json",
+		"status": 200
+	},
+	"name": "fbservice_adress_search_fastighet_uuid",
+	"id": "e19981ad-34b2-4e14-88f5-133f61ca85aa",
+	"persistent": true,
+	"insertionIndex": 15,
+	"uuid": "e19981ad-34b2-4e14-88f5-133f61ca85aa"
 }

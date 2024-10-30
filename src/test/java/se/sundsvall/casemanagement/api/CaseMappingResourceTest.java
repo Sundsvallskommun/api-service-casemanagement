@@ -65,12 +65,12 @@ class CaseMappingResourceTest {
 	void getAllCaseMappings() {
 
 		when(caseMappingService.getAllCaseMappings()).thenReturn(List.of(CaseMapping.builder()
-				.withCaseId("caseId")
-				.withExternalCaseId("externalCaseId")
-				.withCaseType(CaseType.REGISTRERING_AV_LIVSMEDEL.toString())
-				.withServiceName("serviceName")
-				.withTimestamp(LocalDateTime.now())
-				.build(),
+			.withCaseId("caseId")
+			.withExternalCaseId("externalCaseId")
+			.withCaseType(CaseType.REGISTRERING_AV_LIVSMEDEL.toString())
+			.withServiceName("serviceName")
+			.withTimestamp(LocalDateTime.now())
+			.build(),
 			CaseMapping.builder()
 				.withCaseId("caseId2")
 				.withExternalCaseId("externalCaseId2")

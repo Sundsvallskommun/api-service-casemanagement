@@ -1,42 +1,22 @@
 {
-  "name": "CaseData_PostErrands_400",
-  "request": {
-    "urlPathPattern": "/case-data/\\d.\\d/2281/(.+)/errands",
-    "method": "POST",
-    "bodyPatterns": [
-      {
-        "contains": "INTERNAL_SERVER_ERROR"
-      }
-    ]
-  },
-  "response": {
-    "status": 400,
-    "body": "{\"title\": \"Bad request\",\"status\": 400,\"detail\": \"This is a bad request!\"}",
-    "headers": {
-      "Access-Control-Allow-Headers": [
-        "*"
-      ],
-      "Access-Control-Allow-Methods": [
-        "*"
-      ],
-      "Access-Control-Allow-Origin": [
-        "*"
-      ],
-      "Access-Control-Expose-Headers": [
-        ""
-      ],
-      "Content-Type": [
-        "application/json"
-      ],
-      "Date": [
-        "Thu, 09 Jun 2022 12:42:25 GMT"
-      ],
-      "Transfer-Encoding": [
-        "chunked"
-      ],
-      "X-Request-ID": [
-        "e19981ad-34b2-4e14-88f5-133f61ca85aa"
-      ]
-    }
-  }
+	"request": {
+		"method": "POST",
+		"bodyPatterns": [{"contains": "INTERNAL_SERVER_ERROR"}],
+		"urlPathPattern": "/case-data/\\d.\\d/2281/(.+)/errands"
+	},
+	"response": {
+		"headers": {
+			"Transfer-Encoding": ["chunked"],
+			"Access-Control-Expose-Headers": [""],
+			"Access-Control-Allow-Origin": ["*"],
+			"X-Request-ID": ["e19981ad-34b2-4e14-88f5-133f61ca85aa"],
+			"Access-Control-Allow-Methods": ["*"],
+			"Access-Control-Allow-Headers": ["*"],
+			"Date": ["Thu, 09 Jun 2022 12:42:25 GMT"],
+			"Content-Type": ["application/json"]
+		},
+		"body": "{\"title\": \"Bad request\",\"status\": 400,\"detail\": \"This is a bad request!\"}",
+		"status": 400
+	},
+	"name": "CaseData_PostErrands_400"
 }

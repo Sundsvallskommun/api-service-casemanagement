@@ -168,19 +168,14 @@ public class EcosService {
 		}
 		if (propertyInfo != null) {
 			final String facilityGuid = switch (caseInput.getCaseType()) {
-				case REGISTRERING_AV_LIVSMEDEL ->
-					createFoodFacility(caseInput, propertyInfo, registerDocumentResult);
-				case ANMALAN_INSTALLATION_VARMEPUMP, ANSOKAN_TILLSTAND_VARMEPUMP ->
-					createHeatPumpFacility(eFacility.getExtraParameters(), propertyInfo, registerDocumentResult);
+				case REGISTRERING_AV_LIVSMEDEL -> createFoodFacility(caseInput, propertyInfo, registerDocumentResult);
+				case ANMALAN_INSTALLATION_VARMEPUMP, ANSOKAN_TILLSTAND_VARMEPUMP -> createHeatPumpFacility(eFacility.getExtraParameters(), propertyInfo, registerDocumentResult);
 				case ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP,
-				     ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC,
-				     ANMALAN_ANDRING_AVLOPPSANLAGGNING, ANMALAN_ANDRING_AVLOPPSANORDNING ->
-					createIndividualSewage(eFacility, propertyInfo, registerDocumentResult);
-				case ANMALAN_HALSOSKYDDSVERKSAMHET ->
-					createHealthProtectionFacility(eFacility, propertyInfo, registerDocumentResult);
+					ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC,
+					ANMALAN_ANDRING_AVLOPPSANLAGGNING, ANMALAN_ANDRING_AVLOPPSANORDNING -> createIndividualSewage(eFacility, propertyInfo, registerDocumentResult);
+				case ANMALAN_HALSOSKYDDSVERKSAMHET -> createHealthProtectionFacility(eFacility, propertyInfo, registerDocumentResult);
 				case ANMALAN_KOMPOSTERING, ANMALAN_AVHJALPANDEATGARD_FORORENING -> "";
-				default ->
-					throw Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "CaseType: " + caseInput.getCaseType() + " is not valid. There is a problem in the API validation.");
+				default -> throw Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "CaseType: " + caseInput.getCaseType() + " is not valid. There is a problem in the API validation.");
 			};
 
 			// -----> AddPartyToFacility
@@ -240,7 +235,6 @@ public class EcosService {
 		throw Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "FoodFacility could not be created.");
 	}
 
-
 	private String createHeatPumpFacility(final Map<String, String> facilityExtraParameters, final FbPropertyInfo propertyInfo, final RegisterDocumentCaseResultSvcDto registerDocumentResult) {
 
 		final CreateHeatPumpFacility createHeatPumpFacility = new CreateHeatPumpFacility();
@@ -277,7 +271,6 @@ public class EcosService {
 		}
 		throw Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "HeatPumpFacility could not be created");
 	}
-
 
 	private CreateHeatPumpFacilityWithHeatTransferFluidSvcDto getGeoThermalHeatingFacility(final Map<String, String> extraParameters, final FbPropertyInfo propertyInfo, final RegisterDocumentCaseResultSvcDto registerDocumentResult) {
 		final CreateGeothermalHeatingFacilitySvcDto createHeatPumpFacilityWithHeatTransferFluidSvcDto = new CreateGeothermalHeatingFacilitySvcDto();
@@ -419,7 +412,6 @@ public class EcosService {
 		}
 		throw Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "Individual Sewage could not be created");
 	}
-
 
 	private FacilityAddressSvcDto getAddress(final FbPropertyInfo propertyInfo) {
 		if (propertyInfo.getAdressplatsId() != null) {
@@ -629,14 +621,12 @@ public class EcosService {
 
 	private String getDiaryPlanId(final String caseType) {
 		return switch (CaseType.valueOf(caseType)) {
-			case REGISTRERING_AV_LIVSMEDEL, UPPDATERING_RISKKLASSNING ->
-				Constants.ECOS_DIARY_PLAN_LIVSMEDEL;
+			case REGISTRERING_AV_LIVSMEDEL, UPPDATERING_RISKKLASSNING -> Constants.ECOS_DIARY_PLAN_LIVSMEDEL;
 			case ANMALAN_ANDRING_AVLOPPSANLAGGNING, ANMALAN_ANDRING_AVLOPPSANORDNING,
-			     ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC,
-			     ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, ANMALAN_INSTALLATION_VARMEPUMP,
-			     ANSOKAN_TILLSTAND_VARMEPUMP,
-			     ANMALAN_KOMPOSTERING, ANMALAN_AVHJALPANDEATGARD_FORORENING ->
-				Constants.ECOS_DIARY_PLAN_AVLOPP;
+				ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC,
+				ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, ANMALAN_INSTALLATION_VARMEPUMP,
+				ANSOKAN_TILLSTAND_VARMEPUMP,
+				ANMALAN_KOMPOSTERING, ANMALAN_AVHJALPANDEATGARD_FORORENING -> Constants.ECOS_DIARY_PLAN_AVLOPP;
 			case ANMALAN_HALSOSKYDDSVERKSAMHET -> Constants.ECOS_DIARY_PLAN_HALSOSKYDD;
 			default -> null;
 		};
@@ -645,28 +635,18 @@ public class EcosService {
 	private String getProcessTypeId(final String caseType) {
 
 		return switch (CaseType.valueOf(caseType)) {
-			case REGISTRERING_AV_LIVSMEDEL ->
-				Constants.ECOS_PROCESS_TYPE_ID_REGISTRERING_AV_LIVSMEDEL;
-			case ANMALAN_INSTALLATION_VARMEPUMP ->
-				Constants.ECOS_PROCESS_TYPE_ID_ANMALAN_INSTALLATION_VARMEPUMP;
-			case ANSOKAN_TILLSTAND_VARMEPUMP ->
-				Constants.ECOS_PROCESS_TYPE_ID_ANSOKAN_TILLSTAND_VARMEPUMP;
-			case ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP ->
-				Constants.ECOS_PROCESS_TYPE_ID_ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP;
-			case ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC ->
-				Constants.ECOS_PROCESS_TYPE_ID_ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC;
-			case ANMALAN_ANDRING_AVLOPPSANLAGGNING ->
-				Constants.ECOS_PROCESS_TYPE_ID_ANMALAN_ANDRING_AVLOPPSANLAGGNING;
-			case ANMALAN_ANDRING_AVLOPPSANORDNING ->
-				Constants.ECOS_PROCESS_TYPE_ID_ANMALAN_ANDRING_AVLOPPSANORDNING;
-			case ANMALAN_HALSOSKYDDSVERKSAMHET ->
-				Constants.ECOS_PROCESS_TYPE_ID_ANMALAN_HALSOSKYDDSVERKSAMHET;
+			case REGISTRERING_AV_LIVSMEDEL -> Constants.ECOS_PROCESS_TYPE_ID_REGISTRERING_AV_LIVSMEDEL;
+			case ANMALAN_INSTALLATION_VARMEPUMP -> Constants.ECOS_PROCESS_TYPE_ID_ANMALAN_INSTALLATION_VARMEPUMP;
+			case ANSOKAN_TILLSTAND_VARMEPUMP -> Constants.ECOS_PROCESS_TYPE_ID_ANSOKAN_TILLSTAND_VARMEPUMP;
+			case ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP -> Constants.ECOS_PROCESS_TYPE_ID_ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP;
+			case ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC -> Constants.ECOS_PROCESS_TYPE_ID_ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC;
+			case ANMALAN_ANDRING_AVLOPPSANLAGGNING -> Constants.ECOS_PROCESS_TYPE_ID_ANMALAN_ANDRING_AVLOPPSANLAGGNING;
+			case ANMALAN_ANDRING_AVLOPPSANORDNING -> Constants.ECOS_PROCESS_TYPE_ID_ANMALAN_ANDRING_AVLOPPSANORDNING;
+			case ANMALAN_HALSOSKYDDSVERKSAMHET -> Constants.ECOS_PROCESS_TYPE_ID_ANMALAN_HALSOSKYDDSVERKSAMHET;
 			case UPPDATERING_RISKKLASSNING -> Constants.ECOS_PROCESS_TYPE_ID_UPPDATERING_RISKKLASS;
 			case ANMALAN_KOMPOSTERING -> Constants.ECOS_PROCESS_TYPE_ID_ANMALAN_KOMPOSTERING;
-			case ANMALAN_AVHJALPANDEATGARD_FORORENING ->
-				Constants.ECOS_PROCESS_TYPE_ID_ANMALAN_AVHJALPANDEATGARD_FORORENING;
-			default ->
-				throw Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "CaseType: " + caseType + " is not valid...");
+			case ANMALAN_AVHJALPANDEATGARD_FORORENING -> Constants.ECOS_PROCESS_TYPE_ID_ANMALAN_AVHJALPANDEATGARD_FORORENING;
+			default -> throw Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "CaseType: " + caseType + " is not valid...");
 		};
 	}
 
@@ -714,7 +694,7 @@ public class EcosService {
 	}
 
 	/**
-	 * @return CaseStatus from Ecos.
+	 * @return                  CaseStatus from Ecos.
 	 * @throws ThrowableProblem NOT_FOUND if no status was found.
 	 */
 	public CaseStatusDTO getStatus(final String caseId, final String externalCaseId, final String municipalityId) {
@@ -797,7 +777,6 @@ public class EcosService {
 
 		minutMiljoClient.addDocumentsToCase(addDocumentsToCase);
 	}
-
 
 	private ArrayOfSearchCaseResultSvcDto searchCase(final String partyId) {
 		final SearchCase searchCase = new SearchCase();

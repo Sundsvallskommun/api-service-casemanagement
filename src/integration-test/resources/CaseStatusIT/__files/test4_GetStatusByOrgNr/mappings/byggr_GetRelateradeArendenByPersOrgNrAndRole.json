@@ -1,22 +1,18 @@
 {
-  "request": {
-    "url": "/TekisArende/ArendeExportWS.svc",
-    "method": "POST",
-    "bodyPatterns": [
-      {
-        "contains": "GetRelateradeArendenByPersOrgNrAndRole"
-      }
-    ]
-  },
-  "response": {
-    "status": 200,
-    "bodyFileName": "test4_GetStatusByOrgNr/response/byggr_GetRelateradeArendenByPersOrgNrAndRole.xml",
-    "headers": {
-      "Content-Type": "text/xml; charset=utf-8",
-      "Vary": "Accept-Encoding",
-      "Server": "Microsoft-IIS/10.0",
-      "X-Powered-By": "ASP.NET",
-      "Date": "Wed, 28 Jul 2021 06:31:46 GMT"
-    }
-  }
+	"request": {
+		"method": "POST",
+		"bodyPatterns": [{"contains": "GetRelateradeArendenByPersOrgNrAndRole"}],
+		"url": "/TekisArende/ArendeExportWS.svc"
+	},
+	"response": {
+		"headers": {
+			"Server": "Microsoft-IIS/10.0",
+			"Vary": "Accept-Encoding",
+			"Date": "Wed, 28 Jul 2021 06:31:46 GMT",
+			"Content-Type": "text/xml; charset=utf-8",
+			"X-Powered-By": "ASP.NET"
+		},
+		"bodyFileName": "test4_GetStatusByOrgNr/response/byggr_GetRelateradeArendenByPersOrgNrAndRole.xml",
+		"status": 200
+	}
 }

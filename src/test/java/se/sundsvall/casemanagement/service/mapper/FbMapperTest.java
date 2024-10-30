@@ -226,7 +226,9 @@ class FbMapperTest {
 	}
 
 	@ParameterizedTest
-	@ValueSource(strings = { " " })
+	@ValueSource(strings = {
+		" "
+	})
 	@NullAndEmptySource
 	void toAddressDTOWhenCountryIsNullOrEmptyOrBlank(String land) {
 		final var dataItem = new DataItem();

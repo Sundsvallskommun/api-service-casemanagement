@@ -13,7 +13,7 @@ import minutmiljo.SaveRiskClass2024ProductGroupDto;
 
 public final class RiskClassMapper {
 
-	private RiskClassMapper(){
+	private RiskClassMapper() {
 		// Intentionally left empty
 	}
 
@@ -49,8 +49,7 @@ public final class RiskClassMapper {
 	static ArrayOfSaveRiskClass2024CertificationDto mapThirdPartyCertifications(final String thirdPartyCertString) {
 
 		final var thirdPartyCertifications = splitString(thirdPartyCertString);
-		if (thirdPartyCertifications.isEmpty())
-		{
+		if (thirdPartyCertifications.isEmpty()) {
 			return new ArrayOfSaveRiskClass2024CertificationDto().withSaveRiskClass2024CertificationDto(new SaveRiskClass2024CertificationDto());
 		}
 		return new ArrayOfSaveRiskClass2024CertificationDto()

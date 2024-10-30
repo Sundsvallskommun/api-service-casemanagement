@@ -41,30 +41,30 @@ class CaseMappingServiceTest {
 
 	@Test
 	void testPostCaseMapping() {
-		//Arrange
+		// Arrange
 		final var caseId = UUID.randomUUID().toString();
 		final var caseDTO = new OtherCaseDTO();
 		final var externalCaseId = "externalCaseId";
 		caseDTO.setExternalCaseId(externalCaseId);
-		//Mock
+		// Mock
 		when(caseMappingRepository.existsByExternalCaseIdAndMunicipalityId(any(), eq(MUNICIPALITY_ID))).thenReturn(false);
-		//Act
+		// Act
 		caseMappingService.postCaseMapping(caseDTO, caseId, SystemType.CASE_DATA, MUNICIPALITY_ID);
-		//Assert
+		// Assert
 		verify(caseMappingRepository).save(any(CaseMapping.class));
 	}
 
 	@Test
 	void testPostCaseMappingAlreadyExists() {
-		//Arrange
+		// Arrange
 		final var caseId = UUID.randomUUID().toString();
 		final var caseDTO = new OtherCaseDTO();
 		final var externalCaseId = "externalCaseId";
 		caseDTO.setExternalCaseId(externalCaseId);
-		//Mock
+		// Mock
 		when(caseMappingRepository.existsByExternalCaseIdAndMunicipalityId(caseDTO.getExternalCaseId(), MUNICIPALITY_ID)).thenReturn(true);
 
-		//Act && Assert
+		// Act && Assert
 		assertThatThrownBy(() -> caseMappingService.postCaseMapping(caseDTO, caseId, SystemType.ECOS, MUNICIPALITY_ID))
 			.isInstanceOf(ThrowableProblem.class)
 			.hasMessage(MessageFormat.format("Bad Request: A resources already exists with the same externalCaseId: {0}", externalCaseId))
@@ -88,12 +88,12 @@ class CaseMappingServiceTest {
 	@Test
 	void getAllCaseMappings() {
 		when(caseMappingRepository.findAll()).thenReturn(List.of(CaseMapping.builder()
-				.withCaseId("caseId")
-				.withExternalCaseId("externalCaseId")
-				.withCaseType(CaseType.REGISTRERING_AV_LIVSMEDEL.toString())
-				.withServiceName("serviceName")
-				.withTimestamp(LocalDateTime.now())
-				.build(),
+			.withCaseId("caseId")
+			.withExternalCaseId("externalCaseId")
+			.withCaseType(CaseType.REGISTRERING_AV_LIVSMEDEL.toString())
+			.withServiceName("serviceName")
+			.withTimestamp(LocalDateTime.now())
+			.build(),
 			CaseMapping.builder()
 				.withCaseId("caseId2")
 				.withExternalCaseId("externalCaseId2")

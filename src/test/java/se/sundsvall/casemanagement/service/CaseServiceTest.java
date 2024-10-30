@@ -81,9 +81,11 @@ class CaseServiceTest {
 
 	@ParameterizedTest
 	@EnumSource(value = CaseType.class,
-		names = {"MARKLOV_FYLL",
+		names = {
+			"MARKLOV_FYLL",
 			"MARKLOV_SCHAKTNING", "MARKLOV_TRADFALLNING", "MARKLOV_OVRIGT",
-			"STRANDSKYDD_OVRIGT"})
+			"STRANDSKYDD_OVRIGT"
+		})
 	void testHandleByggRCaseNoFacilityTypeAllowed(final CaseType caseType) {
 		// Arrange
 		final var address = AddressDTO.builder()
@@ -115,8 +117,10 @@ class CaseServiceTest {
 
 	@ParameterizedTest
 	@EnumSource(value = CaseType.class,
-		names = {"NYBYGGNAD_ANSOKAN_OM_BYGGLOV",
-			"TILLBYGGNAD_ANSOKAN_OM_BYGGLOV", "STRANDSKYDD_ANDRAD_ANVANDNING"})
+		names = {
+			"NYBYGGNAD_ANSOKAN_OM_BYGGLOV",
+			"TILLBYGGNAD_ANSOKAN_OM_BYGGLOV", "STRANDSKYDD_ANDRAD_ANVANDNING"
+		})
 	void testHandleByggRCaseNoFacilityType_notAllowed(final CaseType caseType) {
 		// Arrange
 		final var address = AddressDTO.builder()

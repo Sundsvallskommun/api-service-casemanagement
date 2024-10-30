@@ -1,38 +1,34 @@
 {
-	"caseType": "BYGGR_ADDITIONAL_DOCUMENTS",
 	"externalCaseId": 1234,
-	"extraParameters": {
-		"errandNr": "BYGG 1234-0012323",
-		"oepAction": "PUT",
-		"serviceName": "Komplettering av ärende hos bygglovavdelningen - TEST"
-	},
-	"stakeholders": [
-		{
-			"type": "PERSON",
-			"roles": [
-				"APPLICANT"
-			],
-			"personId": "d4551234-91bb-4258-a7a7-afb9f265dd66",
-			"firstName": "Test",
-			"lastName": "Testare",
-			"cellphoneNumber": "0702391906",
-			"emailAddress": "Test.Testare@Testare.se"
-		}
-	],
 	"attachments": [
 		{
-			"category": "SITU",
-			"name": "strandskydd - situationsplan Fasad norr.docx",
 			"extension": ".docx",
+			"file": "[base64]",
+			"name": "strandskydd - situationsplan Fasad norr.docx",
 			"mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-			"file": "[base64]"
+			"category": "SITU"
 		},
 		{
-			"category": "ANM",
-			"name": "12345.pdf",
 			"extension": ".pdf",
+			"file": "[base64]",
+			"name": "12345.pdf",
 			"mimeType": "application/pdf",
-			"file": "[base64]"
+			"category": "ANM"
 		}
-	]
+	],
+	"extraParameters": {
+		"oepAction": "PUT",
+		"errandNr": "BYGG 1234-0012323",
+		"serviceName": "Komplettering av ärende hos bygglovavdelningen - TEST"
+	},
+	"stakeholders": [{
+		"firstName": "Test",
+		"lastName": "Testare",
+		"cellphoneNumber": "0702391906",
+		"emailAddress": "Test.Testare@Testare.se",
+		"roles": ["APPLICANT"],
+		"personId": "d4551234-91bb-4258-a7a7-afb9f265dd66",
+		"type": "PERSON"
+	}],
+	"caseType": "BYGGR_ADDITIONAL_DOCUMENTS"
 }

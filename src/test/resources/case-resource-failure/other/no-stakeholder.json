@@ -1,45 +1,39 @@
 {
-  "externalCaseId": "externalCaseId",
-  "caseType": "PARKING_PERMIT",
-  "description": "description",
-  "caseTitleAddition": "caseTitleAddition",
-  "facilities": [
-    {
-      "description": "En fritextbeskrivning av facility",
-      "facilityType": "GARAGE",
-      "facilityCollectionName": "Sundsvalls testfabrik",
-      "mainFacility": true,
-      "address": {
-        "addressCategories": [
-          "POSTAL_ADDRESS"
-        ],
-        "street": "Testargatan",
-        "houseNumber": "18",
-        "postalCode": "123 45",
-        "city": "Sundsvall",
-        "country": "Sverige",
-        "careOf": "Test Testorsson",
-        "attention": "Test Testorsson",
-        "propertyDesignation": "SUNDSVALL BALDER 7:2",
-        "appartmentNumber": "LGH 1001",
-        "isZoningPlanArea": false,
-        "invoiceMarking": "invoiceMarking",
-        "location": {
-          "latitude": 62.3908,
-          "longitude": 17.3069
-        }
-      }
-    }
-  ],
-  "stakeholders": [],
-  "attachments": [
-    {
-      "category": "ARIT",
-      "name": "The attachment name",
-      "note": "A note on an attachment",
-      "extension": ".pdf",
-      "mimeType": "application/pdf",
-      "file": "dGVzdA=="
-    }
-  ]
+	"externalCaseId": "externalCaseId",
+	"attachments": [{
+		"note": "A note on an attachment",
+		"extension": ".pdf",
+		"file": "dGVzdA==",
+		"name": "The attachment name",
+		"mimeType": "application/pdf",
+		"category": "ARIT"
+	}],
+	"caseTitleAddition": "caseTitleAddition",
+	"description": "description",
+	"stakeholders": [],
+	"facilities": [{
+		"address": {
+			"country": "Sverige",
+			"city": "Sundsvall",
+			"postalCode": "123 45",
+			"houseNumber": "18",
+			"appartmentNumber": "LGH 1001",
+			"isZoningPlanArea": false,
+			"invoiceMarking": "invoiceMarking",
+			"careOf": "Test Testorsson",
+			"addressCategories": ["POSTAL_ADDRESS"],
+			"street": "Testargatan",
+			"attention": "Test Testorsson",
+			"propertyDesignation": "SUNDSVALL BALDER 7:2",
+			"location": {
+				"latitude": 62.3908,
+				"longitude": 17.3069
+			}
+		},
+		"facilityType": "GARAGE",
+		"mainFacility": true,
+		"description": "En fritextbeskrivning av facility",
+		"facilityCollectionName": "Sundsvalls testfabrik"
+	}],
+	"caseType": "PARKING_PERMIT"
 }

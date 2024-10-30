@@ -1,27 +1,23 @@
 {
-  "id": "e19981ad-34b2-4e14-88f5-133f61ca85aa",
-  "name": "distribution_produkter_registerbeteckning_v5_referens_fritext",
-  "request": {
-    "urlPathPattern": "/distribution/produkter/registerbeteckning/v5/referens/fritext?(.+)",
-    "method": "GET",
-    "queryParameters": {
-      "status": {
-        "equalTo": "gällande"
-      },
-      "maxHits": {
-        "equalTo": "1"
-      }
-    }
-  },
-  "response": {
-    "status": 200,
-    "bodyFileName": "test3_Livsmedel500Response/response/lantmateriet_getRegisterbeteckning.json",
-    "headers": {
-      "Content-Type": "application/json;charset=UTF-8",
-      "Date": "Tue, 27 Jul 2021 13:15:24 GMT"
-    }
-  },
-  "uuid": "e19981ad-34b2-4e14-88f5-133f61ca85aa",
-  "persistent": true,
-  "insertionIndex": 6
+	"request": {
+		"method": "GET",
+		"queryParameters": {
+			"maxHits": {"equalTo": "1"},
+			"status": {"equalTo": "gällande"}
+		},
+		"urlPathPattern": "/distribution/produkter/registerbeteckning/v5/referens/fritext?(.+)"
+	},
+	"response": {
+		"headers": {
+			"Date": "Tue, 27 Jul 2021 13:15:24 GMT",
+			"Content-Type": "application/json;charset=UTF-8"
+		},
+		"bodyFileName": "test3_Livsmedel500Response/response/lantmateriet_getRegisterbeteckning.json",
+		"status": 200
+	},
+	"name": "distribution_produkter_registerbeteckning_v5_referens_fritext",
+	"id": "e19981ad-34b2-4e14-88f5-133f61ca85aa",
+	"persistent": true,
+	"insertionIndex": 6,
+	"uuid": "e19981ad-34b2-4e14-88f5-133f61ca85aa"
 }

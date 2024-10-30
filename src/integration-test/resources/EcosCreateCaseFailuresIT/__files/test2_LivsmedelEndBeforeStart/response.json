@@ -1,15 +1,15 @@
 {
-  "type": "https://zalando.github.io/problem/constraint-violation",
-  "status": 400,
-  "violations": [
-    {
-      "field": "caseDTO",
-      "message": "startDate must be before endDate"
-    },
-    {
-      "field": "endDate",
-      "message": "must be a date in the present or in the future"
-    }
-  ],
-  "title": "Constraint Violation"
+	"violations": [
+		{
+			"field": "caseDTO",
+			"message": "startDate must be before endDate"
+		},
+		{
+			"field": "endDate",
+			"message": "must be a date in the present or in the future"
+		}
+	],
+	"type": "https://zalando.github.io/problem/constraint-violation",
+	"title": "Constraint Violation",
+	"status": 400
 }

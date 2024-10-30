@@ -88,5 +88,4 @@ public final class ByggrUtil {
 		return arende.getHandelseLista() != null && arende.getHandelseLista().getHandelse() != null;
 	}
 
-
 }

@@ -1,6 +1,5 @@
 package se.sundsvall.casemanagement.service.util;
 
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -76,7 +75,6 @@ class CaseUtilTest {
 		assertThat(result).isEqualTo(personalNumber);
 	}
 
-
 	@Test
 	void testGetSokigoFormattedPersonalNumberFromNull() {
 		assertThatThrownBy(() -> CaseUtil.getSokigoFormattedPersonalNumber("null"))
@@ -96,7 +94,6 @@ class CaseUtilTest {
 	void testParseBooleanWierdText() {
 		assertThat(CaseUtil.parseBoolean("wierd text")).isFalse();
 	}
-
 
 	@Test
 	void testParseBooleanNull() {
@@ -138,7 +135,6 @@ class CaseUtilTest {
 			.isInstanceOf(NumberFormatException.class)
 			.hasMessage("For input string: \"wierd text\"");
 	}
-
 
 	@Test
 	void testParseLocalDateTime() {

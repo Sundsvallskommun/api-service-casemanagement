@@ -11,7 +11,9 @@ import jakarta.validation.Payload;
 import se.sundsvall.casemanagement.api.validation.impl.EcosStakeholderRoleConstraintValidator;
 import se.sundsvall.casemanagement.util.Constants;
 
-@Target({ElementType.FIELD})
+@Target({
+	ElementType.FIELD
+})
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = EcosStakeholderRoleConstraintValidator.class)
 public @interface EcosStakeholderRole {

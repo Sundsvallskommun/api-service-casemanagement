@@ -11,7 +11,9 @@ import jakarta.validation.Payload;
 
 import se.sundsvall.casemanagement.api.validation.impl.SingularFacilityConstraintValidator;
 
-@Target({ElementType.TYPE, ElementType.FIELD})
+@Target({
+	ElementType.TYPE, ElementType.FIELD
+})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Constraint(validatedBy = SingularFacilityConstraintValidator.class)

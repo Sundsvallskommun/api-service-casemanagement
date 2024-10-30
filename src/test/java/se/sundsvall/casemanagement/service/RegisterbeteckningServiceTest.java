@@ -36,7 +36,7 @@ class RegisterbeteckningServiceTest {
 		registerbeteckningsreferens.setBeteckningsid(UUID.randomUUID().toString());
 		registerbeteckningsreferens.setBeteckning(propertyDesignation);
 		registerbeteckningsreferens.setRegisterenhet(RandomStringUtils.random(10, true, false));
-		//Mock
+		// Mock
 		when(registerbeteckningClient.getRegisterbeteckningsreferenser(propertyDesignation, Constants.LANTMATERIET_REFERENS_STATUS_GALLANDE, 1)).thenReturn(List.of(registerbeteckningsreferens));
 		// Act
 		final var result = registerbeteckningService.getRegisterbeteckningsreferens(propertyDesignation);
@@ -48,7 +48,7 @@ class RegisterbeteckningServiceTest {
 	void testGetRegisterbeteckningsreferensEmptyList() {
 		// Arrange
 		final String propertyDesignation = "TEST 1:1";
-		//Mock
+		// Mock
 		when(registerbeteckningClient.getRegisterbeteckningsreferenser(propertyDesignation, Constants.LANTMATERIET_REFERENS_STATUS_GALLANDE, 1)).thenReturn(emptyList());
 		// Act
 		final var result = registerbeteckningService.getRegisterbeteckningsreferens(propertyDesignation);

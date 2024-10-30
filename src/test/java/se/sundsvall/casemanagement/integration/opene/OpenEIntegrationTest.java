@@ -20,7 +20,6 @@ class OpenEIntegrationTest {
 	@InjectMocks
 	private OpenEIntegration openEIntegration;
 
-
 	@Test
 	void confirmDelivery_throws() {
 		doThrow(new RuntimeException()).when(openeClient).confirmDelivery(any());

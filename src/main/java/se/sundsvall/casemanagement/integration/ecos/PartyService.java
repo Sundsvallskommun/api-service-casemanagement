@@ -51,7 +51,6 @@ public class PartyService {
 		this.citizenService = citizenService;
 	}
 
-
 	public List<Map<String, ArrayOfguid>> findAndAddPartyToCase(final EcosCaseDTO ecosCaseDTO, final String caseId) {
 
 		final var organizationDTOs = ecosCaseDTO.getStakeholders().stream()
@@ -71,8 +70,7 @@ public class PartyService {
 				.map((OrganizationDTO organizationDTO) -> mapAsOrganization(organizationDTO, privateDTOs))
 				.toList();
 		} else {
-			mapped = privateDTOs.stream().
-				map(this::mapAsPerson)
+			mapped = privateDTOs.stream().map(this::mapAsPerson)
 				.toList();
 		}
 		mapped.forEach(key -> addPartyToCase(caseId, key));
@@ -142,7 +140,6 @@ public class PartyService {
 		});
 	}
 
-
 	private PersonSvcDto getPersonSvcDto(final PersonDTO personDTO) {
 
 		final var personSvcDto = new PersonSvcDto()
@@ -160,29 +157,25 @@ public class PartyService {
 
 		return new ArrayOfguid()
 			.withGuid(stakeholderDTO.getRoles().stream()
-				.map(roleString ->
-				{
+				.map(roleString -> {
 					final var role = StakeholderRole.valueOf(roleString);
 					return switch (role) {
-						case INVOICE_RECIPENT, INVOICE_RECIPIENT ->
-							Constants.ECOS_ROLE_ID_FAKTURAMOTTAGARE;
+						case INVOICE_RECIPENT, INVOICE_RECIPIENT -> Constants.ECOS_ROLE_ID_FAKTURAMOTTAGARE;
 						case OPERATOR -> Constants.ECOS_ROLE_ID_VERKSAMHETSUTOVARE;
 						case CONTACT_PERSON -> Constants.ECOS_ROLE_ID_KONTAKTPERSON;
 						case APPLICANT -> Constants.ECOS_ROLE_ID_SOKANDE;
 						case INSTALLER -> Constants.ECOS_ROLE_ID_INSTALLATOR;
-						default ->
-							throw Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "The request contained a stakeholder role that was not expected. This should be discovered in the validation of the input. Something in the validation is wrong.");
+						default -> throw Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "The request contained a stakeholder role that was not expected. This should be discovered in the validation of the input. Something in the validation is wrong.");
 					};
 				})
 				.toList());
 	}
 
-
 	/**
 	 * Search for party with and without hyphen in personal number
 	 *
-	 * @param personId personId for person to search for
-	 * @return ArrayOfPartySvcDto
+	 * @param  personId personId for person to search for
+	 * @return          ArrayOfPartySvcDto
 	 */
 	private ArrayOfPartySvcDto searchPartyByPersonId(final String personId) {
 
@@ -269,18 +262,15 @@ public class PartyService {
 								addressDTO.getAddressCategories().stream()
 									.map(adressType -> new AddressTypeSvcDto()
 										.withId(
-											switch (adressType) {
-												case INVOICE_ADDRESS ->
-													Constants.ECOS_ADDRESS_TYPE_ID_FAKTURAADRESS;
-												case POSTAL_ADDRESS ->
-													Constants.ECOS_ADDRESS_TYPE_ID_POSTADRESS;
-												case VISITING_ADDRESS ->
-													Constants.ECOS_ADDRESS_TYPE_ID_BESOKSADRESS;
+											switch (adressType)
+											{
+												case INVOICE_ADDRESS -> Constants.ECOS_ADDRESS_TYPE_ID_FAKTURAADRESS;
+												case POSTAL_ADDRESS -> Constants.ECOS_ADDRESS_TYPE_ID_POSTADRESS;
+												case VISITING_ADDRESS -> Constants.ECOS_ADDRESS_TYPE_ID_BESOKSADRESS;
 											}))
 									.toList())))
 					.toList());
 	}
-
 
 	public ArrayOfPartySvcDto searchPartyByOrganizationNumber(final String organizationNumber) {
 

@@ -8,7 +8,6 @@ import jakarta.validation.ConstraintValidatorContext;
 import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
 import se.sundsvall.casemanagement.api.validation.ValidAttachmentCategory;
 
-
 public class ValidAttachmentCategoryConstraintValidator implements ConstraintValidator<ValidAttachmentCategory, String> {
 
 	@Override

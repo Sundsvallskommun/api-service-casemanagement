@@ -115,9 +115,9 @@ class ByggrMapperTest {
 	@Test
 	void toSaveNewManuellHanteringHandelse() {
 
-		//Act
+		// Act
 		final var result = ByggrMapper.toSaveNewManuellHanteringHandelse("SomeDnr", "SomeNote");
-		//Assert
+		// Assert
 		assertThat(result).isNotNull().hasNoNullFieldsOrProperties();
 		assertThat(result.getMessage().getDnr()).isEqualTo("SomeDnr");
 		assertThat(result.getMessage().getHandlaggarSign()).isEqualTo(BYGGR_SYSTEM_HANDLAGGARE_SIGN);
@@ -129,7 +129,6 @@ class ByggrMapperTest {
 			assertThat(handelse.getHandelseslag()).isEqualTo(BYGGR_HANDELSESLAG_MANUELL_HANTERING_KRAVS);
 			assertThat(handelse.getStartDatum()).isCloseTo(now(), within(2, SECONDS));
 		});
-
 
 	}
 
@@ -227,8 +226,7 @@ class ByggrMapperTest {
 				assertThat(handling.getDokument().getFil().getFilBuffer()).isEqualTo(Base64.getDecoder().decode(attachmentDTO.getFile().getBytes()));
 				assertThat(handling.getDokument().getFil().getFilAndelse()).isEqualTo(attachmentDTO.getExtension().toLowerCase());
 				assertThat(handling.getDokument().getBeskrivning()).isEqualTo(attachmentDTO.getNote());
-			}
-		);
+			});
 
 	}
 
@@ -294,7 +292,7 @@ class ByggrMapperTest {
 		// Act
 		final var result = ByggrMapper.toSaveNewHandelseMessage("someDnr", attachmentDTOS);
 		// Assert
-		//Assert
+		// Assert
 		assertThat(result).isNotNull().hasNoNullFieldsOrPropertiesExcept("besvaradHandelseId");
 		assertThat(result.getDnr()).isEqualTo("someDnr");
 		assertThat(result.getHandlaggarSign()).isEqualTo(BYGGR_SYSTEM_HANDLAGGARE_SIGN);
@@ -320,9 +318,9 @@ class ByggrMapperTest {
 			.build()));
 		final var dto = new ByggRCaseDTO();
 		dto.setStakeholders(List.of(personDto));
-		//Act
+		// Act
 		final var result = ByggrMapper.getInvoiceMarking(dto);
-		//Assert
+		// Assert
 		assertThat(result).isEqualTo("someInvoiceMarking");
 	}
 
@@ -337,9 +335,9 @@ class ByggrMapperTest {
 			.build()));
 		final var dto = new ByggRCaseDTO();
 		dto.setStakeholders(List.of(personDto));
-		//Act
+		// Act
 		final var result = ByggrMapper.getInvoiceMarking(dto);
-		//Assert
+		// Assert
 		assertThat(result).isNull();
 	}
 
@@ -354,9 +352,9 @@ class ByggrMapperTest {
 			.build()));
 		final var dto = new ByggRCaseDTO();
 		dto.setStakeholders(List.of(personDto));
-		//Act
+		// Act
 		final var result = ByggrMapper.getInvoiceMarking(dto);
-		//Assert
+		// Assert
 		assertThat(result).isNull();
 	}
 
@@ -367,9 +365,9 @@ class ByggrMapperTest {
 		final var personDto = new PersonDTO("someFirstname", "someLastName", "somePersonId", "somePersonalNumber");
 		final var dto = new ByggRCaseDTO();
 		dto.setStakeholders(List.of(personDto));
-		//Act
+		// Act
 		final var result = ByggrMapper.getInvoiceMarking(dto);
-		//Assert
+		// Assert
 		assertThat(result).isNull();
 	}
 
@@ -384,12 +382,11 @@ class ByggrMapperTest {
 			.build()));
 		final var dto = new ByggRCaseDTO();
 		dto.setStakeholders(List.of(personDto));
-		//Act
+		// Act
 		final var result = ByggrMapper.getInvoiceMarking(dto);
-		//Assert
+		// Assert
 		assertThat(result).isNull();
 	}
-
 
 	@Test
 	void getArendeKlass() {
@@ -647,7 +644,6 @@ class ByggrMapperTest {
 		assertThat(result).isEqualTo("someCaseDescription installation av eldstad, verkstadsbyggnad & lagerbyggnad samt some case title addition");
 	}
 
-
 	@Test
 	void getArendeBeskrivning_NoDescription() {
 
@@ -660,7 +656,6 @@ class ByggrMapperTest {
 		// Assert
 		assertThat(result).isNull();
 	}
-
 
 	@Test
 	void filterPersonId() {
@@ -735,10 +730,10 @@ class ByggrMapperTest {
 	void toAdressDTos() {
 		// Arrange
 		final var organizationDTO = OrganizationDTO.builder().withAddresses(
-				List.of(AddressDTO.builder()
-					.withAttention("someAttention")
-					.withAddressCategories(List.of(INVOICE_ADDRESS, POSTAL_ADDRESS))
-					.build()))
+			List.of(AddressDTO.builder()
+				.withAttention("someAttention")
+				.withAddressCategories(List.of(INVOICE_ADDRESS, POSTAL_ADDRESS))
+				.build()))
 			.build();
 		final var arendeIntressent = new ArendeIntressent();
 		// Act
@@ -846,7 +841,6 @@ class ByggrMapperTest {
 		assertThat(result.getServiceName()).isEqualTo("someServiceName");
 		assertThat(result.getExternalCaseId()).isEqualTo("someExternalCaseId");
 
-
 	}
 
 	@Test
@@ -926,7 +920,9 @@ class ByggrMapperTest {
 	}
 
 	@ParameterizedTest
-	@ValueSource(strings = {"GRASV", "UNDERE", "BIL"})
+	@ValueSource(strings = {
+		"GRASV", "UNDERE", "BIL"
+	})
 	void createNeighborhoodNotificationArrayOfHandling(String category) {
 		var byggRCase = createByggRCaseDTO(CaseType.NEIGHBORHOOD_NOTIFICATION, AttachmentCategory.ATTACHMENT);
 		for (var attachment : byggRCase.getAttachments()) {
@@ -950,7 +946,6 @@ class ByggrMapperTest {
 		var stakeholderName = "Test Testsson";
 		var propertyDesignation = "SUNDSVALL 5534";
 
-
 		var result = ByggrMapper.createNewEvent(comment, errandInformation, intressent, stakeholderName, propertyDesignation);
 
 		assertThat(result.getRubrik()).isEqualTo(titlePrefix + ", " + propertyDesignation + ", " + intressent.getNamn());
@@ -963,8 +958,7 @@ class ByggrMapperTest {
 	private static Stream<Arguments> createNewEventArguments() {
 		return Stream.of(
 			Arguments.of("Jag har synpunkter", "Grannehörande Svar med erinran"),
-			Arguments.of("Jag har inga synpunkter", "Grannehörande Svar utan erinran")
-		);
+			Arguments.of("Jag har inga synpunkter", "Grannehörande Svar utan erinran"));
 	}
 
 	@Test
@@ -1014,8 +1008,7 @@ class ByggrMapperTest {
 		return Stream.of(
 			Arguments.of("GRASV", "Kompletterande handlingar"),
 			Arguments.of("KOMPBYGG", "Kompletterande bygglovshandlingar"),
-			Arguments.of("KOMPTEK", "Kompletterande tekniska handlingar")
-		);
+			Arguments.of("KOMPTEK", "Kompletterande tekniska handlingar"));
 	}
 
 	@Test

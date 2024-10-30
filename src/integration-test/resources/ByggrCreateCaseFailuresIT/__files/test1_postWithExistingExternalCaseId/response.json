@@ -1,5 +1,5 @@
 {
-  "title": "Bad Request",
-  "status": 400,
-  "detail": "A resources already exists with the same externalCaseId: 3522"
+	"detail": "A resources already exists with the same externalCaseId: 3522",
+	"title": "Bad Request",
+	"status": 400
 }
