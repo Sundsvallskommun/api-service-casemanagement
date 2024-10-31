@@ -1,20 +1,13 @@
 package se.sundsvall.casemanagement.integration.byggr;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.stream.Collectors;
-
+import arendeexport.SaveNewArendeResponse2;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import dev.failsafe.Failsafe;
+import dev.failsafe.RetryPolicy;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
-import arendeexport.SaveNewArendeResponse2;
-import dev.failsafe.Failsafe;
-import dev.failsafe.RetryPolicy;
 import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
 import se.sundsvall.casemanagement.configuration.RetryProperties;
 import se.sundsvall.casemanagement.integration.db.CaseMappingRepository;
@@ -22,7 +15,13 @@ import se.sundsvall.casemanagement.integration.db.CaseRepository;
 import se.sundsvall.casemanagement.integration.messaging.MessagingIntegration;
 import se.sundsvall.casemanagement.integration.opene.OpenEIntegration;
 import se.sundsvall.casemanagement.service.event.IncomingByggrCase;
+import se.sundsvall.casemanagement.service.event.UpdateByggrCase;
 import se.sundsvall.casemanagement.util.Processor;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.stream.Collectors;
 
 @Component
 class ByggrProcessor extends Processor {
@@ -51,6 +50,13 @@ class ByggrProcessor extends Processor {
 			.handleResultIf(response -> response.getDnr().isEmpty())
 			.onFailedAttempt(event -> log.debug("Unable to create byggR errand ({}/{}): {}", event.getAttemptCount(), retryProperties.maxAttempts(), event.getLastException().getMessage()))
 			.build();
+	}
+
+	@EventListener(UpdateByggrCase.class)
+	public void handleUpdateByggrCase(final UpdateByggrCase event) {
+		var byggRCase = event.getPayload();
+		log.info("Handling update of ByggR case: {}", byggRCase.getExternalCaseId());
+		service.updateByggRCase(byggRCase);
 	}
 
 	@EventListener(IncomingByggrCase.class)

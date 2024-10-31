@@ -1,12 +1,7 @@
 package se.sundsvall.casemanagement.service;
 
-import static se.sundsvall.casemanagement.service.mapper.CaseMapper.toCaseEntity;
-
-import java.util.Optional;
-
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
-
 import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
 import se.sundsvall.casemanagement.api.model.CaseDTO;
 import se.sundsvall.casemanagement.api.model.EcosCaseDTO;
@@ -16,7 +11,12 @@ import se.sundsvall.casemanagement.integration.db.CaseRepository;
 import se.sundsvall.casemanagement.service.event.IncomingByggrCase;
 import se.sundsvall.casemanagement.service.event.IncomingEcosCase;
 import se.sundsvall.casemanagement.service.event.IncomingOtherCase;
+import se.sundsvall.casemanagement.service.event.UpdateByggrCase;
 import se.sundsvall.casemanagement.service.util.Validator;
+
+import java.util.Optional;
+
+import static se.sundsvall.casemanagement.service.mapper.CaseMapper.toCaseEntity;
 
 @Service
 public class CaseService {
@@ -47,7 +47,7 @@ public class CaseService {
 			Optional.ofNullable(byggRCase.getExtraParameters())
 				.map(extraParameter -> extraParameter.get("oepAction"))
 				.filter("PUT"::equalsIgnoreCase)
-				.ifPresentOrElse(action -> byggrService.updateByggRCase(byggRCase), () -> {
+				.ifPresentOrElse(action -> handleUpdateByggRCase(byggRCase, municipalityId), () -> {
 					saveCase(byggRCase, municipalityId);
 					handleByggRCase(byggRCase, municipalityId);
 				});
@@ -63,6 +63,10 @@ public class CaseService {
 
 	private void saveCase(final CaseDTO dto, final String municipalityId) {
 		caseRepository.save(toCaseEntity(dto, municipalityId));
+	}
+
+	private void handleUpdateByggRCase(final ByggRCaseDTO byggRCaseDTO, final String municipalityId) {
+		eventPublisher.publishEvent(new UpdateByggrCase(this, byggRCaseDTO, municipalityId));
 	}
 
 	private void handleByggRCase(final ByggRCaseDTO byggRCaseDTO, final String municipalityId) {
