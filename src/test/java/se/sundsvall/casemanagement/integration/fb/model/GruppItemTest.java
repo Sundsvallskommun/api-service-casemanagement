@@ -16,24 +16,24 @@ import static org.hamcrest.CoreMatchers.allOf;
 
 class GruppItemTest {
 
-    @Test
-    void testBean() {
-        MatcherAssert.assertThat(GruppItem.class, allOf(
-                hasValidBeanConstructor(),
-                hasValidGettersAndSetters(),
-                hasValidBeanHashCode(),
-                hasValidBeanEquals(),
-                hasValidBeanToString()));
-    }
+	@Test
+	void testBean() {
+		MatcherAssert.assertThat(GruppItem.class, allOf(
+			hasValidBeanConstructor(),
+			hasValidGettersAndSetters(),
+			hasValidBeanHashCode(),
+			hasValidBeanEquals(),
+			hasValidBeanToString()));
+	}
 
-    @Test
-    void testFields() {
-        GruppItem object = new GruppItem();
-        object.setAdressplatsId(new Random().nextInt());
-        object.setUuid(UUID.randomUUID().toString());
-        object.setIdentitetsnummer(String.valueOf(new Random().nextInt()));
+	@Test
+	void testFields() {
+		GruppItem object = new GruppItem();
+		object.setAdressplatsId(new Random().nextInt());
+		object.setUuid(UUID.randomUUID().toString());
+		object.setIdentitetsnummer(String.valueOf(new Random().nextInt()));
 
-        Assertions.assertThat(object).isNotNull().hasNoNullFieldsOrProperties();
-    }
+		Assertions.assertThat(object).isNotNull().hasNoNullFieldsOrProperties();
+	}
 
 }

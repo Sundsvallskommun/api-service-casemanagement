@@ -1,11 +1,9 @@
 {
-  "type": "https://zalando.github.io/problem/constraint-violation",
-  "status": 400,
-  "violations": [
-    {
-      "field": "facilities",
-      "message": "must not be empty"
-    }
-  ],
-  "title": "Constraint Violation"
+	"violations": [{
+		"field": "facilities",
+		"message": "must not be empty"
+	}],
+	"type": "https://zalando.github.io/problem/constraint-violation",
+	"title": "Constraint Violation",
+	"status": 400
 }

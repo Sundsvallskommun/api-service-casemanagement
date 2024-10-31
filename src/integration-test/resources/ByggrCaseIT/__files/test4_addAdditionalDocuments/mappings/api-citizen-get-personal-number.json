@@ -4,10 +4,8 @@
 		"url": "/citizen/7cc6d5ef-e44c-49ee-890e-888bda8863e1/personnumber"
 	},
 	"response": {
+		"headers": {"Content-Type": "text/plain"},
 		"body": "190101010159",
-		"headers": {
-			"Content-Type": "text/plain"
-		},
 		"status": "200"
 	}
 }

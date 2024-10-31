@@ -2,7 +2,6 @@ package se.sundsvall.casemanagement.util;
 
 public final class Constants {
 
-
 	// e-service extraparameter keys
 	public static final String SYSTEM = "SYSTEM";
 	public static final String DONE = "Klart";
@@ -256,47 +255,47 @@ public final class Constants {
 
 	public static final String POST_CASES_REQUEST_BODY_EXAMPLE = """
 		{
-		    "externalCaseId": "e19981ad-34b2-4e14-88f5-133f61ca85aa",
-		    "caseType": "NYBYGGNAD_ANSOKAN_OM_BYGGLOV",
-		    "facilities": [
-		        {
-		            "facilityType": "STOREHOUSE",
-		            "address": {
-		                "addressCategories": [
-		                    "VISITING_ADDRESS"
-		                ],
-		                "propertyDesignation": "SUNDSVALL BALDER 2"
-		            }
-		        }
-		    ],
-		    "stakeholders": [
-		        {
-		            "type": "ORGANIZATION",
-		            "roles": [
-		                "APPLICANT",
-		                "PAYMENT_PERSON"
-		            ],
-		            "organizationName": "Testorganisationen",
-		            "organizationNumber": "123456-1234"
-		        },
-		        {
-		            "type": "PERSON",
-		            "roles": [
-		                "CONTACT_PERSON"
-		            ],
-		            "firstName": "Test",
-		            "lastName": "Testsson",
-		            "personId": "e19981ad-34b2-4e14-88f5-133f61ca85aa"
-		        }
-		    ],
-		    "attachments": [
-		        {
-		            "category": "ANS",
-		            "name": "Some_name_2022-03-07",
-		            "extension": ".pdf",
-		            "file": "dGVzdA=="
-		        }
-		    ]
+			"externalCaseId": "e19981ad-34b2-4e14-88f5-133f61ca85aa",
+			"caseType": "NYBYGGNAD_ANSOKAN_OM_BYGGLOV",
+			"facilities": [
+				{
+					"facilityType": "STOREHOUSE",
+					"address": {
+						"addressCategories": [
+							"VISITING_ADDRESS"
+						],
+						"propertyDesignation": "SUNDSVALL BALDER 2"
+					}
+				}
+			],
+			"stakeholders": [
+				{
+					"type": "ORGANIZATION",
+					"roles": [
+						"APPLICANT",
+						"PAYMENT_PERSON"
+					],
+					"organizationName": "Testorganisationen",
+					"organizationNumber": "123456-1234"
+				},
+				{
+					"type": "PERSON",
+					"roles": [
+						"CONTACT_PERSON"
+					],
+					"firstName": "Test",
+					"lastName": "Testsson",
+					"personId": "e19981ad-34b2-4e14-88f5-133f61ca85aa"
+				}
+			],
+			"attachments": [
+				{
+					"category": "ANS",
+					"name": "Some_name_2022-03-07",
+					"extension": ".pdf",
+					"file": "dGVzdA=="
+				}
+			]
 		}""";
 
 	public static final String INFILTRATION_PLANT_SVC_DTO = "InfiltrationPlantSvcDto_";
@@ -318,7 +317,6 @@ public final class Constants {
 	public static final String SEPTIC_TANK_SVC_DTO = "SepticTankSvcDto_";
 
 	public static final String CHEMICAL_PRETREATMENT_SVC_DTO = "ChemicalPretreatmentSvcDto_";
-
 
 	public static final String CREATE_AIR_HEATING_FACILITY_SVC_DTO_PREFIX = "CreateAirHeatingFacilitySvcDto_";
 

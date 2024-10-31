@@ -57,7 +57,7 @@ class CaseStatusDTOTest {
 			.withSystem(system)
 			.withTimestamp(timestamp)
 			.build();
-		
+
 		// Assert
 		assertThat(dto).isNotNull().hasNoNullFieldsOrProperties();
 		assertThat(dto.getStatus()).isEqualTo(status);

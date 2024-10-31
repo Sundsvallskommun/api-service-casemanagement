@@ -73,7 +73,6 @@ class RiskClassServiceTest {
 		return dto;
 	}
 
-
 	@Test
 	void updateRiskClass_empty_activites() {
 
@@ -97,6 +96,5 @@ class RiskClassServiceTest {
 		verify(minutMiljoClient, times(1)).updateRiskClass(any());
 		verifyNoMoreInteractions(minutMiljoClient);
 	}
-
 
 }

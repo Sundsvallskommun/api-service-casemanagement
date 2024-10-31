@@ -57,14 +57,15 @@ class CaseStatusResource {
 		this.caseMappingService = caseMappingService;
 	}
 
-	@GetMapping(path = "/organization/{organizationNumber}/cases/status", produces = {APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE})
+	@GetMapping(path = "/organization/{organizationNumber}/cases/status", produces = {
+		APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
+	})
 	@Operation(description = "Returns the latest status for each of the cases where the specified organization has the role \"applicant\".")
 	@ApiResponse(responseCode = "200", description = "OK - Successful operation")
 	public ResponseEntity<List<CaseStatusDTO>> getStatusByOrgNr(
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable(name = "municipalityId") final String municipalityId,
-		@Pattern(regexp = Constants.ORGNR_PATTERN_REGEX, message = Constants.ORGNR_PATTERN_MESSAGE)
-		@Schema(description = "Organization number with 10 or 12 digits.", example = "20220622-2396")
-		@Parameter(name = "organizationNumber", description = "OrganizationNumber") @PathVariable(name = "organizationNumber") final String organizationNumber) {
+		@Pattern(regexp = Constants.ORGNR_PATTERN_REGEX, message = Constants.ORGNR_PATTERN_MESSAGE) @Schema(description = "Organization number with 10 or 12 digits.", example = "20220622-2396") @Parameter(name = "organizationNumber",
+			description = "OrganizationNumber") @PathVariable(name = "organizationNumber") final String organizationNumber) {
 
 		final List<CaseStatusDTO> caseStatusDTOList = new ArrayList<>();
 
@@ -78,20 +79,20 @@ class CaseStatusResource {
 		return ResponseEntity.ok(caseStatusDTOList);
 	}
 
-	@GetMapping(path = "/cases/{externalCaseId}/status", produces = {APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE})
+	@GetMapping(path = "/cases/{externalCaseId}/status", produces = {
+		APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
+	})
 	@Operation(description = "Returns the latest status for the case in the underlying system connected to the specified externalCaseId.")
 	@ApiResponse(responseCode = "200", description = "OK - Successful operation")
 	public ResponseEntity<CaseStatusDTO> getStatusByExternalCaseId(
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable(name = "municipalityId") final String municipalityId,
 		@Parameter(name = "externalCaseId", description = "External case id") @PathVariable(name = "externalCaseId") final String externalCaseId) {
 
-
 		final var caseMapping = caseMappingService.getCaseMapping(externalCaseId, municipalityId);
 
 		final CaseStatusDTO caseStatusDTO = switch (caseMapping.getSystem()) {
 			case BYGGR -> byggrService.toByggrStatus(caseMapping);
-			case ECOS ->
-				ecosService.getStatus(caseMapping.getCaseId(), caseMapping.getExternalCaseId(), municipalityId);
+			case ECOS -> ecosService.getStatus(caseMapping.getCaseId(), caseMapping.getExternalCaseId(), municipalityId);
 			case CASE_DATA -> caseDataService.getStatus(caseMapping, municipalityId);
 		};
 

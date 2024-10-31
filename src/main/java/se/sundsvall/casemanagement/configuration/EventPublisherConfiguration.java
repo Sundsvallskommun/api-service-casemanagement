@@ -9,12 +9,12 @@ import org.springframework.core.task.SimpleAsyncTaskExecutor;
 @Configuration
 class EventPublisherConfiguration {
 
-    @Bean(name = "applicationEventMulticaster")
-    ApplicationEventMulticaster simpleApplicationEventMulticaster() {
-        var eventMulticaster = new SimpleApplicationEventMulticaster();
-        var taskExecutor = new SimpleAsyncTaskExecutor();
-        taskExecutor.setTaskDecorator(new MDCTaskDecorator());
-        eventMulticaster.setTaskExecutor(taskExecutor);
-        return eventMulticaster;
-    }
+	@Bean(name = "applicationEventMulticaster")
+	ApplicationEventMulticaster simpleApplicationEventMulticaster() {
+		var eventMulticaster = new SimpleApplicationEventMulticaster();
+		var taskExecutor = new SimpleAsyncTaskExecutor();
+		taskExecutor.setTaskDecorator(new MDCTaskDecorator());
+		eventMulticaster.setTaskExecutor(taskExecutor);
+		return eventMulticaster;
+	}
 }

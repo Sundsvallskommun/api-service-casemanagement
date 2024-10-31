@@ -147,7 +147,8 @@ import lombok.experimental.SuperBuilder;
 		MEX_REQUEST_FOR_PUBLIC_DOCUMENT,
 		MEX_TERMINATION_OF_LEASE,
 		MEX_TERMINATION_OF_HUNTING_LEASE
-	})})
+	})
+})
 @Data
 @SuperBuilder(setterPrefix = "with")
 @NoArgsConstructor

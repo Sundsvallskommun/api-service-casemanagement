@@ -36,51 +36,83 @@ import se.sundsvall.casemanagement.integration.ecos.configuration.MinutMiljoConf
 @CircuitBreaker(name = "minutmiljo")
 public interface MinutMiljoClient {
 
-	@PostMapping(consumes = MinutMiljoClientV2.TEXT_XML_UTF8, headers = { "SOAPAction=urn:Ecos.API.MinutMiljo.Service.V1/IMinutMiljoService/SearchParty" })
+	@PostMapping(consumes = MinutMiljoClientV2.TEXT_XML_UTF8, headers = {
+		"SOAPAction=urn:Ecos.API.MinutMiljo.Service.V1/IMinutMiljoService/SearchParty"
+	})
 	SearchPartyResponse searchParty(SearchParty searchParty);
 
-	@PostMapping(consumes = MinutMiljoClientV2.TEXT_XML_UTF8, headers = { "SOAPAction=urn:Ecos.API.MinutMiljo.Service.V1/IMinutMiljoService/CreateOrganizationParty" })
+	@PostMapping(consumes = MinutMiljoClientV2.TEXT_XML_UTF8, headers = {
+		"SOAPAction=urn:Ecos.API.MinutMiljo.Service.V1/IMinutMiljoService/CreateOrganizationParty"
+	})
 	CreateOrganizationPartyResponse createOrganizationParty(CreateOrganizationParty createOrganizationParty);
 
-	@PostMapping(consumes = MinutMiljoClientV2.TEXT_XML_UTF8, headers = { "SOAPAction=urn:Ecos.API.MinutMiljo.Service.V1/IMinutMiljoService/CreatePersonParty" })
+	@PostMapping(consumes = MinutMiljoClientV2.TEXT_XML_UTF8, headers = {
+		"SOAPAction=urn:Ecos.API.MinutMiljo.Service.V1/IMinutMiljoService/CreatePersonParty"
+	})
 	CreatePersonPartyResponse createPersonParty(CreatePersonParty createPersonParty);
 
-	@PostMapping(consumes = MinutMiljoClientV2.TEXT_XML_UTF8, headers = { "SOAPAction=urn:Ecos.API.MinutMiljo.Service.V1/IMinutMiljoService/AddPartyToFacility" })
+	@PostMapping(consumes = MinutMiljoClientV2.TEXT_XML_UTF8, headers = {
+		"SOAPAction=urn:Ecos.API.MinutMiljo.Service.V1/IMinutMiljoService/AddPartyToFacility"
+	})
 	void addPartyToFacility(AddPartyToFacility addPartyToFacility);
 
-	@PostMapping(consumes = MinutMiljoClientV2.TEXT_XML_UTF8, headers = { "SOAPAction=urn:Ecos.API.MinutMiljo.Service.V1/IMinutMiljoService/AddPartyToCase" })
+	@PostMapping(consumes = MinutMiljoClientV2.TEXT_XML_UTF8, headers = {
+		"SOAPAction=urn:Ecos.API.MinutMiljo.Service.V1/IMinutMiljoService/AddPartyToCase"
+	})
 	void addPartyToCase(AddPartyToCase addPartyToCase);
 
-	@PostMapping(consumes = MinutMiljoClientV2.TEXT_XML_UTF8, headers = { "SOAPAction=urn:Ecos.API.MinutMiljo.Service.V1/IMinutMiljoService/CreateOccurrenceOnCase" })
+	@PostMapping(consumes = MinutMiljoClientV2.TEXT_XML_UTF8, headers = {
+		"SOAPAction=urn:Ecos.API.MinutMiljo.Service.V1/IMinutMiljoService/CreateOccurrenceOnCase"
+	})
 	void createOccurrenceOnCase(CreateOccurrenceOnCase createOccurrenceOnCase);
 
-	@PostMapping(consumes = MinutMiljoClientV2.TEXT_XML_UTF8, headers = { "SOAPAction=urn:Ecos.API.MinutMiljo.Service.V1/IMinutMiljoService/SearchCase" })
+	@PostMapping(consumes = MinutMiljoClientV2.TEXT_XML_UTF8, headers = {
+		"SOAPAction=urn:Ecos.API.MinutMiljo.Service.V1/IMinutMiljoService/SearchCase"
+	})
 	SearchCaseResponse searchCase(SearchCase searchCase);
 
-	@PostMapping(consumes = MinutMiljoClientV2.TEXT_XML_UTF8, headers = { "SOAPAction=urn:Ecos.API.MinutMiljo.Service.V1/IMinutMiljoService/AddDocumentsToCase" })
+	@PostMapping(consumes = MinutMiljoClientV2.TEXT_XML_UTF8, headers = {
+		"SOAPAction=urn:Ecos.API.MinutMiljo.Service.V1/IMinutMiljoService/AddDocumentsToCase"
+	})
 	void addDocumentsToCase(AddDocumentsToCase addDocumentsToCase);
 
-	@PostMapping(consumes = MinutMiljoClientV2.TEXT_XML_UTF8, headers = { "SOAPAction=urn:Ecos.API.MinutMiljo.Service.V1/IMinutMiljoService/GetCase" })
+	@PostMapping(consumes = MinutMiljoClientV2.TEXT_XML_UTF8, headers = {
+		"SOAPAction=urn:Ecos.API.MinutMiljo.Service.V1/IMinutMiljoService/GetCase"
+	})
 	GetCaseResponse getCase(GetCase getCase);
 
-	@PostMapping(consumes = MinutMiljoClientV2.TEXT_XML_UTF8, headers = { "SOAPAction=urn:Ecos.API.MinutMiljo.Service.V1/IMinutMiljoService/CreateFoodFacility" })
+	@PostMapping(consumes = MinutMiljoClientV2.TEXT_XML_UTF8, headers = {
+		"SOAPAction=urn:Ecos.API.MinutMiljo.Service.V1/IMinutMiljoService/CreateFoodFacility"
+	})
 	CreateFoodFacilityResponse createFoodFacility(CreateFoodFacility createFoodFacility);
 
-	@PostMapping(consumes = MinutMiljoClientV2.TEXT_XML_UTF8, headers = { "SOAPAction=urn:Ecos.API.MinutMiljo.Service.V1/IMinutMiljoService/CreateHeatPumpFacility" })
+	@PostMapping(consumes = MinutMiljoClientV2.TEXT_XML_UTF8, headers = {
+		"SOAPAction=urn:Ecos.API.MinutMiljo.Service.V1/IMinutMiljoService/CreateHeatPumpFacility"
+	})
 	CreateHeatPumpFacilityResponse createHeatPumpFacility(CreateHeatPumpFacility createHeatPumpFacility);
 
-	@PostMapping(consumes = MinutMiljoClientV2.TEXT_XML_UTF8, headers = { "SOAPAction=urn:Ecos.API.MinutMiljo.Service.V1/IMinutMiljoService/CreateIndividualSewageFacility" })
+	@PostMapping(consumes = MinutMiljoClientV2.TEXT_XML_UTF8, headers = {
+		"SOAPAction=urn:Ecos.API.MinutMiljo.Service.V1/IMinutMiljoService/CreateIndividualSewageFacility"
+	})
 	CreateIndividualSewageFacilityResponse createIndividualSewageFacility(CreateIndividualSewageFacility createIndividualSewageFacility);
 
-	@PostMapping(consumes = MinutMiljoClientV2.TEXT_XML_UTF8, headers = { "SOAPAction=urn:Ecos.API.MinutMiljo.Service.V1/IMinutMiljoService/CreateHealthProtectionFacility" })
+	@PostMapping(consumes = MinutMiljoClientV2.TEXT_XML_UTF8, headers = {
+		"SOAPAction=urn:Ecos.API.MinutMiljo.Service.V1/IMinutMiljoService/CreateHealthProtectionFacility"
+	})
 	CreateHealthProtectionFacilityResponse createHealthProtectionFacility(CreateHealthProtectionFacility createHealthProtectionFacility);
 
-	@PostMapping(consumes = MinutMiljoClientV2.TEXT_XML_UTF8, headers = { "SOAPAction=urn:Ecos.API.MinutMiljo.Service.V1/IMinutMiljoService/AddFacilityToCase" })
+	@PostMapping(consumes = MinutMiljoClientV2.TEXT_XML_UTF8, headers = {
+		"SOAPAction=urn:Ecos.API.MinutMiljo.Service.V1/IMinutMiljoService/AddFacilityToCase"
+	})
 	void addFacilityToCase(AddFacilityToCase addFacilityToCase);
 
-	@PostMapping(consumes = MinutMiljoClientV2.TEXT_XML_UTF8, headers = { "SOAPAction=urn:Ecos.API.MinutMiljo.Service.V1/IMinutMiljoService/SearchFacility" })
+	@PostMapping(consumes = MinutMiljoClientV2.TEXT_XML_UTF8, headers = {
+		"SOAPAction=urn:Ecos.API.MinutMiljo.Service.V1/IMinutMiljoService/SearchFacility"
+	})
 	SearchFacilityResponse searchFacility(SearchFacility searchFacility);
 
-	@PostMapping(consumes = MinutMiljoClientV2.TEXT_XML_UTF8, headers = { "SOAPAction=urn:Ecos.API.MinutMiljo.Service.V1/IMinutMiljoService/SaveFoodFacility2024RiskClassData" })
+	@PostMapping(consumes = MinutMiljoClientV2.TEXT_XML_UTF8, headers = {
+		"SOAPAction=urn:Ecos.API.MinutMiljo.Service.V1/IMinutMiljoService/SaveFoodFacility2024RiskClassData"
+	})
 	void updateRiskClass(SaveFoodFacility2024RiskClassData data);
 }

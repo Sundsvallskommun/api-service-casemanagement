@@ -129,7 +129,7 @@ class CaseDataMapperTest {
 	@Test
 	void toStakeholders() {
 
-		//Arrange
+		// Arrange
 		final var organizationDTOOrgnumberWithoutHyphen = (OrganizationDTO) createStakeholderDTO(StakeholderType.ORGANIZATION, List.of("someRole"));
 		organizationDTOOrgnumberWithoutHyphen.setOrganizationNumber(organizationDTOOrgnumberWithoutHyphen.getOrganizationNumber().replace("-", ""));
 
@@ -146,7 +146,7 @@ class CaseDataMapperTest {
 		final var organizationDTO = (OrganizationDTO) stakeholders.getFirst();
 		final var personDTO = (PersonDTO) stakeholders.getLast();
 
-		//Act
+		// Act
 		final var result = CaseDataMapper.toStakeholders(stakeholders);
 
 		assertThat(result).hasSize(3).extracting(
@@ -161,40 +161,39 @@ class CaseDataMapperTest {
 			Stakeholder::getFirstName,
 			Stakeholder::getLastName,
 			Stakeholder::getType).containsExactly(
-			tuple(List.of(role2, role3, role),
-				toContactInformation(organizationDTO),
-				CaseDataMapper.toStakeholderAddresses(organizationDTO.getAddresses()),
-				organizationDTO.getExtraParameters(),
-				organizationDTO.getOrganizationNumber(),
-				organizationDTO.getOrganizationName(),
-				organizationDTO.getAuthorizedSignatory(),
-				null,
-				null,
-				null,
-				ORGANIZATION),
-			tuple(List.of(role2, role3, role),
-				toContactInformation(organizationDTOOrgnumberWithoutHyphen),
-				CaseDataMapper.toStakeholderAddresses(organizationDTOOrgnumberWithoutHyphen.getAddresses()),
-				organizationDTOOrgnumberWithoutHyphen.getExtraParameters(),
-				organizationDTOOrgnumberWithoutHyphen.getOrganizationNumber().substring(0, 6) + "-" + organizationDTOOrgnumberWithoutHyphen.getOrganizationNumber().substring(6),
-				organizationDTOOrgnumberWithoutHyphen.getOrganizationName(),
-				organizationDTOOrgnumberWithoutHyphen.getAuthorizedSignatory(),
-				null,
-				null,
-				null,
-				ORGANIZATION),
-			tuple(List.of(role2, role3, role),
-				toContactInformation(personDTO),
-				CaseDataMapper.toStakeholderAddresses(personDTO.getAddresses()),
-				personDTO.getExtraParameters(),
-				null,
-				null,
-				null,
-				personDTO.getPersonId(),
-				personDTO.getFirstName(),
-				personDTO.getLastName(),
-				Stakeholder.TypeEnum.PERSON)
-		);
+				tuple(List.of(role2, role3, role),
+					toContactInformation(organizationDTO),
+					CaseDataMapper.toStakeholderAddresses(organizationDTO.getAddresses()),
+					organizationDTO.getExtraParameters(),
+					organizationDTO.getOrganizationNumber(),
+					organizationDTO.getOrganizationName(),
+					organizationDTO.getAuthorizedSignatory(),
+					null,
+					null,
+					null,
+					ORGANIZATION),
+				tuple(List.of(role2, role3, role),
+					toContactInformation(organizationDTOOrgnumberWithoutHyphen),
+					CaseDataMapper.toStakeholderAddresses(organizationDTOOrgnumberWithoutHyphen.getAddresses()),
+					organizationDTOOrgnumberWithoutHyphen.getExtraParameters(),
+					organizationDTOOrgnumberWithoutHyphen.getOrganizationNumber().substring(0, 6) + "-" + organizationDTOOrgnumberWithoutHyphen.getOrganizationNumber().substring(6),
+					organizationDTOOrgnumberWithoutHyphen.getOrganizationName(),
+					organizationDTOOrgnumberWithoutHyphen.getAuthorizedSignatory(),
+					null,
+					null,
+					null,
+					ORGANIZATION),
+				tuple(List.of(role2, role3, role),
+					toContactInformation(personDTO),
+					CaseDataMapper.toStakeholderAddresses(personDTO.getAddresses()),
+					personDTO.getExtraParameters(),
+					null,
+					null,
+					null,
+					personDTO.getPersonId(),
+					personDTO.getFirstName(),
+					personDTO.getLastName(),
+					Stakeholder.TypeEnum.PERSON));
 	}
 
 	@Test

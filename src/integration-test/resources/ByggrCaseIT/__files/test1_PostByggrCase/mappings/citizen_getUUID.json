@@ -1,21 +1,21 @@
 {
-  "id": "e19981ad-34b2-4e14-88f5-133f61ca85aa",
-  "name": "citizen_e19981ad-34b2-4e14-88f5-133f61ca85aa_personnumber",
-  "request": {
-    "urlPathPattern": "/citizen/(.+)/personnumber",
-    "method": "GET"
-  },
-  "response": {
-    "status": 200,
-    "body": "202206222396",
-    "headers": {
-      "api-supported-versions": "1.0",
-      "Content-Type": "text/plain; charset=utf-8",
-      "X-Powered-By": "ASP.NET",
-      "Date": "Tue, 27 Jul 2021 14:30:37 GMT"
-    }
-  },
-  "uuid": "e19981ad-34b2-4e14-88f5-133f61ca85aa",
-  "persistent": true,
-  "insertionIndex": 8
+	"request": {
+		"method": "GET",
+		"urlPathPattern": "/citizen/(.+)/personnumber"
+	},
+	"response": {
+		"headers": {
+			"api-supported-versions": "1.0",
+			"Date": "Tue, 27 Jul 2021 14:30:37 GMT",
+			"Content-Type": "text/plain; charset=utf-8",
+			"X-Powered-By": "ASP.NET"
+		},
+		"body": "202206222396",
+		"status": 200
+	},
+	"name": "citizen_e19981ad-34b2-4e14-88f5-133f61ca85aa_personnumber",
+	"id": "e19981ad-34b2-4e14-88f5-133f61ca85aa",
+	"persistent": true,
+	"insertionIndex": 8,
+	"uuid": "e19981ad-34b2-4e14-88f5-133f61ca85aa"
 }

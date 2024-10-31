@@ -92,7 +92,7 @@ public class Validator {
 
 			attefallFacilityType = switch (FacilityType.valueOf(facilityType)) {
 				case FURNISHING_OF_ADDITIONAL_DWELLING, ANCILLARY_BUILDING,
-				     ANCILLARY_HOUSING_BUILDING, DORMER, EXTENSION -> true;
+					ANCILLARY_HOUSING_BUILDING, DORMER, EXTENSION -> true;
 				default -> false;
 			};
 		}

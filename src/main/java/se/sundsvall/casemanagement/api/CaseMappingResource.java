@@ -40,7 +40,9 @@ class CaseMappingResource {
 		this.caseMappingService = caseMappingService;
 	}
 
-	@GetMapping(produces = {APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE})
+	@GetMapping(produces = {
+		APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
+	})
 	@Operation(description = "Returns the connection between externalCaseId and the case in the underlying system.")
 	@ApiResponse(responseCode = "200", description = "OK - Successful operation")
 	public ResponseEntity<List<CaseMapping>> getCaseMapping(

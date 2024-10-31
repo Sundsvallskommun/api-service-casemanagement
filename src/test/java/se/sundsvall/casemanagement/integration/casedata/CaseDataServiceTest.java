@@ -78,7 +78,9 @@ class CaseDataServiceTest {
 	private ArgumentCaptor<generated.client.casedata.Attachment> attachmentArgumentCaptor;
 
 	@ParameterizedTest
-	@EnumSource(value = CaseType.class, names = { PARKING_PERMIT, LOST_PARKING_PERMIT, PARKING_PERMIT_RENEWAL })
+	@EnumSource(value = CaseType.class, names = {
+		PARKING_PERMIT, LOST_PARKING_PERMIT, PARKING_PERMIT_RENEWAL
+	})
 	void testPostCases(final CaseType caseType) throws URISyntaxException {
 		// Arrange
 		final var errandId = new Random().nextLong();
@@ -236,8 +238,7 @@ class CaseDataServiceTest {
 		// Mock
 		when(caseDataClientMock.getErrand(eq(MUNICIPALITY_ID), eq(namespace), any())).thenThrow(Problem.valueOf(Status.NOT_FOUND));
 		// Act
-		assertThatThrownBy(() -> caseDataService.getStatus(caseMapping, MUNICIPALITY_ID)
-		)
+		assertThatThrownBy(() -> caseDataService.getStatus(caseMapping, MUNICIPALITY_ID))
 			.isInstanceOf(ThrowableProblem.class)
 			.hasFieldOrPropertyWithValue("status", Status.NOT_FOUND)
 			.hasMessage("Not Found: No case was found in CaseData with caseId: 1");

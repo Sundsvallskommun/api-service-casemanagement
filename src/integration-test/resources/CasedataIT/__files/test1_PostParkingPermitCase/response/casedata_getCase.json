@@ -1,171 +1,133 @@
 {
-  "id": 24,
-  "version": 1,
-  "created": "2022-10-25T11:20:28.87958+02:00",
-  "updated": "2022-10-25T11:20:29.363269+02:00",
-  "extraParameters": [
-    {
-      "key": "disability.walkingAbility",
-      "values": [
-        "true"
-      ]
-    },
-    {
-      "key": "application.applicant.testimonial",
-      "values": [
-        "true"
-      ]
-    },
-    {
-      "key": "consent.view.transportationServiceDetails",
-      "values": [
-        "false"
-      ]
-    },
-    {
-      "key": "disability.aid",
-      "values": [
-        "Inget"
-      ]
-    },
-    {
-      "key": "disability.canBeAloneWhileParking",
-      "values": [
-        "true"
-      ]
-    },
-    {
-      "key": "application.role",
-      "values": [
-        "SELF"
-      ]
-    },
-    {
-      "key": "application.applicant.capacity",
-      "values": [
-        "DRIVER"
-      ]
-    },
-    {
-      "key": "application.applicant.signingAbility",
-      "values": [
-        "false"
-      ]
-    },
-    {
-      "key": "disability.walkingDistance.max",
-      "values": [
-        ""
-      ]
-    },
-    {
-      "key": "disability.walkingDistance.beforeRest",
-      "values": [
-        ""
-      ]
-    },
-    {
-      "key": "consent.contact.doctor",
-      "values": [
-        "false"
-      ]
-    },
-    {
-      "key": "application.reason",
-      "values": [
-        ""
-      ]
-    },
-    {
-      "key": "disability.canBeAloneWhileParking.note",
-      "values": [
-        ""
-      ]
-    },
-    {
-      "key": "disability.duration",
-      "values": [
-        "P6M"
-      ]
-    }
-  ],
-  "errandNumber": "PRH-2022-000001",
-  "caseType": "PARKING_PERMIT",
-  "priority": "HIGH",
-  "description": "",
-  "caseTitleAddition": "Nytt parkeringstillstånd",
-  "diaryNumber": "",
-  "phase": "Aktualisering",
-  "statuses": [
-    {
-      "statusType": "Ärende inkommit",
-      "description": "Ärende inkommit",
-      "dateTime": "2022-10-25T11:20:28.692+02:00"
-    }
-  ],
-  "municipalityId": "2281",
-  "processId": "e19981ad-34b2-4e14-88f5-133f61ca85aa",
-  "stakeholders": [
-    {
-      "id": 1,
-      "version": 0,
-      "created": "2022-10-25T11:20:28.88606+02:00",
-      "updated": "2022-10-25T11:20:28.886093+02:00",
-      "extraParameters": {},
-      "type": "PERSON",
-      "firstName": "Test",
-      "lastName": "Testsson",
-      "adAccount": "GUNNBE",
-      "roles": [
-        "ADMINISTRATOR"
-      ],
-      "addresses": [],
-      "contactInformation": [
-        {
-          "contactType": "EMAIL",
-          "value": "test@sundsvall.se"
-        }
-      ]
-    },
-    {
-      "id": 2,
-      "version": 0,
-      "created": "2022-10-25T11:20:28.888013+02:00",
-      "updated": "2022-10-25T11:20:28.888037+02:00",
-      "extraParameters": {},
-      "type": "PERSON",
-      "firstName": "Kim",
-      "lastName": "Svensson",
-      "personId": "e19981ad-34b2-4e14-88f5-133f61ca85aa",
-      "roles": [
-        "APPLICANT"
-      ],
-      "addresses": [
-        {
-          "street": "TESTARGATAN 1",
-          "postalCode": "123 45",
-          "city": "SUNDSVALL"
-        }
-      ],
-      "contactInformation": [
-        {
-          "contactType": "PHONE",
-          "value": "070213123"
-        },
-        {
-          "contactType": "EMAIL",
-          "value": "@\\w+\\.\\w+"
-        }
-      ]
-    }
-  ],
-  "facilities": [],
-  "attachments": [],
-  "decisions": [],
-  "notes": [],
-  "messageIds": [],
-  "createdByClient": "WSO2_CaseManagementUI",
-  "updatedByClient": "UNKNOWN",
-  "createdBy": "kar52and",
-  "updatedBy": "UNKNOWN"
+	"municipalityId": "2281",
+	"attachments": [],
+	"notes": [],
+	"errandNumber": "PRH-2022-000001",
+	"createdByClient": "WSO2_CaseManagementUI",
+	"messageIds": [],
+	"extraParameters": [
+		{
+			"values": ["true"],
+			"key": "disability.walkingAbility"
+		},
+		{
+			"values": ["true"],
+			"key": "application.applicant.testimonial"
+		},
+		{
+			"values": ["false"],
+			"key": "consent.view.transportationServiceDetails"
+		},
+		{
+			"values": ["Inget"],
+			"key": "disability.aid"
+		},
+		{
+			"values": ["true"],
+			"key": "disability.canBeAloneWhileParking"
+		},
+		{
+			"values": ["SELF"],
+			"key": "application.role"
+		},
+		{
+			"values": ["DRIVER"],
+			"key": "application.applicant.capacity"
+		},
+		{
+			"values": ["false"],
+			"key": "application.applicant.signingAbility"
+		},
+		{
+			"values": [""],
+			"key": "disability.walkingDistance.max"
+		},
+		{
+			"values": [""],
+			"key": "disability.walkingDistance.beforeRest"
+		},
+		{
+			"values": ["false"],
+			"key": "consent.contact.doctor"
+		},
+		{
+			"values": [""],
+			"key": "application.reason"
+		},
+		{
+			"values": [""],
+			"key": "disability.canBeAloneWhileParking.note"
+		},
+		{
+			"values": ["P6M"],
+			"key": "disability.duration"
+		}
+	],
+	"description": "",
+	"stakeholders": [
+		{
+			"firstName": "Test",
+			"lastName": "Testsson",
+			"addresses": [],
+			"contactInformation": [{
+				"contactType": "EMAIL",
+				"value": "test@sundsvall.se"
+			}],
+			"adAccount": "GUNNBE",
+			"created": "2022-10-25T11:20:28.88606+02:00",
+			"roles": ["ADMINISTRATOR"],
+			"extraParameters": {},
+			"id": 1,
+			"type": "PERSON",
+			"version": 0,
+			"updated": "2022-10-25T11:20:28.886093+02:00"
+		},
+		{
+			"firstName": "Kim",
+			"lastName": "Svensson",
+			"addresses": [{
+				"city": "SUNDSVALL",
+				"street": "TESTARGATAN 1",
+				"postalCode": "123 45"
+			}],
+			"contactInformation": [
+				{
+					"contactType": "PHONE",
+					"value": "070213123"
+				},
+				{
+					"contactType": "EMAIL",
+					"value": "@\\w+\\.\\w+"
+				}
+			],
+			"created": "2022-10-25T11:20:28.888013+02:00",
+			"roles": ["APPLICANT"],
+			"extraParameters": {},
+			"personId": "e19981ad-34b2-4e14-88f5-133f61ca85aa",
+			"id": 2,
+			"type": "PERSON",
+			"version": 0,
+			"updated": "2022-10-25T11:20:28.888037+02:00"
+		}
+	],
+	"caseType": "PARKING_PERMIT",
+	"diaryNumber": "",
+	"processId": "e19981ad-34b2-4e14-88f5-133f61ca85aa",
+	"caseTitleAddition": "Nytt parkeringstillstånd",
+	"decisions": [],
+	"id": 24,
+	"phase": "Aktualisering",
+	"updatedBy": "UNKNOWN",
+	"created": "2022-10-25T11:20:28.87958+02:00",
+	"updatedByClient": "UNKNOWN",
+	"priority": "HIGH",
+	"version": 1,
+	"createdBy": "kar52and",
+	"statuses": [{
+		"dateTime": "2022-10-25T11:20:28.692+02:00",
+		"statusType": "Ärende inkommit",
+		"description": "Ärende inkommit"
+	}],
+	"facilities": [],
+	"updated": "2022-10-25T11:20:29.363269+02:00"
 }

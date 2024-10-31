@@ -14,23 +14,23 @@ import static org.hamcrest.CoreMatchers.allOf;
 
 class RegisterbeteckningsreferensTest {
 
-    @Test
-    void testBean() {
-        MatcherAssert.assertThat(Registerbeteckningsreferens.class, allOf(
-                hasValidBeanConstructor(),
-                hasValidGettersAndSetters(),
-                hasValidBeanHashCode(),
-                hasValidBeanEquals(),
-                hasValidBeanToString()));
-    }
+	@Test
+	void testBean() {
+		MatcherAssert.assertThat(Registerbeteckningsreferens.class, allOf(
+			hasValidBeanConstructor(),
+			hasValidGettersAndSetters(),
+			hasValidBeanHashCode(),
+			hasValidBeanEquals(),
+			hasValidBeanToString()));
+	}
 
-    @Test
-    void testFields() {
-        Registerbeteckningsreferens object = new Registerbeteckningsreferens();
-        object.setRegisterenhet(RandomStringUtils.randomAlphabetic(10));
-        object.setBeteckning(RandomStringUtils.randomAlphabetic(10));
-        object.setBeteckningsid(RandomStringUtils.randomAlphabetic(10));
+	@Test
+	void testFields() {
+		Registerbeteckningsreferens object = new Registerbeteckningsreferens();
+		object.setRegisterenhet(RandomStringUtils.randomAlphabetic(10));
+		object.setBeteckning(RandomStringUtils.randomAlphabetic(10));
+		object.setBeteckningsid(RandomStringUtils.randomAlphabetic(10));
 
-        Assertions.assertThat(object).isNotNull().hasNoNullFieldsOrProperties();
-    }
+		Assertions.assertThat(object).isNotNull().hasNoNullFieldsOrProperties();
+	}
 }

@@ -67,7 +67,6 @@ public enum FacilityType {
 	BRIDGE_PIER("BRY", "brygga/pir"),
 	SIGN("SKY", "skylt"),
 
-
 	// Parkering & Cykelparkering
 	PARKING("PAR", "parkering"),
 	DEPOT("UPP", "upplag"),
@@ -95,7 +94,6 @@ public enum FacilityType {
 	FACADE_CHANGE("F", "fasadändring av"),
 	GLAZING_BALCONY("H", "inglasning av balkong"),
 	USAGE_CHANGE("ÄNDR", "ändrad användning");
-
 
 	private final String value;
 	private final String description;

@@ -23,7 +23,6 @@ import se.sundsvall.casemanagement.api.model.EcosCaseDTO;
 
 class CaseEntityTest {
 
-
 	@BeforeAll
 	static void setup() {
 		registerValueGenerator(() -> LocalDateTime.now().plusDays(new Random().nextInt()), LocalDateTime.class);

@@ -78,7 +78,6 @@ public final class ByggrMapper {
 
 	private ByggrMapper() {}
 
-
 	static void setStakeholderFields(final StakeholderDTO stakeholderDTO, final List<String> personIds, final ArendeIntressent intressent) {
 		switch (stakeholderDTO) {
 			case final PersonDTO personDTO -> {
@@ -88,8 +87,7 @@ public final class ByggrMapper {
 				}
 				setPersonFields(intressent, personDTO);
 			}
-			case final OrganizationDTO organizationDTO ->
-				setOrganizationFields(intressent, organizationDTO);
+			case final OrganizationDTO organizationDTO -> setOrganizationFields(intressent, organizationDTO);
 			default -> throw Problem.valueOf(Status.BAD_REQUEST, "Invalid stakeholder type");
 		}
 	}
@@ -203,10 +201,10 @@ public final class ByggrMapper {
 
 	static String getMainOrOnlyArendeslag(final List<FacilityDTO> facilityList) {
 		return FacilityType.valueOf(facilityList.stream()
-				.filter(facility -> FacilityType.USAGE_CHANGE.equals(FacilityType.valueOf(facility.getFacilityType())))
-				.findFirst()
-				.orElse(facilityList.getFirst())
-				.getFacilityType())
+			.filter(facility -> FacilityType.USAGE_CHANGE.equals(FacilityType.valueOf(facility.getFacilityType())))
+			.findFirst()
+			.orElse(facilityList.getFirst())
+			.getFacilityType())
 			.getValue();
 	}
 
@@ -283,7 +281,6 @@ public final class ByggrMapper {
 		return arrayOfIntressentKommunikation;
 	}
 
-
 	static void populateStakeholderListWithPropertyOwnerPersons(final List<PersonDTO> persons, final List<StakeholderDTO> stakeholders, final List<StakeholderDTO> propertyOwners) {
 		final List<PersonDTO> personDTOPropertyOwnerList = propertyOwners.stream()
 			.filter(PersonDTO.class::isInstance)
@@ -313,7 +310,6 @@ public final class ByggrMapper {
 
 		stakeholders.addAll(notExistingPersonPropertyOwnerListDTO);
 	}
-
 
 	static void populateStakeholderListWithPropertyOwnerOrganizations(final List<OrganizationDTO> organizationDTOStakeholders, final List<StakeholderDTO> stakeholderDTOList, final List<StakeholderDTO> propertyOwnerList) {
 		final var organizationDTOPropertyOwnerList = propertyOwnerList.stream()
@@ -348,8 +344,8 @@ public final class ByggrMapper {
 	 * "Ärendemening" - Is automatically set in ByggR based on "typ", "slag" and "klass",
 	 * but when its multiple facilities, it must be set to contain all facilities.
 	 *
-	 * @param pCase PlanningPermissionCase
-	 * @return ärendemening or null
+	 * @param  pCase PlanningPermissionCase
+	 * @return       ärendemening or null
 	 */
 	static String getArendeBeskrivning(final ByggRCaseDTO pCase, final String caseDescription) {
 
@@ -380,7 +376,6 @@ public final class ByggrMapper {
 			.filter(Objects::nonNull)
 			.toList();
 	}
-
 
 	static void toAdressCategory(final StakeholderDTO stakeholderDTO, final AddressDTO addressDTO, final AddressCategory addressCategory, final ArendeIntressent intressent) {
 		if (AddressCategory.POSTAL_ADDRESS.equals(addressCategory)) {
@@ -436,7 +431,6 @@ public final class ByggrMapper {
 		throw Problem.valueOf(Status.NOT_FOUND, Constants.ERR_MSG_STATUS_NOT_FOUND);
 	}
 
-
 	static CaseStatusDTO buildCaseStatusDTO(final Arende arende, final String externalCaseId, final List<CaseMapping> caseMappingList) {
 		return CaseStatusDTO.builder()
 			.withSystem(SystemType.BYGGR)
@@ -456,7 +450,7 @@ public final class ByggrMapper {
 		if (HANDELSETYP_ANMALAN.equals(handelsetyp)
 			|| HANDELSETYP_ANSOKAN.equals(handelsetyp)
 			|| Constants.BYGGR_HANDELSETYP_UNDERRATTELSE.equals(handelsetyp) && (Constants.BYGGR_HANDELSESLAG_MED_KRAV_PA_SVAR.equals(handelseslag)
-			|| Constants.BYGGR_HANDELSESLAG_UTAN_KRAV_PA_SVAR.equals(handelseslag))
+				|| Constants.BYGGR_HANDELSESLAG_UTAN_KRAV_PA_SVAR.equals(handelseslag))
 			|| Constants.BYGGR_HANDELSETYP_KOMPLETTERINGSFORELAGGANDE.equals(handelsetyp)
 			|| Constants.BYGGR_HANDELSETYP_KOMPLETTERINGSFORELAGGANDE_PAMINNELSE.equals(handelsetyp)) {
 			// ANM, ANSÖKAN
@@ -466,9 +460,9 @@ public final class ByggrMapper {
 		if (Constants.BYGGR_HANDELSETYP_BESLUT.equals(handelsetyp) && (Constants.BYGGR_HANDELSESLAG_SLUTBESKED.equals(handelseslag)
 			|| Constants.BYGGR_HANDELSESLAG_AVSKRIVNING.equals(handelseslag))
 			|| ((Constants.BYGGR_HANDELSETYP_HANDLING.equals(handelsetyp) && Constants.BYGGR_HANDELSESLAG_KOMPLETTERANDE_HANDLINGAR.equals(handelseslag))
-			|| Constants.BYGGR_HANDELSESLAG_KOMPLETTERANDE_BYGGLOVHANDLINGAR.equals(handelseslag)
-			|| Constants.BYGGR_HANDELSESLAG_KOMPLETTERANDE_TEKNISKA_HANDLINGAR.equals(handelseslag)
-			|| Constants.BYGGR_HANDELSESLAG_REVIDERADE_HANDLINGAR.equals(handelseslag))) {
+				|| Constants.BYGGR_HANDELSESLAG_KOMPLETTERANDE_BYGGLOVHANDLINGAR.equals(handelseslag)
+				|| Constants.BYGGR_HANDELSESLAG_KOMPLETTERANDE_TEKNISKA_HANDLINGAR.equals(handelseslag)
+				|| Constants.BYGGR_HANDELSESLAG_REVIDERADE_HANDLINGAR.equals(handelseslag))) {
 			// SLU, UAB
 			return handelseslag;
 		} else if (Constants.BYGGR_HANDELSETYP_REMISS.equals(handelsetyp)
@@ -537,8 +531,8 @@ public final class ByggrMapper {
 	/**
 	 * Repackages the attachments from the incoming request to a format that ByggR can understand.
 	 *
-	 * @param byggRCase The incoming request from OpenE
-	 * @return ArrayOfHandelseHandling, a list of attachments that the stakeholder sends with the response
+	 * @param  byggRCase The incoming request from OpenE
+	 * @return           ArrayOfHandelseHandling, a list of attachments that the stakeholder sends with the response
 	 */
 	static ArrayOfHandling createNeighborhoodNotificationArrayOfHandling(final ByggRCaseDTO byggRCase) {
 		var handlingar = byggRCase.getAttachments().stream()
@@ -678,9 +672,9 @@ public final class ByggrMapper {
 	/**
 	 * Extracts a stakeholder from a specific byggR event based on the stakeholder id.
 	 *
-	 * @param handelse the event
-	 * @param stakeholderId the stakeholder id
-	 * @return HandelseIntressent, the stakeholder of a specific event
+	 * @param  handelse      the event
+	 * @param  stakeholderId the stakeholder id
+	 * @return               HandelseIntressent, the stakeholder of a specific event
 	 */
 	static HandelseIntressent extractIntressentFromEvent(final Handelse handelse, final String stakeholderId) {
 		final var intressent = handelse.getIntressentLista().getIntressent().stream()
@@ -702,10 +696,10 @@ public final class ByggrMapper {
 	/**
 	 * Creates a SaveNewHandelse object with the given parameters, used for NEIGHBORHOOD_NOTIFICATION cases.
 	 *
-	 * @param dnr The case number
-	 * @param handelse The ByggR event
-	 * @param arrayOfHandling The attachments that the stakeholder sends with the response
-	 * @return SaveNewHandelse, a request model that is sent to ByggR
+	 * @param  dnr             The case number
+	 * @param  handelse        The ByggR event
+	 * @param  arrayOfHandling The attachments that the stakeholder sends with the response
+	 * @return                 SaveNewHandelse, a request model that is sent to ByggR
 	 */
 	static SaveNewHandelse createSaveNewHandelse(final String dnr, final Handelse handelse, final ArrayOfHandling arrayOfHandling, final Integer besvaradHandelseId) {
 		return new SaveNewHandelse()
@@ -721,12 +715,12 @@ public final class ByggrMapper {
 	/**
 	 * Creates a new Handelse object with the given parameters.
 	 *
-	 * @param comment String that determines if the stakeholder has any issues with the building permit
-	 * @param errandInformation String that contains the stakeholders comment. (Bad name given by OpenE)
-	 * @param intressent HandelseIntressent
-	 * @param stakeholderName The stakeholder name
-	 * @param propertyDesignation The property designation
-	 * @return Handelse, a new event in a ByggR Case
+	 * @param  comment             String that determines if the stakeholder has any issues with the building permit
+	 * @param  errandInformation   String that contains the stakeholders comment. (Bad name given by OpenE)
+	 * @param  intressent          HandelseIntressent
+	 * @param  stakeholderName     The stakeholder name
+	 * @param  propertyDesignation The property designation
+	 * @return                     Handelse, a new event in a ByggR Case
 	 */
 	static Handelse createNewEvent(final String comment, final String errandInformation, final HandelseIntressent intressent, final String stakeholderName, final String propertyDesignation) {
 		var isOpposed = comment.equals("Jag har synpunkter");

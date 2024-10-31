@@ -68,8 +68,7 @@ public class FbService {
 			List.of(registerbeteckningsreferens.getRegisterenhet()),
 			fbDatabase,
 			fbUsername,
-			fbPassword
-		);
+			fbPassword);
 
 		final var fnr = toFnr(propertyInfoResponse);
 		if (isNull(fnr)) {
@@ -80,8 +79,7 @@ public class FbService {
 			List.of(registerbeteckningsreferens.getRegisterenhet()),
 			fbDatabase,
 			fbUsername,
-			fbPassword
-		);
+			fbPassword);
 
 		return toFbPropertyInfo(fnr, toAdressplatsId(addressInfoResponse));
 	}
@@ -89,8 +87,8 @@ public class FbService {
 	/**
 	 * Get propertyOwners of specified property
 	 *
-	 * @param propertyDesignation the specified property
-	 * @return List of propertyOwners
+	 * @param  propertyDesignation the specified property
+	 * @return                     List of propertyOwners
 	 */
 	public List<StakeholderDTO> getPropertyOwnerByPropertyDesignation(final String propertyDesignation) {
 
@@ -132,8 +130,7 @@ public class FbService {
 			List.of(persOrgNr),
 			fbDatabase,
 			fbUsername,
-			fbPassword
-		);
+			fbPassword);
 
 		return toAddressDTO(response);
 	}

@@ -15,25 +15,25 @@ import static com.google.code.beanmatchers.BeanMatchers.hasValidGettersAndSetter
 import static org.hamcrest.CoreMatchers.allOf;
 
 class ResponseDtoTest {
-    @Test
-    void testBean() {
-        MatcherAssert.assertThat(ResponseDto.class, allOf(
-                hasValidBeanConstructor(),
-                hasValidGettersAndSetters(),
-                hasValidBeanHashCode(),
-                hasValidBeanEquals(),
-                hasValidBeanToString()));
-    }
+	@Test
+	void testBean() {
+		MatcherAssert.assertThat(ResponseDto.class, allOf(
+			hasValidBeanConstructor(),
+			hasValidGettersAndSetters(),
+			hasValidBeanHashCode(),
+			hasValidBeanEquals(),
+			hasValidBeanToString()));
+	}
 
-    @Test
-    void testFields() {
-        ResponseDto object = new ResponseDto();
-        object.setData(List.of(new DataItem()));
-        object.setFel(List.of("Fel"));
-        object.setStatusKod(new Random().nextInt());
-        object.setStatusMeddelande("StatusMeddelande");
+	@Test
+	void testFields() {
+		ResponseDto object = new ResponseDto();
+		object.setData(List.of(new DataItem()));
+		object.setFel(List.of("Fel"));
+		object.setStatusKod(new Random().nextInt());
+		object.setStatusMeddelande("StatusMeddelande");
 
-        Assertions.assertThat(object).isNotNull().hasNoNullFieldsOrProperties();
-    }
+		Assertions.assertThat(object).isNotNull().hasNoNullFieldsOrProperties();
+	}
 
 }

@@ -12,7 +12,9 @@ import jakarta.validation.Payload;
 import se.sundsvall.casemanagement.api.validation.impl.OnlyOneMainFacilityConstraintValidator;
 import se.sundsvall.casemanagement.util.Constants;
 
-@Target({ElementType.TYPE, ElementType.FIELD})
+@Target({
+	ElementType.TYPE, ElementType.FIELD
+})
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = OnlyOneMainFacilityConstraintValidator.class)
 @Documented

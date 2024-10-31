@@ -50,8 +50,7 @@ class ByggrUtilTest {
 		// Arrange
 		final List<StakeholderDTO> stakholderList = List.of(
 			PersonDTO.builder().withPersonId("somePersonId").build(),
-			PersonDTO.builder().withPersonId("somePersonId").build()
-		);
+			PersonDTO.builder().withPersonId("somePersonId").build());
 
 		// Act
 		final var result = ByggrUtil.containsPersonDuplicates(stakholderList);
@@ -64,8 +63,7 @@ class ByggrUtilTest {
 		// Arrange
 		final List<StakeholderDTO> stakholderList = List.of(
 			PersonDTO.builder().withPersonId("somePersonId").build(),
-			PersonDTO.builder().withPersonId("somePersonId2").build()
-		);
+			PersonDTO.builder().withPersonId("somePersonId2").build());
 
 		// Act
 		final var result = ByggrUtil.containsPersonDuplicates(stakholderList);
@@ -152,7 +150,6 @@ class ByggrUtilTest {
 		// Assert
 		assertThat(result).isEqualTo("SOME-PROPERTY-DESIGNATION");
 	}
-
 
 	@Test
 	void parsePropertyDesignation_NotStartingWithSundsvall() {

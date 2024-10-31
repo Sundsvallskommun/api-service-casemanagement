@@ -126,8 +126,7 @@ public final class TestUtil {
 			.withAddress(createAddressDTO(List.of(AddressCategory.VISITING_ADDRESS)));
 
 		final var extraParameters = switch (caseType) {
-			case ANSOKAN_TILLSTAND_VARMEPUMP, ANMALAN_INSTALLATION_VARMEPUMP ->
-				getHeatPumpExtraParams();
+			case ANSOKAN_TILLSTAND_VARMEPUMP, ANMALAN_INSTALLATION_VARMEPUMP -> getHeatPumpExtraParams();
 			default -> createExtraParameters();
 		};
 
@@ -162,7 +161,6 @@ public final class TestUtil {
 			.withMainFacility(mainFacility)
 			.build();
 	}
-
 
 	public static StakeholderDTO createStakeholderDTO(final StakeholderType stakeholderType, final List<String> stakeholderRoles) {
 		if (stakeholderType.equals(StakeholderType.PERSON)) {
@@ -252,7 +250,6 @@ public final class TestUtil {
 			.findAndAddPartyToCase(any(EcosCaseDTO.class), any(String.class));
 
 	}
-
 
 	public static void standardMockMinutMiljo(final MinutMiljoClient mock, final MinutMiljoClientV2 mockV2) {
 		lenient().doReturn(new SearchPartyResponse()).when(mock).searchParty(any());
@@ -405,7 +402,6 @@ public final class TestUtil {
 	public static <E extends Enum<E>> Enum<?> getRandomOfEnum(final Class<E> enumClass) {
 		return Arrays.stream(enumClass.getEnumConstants()).toList().get(new Random().nextInt(enumClass.getEnumConstants().length));
 	}
-
 
 	public static List<CaseTypeData> setUpCaseTypes() {
 		final var caseTypeDataList = new ArrayList<CaseTypeData>();

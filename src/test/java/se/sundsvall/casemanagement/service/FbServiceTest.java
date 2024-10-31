@@ -102,7 +102,7 @@ class FbServiceTest {
 		final var propertyOwners = List.of(personDTOMock, organizationDTOMock);
 		final var personDTOMockAddressDTO = personDTOMock.getAddresses().getFirst();
 
-		//Mock
+		// Mock
 		mockFb();
 		when(fbClientMock.getPropertyOwnerByFnr(any(), any(), any(), any())).thenReturn(createPropertyOwnerByFnrResponse(propertyOwners));
 		when(fbClientMock.getPropertyOwnerInfoByUuid(any(), any(), any(), any())).thenReturn(createPropertyOwnerInfoByUuidResponse(propertyOwners));
@@ -145,7 +145,7 @@ class FbServiceTest {
 		final var propertyOwnerInfoByUuid = createPropertyOwnerInfoByUuidResponse(propertyOwners);
 		propertyOwnerInfoByUuid.getData().getFirst().setGallandeOrganisationsnamn(null);
 
-		//Mock
+		// Mock
 		mockFb();
 		when(fbClientMock.getPropertyOwnerByFnr(any(), any(), any(), any())).thenReturn(createPropertyOwnerByFnrResponse(propertyOwners));
 		when(fbClientMock.getPropertyOwnerInfoByUuid(any(), any(), any(), any())).thenReturn(propertyOwnerInfoByUuid);
@@ -164,7 +164,7 @@ class FbServiceTest {
 		final var propertyDesignation = "TEST 1:1";
 		final List<StakeholderDTO> propertyOwners = List.of(personDTOMock);
 
-		//Mock
+		// Mock
 		mockFb();
 		when(fbClientMock.getPropertyOwnerByFnr(any(), any(), any(), any())).thenReturn(createPropertyOwnerByFnrResponse(propertyOwners));
 		when(fbClientMock.getPropertyOwnerInfoByUuid(any(), any(), any(), any())).thenReturn(createPropertyOwnerInfoByUuidResponse(propertyOwners));
@@ -222,16 +222,16 @@ class FbServiceTest {
 		final var dataitem = new DataItem();
 		responseDto.setData(List.of(dataitem));
 		dataitem.setGrupp(propertyOwners.stream().map(propertyOwner -> {
-				final var gruppItem = new GruppItem();
-				if (propertyOwner instanceof final PersonDTO personDTO) {
-					gruppItem.setIdentitetsnummer(personDTO.getPersonalNumber());
-					gruppItem.setUuid(UUID.randomUUID().toString());
-				} else if (propertyOwner instanceof final OrganizationDTO organizationDTO) {
-					gruppItem.setIdentitetsnummer(organizationDTO.getOrganizationNumber());
-					gruppItem.setUuid(UUID.randomUUID().toString());
-				}
-				return gruppItem;
-			})
+			final var gruppItem = new GruppItem();
+			if (propertyOwner instanceof final PersonDTO personDTO) {
+				gruppItem.setIdentitetsnummer(personDTO.getPersonalNumber());
+				gruppItem.setUuid(UUID.randomUUID().toString());
+			} else if (propertyOwner instanceof final OrganizationDTO organizationDTO) {
+				gruppItem.setIdentitetsnummer(organizationDTO.getOrganizationNumber());
+				gruppItem.setUuid(UUID.randomUUID().toString());
+			}
+			return gruppItem;
+		})
 			.toList());
 		return responseDto;
 	}

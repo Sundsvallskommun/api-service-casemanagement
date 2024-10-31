@@ -14,7 +14,9 @@ public interface MinutMiljoClientV2 {
 
 	String TEXT_XML_UTF8 = "text/xml;charset=UTF-8";
 
-	@PostMapping(consumes = TEXT_XML_UTF8, headers = { "SOAPAction=urn:Ecos.API.MinutMiljo.Service.V2/IMinutMiljoServiceV2/RegisterDocument" })
+	@PostMapping(consumes = TEXT_XML_UTF8, headers = {
+		"SOAPAction=urn:Ecos.API.MinutMiljo.Service.V2/IMinutMiljoServiceV2/RegisterDocument"
+	})
 	RegisterDocumentResponse registerDocumentV2(
 		RegisterDocument registerDocument);
 }

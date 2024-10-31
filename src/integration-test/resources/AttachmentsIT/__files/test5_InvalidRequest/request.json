@@ -1,11 +1,9 @@
-[
-  {
-    "category": null,
-    "name": null,
-    "note": null,
-    "extension": null,
-    "mimeType": null,
-    "file": null,
-    "extraParameters": null
-  }
-]
+[{
+	"note": null,
+	"extension": null,
+	"file": null,
+	"name": null,
+	"extraParameters": null,
+	"mimeType": null,
+	"category": null
+}]

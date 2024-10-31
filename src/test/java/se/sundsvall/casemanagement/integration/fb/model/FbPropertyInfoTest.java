@@ -14,22 +14,22 @@ import static com.google.code.beanmatchers.BeanMatchers.hasValidGettersAndSetter
 import static org.hamcrest.CoreMatchers.allOf;
 
 class FbPropertyInfoTest {
-    @Test
-    void testBean() {
-        MatcherAssert.assertThat(FbPropertyInfo.class, allOf(
-                hasValidBeanConstructor(),
-                hasValidGettersAndSetters(),
-                hasValidBeanHashCode(),
-                hasValidBeanEquals(),
-                hasValidBeanToString()));
-    }
+	@Test
+	void testBean() {
+		MatcherAssert.assertThat(FbPropertyInfo.class, allOf(
+			hasValidBeanConstructor(),
+			hasValidGettersAndSetters(),
+			hasValidBeanHashCode(),
+			hasValidBeanEquals(),
+			hasValidBeanToString()));
+	}
 
-    @Test
-    void testFields() {
-        FbPropertyInfo object = new FbPropertyInfo();
-        object.setAdressplatsId(new Random().nextInt());
-        object.setFnr(new Random().nextInt());
+	@Test
+	void testFields() {
+		FbPropertyInfo object = new FbPropertyInfo();
+		object.setAdressplatsId(new Random().nextInt());
+		object.setFnr(new Random().nextInt());
 
-        Assertions.assertThat(object).isNotNull().hasNoNullFieldsOrProperties();
-    }
+		Assertions.assertThat(object).isNotNull().hasNoNullFieldsOrProperties();
+	}
 }

@@ -59,7 +59,6 @@ class PartyServiceTest {
 		verifyNoInteractions(citizenService);
 	}
 
-
 	@Test
 	void findAndAddPartyToCase_withPersonStakeholder() {
 

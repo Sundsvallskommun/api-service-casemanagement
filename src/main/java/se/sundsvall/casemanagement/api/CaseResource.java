@@ -60,12 +60,15 @@ class CaseResource {
 	}
 
 	@Operation(description = "Creates a case in ByggR or Ecos2 based on caseType. Also persists a connection between externalCaseId and the created case.")
-	@PostMapping(path = "cases", consumes = MediaType.APPLICATION_JSON_VALUE, produces = {APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE})
+	@PostMapping(path = "cases", consumes = MediaType.APPLICATION_JSON_VALUE, produces = {
+		APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
+	})
 	@ApiResponse(responseCode = "200", description = "OK")
 	public ResponseEntity<CaseResourceResponseDTO> postCases(
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable(name = "municipalityId") final String municipalityId,
-		@Schema(oneOf = {ByggRCaseDTO.class, EcosCaseDTO.class, OtherCaseDTO.class}, example = Constants.POST_CASES_REQUEST_BODY_EXAMPLE)
-		@RequestBody @Valid final CaseDTO caseDTOInput) {
+		@Schema(oneOf = {
+			ByggRCaseDTO.class, EcosCaseDTO.class, OtherCaseDTO.class
+		}, example = Constants.POST_CASES_REQUEST_BODY_EXAMPLE) @RequestBody @Valid final CaseDTO caseDTOInput) {
 
 		// Validates that it doesn't exist any case with the same oep-ID and municipalityId
 		caseMappingService.validateUniqueCase(caseDTOInput, municipalityId);
@@ -76,13 +79,16 @@ class CaseResource {
 	}
 
 	@Operation(description = "Update a case.")
-	@PutMapping(path = "cases/{externalCaseId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = {APPLICATION_PROBLEM_JSON_VALUE})
+	@PutMapping(path = "cases/{externalCaseId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = {
+		APPLICATION_PROBLEM_JSON_VALUE
+	})
 	@ApiResponse(responseCode = "204", description = "No content")
 	public ResponseEntity<Void> putCase(
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable(name = "municipalityId") final String municipalityId,
 		@Parameter(name = "externalCaseId", description = "External case id", example = "1234") @PathVariable(name = "externalCaseId") final String externalCaseId,
-		@Schema(oneOf = {ByggRCaseDTO.class, EcosCaseDTO.class, OtherCaseDTO.class}, example = Constants.POST_CASES_REQUEST_BODY_EXAMPLE)
-		@RequestBody @Valid final CaseDTO caseDTOInput) {
+		@Schema(oneOf = {
+			ByggRCaseDTO.class, EcosCaseDTO.class, OtherCaseDTO.class
+		}, example = Constants.POST_CASES_REQUEST_BODY_EXAMPLE) @RequestBody @Valid final CaseDTO caseDTOInput) {
 		if (caseDTOInput instanceof final OtherCaseDTO otherCaseDTO) {
 			caseDataService.putErrand(Long.valueOf(caseMappingService.getCaseMapping(externalCaseId, municipalityId).getCaseId()), otherCaseDTO, municipalityId);
 			return noContent().build();

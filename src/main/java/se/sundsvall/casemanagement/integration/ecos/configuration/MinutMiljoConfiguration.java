@@ -1,6 +1,5 @@
 package se.sundsvall.casemanagement.integration.ecos.configuration;
 
-
 import java.nio.charset.StandardCharsets;
 
 import javax.net.ssl.X509TrustManager;

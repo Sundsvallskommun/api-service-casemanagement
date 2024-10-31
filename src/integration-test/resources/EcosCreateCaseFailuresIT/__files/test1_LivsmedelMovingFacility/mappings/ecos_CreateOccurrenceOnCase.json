@@ -1,26 +1,22 @@
 {
-  "request": {
-    "url": "/Ecos2PublicServices/MinutMiljoService.svc",
-    "method": "POST",
-    "bodyPatterns": [
-      {
-        "contains": "CreateOccurrenceOnCase"
-      }
-    ]
-  },
-  "response": {
-    "status": 200,
-    "body": "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\"><s:Body><CreateOccurrenceOnCaseResponse  xmlns=\"urn:Ecos.API.MinutMiljo.Service.V1\"><CreateOccurrenceOnCaseResult>e19981ad-34b2-4e14-88f5-133f61ca85aa</CreateOccurrenceOnCaseResult></CreateOccurrenceOnCaseResponse></s:Body></s:Envelope>",
-    "headers": {
-      "Content-Type": "text/xml; charset=utf-8",
-      "Vary": "Accept-Encoding",
-      "Server": "Microsoft-IIS/10.0",
-      "X-Powered-By": "ASP.NET",
-      "Date": "Wed, 28 Jul 2021 09:32:38 GMT",
-      "Persistent-Auth": "true",
-      "Cache-Control": "private",
-      "X-AspNet-Version": "4.0.30319",
-      "Set-Cookie": "ASP.NET_SessionId=2ih1nqy0igdxjlzxular3k4t; path=/; HttpOnly; SameSite=Lax"
-    }
-  }
+	"request": {
+		"method": "POST",
+		"bodyPatterns": [{"contains": "CreateOccurrenceOnCase"}],
+		"url": "/Ecos2PublicServices/MinutMiljoService.svc"
+	},
+	"response": {
+		"headers": {
+			"Server": "Microsoft-IIS/10.0",
+			"Cache-Control": "private",
+			"X-AspNet-Version": "4.0.30319",
+			"Vary": "Accept-Encoding",
+			"Set-Cookie": "ASP.NET_SessionId=2ih1nqy0igdxjlzxular3k4t; path=/; HttpOnly; SameSite=Lax",
+			"Persistent-Auth": "true",
+			"Date": "Wed, 28 Jul 2021 09:32:38 GMT",
+			"Content-Type": "text/xml; charset=utf-8",
+			"X-Powered-By": "ASP.NET"
+		},
+		"body": "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\"><s:Body><CreateOccurrenceOnCaseResponse  xmlns=\"urn:Ecos.API.MinutMiljo.Service.V1\"><CreateOccurrenceOnCaseResult>e19981ad-34b2-4e14-88f5-133f61ca85aa<\/CreateOccurrenceOnCaseResult><\/CreateOccurrenceOnCaseResponse><\/s:Body><\/s:Envelope>",
+		"status": 200
+	}
 }

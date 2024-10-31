@@ -27,10 +27,14 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", include = JsonTypeInfo.As.EXISTING_PROPERTY, visible = true)
-@JsonSubTypes({@Type(value = PersonDTO.class, name = StakeholderType.Constants.PERSON_VALUE),
-	@Type(value = OrganizationDTO.class, name = StakeholderType.Constants.ORGANIZATION_VALUE)})
-@JsonPropertyOrder({"type", "roles", "organizationName", "organizationNumber", "firstName", "lastName", "personId",
-	"phoneNumber", "emailAddress", "address", "billingAddress"})
+@JsonSubTypes({
+	@Type(value = PersonDTO.class, name = StakeholderType.Constants.PERSON_VALUE),
+	@Type(value = OrganizationDTO.class, name = StakeholderType.Constants.ORGANIZATION_VALUE)
+})
+@JsonPropertyOrder({
+	"type", "roles", "organizationName", "organizationNumber", "firstName", "lastName", "personId",
+	"phoneNumber", "emailAddress", "address", "billingAddress"
+})
 @Data
 @SuperBuilder(setterPrefix = "with")
 @NoArgsConstructor

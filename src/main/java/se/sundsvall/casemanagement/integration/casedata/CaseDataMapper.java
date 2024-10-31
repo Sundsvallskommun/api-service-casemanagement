@@ -66,32 +66,32 @@ public final class CaseDataMapper {
 
 	public static Facility toFacility(final FacilityDTO facilityDTO) {
 		return Optional.ofNullable(facilityDTO).map(f -> new Facility()
-				.mainFacility(f.isMainFacility())
-				.facilityType(f.getFacilityType())
-				.facilityCollectionName(f.getFacilityCollectionName())
-				.description(f.getDescription())
-				.extraParameters(f.getExtraParameters())
-				.address(toFacilityAddress(f.getAddress())))
+			.mainFacility(f.isMainFacility())
+			.facilityType(f.getFacilityType())
+			.facilityCollectionName(f.getFacilityCollectionName())
+			.description(f.getDescription())
+			.extraParameters(f.getExtraParameters())
+			.address(toFacilityAddress(f.getAddress())))
 			.orElse(null);
 	}
 
 	public static Address toFacilityAddress(final AddressDTO dto) {
 		return Optional.ofNullable(dto).map(address -> new Address()
-				.city(address.getCity())
-				.country(address.getCountry())
-				.postalCode(address.getPostalCode())
-				.street(address.getStreet())
-				.houseNumber(address.getHouseNumber())
-				.careOf(address.getCareOf())
-				.attention(address.getAttention())
-				.propertyDesignation(address.getPropertyDesignation())
-				.apartmentNumber(address.getAppartmentNumber())
-				.location(toCoordinates(address.getLocation()))
-				.isZoningPlanArea(address.getIsZoningPlanArea())
-				.invoiceMarking(address.getInvoiceMarking())
-				.addressCategory(Optional.ofNullable(dto.getAddressCategories())
-					.map(a -> Address.AddressCategoryEnum.VISITING_ADDRESS)
-					.orElse(null)))
+			.city(address.getCity())
+			.country(address.getCountry())
+			.postalCode(address.getPostalCode())
+			.street(address.getStreet())
+			.houseNumber(address.getHouseNumber())
+			.careOf(address.getCareOf())
+			.attention(address.getAttention())
+			.propertyDesignation(address.getPropertyDesignation())
+			.apartmentNumber(address.getAppartmentNumber())
+			.location(toCoordinates(address.getLocation()))
+			.isZoningPlanArea(address.getIsZoningPlanArea())
+			.invoiceMarking(address.getInvoiceMarking())
+			.addressCategory(Optional.ofNullable(dto.getAddressCategories())
+				.map(a -> Address.AddressCategoryEnum.VISITING_ADDRESS)
+				.orElse(null)))
 			.orElse(null);
 	}
 
@@ -166,28 +166,25 @@ public final class CaseDataMapper {
 
 	public static Coordinates toCoordinates(final CoordinatesDTO location) {
 		return Optional.ofNullable(location).map(coordinatesDTO -> new Coordinates()
-				.latitude(location.getLatitude())
-				.longitude(location.getLongitude()))
+			.latitude(location.getLatitude())
+			.longitude(location.getLongitude()))
 			.orElse(null);
 	}
 
 	public static List<ContactInformation> toContactInformation(final StakeholderDTO stakeholderDTO) {
 		final var contactInformation = new ArrayList<ContactInformation>();
 
-		Optional.ofNullable(stakeholderDTO.getCellphoneNumber()).ifPresent(cellphoneNumber ->
-			contactInformation.add(new ContactInformation()
-				.contactType(CELLPHONE)
-				.value(cellphoneNumber)));
+		Optional.ofNullable(stakeholderDTO.getCellphoneNumber()).ifPresent(cellphoneNumber -> contactInformation.add(new ContactInformation()
+			.contactType(CELLPHONE)
+			.value(cellphoneNumber)));
 
-		Optional.ofNullable(stakeholderDTO.getPhoneNumber()).ifPresent(phoneNumber ->
-			contactInformation.add(new ContactInformation()
-				.contactType(PHONE)
-				.value(phoneNumber)));
+		Optional.ofNullable(stakeholderDTO.getPhoneNumber()).ifPresent(phoneNumber -> contactInformation.add(new ContactInformation()
+			.contactType(PHONE)
+			.value(phoneNumber)));
 
-		Optional.ofNullable(stakeholderDTO.getEmailAddress()).ifPresent(emailAddress ->
-			contactInformation.add(new ContactInformation()
-				.contactType(EMAIL)
-				.value(emailAddress)));
+		Optional.ofNullable(stakeholderDTO.getEmailAddress()).ifPresent(emailAddress -> contactInformation.add(new ContactInformation()
+			.contactType(EMAIL)
+			.value(emailAddress)));
 
 		return contactInformation;
 	}
@@ -218,10 +215,10 @@ public final class CaseDataMapper {
 
 	private static List<ExtraParameter> toExtraParameters(final Map<String, String> extraParameters) {
 		return Optional.ofNullable(extraParameters).map(params -> params.entrySet().stream()
-				.map(entry -> new ExtraParameter()
-					.key(entry.getKey())
-					.values(List.of(entry.getValue())))
-				.toList())
+			.map(entry -> new ExtraParameter()
+				.key(entry.getKey())
+				.values(List.of(entry.getValue())))
+			.toList())
 			.orElse(emptyList());
 	}
 

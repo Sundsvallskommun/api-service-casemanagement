@@ -55,7 +55,9 @@ public interface CaseDataClient {
 		@RequestBody @Valid Attachment attachment);
 
 	@Operation(description = "Get all attachments.")
-	@GetMapping(path = "/{municipalityId}/{namespace}/attachments/errand/{errandNumber}", produces = {APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE})
+	@GetMapping(path = "/{municipalityId}/{namespace}/attachments/errand/{errandNumber}", produces = {
+		APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
+	})
 	List<Attachment> getAttachmentsByErrandNumber(
 		@PathVariable(name = "municipalityId") final String municipalityId,
 		@PathVariable(name = "namespace") final String namespace,
@@ -69,14 +71,18 @@ public interface CaseDataClient {
 		@PathVariable(name = "errandId") final Long errandId,
 		@PathVariable(name = "attachmentId") final Long attachmentId);
 
-	@GetMapping(path = "/{municipalityId}/{namespace}/errands/{id}", consumes = APPLICATION_JSON_VALUE, produces = {APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE})
+	@GetMapping(path = "/{municipalityId}/{namespace}/errands/{id}", consumes = APPLICATION_JSON_VALUE, produces = {
+		APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
+	})
 	Errand getErrand(
 		@PathVariable(name = "municipalityId") final String municipalityId,
 		@PathVariable(name = "namespace") final String namespace,
 		@PathVariable(name = "id") final Long id);
 
 	@Operation(description = "Update errand.")
-	@PatchMapping(path = "/{municipalityId}/{namespace}/errands/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = {APPLICATION_PROBLEM_JSON_VALUE})
+	@PatchMapping(path = "/{municipalityId}/{namespace}/errands/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = {
+		APPLICATION_PROBLEM_JSON_VALUE
+	})
 	@ApiResponse(responseCode = "204", description = "No content - Successful operation")
 	ResponseEntity<Void> patchErrand(
 		@PathVariable(name = "municipalityId") final String municipalityId,
@@ -85,7 +91,9 @@ public interface CaseDataClient {
 		@RequestBody @Valid PatchErrand patchErrand);
 
 	@Operation(description = "Add/replace status on errand.")
-	@PutMapping(path = "/{municipalityId}/{namespace}/errands/{id}/statuses", consumes = MediaType.APPLICATION_JSON_VALUE, produces = {APPLICATION_PROBLEM_JSON_VALUE})
+	@PutMapping(path = "/{municipalityId}/{namespace}/errands/{id}/statuses", consumes = MediaType.APPLICATION_JSON_VALUE, produces = {
+		APPLICATION_PROBLEM_JSON_VALUE
+	})
 	@ApiResponse(responseCode = "204", description = "No content - Successful operation")
 	ResponseEntity<Void> putStatusOnErrand(
 		@PathVariable(name = "municipalityId") final String municipalityId,
@@ -94,7 +102,9 @@ public interface CaseDataClient {
 		@RequestBody @Valid List<Status> statusList);
 
 	@Operation(description = "Replace stakeholders on errand.")
-	@PutMapping(path = "/{municipalityId}/{namespace}/errands/{id}/stakeholders", consumes = MediaType.APPLICATION_JSON_VALUE, produces = {APPLICATION_PROBLEM_JSON_VALUE})
+	@PutMapping(path = "/{municipalityId}/{namespace}/errands/{id}/stakeholders", consumes = MediaType.APPLICATION_JSON_VALUE, produces = {
+		APPLICATION_PROBLEM_JSON_VALUE
+	})
 	@ApiResponse(responseCode = "204", description = "No content - Successful operation")
 	ResponseEntity<Void> putStakeholdersOnErrand(
 		@PathVariable(name = "municipalityId") final String municipalityId,

@@ -1,15 +1,11 @@
 {
-  "request": {
-    "urlPathPattern": "/case-data/\\d.\\d/2281/(.+)/attachments/errand/(.+)",
-    "method": "GET"
-  },
-  "response": {
-    "status": 200,
-    "bodyFileName": "test3_updateCase/response/casedata_getAttachments.json",
-    "headers": {
-      "Content-Type": [
-        "application/json"
-      ]
-    }
-  }
+	"request": {
+		"method": "GET",
+		"urlPathPattern": "/case-data/\\d.\\d/2281/(.+)/attachments/errand/(.+)"
+	},
+	"response": {
+		"headers": {"Content-Type": ["application/json"]},
+		"bodyFileName": "test3_updateCase/response/casedata_getAttachments.json",
+		"status": 200
+	}
 }
