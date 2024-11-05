@@ -179,7 +179,7 @@ public class CaseDataService {
 			return Namespace.SBK_MEX.name();
 		}
 		if (CaseType.PRH_CASE_TYPES.contains(enumValue)) {
-			return Namespace.SBK_PARKINGPERMIT.name();
+			return Namespace.SBK_PARKING_PERMIT.name();
 		}
 		return "OTHER";
 	}

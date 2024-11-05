@@ -89,7 +89,7 @@ class CaseDataServiceTest {
 		getErrand.setErrandNumber("Inskickat");
 		final var inputCase = createCase(caseType);
 		final var municipalityId = "2281";
-		final var namespace = Namespace.SBK_PARKINGPERMIT.name();
+		final var namespace = Namespace.SBK_PARKING_PERMIT.name();
 
 		// Mock
 		when(caseDataClientMock.postErrands(eq(MUNICIPALITY_ID), eq(namespace), any())).thenReturn(ResponseEntity.created(uri).build());
@@ -143,7 +143,7 @@ class CaseDataServiceTest {
 		// Arrange
 		final var errandId = new Random().nextLong();
 		final var inputCase = createCase(CaseType.PARKING_PERMIT);
-		final var namespace = Namespace.SBK_PARKINGPERMIT.name();
+		final var namespace = Namespace.SBK_PARKING_PERMIT.name();
 
 		// Mock
 		when(caseDataClientMock.patchErrand(eq(MUNICIPALITY_ID), eq(namespace), any(), any())).thenReturn(null);
@@ -191,7 +191,7 @@ class CaseDataServiceTest {
 		// Arrange
 		final var caseId = new Random().nextLong();
 		final var errandMock = new Errand();
-		final var namespace = Namespace.SBK_PARKINGPERMIT.name();
+		final var namespace = Namespace.SBK_PARKING_PERMIT.name();
 		errandMock.setId(caseId);
 		final var statusMock1 = new generated.client.casedata.Status()
 			.statusType(RandomStringUtils.random(10, true, false))
