@@ -6,7 +6,6 @@ import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
 import se.sundsvall.casemanagement.api.model.CaseDTO;
 import se.sundsvall.casemanagement.api.model.EcosCaseDTO;
 import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
-import se.sundsvall.casemanagement.integration.byggr.ByggrService;
 import se.sundsvall.casemanagement.integration.db.CaseRepository;
 import se.sundsvall.casemanagement.service.event.IncomingByggrCase;
 import se.sundsvall.casemanagement.service.event.IncomingEcosCase;
@@ -27,15 +26,11 @@ public class CaseService {
 
 	private final Validator validator;
 
-	private final ByggrService byggrService;
-
 	public CaseService(final ApplicationEventPublisher eventPublisher,
-		final CaseRepository caseRepository, final Validator validator,
-		final ByggrService byggrService) {
+		final CaseRepository caseRepository, final Validator validator) {
 		this.eventPublisher = eventPublisher;
 		this.caseRepository = caseRepository;
 		this.validator = validator;
-		this.byggrService = byggrService;
 	}
 
 	public void handleCase(final CaseDTO dto, final String municipalityId) {

@@ -1,5 +1,57 @@
 package se.sundsvall.casemanagement.integration.byggr;
 
+import arendeexport.Arende;
+import arendeexport.Arende2;
+import arendeexport.ArendeFastighet;
+import arendeexport.ArendeIntressent;
+import arendeexport.ArrayOfAbstractArendeObjekt2;
+import arendeexport.ArrayOfArendeIntressent2;
+import arendeexport.ArrayOfString;
+import arendeexport.Fastighet;
+import arendeexport.GetArende;
+import arendeexport.GetRelateradeArendenByPersOrgNrAndRole;
+import arendeexport.GetRemisserByPersOrgNr;
+import arendeexport.HandelseIntressent;
+import arendeexport.HandlaggareBas;
+import arendeexport.Remiss;
+import arendeexport.RemissStatusFilter;
+import arendeexport.SaveNewArende;
+import arendeexport.SaveNewArendeResponse2;
+import arendeexport.SaveNewHandelse;
+import arendeexport.SaveNewHandelseMessage;
+import arendeexport.SaveNewRemissvar;
+import arendeexport.SaveNewRemissvarMessage;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.zalando.problem.Problem;
+import se.sundsvall.casemanagement.api.model.AttachmentDTO;
+import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
+import se.sundsvall.casemanagement.api.model.CaseStatusDTO;
+import se.sundsvall.casemanagement.api.model.OrganizationDTO;
+import se.sundsvall.casemanagement.api.model.PersonDTO;
+import se.sundsvall.casemanagement.api.model.StakeholderDTO;
+import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
+import se.sundsvall.casemanagement.api.model.enums.SystemType;
+import se.sundsvall.casemanagement.integration.db.CaseTypeDataRepository;
+import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
+import se.sundsvall.casemanagement.integration.db.model.CaseTypeData;
+import se.sundsvall.casemanagement.integration.opene.OpenEIntegration;
+import se.sundsvall.casemanagement.service.CaseMappingService;
+import se.sundsvall.casemanagement.service.CitizenService;
+import se.sundsvall.casemanagement.service.FbService;
+import se.sundsvall.casemanagement.service.util.LegalIdUtility;
+import se.sundsvall.casemanagement.util.CaseUtil;
+import se.sundsvall.casemanagement.util.Constants;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import static java.util.Collections.emptyList;
 import static org.zalando.problem.Status.BAD_REQUEST;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.WITH_NULLABLE_FACILITY_TYPE;
@@ -40,60 +92,6 @@ import static se.sundsvall.casemanagement.util.Constants.ERRAND_NR;
 import static se.sundsvall.casemanagement.util.Constants.EVENT_CATEGORY;
 import static se.sundsvall.casemanagement.util.Constants.OTHER_INFORMATION;
 import static se.sundsvall.casemanagement.util.Constants.SYSTEM;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-import org.zalando.problem.Problem;
-
-import se.sundsvall.casemanagement.api.model.AttachmentDTO;
-import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
-import se.sundsvall.casemanagement.api.model.CaseStatusDTO;
-import se.sundsvall.casemanagement.api.model.OrganizationDTO;
-import se.sundsvall.casemanagement.api.model.PersonDTO;
-import se.sundsvall.casemanagement.api.model.StakeholderDTO;
-import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
-import se.sundsvall.casemanagement.api.model.enums.SystemType;
-import se.sundsvall.casemanagement.integration.db.CaseTypeDataRepository;
-import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
-import se.sundsvall.casemanagement.integration.db.model.CaseTypeData;
-import se.sundsvall.casemanagement.integration.opene.OpenEIntegration;
-import se.sundsvall.casemanagement.service.CaseMappingService;
-import se.sundsvall.casemanagement.service.CitizenService;
-import se.sundsvall.casemanagement.service.FbService;
-import se.sundsvall.casemanagement.service.util.LegalIdUtility;
-import se.sundsvall.casemanagement.util.CaseUtil;
-import se.sundsvall.casemanagement.util.Constants;
-
-import arendeexport.Arende;
-import arendeexport.Arende2;
-import arendeexport.ArendeFastighet;
-import arendeexport.ArendeIntressent;
-import arendeexport.ArrayOfAbstractArendeObjekt2;
-import arendeexport.ArrayOfArendeIntressent2;
-import arendeexport.ArrayOfString;
-import arendeexport.Fastighet;
-import arendeexport.GetArende;
-import arendeexport.GetRelateradeArendenByPersOrgNrAndRole;
-import arendeexport.GetRemisserByPersOrgNr;
-import arendeexport.HandelseIntressent;
-import arendeexport.HandlaggareBas;
-import arendeexport.Remiss;
-import arendeexport.RemissStatusFilter;
-import arendeexport.SaveNewArende;
-import arendeexport.SaveNewArendeResponse2;
-import arendeexport.SaveNewHandelse;
-import arendeexport.SaveNewHandelseMessage;
-import arendeexport.SaveNewRemissvar;
-import arendeexport.SaveNewRemissvarMessage;
 
 @Service
 public class ByggrService {
@@ -226,9 +224,9 @@ public class ByggrService {
 	}
 
 	/**
-	 * The incoming request might have one or two stakeholders. If any stakeholder is of type
-	 * Organization, we should use the organization number as stakeholderId.
-	 * If no organization is found, we should use the personId to fetch a personal number from
+	 * The incoming request might have one or two stakeholders. If any stakeholder is of type Organization, we should use
+	 * the organization number as stakeholderId. If no organization is found, we should use the personId to fetch a personal
+	 * number from
 	 * citizenService and use this personal number as the stakeholder id.
 	 *
 	 * @param  stakeholders List of stakeholders
