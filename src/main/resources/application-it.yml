@@ -11,6 +11,11 @@ integration:
     oauth2ClientSecret: ${SUNDSVALLS_KOMMUN_CONSUMER_SECRET}
     oauth2TokenUrl: http://localhost:${wiremock.server.port:}/token
     url: http://localhost:${wiremock.server.port:}/citizen
+  party:
+    oauth2ClientId: ${SUNDSVALLS_KOMMUN_CONSUMER_KEY}
+    oauth2ClientSecret: ${SUNDSVALLS_KOMMUN_CONSUMER_SECRET}
+    oauth2TokenUrl: http://localhost:${wiremock.server.port:}/token
+    url: http://localhost:${wiremock.server.port:}/party
   fb:
     database: test_db
     password: test_pass
