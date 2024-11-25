@@ -184,4 +184,8 @@ public class CaseDataService {
 		return "OTHER";
 	}
 
+	public List<Errand> getErrands(final String municipalityId, final String namespace, final String filter) {
+		return caseDataClient.getErrands(municipalityId, namespace, filter, "1000");
+	}
+
 }

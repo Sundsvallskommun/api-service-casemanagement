@@ -44,6 +44,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.LOST_PARKING_PERMIT;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARKING_PERMIT;
@@ -271,6 +272,22 @@ class CaseDataServiceTest {
 			.isInstanceOf(ThrowableProblem.class)
 			.hasFieldOrPropertyWithValue("status", Status.NOT_FOUND)
 			.hasFieldOrPropertyWithValue("detail", "No case was found in CaseData with caseId: " + errandId);
+	}
+
+	@Test
+	void getErrands() {
+		var partyId = UUID.randomUUID().toString();
+		var filter = "stakeholder.organizationNumber=%s".formatted(partyId);
+		var namespace = "OTHER";
+
+		when(caseDataClientMock.getErrands(MUNICIPALITY_ID, namespace, filter, "1000")).thenReturn(List.of(new Errand(), new Errand(), new Errand()));
+
+		var result = caseDataService.getErrands(MUNICIPALITY_ID, namespace, filter);
+
+		assertThat(result).hasSize(3);
+
+		verify(caseDataClientMock).getErrands(MUNICIPALITY_ID, namespace, filter, "1000");
+		verifyNoMoreInteractions(caseDataClientMock);
 	}
 
 	private OtherCaseDTO createCase(final CaseType caseType) {

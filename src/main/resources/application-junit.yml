@@ -38,6 +38,11 @@ integration:
     oauth2ClientSecret: clientSecret
     oauth2TokenUrl: token.url
     url: citizen.url
+  party:
+    oauth2ClientId: clientId
+    oauth2ClientSecret: clientSecret
+    oauth2TokenUrl: token.url
+    url: party.url
   fb:
     database: test_db
     password: test_pass
