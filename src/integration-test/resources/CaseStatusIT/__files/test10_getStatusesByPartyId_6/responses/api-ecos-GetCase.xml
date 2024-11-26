@@ -1,0 +1,86 @@
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+	<s:Body>
+		<GetCaseResponse xmlns="urn:Ecos.API.MinutMiljo.Service.V1">
+			<GetCaseResult xmlns:a="urn:Ecos.API.MinutMiljo.DataContracts.V1"
+			  xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+				<a:CaseId>e19981ad-34b2-4e14-88f5-133f61ca85aa</a:CaseId>
+				<a:CaseNumber>MK-2021-837</a:CaseNumber>
+				<a:CaseSubtitle>Kalle Anka Fabriken, SUNDSVALL BALDER 2</a:CaseSubtitle>
+				<a:CaseSubtitleFree />
+				<a:Documents>
+					<a:DocumentListItemSvcDto>
+						<a:DecisionBases i:nil="true" />
+						<a:DocumentClassificationTypeDescription>Anmälan livsmedelsanläggning
+						</a:DocumentClassificationTypeDescription>
+						<a:DocumentId>e19981ad-34b2-4e14-88f5-133f61ca85aa</a:DocumentId>
+						<a:DocumentKindId>e19981ad-34b2-4e14-88f5-133f61ca85aa</a:DocumentKindId>
+						<a:DocumentStatus>Inkommen</a:DocumentStatus>
+						<a:DocumentTypeId>e19981ad-34b2-4e14-88f5-133f61ca85aa</a:DocumentTypeId>
+						<a:Filename>8514</a:Filename>
+						<a:IsMainDecision>false</a:IsMainDecision>
+						<a:Note i:nil="true" />
+					</a:DocumentListItemSvcDto>
+				</a:Documents>
+				<a:EstateAddress>Testargatan 1 12345 Sundsvall Sverige
+				</a:EstateAddress>
+				<a:EstateDesignation>Kalle Anka Fabriken</a:EstateDesignation>
+				<a:Occurrences>
+					<a:OccurrenceListItemSvcDto>
+						<a:Documents />
+						<a:OccurrenceDate>2021-09-08T13:21:49.7366667</a:OccurrenceDate>
+						<a:OccurrenceDescription>Begäran om anstånd</a:OccurrenceDescription>
+						<a:OccurrenceId>e19981ad-34b2-4e14-88f5-133f61ca85aa</a:OccurrenceId>
+						<a:OccurrenceKindId>e19981ad-34b2-4e14-88f5-133f61ca85aa</a:OccurrenceKindId>
+						<a:OccurrenceTypeId>e19981ad-34b2-4e14-88f5-133f61ca85aa</a:OccurrenceTypeId>
+					</a:OccurrenceListItemSvcDto>
+					<a:OccurrenceListItemSvcDto>
+						<a:Documents />
+						<a:OccurrenceDate>2021-09-08T13:20:12.0166667</a:OccurrenceDate>
+						<a:OccurrenceDescription>Samråd/möte</a:OccurrenceDescription>
+						<a:OccurrenceId>e19981ad-34b2-4e14-88f5-133f61ca85aa</a:OccurrenceId>
+						<a:OccurrenceKindId>e19981ad-34b2-4e14-88f5-133f61ca85aa</a:OccurrenceKindId>
+						<a:OccurrenceTypeId>e19981ad-34b2-4e14-88f5-133f61ca85aa</a:OccurrenceTypeId>
+					</a:OccurrenceListItemSvcDto>
+					<a:OccurrenceListItemSvcDto>
+						<a:Documents />
+						<a:OccurrenceDate>2021-09-08T13:18:25.99</a:OccurrenceDate>
+						<a:OccurrenceDescription>Begäran om komplettering</a:OccurrenceDescription>
+						<a:OccurrenceId>e19981ad-34b2-4e14-88f5-133f61ca85aa</a:OccurrenceId>
+						<a:OccurrenceKindId>e19981ad-34b2-4e14-88f5-133f61ca85aa</a:OccurrenceKindId>
+						<a:OccurrenceTypeId>e19981ad-34b2-4e14-88f5-133f61ca85aa</a:OccurrenceTypeId>
+					</a:OccurrenceListItemSvcDto>
+					<a:OccurrenceListItemSvcDto>
+						<a:Documents />
+						<a:OccurrenceDate>2021-09-07T00:00:00</a:OccurrenceDate>
+						<a:OccurrenceDescription>Aktrensning</a:OccurrenceDescription>
+						<a:OccurrenceId>e19981ad-34b2-4e14-88f5-133f61ca85aa</a:OccurrenceId>
+						<a:OccurrenceKindId>e19981ad-34b2-4e14-88f5-133f61ca85aa</a:OccurrenceKindId>
+						<a:OccurrenceTypeId>e19981ad-34b2-4e14-88f5-133f61ca85aa</a:OccurrenceTypeId>
+					</a:OccurrenceListItemSvcDto>
+					<a:OccurrenceListItemSvcDto>
+						<a:Documents>
+							<a:DocumentListItemSvcDto>
+								<a:DecisionBases i:nil="true" />
+								<a:DocumentClassificationTypeDescription>Anmälan livsmedelsanläggning
+								</a:DocumentClassificationTypeDescription>
+								<a:DocumentId>e19981ad-34b2-4e14-88f5-133f61ca85aa</a:DocumentId>
+								<a:DocumentKindId>e19981ad-34b2-4e14-88f5-133f61ca85aa</a:DocumentKindId>
+								<a:DocumentStatus>Inkommen</a:DocumentStatus>
+								<a:DocumentTypeId>e19981ad-34b2-4e14-88f5-133f61ca85aa</a:DocumentTypeId>
+								<a:Filename>8514</a:Filename>
+								<a:IsMainDecision>false</a:IsMainDecision>
+								<a:Note i:nil="true" />
+							</a:DocumentListItemSvcDto>
+						</a:Documents>
+						<a:OccurrenceDate>2021-08-31T13:46:42.6466667</a:OccurrenceDate>
+						<a:OccurrenceDescription>Anmälan</a:OccurrenceDescription>
+						<a:OccurrenceId>e19981ad-34b2-4e14-88f5-133f61ca85aa</a:OccurrenceId>
+						<a:OccurrenceKindId>e19981ad-34b2-4e14-88f5-133f61ca85aa</a:OccurrenceKindId>
+						<a:OccurrenceTypeId>e19981ad-34b2-4e14-88f5-133f61ca85aa</a:OccurrenceTypeId>
+					</a:OccurrenceListItemSvcDto>
+				</a:Occurrences>
+				<a:ProcessTypeName>Registrering av livsmedelsanläggning</a:ProcessTypeName>
+			</GetCaseResult>
+		</GetCaseResponse>
+	</s:Body>
+</s:Envelope>

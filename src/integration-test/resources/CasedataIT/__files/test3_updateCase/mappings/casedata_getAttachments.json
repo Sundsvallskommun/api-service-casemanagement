@@ -1,7 +1,7 @@
 {
 	"request": {
 		"method": "GET",
-		"urlPathPattern": "/case-data/\\d.\\d/2281/(.+)/attachments/errand/(.+)"
+		"urlPathPattern": "/case-data/2281/(.+)/attachments/errand/(.+)"
 	},
 	"response": {
 		"headers": {"Content-Type": ["application/json"]},

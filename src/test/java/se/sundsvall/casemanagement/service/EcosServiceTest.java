@@ -1,57 +1,6 @@
 package se.sundsvall.casemanagement.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static se.sundsvall.casemanagement.TestUtil.ADRESSPLATS_ID;
-import static se.sundsvall.casemanagement.TestUtil.FNR;
-
-import java.nio.charset.StandardCharsets;
-import java.text.MessageFormat;
-import java.time.LocalDateTime;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.testcontainers.shaded.org.apache.commons.lang3.RandomStringUtils;
-import org.zalando.problem.Problem;
-
-import se.sundsvall.casemanagement.TestUtil;
-import se.sundsvall.casemanagement.api.model.AddressDTO;
-import se.sundsvall.casemanagement.api.model.AttachmentDTO;
-import se.sundsvall.casemanagement.api.model.CaseDTO;
-import se.sundsvall.casemanagement.api.model.EcosCaseDTO;
-import se.sundsvall.casemanagement.api.model.FacilityDTO;
-import se.sundsvall.casemanagement.api.model.OrganizationDTO;
-import se.sundsvall.casemanagement.api.model.PersonDTO;
-import se.sundsvall.casemanagement.api.model.enums.AddressCategory;
-import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
-import se.sundsvall.casemanagement.api.model.enums.CaseType;
-import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
-import se.sundsvall.casemanagement.api.model.enums.StakeholderType;
-import se.sundsvall.casemanagement.api.model.enums.SystemType;
-import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
-import se.sundsvall.casemanagement.integration.ecos.EcosService;
-import se.sundsvall.casemanagement.integration.ecos.MinutMiljoClient;
-import se.sundsvall.casemanagement.integration.ecos.MinutMiljoClientV2;
-import se.sundsvall.casemanagement.integration.ecos.PartyService;
-import se.sundsvall.casemanagement.util.CaseUtil;
-import se.sundsvall.casemanagement.util.Constants;
-
+import generated.client.party.PartyType;
 import minutmiljo.AddDocumentsToCase;
 import minutmiljo.ArrayOfOccurrenceListItemSvcDto;
 import minutmiljo.ArrayOfPartySvcDto;
@@ -83,6 +32,56 @@ import minutmiljo.SearchCaseResultSvcDto;
 import minutmiljo.SepticTankSvcDto;
 import minutmiljoV2.RegisterDocument;
 import minutmiljoV2.RegisterDocumentCaseSvcDtoV2;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.testcontainers.shaded.org.apache.commons.lang3.RandomStringUtils;
+import org.zalando.problem.Problem;
+import se.sundsvall.casemanagement.TestUtil;
+import se.sundsvall.casemanagement.api.model.AddressDTO;
+import se.sundsvall.casemanagement.api.model.AttachmentDTO;
+import se.sundsvall.casemanagement.api.model.CaseDTO;
+import se.sundsvall.casemanagement.api.model.EcosCaseDTO;
+import se.sundsvall.casemanagement.api.model.FacilityDTO;
+import se.sundsvall.casemanagement.api.model.OrganizationDTO;
+import se.sundsvall.casemanagement.api.model.PersonDTO;
+import se.sundsvall.casemanagement.api.model.enums.AddressCategory;
+import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
+import se.sundsvall.casemanagement.api.model.enums.CaseType;
+import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
+import se.sundsvall.casemanagement.api.model.enums.StakeholderType;
+import se.sundsvall.casemanagement.api.model.enums.SystemType;
+import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
+import se.sundsvall.casemanagement.integration.ecos.EcosService;
+import se.sundsvall.casemanagement.integration.ecos.MinutMiljoClient;
+import se.sundsvall.casemanagement.integration.ecos.MinutMiljoClientV2;
+import se.sundsvall.casemanagement.integration.ecos.PartyService;
+import se.sundsvall.casemanagement.util.CaseUtil;
+import se.sundsvall.casemanagement.util.Constants;
+
+import java.nio.charset.StandardCharsets;
+import java.text.MessageFormat;
+import java.time.LocalDateTime;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static se.sundsvall.casemanagement.TestUtil.ADRESSPLATS_ID;
+import static se.sundsvall.casemanagement.TestUtil.FNR;
 
 @ExtendWith(MockitoExtension.class)
 class EcosServiceTest {
@@ -823,10 +822,10 @@ class EcosServiceTest {
 		when(caseMappingServiceMock.getCaseMapping(any(), any(), eq(MUNICIPALITY_ID))).thenReturn(List.of(caseMapping));
 		when(minutMiljoClientMock.getCase(any())).thenReturn(new GetCaseResponse().withGetCaseResult(caseSvcDto));
 		when(minutMiljoClientMock.searchCase(any())).thenReturn(searchCaseResponse);
-		when(partyServiceMock.searchPartyByOrganizationNumber(any())).thenReturn(arrayOfPartySvcDto);
+		when(partyServiceMock.searchPartyByLegalId(orgnr, PartyType.ENTERPRISE)).thenReturn(arrayOfPartySvcDto);
 
 		// Act
-		final var result = ecosService.getEcosStatusByOrgNr(orgnr, MUNICIPALITY_ID);
+		final var result = ecosService.getEcosStatusByLegalId(orgnr, PartyType.ENTERPRISE, MUNICIPALITY_ID);
 
 		// Assert
 		assertThat(result).hasSize(2);

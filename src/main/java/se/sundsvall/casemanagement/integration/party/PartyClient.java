@@ -11,7 +11,7 @@ import java.util.Optional;
 import static se.sundsvall.casemanagement.integration.party.configuration.PartyConfiguration.CLIENT_ID;
 
 @FeignClient(name = CLIENT_ID,
-	url = "${integration.citizen.url}",
+	url = "${integration.party.url}",
 	configuration = PartyConfiguration.class,
 	dismiss404 = true)
 public interface PartyClient {

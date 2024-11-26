@@ -1,7 +1,7 @@
 {
 	"request": {
 		"method": "DELETE",
-		"urlPathPattern": "/case-data/\\d.\\d/2281/(.+)/errands/(.+)/attachments/(.+)"
+		"urlPathPattern": "/case-data/2281/(.+)/errands/(.+)/attachments/(.+)"
 	},
 	"response": {
 		"headers": {

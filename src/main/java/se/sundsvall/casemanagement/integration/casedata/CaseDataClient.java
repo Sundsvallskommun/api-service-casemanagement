@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -113,7 +114,7 @@ public interface CaseDataClient {
 		@RequestBody @Valid List<Stakeholder> stakeholderList);
 
 	@GetMapping(path = "/{municipalityId}/{namespace}/errands")
-	List<Errand> getErrands(
+	Page<Errand> getErrands(
 		@PathVariable(name = "municipalityId") final String municipalityId,
 		@PathVariable(name = "namespace") final String namespace,
 		@RequestParam @Parameter(

@@ -1,0 +1,23 @@
+{
+	"request": {
+		"headers": {"SoapAction": {"equalTo": "urn:Ecos.API.MinutMiljo.Service.V1/IMinutMiljoService/SearchParty"}},
+		"method": "POST",
+		"bodyPatterns": [{"equalToXml": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\"><SOAP-ENV:Header/><SOAP-ENV:Body><ns2:SearchParty xmlns=\"urn:Ecos.API.MinutMiljo.DataContracts.V1\" xmlns:ns2=\"urn:Ecos.API.MinutMiljo.Service.V1\"><ns2:model><ExactOrganizationName xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/><Name xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/><PersonalIdentificationNumber xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/><OrganizationIdentificationNumber>16212000-2411<\/OrganizationIdentificationNumber><\/ns2:model><\/ns2:SearchParty><\/SOAP-ENV:Body><\/SOAP-ENV:Envelope>"}],
+		"url": "/Ecos2PublicServices/MinutMiljoService.svc"
+	},
+	"response": {
+		"headers": {
+			"Server": "Microsoft-IIS/10.0",
+			"Cache-Control": "private",
+			"X-AspNet-Version": "4.0.30319",
+			"Vary": "Accept-Encoding",
+			"Set-Cookie": "ASP.NET_SessionId=2ih1nqy0igdxjlzxular3k4t; path=/; HttpOnly; SameSite=Lax",
+			"Persistent-Auth": "true",
+			"Date": "Wed, 28 Jul 2021 09:32:38 GMT",
+			"Content-Type": "text/xml; charset=utf-8",
+			"X-Powered-By": "ASP.NET"
+		},
+		"bodyFileName": "test10_getStatusesByPartyId_6/responses/api-ecos-SearchParty-no-hits.xml",
+		"status": 200
+	}
+}

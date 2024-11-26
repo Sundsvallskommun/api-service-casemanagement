@@ -16,14 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.zalando.problem.Problem;
 import org.zalando.problem.violations.ConstraintViolationProblem;
 import se.sundsvall.casemanagement.api.model.CaseStatusDTO;
-import se.sundsvall.casemanagement.integration.byggr.ByggrService;
-import se.sundsvall.casemanagement.integration.casedata.CaseDataService;
-import se.sundsvall.casemanagement.integration.ecos.EcosService;
-import se.sundsvall.casemanagement.service.CaseMappingService;
+import se.sundsvall.casemanagement.service.StatusService;
 import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
 import se.sundsvall.dept44.common.validators.annotation.ValidUuid;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -46,17 +42,10 @@ import static se.sundsvall.casemanagement.util.Constants.ORGNR_PATTERN_REGEX;
 @ApiResponse(responseCode = "502", description = "Bad Gateway", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 class CaseStatusResource {
 
-	private final ByggrService byggrService;
-	private final EcosService ecosService;
-	private final CaseDataService caseDataService;
-	private final CaseMappingService caseMappingService;
+	private final StatusService statusService;
 
-	CaseStatusResource(final ByggrService byggrService, final EcosService ecosService,
-		final CaseDataService caseDataService, final CaseMappingService caseMappingService) {
-		this.byggrService = byggrService;
-		this.ecosService = ecosService;
-		this.caseDataService = caseDataService;
-		this.caseMappingService = caseMappingService;
+	CaseStatusResource(final StatusService statusService) {
+		this.statusService = statusService;
 	}
 
 	@GetMapping(path = "/organization/{organizationNumber}/cases/status")
@@ -65,17 +54,9 @@ class CaseStatusResource {
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable(name = "municipalityId") final String municipalityId,
 		@Pattern(regexp = ORGNR_PATTERN_REGEX, message = ORGNR_PATTERN_MESSAGE) @Schema(description = "Organization number with 10 or 12 digits.", example = "20220622-2396") @Parameter(name = "organizationNumber",
 			description = "OrganizationNumber") @PathVariable(name = "organizationNumber") final String organizationNumber) {
+		var caseStatuses = statusService.getStatusByOrgNr(municipalityId, organizationNumber);
 
-		final List<CaseStatusDTO> caseStatusDTOList = new ArrayList<>();
-
-		caseStatusDTOList.addAll(byggrService.getByggrStatusByOrgNr(organizationNumber, municipalityId));
-		caseStatusDTOList.addAll(ecosService.getEcosStatusByOrgNr(organizationNumber, municipalityId));
-
-		if (caseStatusDTOList.isEmpty()) {
-			return ResponseEntity.notFound().build();
-		}
-
-		return ResponseEntity.ok(caseStatusDTOList);
+		return caseStatuses.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(caseStatuses);
 	}
 
 	@GetMapping(path = "/cases/{externalCaseId}/status")
@@ -83,16 +64,7 @@ class CaseStatusResource {
 	ResponseEntity<CaseStatusDTO> getStatusByExternalCaseId(
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable(name = "municipalityId") final String municipalityId,
 		@Parameter(name = "externalCaseId", description = "External case id") @PathVariable(name = "externalCaseId") final String externalCaseId) {
-
-		final var caseMapping = caseMappingService.getCaseMapping(externalCaseId, municipalityId);
-
-		final CaseStatusDTO caseStatusDTO = switch (caseMapping.getSystem()) {
-			case BYGGR -> byggrService.toByggrStatus(caseMapping);
-			case ECOS -> ecosService.getStatus(caseMapping.getCaseId(), caseMapping.getExternalCaseId(), municipalityId);
-			case CASE_DATA -> caseDataService.getStatus(caseMapping, municipalityId);
-		};
-
-		return ResponseEntity.ok(caseStatusDTO);
+		return ResponseEntity.ok(statusService.getStatusByExternalCaseId(municipalityId, externalCaseId));
 	}
 
 	@GetMapping(path = "/{partyId}/statuses")
@@ -100,10 +72,7 @@ class CaseStatusResource {
 	ResponseEntity<List<CaseStatusDTO>> getStatusesByPartyId(
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable(name = "municipalityId") final String municipalityId,
 		@Parameter(name = "partyId", description = "Party id") @ValidUuid @PathVariable(name = "partyId") final String partyId) {
-
-		// TODO: Implement this method.
-
-		return ResponseEntity.ok().build();
+		return ResponseEntity.ok(statusService.getStatusesByPartyId(municipalityId, partyId));
 	}
 
 }

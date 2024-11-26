@@ -1,5 +1,6 @@
 package se.sundsvall.casemanagement.integration.ecos;
 
+import generated.client.party.PartyType;
 import minutmiljo.AddDocumentsToCase;
 import minutmiljo.AddDocumentsToCaseSvcDto;
 import minutmiljo.AddPartyToFacility;
@@ -734,11 +735,11 @@ public class EcosService {
 		throw Problem.valueOf(Status.NOT_FOUND, Constants.ERR_MSG_STATUS_NOT_FOUND);
 	}
 
-	public List<CaseStatusDTO> getEcosStatusByOrgNr(final String organizationNumber, final String municipalityId) {
+	public List<CaseStatusDTO> getEcosStatusByLegalId(final String legalId, final PartyType partyType, final String municipalityId) {
 		final List<CaseStatusDTO> caseStatusDTOList = new ArrayList<>();
 
 		// Find party both with and without prefix "16"
-		final ArrayOfPartySvcDto allParties = partyService.searchPartyByOrganizationNumber(organizationNumber);
+		final ArrayOfPartySvcDto allParties = partyService.searchPartyByLegalId(legalId, partyType);
 
 		// Search Ecos Case
 		if ((allParties.getPartySvcDto() != null) && !allParties.getPartySvcDto().isEmpty()) {

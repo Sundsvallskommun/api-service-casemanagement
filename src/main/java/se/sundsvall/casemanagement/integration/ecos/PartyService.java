@@ -1,24 +1,6 @@
 package se.sundsvall.casemanagement.integration.ecos;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import org.springframework.stereotype.Service;
-import org.zalando.problem.Problem;
-import org.zalando.problem.Status;
-
-import se.sundsvall.casemanagement.api.model.AddressDTO;
-import se.sundsvall.casemanagement.api.model.EcosCaseDTO;
-import se.sundsvall.casemanagement.api.model.OrganizationDTO;
-import se.sundsvall.casemanagement.api.model.PersonDTO;
-import se.sundsvall.casemanagement.api.model.StakeholderDTO;
-import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
-import se.sundsvall.casemanagement.service.CitizenService;
-import se.sundsvall.casemanagement.util.CaseUtil;
-import se.sundsvall.casemanagement.util.Constants;
-
+import generated.client.party.PartyType;
 import minutmiljo.AddPartyToCase;
 import minutmiljo.AddPartyToCaseSvcDto;
 import minutmiljo.AddressTypeSvcDto;
@@ -38,6 +20,23 @@ import minutmiljo.PersonSvcDto;
 import minutmiljo.SearchParty;
 import minutmiljo.SearchPartyResponse;
 import minutmiljo.SearchPartySvcDto;
+import org.springframework.stereotype.Service;
+import org.zalando.problem.Problem;
+import org.zalando.problem.Status;
+import se.sundsvall.casemanagement.api.model.AddressDTO;
+import se.sundsvall.casemanagement.api.model.EcosCaseDTO;
+import se.sundsvall.casemanagement.api.model.OrganizationDTO;
+import se.sundsvall.casemanagement.api.model.PersonDTO;
+import se.sundsvall.casemanagement.api.model.StakeholderDTO;
+import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
+import se.sundsvall.casemanagement.service.CitizenService;
+import se.sundsvall.casemanagement.util.CaseUtil;
+import se.sundsvall.casemanagement.util.Constants;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class PartyService {
@@ -299,6 +298,46 @@ public class PartyService {
 		}
 
 		return allParties;
+	}
+
+	public ArrayOfPartySvcDto searchPartyByLegalId(final String legalId, final PartyType partyType) {
+
+		// Find party both with and without prefix "16"
+		final var allParties = new ArrayOfPartySvcDto();
+
+		final var partiesWithoutPrefix = minutMiljoClient.searchParty(createSearchPartyWithoutPrefixedLegalId(legalId, partyType));
+		final var partiesWithPrefix = minutMiljoClient.searchParty(createSearchPartyWithPrefixedLegalId(legalId, partyType));
+
+		if (partiesWithoutPrefix != null) {
+			allParties.getPartySvcDto().addAll(partiesWithoutPrefix.getSearchPartyResult().getPartySvcDto());
+		}
+		if (partiesWithPrefix != null) {
+			allParties.getPartySvcDto().addAll(partiesWithPrefix.getSearchPartyResult().getPartySvcDto());
+		}
+
+		return allParties;
+	}
+
+	private SearchParty createSearchPartyWithoutPrefixedLegalId(final String legalId, final PartyType partyType) {
+		final var searchParty = new SearchParty()
+			.withModel(new SearchPartySvcDto());
+		if (partyType == PartyType.ENTERPRISE) {
+			searchParty.getModel().setOrganizationIdentificationNumber(legalId);
+		} else {
+			searchParty.getModel().setPersonalIdentificationNumber(legalId);
+		}
+		return searchParty;
+	}
+
+	private SearchParty createSearchPartyWithPrefixedLegalId(final String legalId, final PartyType partyType) {
+		final var searchParty = new SearchParty()
+			.withModel(new SearchPartySvcDto());
+		if (partyType == PartyType.ENTERPRISE) {
+			searchParty.getModel().setOrganizationIdentificationNumber(CaseUtil.getSokigoFormattedOrganizationNumber(legalId));
+		} else {
+			searchParty.getModel().setPersonalIdentificationNumber(CaseUtil.getSokigoFormattedPersonalNumber(legalId));
+		}
+		return searchParty;
 	}
 
 }

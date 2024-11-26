@@ -12,6 +12,8 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.ResponseEntity;
 import org.testcontainers.shaded.org.apache.commons.lang3.RandomStringUtils;
 import org.zalando.problem.Problem;
@@ -26,24 +28,30 @@ import se.sundsvall.casemanagement.api.model.enums.Namespace;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderType;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
+import se.sundsvall.casemanagement.integration.casedata.configuration.CaseDataProperties;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.service.CaseMappingService;
 import se.sundsvall.casemanagement.util.Constants;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.within;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.LOST_PARKING_PERMIT;
@@ -65,6 +73,9 @@ class CaseDataServiceTest {
 
 	@Mock
 	private CaseDataClient caseDataClientMock;
+
+	@Mock
+	private CaseDataProperties caseDataPropertiesMock;
 
 	@Captor
 	private ArgumentCaptor<PatchErrand> patchErrandArgumentCaptor;
@@ -279,8 +290,8 @@ class CaseDataServiceTest {
 		var partyId = UUID.randomUUID().toString();
 		var filter = "stakeholder.organizationNumber=%s".formatted(partyId);
 		var namespace = "OTHER";
-
-		when(caseDataClientMock.getErrands(MUNICIPALITY_ID, namespace, filter, "1000")).thenReturn(List.of(new Errand(), new Errand(), new Errand()));
+		Page<Errand> page = new PageImpl<>(List.of(new Errand(), new Errand(), new Errand()));
+		when(caseDataClientMock.getErrands(MUNICIPALITY_ID, namespace, filter, "1000")).thenReturn(page);
 
 		var result = caseDataService.getErrands(MUNICIPALITY_ID, namespace, filter);
 
@@ -288,6 +299,76 @@ class CaseDataServiceTest {
 
 		verify(caseDataClientMock).getErrands(MUNICIPALITY_ID, namespace, filter, "1000");
 		verifyNoMoreInteractions(caseDataClientMock);
+	}
+
+	@Test
+	void getStatusByFilter() {
+		var namespace1 = "namespace1";
+		var namespace2 = "namespace2";
+		var namespaceMap = Map.of(MUNICIPALITY_ID, List.of(namespace1, namespace2));
+		var errand = createErrand();
+		Page<Errand> page = new PageImpl<>(List.of(errand));
+		when(caseDataClientMock.getErrands(MUNICIPALITY_ID, namespace1, "filter", "1000")).thenReturn(page);
+		when(caseDataClientMock.getErrands(MUNICIPALITY_ID, namespace2, "filter", "1000")).thenReturn(page);
+		when(caseDataPropertiesMock.namespaces()).thenReturn(namespaceMap);
+
+		var result = caseDataService.getStatusesByFilter("filter", MUNICIPALITY_ID);
+
+		assertThat(result).hasSize(2);
+		assertThat(result).allSatisfy(caseStatus -> {
+			assertThat(caseStatus.getSystem()).isEqualTo(SystemType.CASE_DATA);
+			assertThat(caseStatus.getExternalCaseId()).isEqualTo("1234567890");
+			assertThat(caseStatus.getCaseId()).isEqualTo("1");
+			assertThat(caseStatus.getStatus()).isEqualTo("STATUS_TYPE");
+			assertThat(caseStatus.getTimestamp()).isCloseTo(LocalDateTime.now(), within(5, ChronoUnit.SECONDS));
+			assertThat(caseStatus.getServiceName()).isEqualTo("VALUE1");
+		});
+		verify(caseDataPropertiesMock).namespaces();
+		verify(caseDataClientMock).getErrands(MUNICIPALITY_ID, namespace1, "filter", "1000");
+		verify(caseDataClientMock).getErrands(MUNICIPALITY_ID, namespace2, "filter", "1000");
+		verifyNoMoreInteractions(caseDataClientMock, caseDataPropertiesMock);
+		verifyNoInteractions(caseMappingServiceMock);
+	}
+
+	@Test
+	void toCaseStatusDTO() {
+		var errand = createErrand();
+
+		var result = caseDataService.toCaseStatusDTO(errand);
+
+		assertThat(result.getCaseId()).isEqualTo("1");
+		assertThat(result.getExternalCaseId()).isEqualTo("1234567890");
+		assertThat(result.getCaseType()).isEqualTo("CASE_TYPE");
+		assertThat(result.getSystem()).isEqualTo(SystemType.CASE_DATA);
+		assertThat(result.getStatus()).isEqualTo("STATUS_TYPE");
+		assertThat(result.getTimestamp()).isCloseTo(LocalDateTime.now(), within(5, ChronoUnit.SECONDS));
+		assertThat(result.getServiceName()).isEqualTo("VALUE1");
+		verifyNoInteractions(caseMappingServiceMock, caseDataPropertiesMock, caseDataClientMock);
+	}
+
+	private Errand createErrand() {
+		var errand = new Errand();
+		errand.setExternalCaseId("1234567890");
+		errand.setId(1L);
+		errand.setCaseType("CASE_TYPE");
+		errand.setStatuses(List.of(createStatus()));
+		errand.setExtraParameters(List.of(createExtraParameter()));
+		return errand;
+	}
+
+	private generated.client.casedata.Status createStatus() {
+		var status = new generated.client.casedata.Status();
+		status.setStatusType("STATUS_TYPE");
+		status.setDateTime(OffsetDateTime.now());
+		status.setDescription("DESCRIPTION");
+		return status;
+	}
+
+	private generated.client.casedata.ExtraParameter createExtraParameter() {
+		var extraParameter = new generated.client.casedata.ExtraParameter();
+		extraParameter.setKey("serviceName");
+		extraParameter.setValues(List.of("VALUE1", "VALUE2"));
+		return extraParameter;
 	}
 
 	private OtherCaseDTO createCase(final CaseType caseType) {

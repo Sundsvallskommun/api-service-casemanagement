@@ -186,7 +186,7 @@
 			}],
 			"decisions": []
 		}}],
-		"urlPathPattern": "/case-data/\\d.\\d/2281/(.+)/errands"
+		"urlPathPattern": "/case-data/2281/(.+)/errands"
 	},
 	"response": {
 		"headers": {

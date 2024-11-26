@@ -57,7 +57,10 @@ VALUES ('BYGG 2021-000200', '3522', 'NYBYGGNAD_ANSOKAN_OM_BYGGLOV',
 
        ('e19981ad-34b2-4e14-88f5-133f61ca85aa', '2223', 'REGISTRERING_AV_LIVSMEDEL',
         'Registrering av livsmedelsanläggning', 'ECOS', '2023-05-12 14:53:58.672027', '2281'),
-    
+
 
        ('24', '231', 'PARKING_PERMIT', 'Parkeringstillstånd', 'CASE_DATA',
+        '2023-05-12 14:53:58.672027', '2281'),
+
+       ('BYGG 2022-000003', '231156', 'NYBYGGNAD_ANSOKAN_OM_BYGGLOV', 'Ansökan - nybyggnad', 'BYGGR',
         '2023-05-12 14:53:58.672027', '2281');

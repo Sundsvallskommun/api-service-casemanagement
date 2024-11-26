@@ -1,5 +1,6 @@
 package se.sundsvall.casemanagement.api;
 
+import generated.client.party.PartyType;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -53,8 +54,8 @@ class CaseStatusResourceTest {
 	@Test
 	void getStatusByOrgNr() {
 		final var organizationNumber = "20220622-2396";
-		when(byggrService.getByggrStatusByOrgNr(organizationNumber, MUNICIPALITY_ID)).thenReturn(List.of(createCaseStatusDTO()));
-		when(ecosService.getEcosStatusByOrgNr(organizationNumber, MUNICIPALITY_ID)).thenReturn(List.of(createCaseStatusDTO()));
+		when(byggrService.getByggrStatusByLegalId(organizationNumber, PartyType.ENTERPRISE, MUNICIPALITY_ID)).thenReturn(List.of(createCaseStatusDTO()));
+		when(ecosService.getEcosStatusByLegalId(organizationNumber, PartyType.ENTERPRISE, MUNICIPALITY_ID)).thenReturn(List.of(createCaseStatusDTO()));
 
 		final var response = webTestClient.get()
 			.uri(uriBuilder -> uriBuilder.path(ORG_PATH).build(organizationNumber))
@@ -65,8 +66,8 @@ class CaseStatusResourceTest {
 
 		assertThat(response).hasSize(2);
 
-		verify(byggrService).getByggrStatusByOrgNr(organizationNumber, MUNICIPALITY_ID);
-		verify(ecosService).getEcosStatusByOrgNr(organizationNumber, MUNICIPALITY_ID);
+		verify(byggrService).getByggrStatusByLegalId(organizationNumber, PartyType.ENTERPRISE, MUNICIPALITY_ID);
+		verify(ecosService).getEcosStatusByLegalId(organizationNumber, PartyType.ENTERPRISE, MUNICIPALITY_ID);
 		verifyNoMoreInteractions(byggrService, ecosService);
 		verifyNoInteractions(caseMappingService, caseDataService);
 	}
@@ -74,8 +75,8 @@ class CaseStatusResourceTest {
 	@Test
 	void getStatusByOrgNr_NoMatch() {
 		final var organizationNumber = "20220622-2396";
-		when(byggrService.getByggrStatusByOrgNr(organizationNumber, MUNICIPALITY_ID)).thenReturn(List.of());
-		when(ecosService.getEcosStatusByOrgNr(organizationNumber, MUNICIPALITY_ID)).thenReturn(List.of());
+		when(byggrService.getByggrStatusByLegalId(organizationNumber, PartyType.ENTERPRISE, MUNICIPALITY_ID)).thenReturn(List.of());
+		when(ecosService.getEcosStatusByLegalId(organizationNumber, PartyType.ENTERPRISE, MUNICIPALITY_ID)).thenReturn(List.of());
 
 		final var response = webTestClient.get()
 			.uri(uriBuilder -> uriBuilder.path(ORG_PATH).build(organizationNumber))
@@ -86,8 +87,8 @@ class CaseStatusResourceTest {
 
 		assertThat(response).isEmpty();
 
-		verify(byggrService).getByggrStatusByOrgNr(organizationNumber, MUNICIPALITY_ID);
-		verify(ecosService).getEcosStatusByOrgNr(organizationNumber, MUNICIPALITY_ID);
+		verify(byggrService).getByggrStatusByLegalId(organizationNumber, PartyType.ENTERPRISE, MUNICIPALITY_ID);
+		verify(ecosService).getEcosStatusByLegalId(organizationNumber, PartyType.ENTERPRISE, MUNICIPALITY_ID);
 		verifyNoMoreInteractions(byggrService, ecosService);
 		verifyNoInteractions(caseMappingService, caseDataService);
 	}
