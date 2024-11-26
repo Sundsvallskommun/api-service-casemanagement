@@ -5,7 +5,14 @@ integration:
     oauth2ClientId: ${SUNDSVALLS_KOMMUN_CONSUMER_KEY}
     oauth2ClientSecret: ${SUNDSVALLS_KOMMUN_CONSUMER_SECRET}
     oauth2TokenUrl: http://localhost:${wiremock.server.port:}/token
-    url: http://localhost:${wiremock.server.port:}/case-data/1.0
+    url: http://localhost:${wiremock.server.port:}/case-data
+    namespaces:
+      2281:
+        - "NAMESPACE_1"
+        - "NAMESPACE_2"
+      2282:
+        - "NAMESPACE_3"
+        - "NAMESPACE_4"
   citizen:
     oauth2ClientId: ${SUNDSVALLS_KOMMUN_CONSUMER_KEY}
     oauth2ClientSecret: ${SUNDSVALLS_KOMMUN_CONSUMER_SECRET}

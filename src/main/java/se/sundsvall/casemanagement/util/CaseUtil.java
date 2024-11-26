@@ -1,5 +1,9 @@
 package se.sundsvall.casemanagement.util;
 
+import generated.client.party.PartyType;
+import org.zalando.problem.Problem;
+import org.zalando.problem.Status;
+
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -8,16 +12,20 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.IntStream;
 
-import org.zalando.problem.Problem;
-import org.zalando.problem.Status;
-
-public class CaseUtil {
+public final class CaseUtil {
 
 	private CaseUtil() {
 		throw new IllegalStateException("Utility class");
 	}
 
-	public static String getSokigoFormattedOrganizationNumber(String organizationNumber) {
+	public static String getFormattedLegalId(final PartyType partyType, final String legalId) {
+		if (partyType == PartyType.ENTERPRISE) {
+			return getSokigoFormattedOrganizationNumber(legalId);
+		}
+		return getSokigoFormattedPersonalNumber(legalId);
+	}
+
+	public static String getSokigoFormattedOrganizationNumber(final String organizationNumber) {
 
 		// Control that the organizationNumber is not null and that it is a valid length
 		if (IntStream.of(13, 12, 11, 10).anyMatch(i -> organizationNumber.length() == i)) {
@@ -39,7 +47,7 @@ public class CaseUtil {
 
 	}
 
-	public static String getSokigoFormattedPersonalNumber(String personalNumber) {
+	public static String getSokigoFormattedPersonalNumber(final String personalNumber) {
 
 		if (personalNumber == null) {
 			throw Problem.valueOf(Status.BAD_REQUEST, "personalNumber must not be null");
@@ -62,7 +70,7 @@ public class CaseUtil {
 	/**
 	 * Returns boolean, true or false.
 	 */
-	public static boolean parseBoolean(Object value) {
+	public static boolean parseBoolean(final Object value) {
 		final String stringValue = parseString(value);
 		return Boolean.parseBoolean(stringValue);
 	}
@@ -70,16 +78,15 @@ public class CaseUtil {
 	/**
 	 * Returns Integer or null.
 	 */
-	public static Integer parseInteger(Object value) {
+	public static Integer parseInteger(final Object value) {
 		final String stringValue = parseString(value);
 		return (stringValue != null) ? Integer.parseInt(stringValue) : null;
 	}
 
 	/**
-	 * Returns LocalDateTime or null.
-	 * Parses a date without an offset, such as '2011-12-03'.
+	 * Returns LocalDateTime or null. Parses a date without an offset, such as '2011-12-03'.
 	 */
-	public static LocalDateTime parseLocalDateTime(Object value) {
+	public static LocalDateTime parseLocalDateTime(final Object value) {
 		final String stringValue = parseString(value);
 		return (stringValue != null) ? LocalDate.parse(stringValue, DateTimeFormatter.ISO_LOCAL_DATE).atStartOfDay() : null;
 	}
@@ -87,7 +94,7 @@ public class CaseUtil {
 	/**
 	 * Returns Double or null.
 	 */
-	public static Double parseDouble(Object value) {
+	public static Double parseDouble(final Object value) {
 		final String stringValue = parseString(value);
 		return (stringValue != null) ? Double.parseDouble(stringValue) : null;
 	}
@@ -95,11 +102,11 @@ public class CaseUtil {
 	/**
 	 * Returns String or null.
 	 */
-	public static String parseString(Object value) {
+	public static String parseString(final Object value) {
 		return Objects.toString(value, null);
 	}
 
-	public static boolean notNullOrEmpty(List<?> list) {
+	public static boolean notNullOrEmpty(final List<?> list) {
 		return ((list != null) && !list.isEmpty());
 	}
 }

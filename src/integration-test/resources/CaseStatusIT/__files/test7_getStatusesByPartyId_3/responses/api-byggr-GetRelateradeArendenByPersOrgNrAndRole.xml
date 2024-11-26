@@ -1,0 +1,189 @@
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+	<s:Body xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+		<GetRelateradeArendenByPersOrgNrAndRoleResponse xmlns="www.tekis.se/ServiceContract">
+			<GetRelateradeArendenByPersOrgNrAndRoleResult>
+				<Arende arendeId="231156" dnr="BYGG 2022-000003" diarieprefix="BYGG" komkod="2281" enhetkod="SBK" arendegrupp="LOV" arendetyp="BL" arendeslag="A" arendeklass="CP" namndkod="SBN" kalla="3" checksum="46">
+					<status xmlns="www.tekis.se/arende">Pågående</status>
+					<beskrivning xmlns="www.tekis.se/arende">Bygglov för nybyggnad av carport</beskrivning>
+					<ankomstDatum xmlns="www.tekis.se/arende">2022-03-21</ankomstDatum>
+					<uppdateradDatum xmlns="www.tekis.se/arende">2022-03-21</uppdateradDatum>
+					<registreradDatum xmlns="www.tekis.se/arende">2022-03-21</registreradDatum>
+					<handlaggare handlaggareId="1607" signatur="SYSTEM" xmlns="www.tekis.se/arende">
+						<fornamn>Systemanvändare</fornamn>
+						<efternamn>System</efternamn>
+					</handlaggare>
+					<intressentLista xmlns="www.tekis.se/arende">
+						<intressent intressentId="132347" persOrgNr="123456-1234" arForetag="true" intressentVersionId="215711" kundnr="132347" arInternKund="false" arAktiv="true" checksum="1926863499|1926863499">
+							<namn>testnamn</namn>
+							<adress>testadress</adress>
+							<postNr>87100</postNr>
+							<ort>testort</ort>
+							<intressentKommunikationLista>
+								<intressentKommunikation arAktiv="true" checksum="172161926">
+									<beskrivning>e@post.se</beskrivning>
+									<komtyp>Epost</komtyp>
+									<attention attentionId="47197" checksum="1926863499">
+										<attention>testatt</attention>
+									</attention>
+								</intressentKommunikation>
+							</intressentKommunikationLista>
+							<attention attentionId="47197" checksum="1926863499">
+								<attention>testatt</attention>
+							</attention>
+							<rollLista>
+								<roll>SOK</roll>
+							</rollLista>
+						</intressent>
+						<intressent intressentId="38334" persOrgNr="16212000-2411" arForetag="true" intressentVersionId="215712" kundnr="12296" arInternKund="false" arAktiv="true" checksum="1926702523|1926702523">
+							<namn>SUNDSVALLS KOMMUN</namn>
+							<postNr>851 85</postNr>
+							<ort>SUNDSVALL</ort>
+							<land>Sverige</land>
+							<intressentKommunikationLista>
+								<intressentKommunikation arAktiv="true" checksum="740967109">
+									<beskrivning>0701111111</beskrivning>
+									<komtyp>HEM</komtyp>
+								</intressentKommunikation>
+								<intressentKommunikation arAktiv="true" checksum="-1143432453">
+									<beskrivning>0702222222</beskrivning>
+									<komtyp>MOB</komtyp>
+								</intressentKommunikation>
+								<intressentKommunikation arAktiv="true" checksum="-540156243">
+									<beskrivning>testa@test.com</beskrivning>
+									<komtyp>Epost</komtyp>
+									<attention attentionId="47267" checksum="757221280">
+										<attention>TEST</attention>
+									</attention>
+								</intressentKommunikation>
+							</intressentKommunikationLista>
+							<rollLista>
+								<roll>FAG</roll>
+							</rollLista>
+						</intressent>
+					</intressentLista>
+					<handelseLista xmlns="www.tekis.se/arende">
+						<handelse handelseId="1463126" checksum="46">
+							<riktning>In</riktning>
+							<rubrik>Bygglov</rubrik>
+							<startDatum>2022-03-21T11:10:00+01:00</startDatum>
+							<anteckning />
+							<handelseslag>Bygglov</handelseslag>
+							<handelsetyp>ANSÖKAN</handelsetyp>
+							<sekretess>false</sekretess>
+							<makulerad>false</makulerad>
+							<handlingLista>
+								<handling handlingId="1480891" checksum="46">
+									<typ>ANS</typ>
+									<status>Inkommen</status>
+									<handlingDatum>2022-03-21</handlingDatum>
+									<anteckning>9664.pdf</anteckning>
+									<uuid>d8db4d3c-f844-4d81-8584-a8b44198aad1</uuid>
+									<arkivStatus>Arkiveras</arkivStatus>
+									<makulerad>false</makulerad>
+									<dokument dokId="250321191" checksum="-822760683|637834578580000000">
+										<namn>9664.pdf</namn>
+									</dokument>
+								</handling>
+								<handling handlingId="1480892" checksum="47">
+									<typ>SITU</typ>
+									<status>Inkommen</status>
+									<handlingDatum>2022-03-21</handlingDatum>
+									<anteckning>situationsplan Ritning1.docx</anteckning>
+									<uuid>949431ac-453a-4b02-8491-8f8e0295b64e</uuid>
+									<makulerad>false</makulerad>
+									<dokument dokId="250321192" checksum="-397713164|637834578580000000">
+										<namn>situationsplan Ritning1.docx</namn>
+									</dokument>
+								</handling>
+								<handling handlingId="1480893" checksum="20">
+									<typ>SEK2</typ>
+									<status>Inkommen</status>
+									<handlingDatum>2022-03-21</handlingDatum>
+									<anteckning>sektionsritning Ritning3.docx</anteckning>
+									<uuid>7c175084-924c-49d9-94b5-72ad7171a408</uuid>
+									<makulerad>false</makulerad>
+									<dokument dokId="250321193" checksum="-631766481|637834578580000000">
+										<namn>sektionsritning Ritning3.docx</namn>
+									</dokument>
+								</handling>
+								<handling handlingId="1480894" checksum="20">
+									<typ>PLA2</typ>
+									<status>Inkommen</status>
+									<handlingDatum>2022-03-21</handlingDatum>
+									<anteckning>planritning Ritning2.docx</anteckning>
+									<uuid>85ec896c-6293-4838-bce1-cd2dbdddafc1</uuid>
+									<makulerad>false</makulerad>
+									<dokument dokId="250321194" checksum="-1916715705|637834578580000000">
+										<namn>planritning Ritning2.docx</namn>
+									</dokument>
+								</handling>
+								<handling handlingId="1480895" checksum="20">
+									<typ>FAS2</typ>
+									<status>Inkommen</status>
+									<handlingDatum>2022-03-21</handlingDatum>
+									<anteckning>fasadritning Fasad ost.docx</anteckning>
+									<uuid>07c51b44-55ec-463c-901b-423b7b328f08</uuid>
+									<makulerad>false</makulerad>
+									<dokument dokId="250321195" checksum="-1545908585|637834578580000000">
+										<namn>fasadritning Fasad ost.docx</namn>
+									</dokument>
+								</handling>
+								<handling handlingId="1480896" checksum="20">
+									<typ>FAS2</typ>
+									<status>Inkommen</status>
+									<handlingDatum>2022-03-21</handlingDatum>
+									<anteckning>fasadritning Fasad norr.docx</anteckning>
+									<uuid>abdf2e37-3e7f-425f-a927-da73b3ca7dd8</uuid>
+									<makulerad>false</makulerad>
+									<dokument dokId="250321196" checksum="-1062441116|637834578580000000">
+										<namn>fasadritning Fasad norr.docx</namn>
+									</dokument>
+								</handling>
+							</handlingLista>
+							<intressentLista />
+							<arbetsmaterial>false</arbetsmaterial>
+							<handlaggare signatur="SYSTEM" />
+						</handelse>
+						<handelse handelseId="1463127" checksum="33">
+							<riktning>In</riktning>
+							<rubrik>Komplettering till Admin</rubrik>
+							<startDatum>2022-03-23T13:44:00+01:00</startDatum>
+							<anteckning>Inkomna kompletteringar via e-tjänst.</anteckning>
+							<handelseslag>KOMPADM</handelseslag>
+							<handelsetyp>HANDLING</handelsetyp>
+							<sekretess>false</sekretess>
+							<makulerad>false</makulerad>
+							<handlingLista>
+								<handling handlingId="1480897" checksum="46">
+									<typ>BIL</typ>
+									<status>Inkommen</status>
+									<handlingDatum>2022-03-23</handlingDatum>
+									<anteckning>Testdokument.pdf</anteckning>
+									<uuid>79e91238-d0b4-41b7-9e35-45b5b2e2c445</uuid>
+									<makulerad>false</makulerad>
+									<dokument dokId="250321197" checksum="510448762|637836398630000000">
+										<namn>Testdokument.pdf</namn>
+										<beskrivning>Testar igen att skicka ett meddelande med bilaga</beskrivning>
+									</dokument>
+								</handling>
+							</handlingLista>
+							<intressentLista />
+							<arbetsmaterial>false</arbetsmaterial>
+							<handlaggare signatur="SYSTEM" />
+						</handelse>
+					</handelseLista>
+					<projektnr xmlns="www.tekis.se/arende">BALDER 1</projektnr>
+					<bevakningLista xmlns="www.tekis.se/arende" />
+					<objektLista xmlns="www.tekis.se/arende">
+						<abstractArendeObjekt xsi:type="arendeFastighet" arendeObjektId="243647" arHuvudObjekt="true" checksum="1|">
+							<fastighet checksum="1885708797|" fnr="22044331">
+								<trakt>BALDER</trakt>
+								<fbetNr>1</fbetNr>
+							</fastighet>
+						</abstractArendeObjekt>
+					</objektLista>
+				</Arende>
+			</GetRelateradeArendenByPersOrgNrAndRoleResult>
+		</GetRelateradeArendenByPersOrgNrAndRoleResponse>
+	</s:Body>
+</s:Envelope>

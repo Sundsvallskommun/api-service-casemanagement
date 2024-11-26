@@ -33,6 +33,13 @@ integration:
     oauth2ClientSecret: clientSecret
     oauth2TokenUrl: token.url
     url: case-data.url
+    namespaces:
+      2281:
+        - "NAMESPACE_1"
+        - "NAMESPACE_2"
+      2282:
+        - "NAMESPACE_3"
+        - "NAMESPACE_4"
   citizen:
     oauth2ClientId: clientId
     oauth2ClientSecret: clientSecret

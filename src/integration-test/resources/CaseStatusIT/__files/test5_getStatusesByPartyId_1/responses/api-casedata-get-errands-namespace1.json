@@ -1,0 +1,171 @@
+{
+	"number": 0,
+	"last": true,
+	"size": 1000,
+	"numberOfElements": 1,
+	"totalPages": 1,
+	"pageable": {
+		"paged": true,
+		"pageNumber": 0,
+		"offset": 0,
+		"pageSize": 1000,
+		"unpaged": false,
+		"sort": []
+	},
+	"sort": [],
+	"content": [{
+		"municipalityId": "2281",
+		"externalCaseId": "123",
+		"notes": [],
+		"errandNumber": "PRH-2022-000016",
+		"createdByClient": "joh24doe",
+		"description": "",
+		"extraParameters": [
+			{
+				"values": ["Test service!"],
+				"key": "serviceName"
+			},
+			{
+				"values": ["false"],
+				"key": "application.applicant.signingAbility"
+			},
+			{
+				"values": ["true"],
+				"key": "application.applicant.testimonial"
+			},
+			{
+				"values": [""],
+				"key": "application.reason"
+			},
+			{
+				"values": ["SELF"],
+				"key": "application.role"
+			},
+			{
+				"values": ["false"],
+				"key": "consent.contact.doctor"
+			},
+			{
+				"values": ["false"],
+				"key": "consent.view.transportationServiceDetails"
+			},
+			{
+				"values": ["Inget"],
+				"key": "disability.aid"
+			},
+			{
+				"values": ["true"],
+				"key": "disability.canBeAloneWhileParking"
+			},
+			{
+				"values": [""],
+				"key": "disability.canBeAloneWhileParking.note"
+			},
+			{
+				"values": ["P6M"],
+				"key": "disability.duration"
+			},
+			{
+				"values": ["true"],
+				"key": "disability.walkingAbility"
+			},
+			{
+				"values": [""],
+				"key": "disability.walkingDistance.beforeRest"
+			},
+			{
+				"values": [""],
+				"key": "disability.walkingDistance.max"
+			}
+		],
+		"stakeholders": [
+			{
+				"lastName": "Doe",
+				"municipalityId": "2281",
+				"addresses": [{
+					"city": "TestCity",
+					"street": "TestStreet 4",
+					"postalCode": "1337"
+				}],
+				"created": "2022-12-13T14:04:18.286336+01:00",
+				"roles": ["APPLICANT"],
+				"extraParameters": {},
+				"type": "PERSON",
+				"version": 0,
+				"firstName": "John",
+				"contactInformation": [
+					{
+						"contactType": "PHONE",
+						"value": "070-0000000"
+					},
+					{
+						"contactType": "EMAIL",
+						"value": "a@example.com"
+					}
+				],
+				"namespace": "SBK_PARKING_PERMIT",
+				"personId": "f2af73ba-fa39-474b-b2ff-cc420158266d",
+				"id": 46,
+				"updated": "2022-12-13T14:04:18.286341+01:00"
+			},
+			{
+				"lastName": "Doe",
+				"municipalityId": "2281",
+				"addresses": [],
+				"adAccount": "jodo",
+				"created": "2022-12-14T08:56:56.672252+01:00",
+				"roles": ["ADMINISTRATOR"],
+				"extraParameters": {},
+				"type": "PERSON",
+				"version": 1,
+				"firstName": "John",
+				"contactInformation": [{
+					"contactType": "EMAIL",
+					"value": "john.doe@test.se"
+				}],
+				"namespace": "SBK_PARKING_PERMIT",
+				"id": 90,
+				"updated": "2022-12-14T08:56:56.686653+01:00"
+			}
+		],
+		"caseType": "PARKING_PERMIT",
+		"diaryNumber": "",
+		"processId": "a74cfa6b-7ae6-11ed-a840-0242ac110002",
+		"caseTitleAddition": "Nytt parkeringstillstånd",
+		"decisions": [{
+			"municipalityId": "2281",
+			"law": [],
+			"attachments": [],
+			"created": "2022-12-13T14:04:19.030335+01:00",
+			"namespace": "SBK_PARKING_PERMIT",
+			"description": "Personen är boende i test kommun. Nuvarande kontroll ger rekommenderat beslut att godkänna ansökan.",
+			"extraParameters": {},
+			"decisionType": "RECOMMENDED",
+			"decisionOutcome": "APPROVAL",
+			"id": 32,
+			"version": 0,
+			"updated": "2022-12-13T14:04:19.03034+01:00"
+		}],
+		"id": 16,
+		"suspension": {},
+		"phase": "Beslut",
+		"updatedBy": "joh24doe",
+		"updatedByClient": "johnny doe",
+		"created": "2022-12-13T14:04:18.283124+01:00",
+		"priority": "HIGH",
+		"version": 207,
+		"appeals": [],
+		"createdBy": "joh24doe",
+		"namespace": "SBK_PARKING_PERMIT",
+		"statuses": [{
+			"dateTime": "2022-12-14T09:43:52.538759+01:00",
+			"statusType": "Väntar på komplettering",
+			"description": "Ärendet saknar nödvändig information för att beslut ska kunna tas. Uppgift om maximal gångsträcka för den sökande saknas eller innehåller ogiltig data."
+		}],
+		"facilities": [],
+		"updated": "2022-12-16T08:36:50.756215+01:00"
+	}],
+	"first": true,
+	"totalElements": 1,
+	"empty": false
+}

@@ -1,5 +1,77 @@
 package se.sundsvall.casemanagement.integration.byggr;
 
+import arendeexport.AbstractArendeObjekt;
+import arendeexport.Arende;
+import arendeexport.Arende2;
+import arendeexport.ArendeFastighet;
+import arendeexport.ArendeIntressent;
+import arendeexport.ArrayOfArende1;
+import arendeexport.ArrayOfHandelse;
+import arendeexport.ArrayOfHandelseIntressent2;
+import arendeexport.ArrayOfHandling;
+import arendeexport.ArrayOfRemiss;
+import arendeexport.ArrayOfString2;
+import arendeexport.GetArende;
+import arendeexport.GetArendeResponse;
+import arendeexport.GetRelateradeArendenByPersOrgNrAndRole;
+import arendeexport.GetRelateradeArendenByPersOrgNrAndRoleResponse;
+import arendeexport.GetRemisserByPersOrgNrResponse;
+import arendeexport.Handelse;
+import arendeexport.HandelseHandling;
+import arendeexport.HandelseIntressent;
+import arendeexport.Remiss;
+import arendeexport.SaveNewArende;
+import arendeexport.SaveNewArendeMessage;
+import arendeexport.SaveNewArendeResponse2;
+import arendeexport.SaveNewHandelse;
+import arendeexport.SaveNewHandelseMessage;
+import generated.client.party.PartyType;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.zalando.problem.Status;
+import org.zalando.problem.ThrowableProblem;
+import se.sundsvall.casemanagement.TestUtil;
+import se.sundsvall.casemanagement.api.model.AttachmentDTO;
+import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
+import se.sundsvall.casemanagement.api.model.CaseStatusDTO;
+import se.sundsvall.casemanagement.api.model.FacilityDTO;
+import se.sundsvall.casemanagement.api.model.OrganizationDTO;
+import se.sundsvall.casemanagement.api.model.PersonDTO;
+import se.sundsvall.casemanagement.api.model.StakeholderDTO;
+import se.sundsvall.casemanagement.api.model.enums.AddressCategory;
+import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
+import se.sundsvall.casemanagement.api.model.enums.CaseType;
+import se.sundsvall.casemanagement.api.model.enums.FacilityType;
+import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
+import se.sundsvall.casemanagement.api.model.enums.StakeholderType;
+import se.sundsvall.casemanagement.api.model.enums.SystemType;
+import se.sundsvall.casemanagement.integration.db.CaseTypeDataRepository;
+import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
+import se.sundsvall.casemanagement.integration.opene.OpenEIntegration;
+import se.sundsvall.casemanagement.service.CaseMappingService;
+import se.sundsvall.casemanagement.service.CitizenService;
+import se.sundsvall.casemanagement.service.FbService;
+import se.sundsvall.casemanagement.util.Constants;
+
+import java.text.MessageFormat;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -38,79 +110,6 @@ import static se.sundsvall.casemanagement.util.Constants.RUBRIK_ANMALAN_ATTEFALL
 import static se.sundsvall.casemanagement.util.Constants.RUBRIK_BYGGLOV;
 import static se.sundsvall.casemanagement.util.Constants.RUBRIK_STRANDSKYDD;
 import static se.sundsvall.casemanagement.util.Constants.STRANDSKYDD;
-
-import java.text.MessageFormat;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.zalando.problem.Status;
-import org.zalando.problem.ThrowableProblem;
-
-import se.sundsvall.casemanagement.TestUtil;
-import se.sundsvall.casemanagement.api.model.AttachmentDTO;
-import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
-import se.sundsvall.casemanagement.api.model.CaseStatusDTO;
-import se.sundsvall.casemanagement.api.model.FacilityDTO;
-import se.sundsvall.casemanagement.api.model.OrganizationDTO;
-import se.sundsvall.casemanagement.api.model.PersonDTO;
-import se.sundsvall.casemanagement.api.model.StakeholderDTO;
-import se.sundsvall.casemanagement.api.model.enums.AddressCategory;
-import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
-import se.sundsvall.casemanagement.api.model.enums.CaseType;
-import se.sundsvall.casemanagement.api.model.enums.FacilityType;
-import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
-import se.sundsvall.casemanagement.api.model.enums.StakeholderType;
-import se.sundsvall.casemanagement.api.model.enums.SystemType;
-import se.sundsvall.casemanagement.integration.db.CaseTypeDataRepository;
-import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
-import se.sundsvall.casemanagement.integration.opene.OpenEIntegration;
-import se.sundsvall.casemanagement.service.CaseMappingService;
-import se.sundsvall.casemanagement.service.CitizenService;
-import se.sundsvall.casemanagement.service.FbService;
-import se.sundsvall.casemanagement.util.Constants;
-
-import arendeexport.AbstractArendeObjekt;
-import arendeexport.Arende;
-import arendeexport.Arende2;
-import arendeexport.ArendeFastighet;
-import arendeexport.ArendeIntressent;
-import arendeexport.ArrayOfArende1;
-import arendeexport.ArrayOfHandelse;
-import arendeexport.ArrayOfHandelseIntressent2;
-import arendeexport.ArrayOfHandling;
-import arendeexport.ArrayOfRemiss;
-import arendeexport.ArrayOfString2;
-import arendeexport.GetArende;
-import arendeexport.GetArendeResponse;
-import arendeexport.GetRelateradeArendenByPersOrgNrAndRole;
-import arendeexport.GetRelateradeArendenByPersOrgNrAndRoleResponse;
-import arendeexport.GetRemisserByPersOrgNrResponse;
-import arendeexport.Handelse;
-import arendeexport.HandelseHandling;
-import arendeexport.HandelseIntressent;
-import arendeexport.Remiss;
-import arendeexport.SaveNewArende;
-import arendeexport.SaveNewArendeMessage;
-import arendeexport.SaveNewArendeResponse2;
-import arendeexport.SaveNewHandelse;
-import arendeexport.SaveNewHandelseMessage;
 
 @ExtendWith(MockitoExtension.class)
 class ByggrServiceTest {
@@ -1015,14 +1014,14 @@ class ByggrServiceTest {
 		when(arendeExportClientMock.getRelateradeArendenByPersOrgNrAndRole(any())).thenReturn(getRelateradeArendenByPersOrgNrAndRoleResponse);
 
 		final String orgnr = TestUtil.generateRandomOrganizationNumber();
-		final var getStatusResult = byggrService.getByggrStatusByOrgNr(orgnr, MUNICIPALITY_ID);
+		final var getStatusResult = byggrService.getByggrStatusByLegalId(orgnr, PartyType.ENTERPRISE, MUNICIPALITY_ID);
 
 		assertThat(getStatusResult).hasSize(2);
 		assertCaseStatus(caseId1, externalCaseID1, CaseType.valueOf(caseMappingList1.getFirst().getCaseType()), caseMappingList1.getFirst().getServiceName(), handelse2.getHandelseslag(), handelse2.getStartDatum(), getStatusResult.getFirst());
 		assertCaseStatus(caseId2, externalCaseID2, CaseType.valueOf(caseMappingList2.getFirst().getCaseType()), caseMappingList2.getFirst().getServiceName(), handelse21.getHandelseslag(), handelse21.getStartDatum(), getStatusResult.get(1));
 
 		final ArgumentCaptor<GetRelateradeArendenByPersOrgNrAndRole> getRelateradeArendenByPersOrgNrAndRoleRequestCaptor = ArgumentCaptor.forClass(GetRelateradeArendenByPersOrgNrAndRole.class);
-		verify(arendeExportClientMock, times(1)).getRelateradeArendenByPersOrgNrAndRole(getRelateradeArendenByPersOrgNrAndRoleRequestCaptor.capture());
+		verify(arendeExportClientMock).getRelateradeArendenByPersOrgNrAndRole(getRelateradeArendenByPersOrgNrAndRoleRequestCaptor.capture());
 		assertThat(getRelateradeArendenByPersOrgNrAndRoleRequestCaptor.getValue().getPersOrgNr()).isEqualTo(orgnr);
 		assertThat(getRelateradeArendenByPersOrgNrAndRoleRequestCaptor.getValue().getArendeIntressentRoller().getString()).contains(StakeholderRole.APPLICANT.getText());
 		assertThat(getRelateradeArendenByPersOrgNrAndRoleRequestCaptor.getValue().getHandelseIntressentRoller().getString()).contains(StakeholderRole.APPLICANT.getText());
@@ -1116,8 +1115,7 @@ class ByggrServiceTest {
 	}
 
 	/**
-	 * Test scenario where there is 1 person stakeholder.
-	 * Should retrieve and return personal number from citizen service.
+	 * Test scenario where there is 1 person stakeholder. Should retrieve and return personal number from citizen service.
 	 */
 	@Test
 	void extractStakeholderId1() {
@@ -1133,8 +1131,8 @@ class ByggrServiceTest {
 	}
 
 	/**
-	 * Test scenario where there is 2 stakeholders, one person and one organization.
-	 * Should return the organization stakeholders organization number.
+	 * Test scenario where there is 2 stakeholders, one person and one organization. Should return the organization
+	 * stakeholders organization number.
 	 */
 	@Test
 	void extractStakeholderId2() {
@@ -1152,9 +1150,8 @@ class ByggrServiceTest {
 	}
 
 	/**
-	 * Test scenario where there is 2 stakeholders, one person and one organization and the
-	 * organization number is in 10 digit format.
-	 * Should add "16" prefix to the organization stakeholders organization number and return.
+	 * Test scenario where there is 2 stakeholders, one person and one organization and the organization number is in 10
+	 * digit format. Should add "16" prefix to the organization stakeholders organization number and return.
 	 */
 	@Test
 	void extractStakeholderId3() {

@@ -21,6 +21,7 @@ import arendeexport.SaveNewHandelse;
 import arendeexport.SaveNewHandelseMessage;
 import arendeexport.SaveNewRemissvar;
 import arendeexport.SaveNewRemissvarMessage;
+import generated.client.party.PartyType;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
@@ -312,10 +313,9 @@ public class ByggrService {
 		return ByggrMapper.toByggrStatus(arende, externalCaseId, caseMappingList);
 	}
 
-	public List<CaseStatusDTO> getByggrStatusByOrgNr(final String organizationNumber, final String municipalityId) {
-
+	public List<CaseStatusDTO> getByggrStatusByLegalId(final String legalId, final PartyType partyType, final String municipalityId) {
 		final var getRelateradeArendenByPersOrgNrAndRoleInput = new GetRelateradeArendenByPersOrgNrAndRole()
-			.withPersOrgNr(organizationNumber)
+			.withPersOrgNr(legalId)
 			.withArendeIntressentRoller(new ArrayOfString().withString(StakeholderRole.APPLICANT.getText()))
 			.withHandelseIntressentRoller(new ArrayOfString().withString(StakeholderRole.APPLICANT.getText()));
 
@@ -325,13 +325,15 @@ public class ByggrService {
 			return emptyList();
 		}
 
+		// If no cases are found, try to fetch cases with formatted legal id
 		if (arrayOfByggrArende.getArende().isEmpty()) {
-			getRelateradeArendenByPersOrgNrAndRoleInput.setPersOrgNr(CaseUtil.getSokigoFormattedOrganizationNumber(organizationNumber));
+			getRelateradeArendenByPersOrgNrAndRoleInput.setPersOrgNr(CaseUtil.getFormattedLegalId(partyType, legalId));
 			arrayOfByggrArende = arendeExportClient.getRelateradeArendenByPersOrgNrAndRole(getRelateradeArendenByPersOrgNrAndRoleInput).getGetRelateradeArendenByPersOrgNrAndRoleResult();
 		}
 
 		return arrayOfByggrArende.getArende().stream().map(byggrArende -> {
 			final var caseMappingList = caseMappingService.getCaseMapping(null, byggrArende.getDnr(), municipalityId);
+
 			return toByggrStatus(byggrArende, Optional.ofNullable(caseMappingList)
 				.filter(list -> !list.isEmpty())
 				.map(list -> list.getFirst().getExternalCaseId())

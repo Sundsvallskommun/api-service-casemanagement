@@ -1,0 +1,17 @@
+{
+	"request": {
+		"headers": {"Authorization": {"equalTo": "Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"}},
+		"method": "GET",
+		"queryParameters": {
+			"filter": {"equalTo": "stakeholders.personId:'f2af73ba-fa39-474b-b2ff-cc420158266d'"},
+			"size": {"equalTo": "1000"}
+		},
+		"urlPath": "/case-data/2281/NAMESPACE_2/errands"
+	},
+	"response": {
+		"headers": {"Content-Type": "application/json"},
+		"bodyFileName": "test5_getStatusesByPartyId_1/responses/api-casedata-get-errands-namespace2.json",
+		"status": 200
+	},
+	"name": "api-casedata-get-errands"
+}

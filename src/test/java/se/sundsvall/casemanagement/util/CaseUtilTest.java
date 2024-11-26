@@ -1,19 +1,43 @@
-package se.sundsvall.casemanagement.service.util;
+package se.sundsvall.casemanagement.util;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import generated.client.party.PartyType;
+import org.junit.jupiter.api.Test;
+import org.zalando.problem.Status;
+import org.zalando.problem.ThrowableProblem;
+import se.sundsvall.casemanagement.TestUtil;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
-import org.junit.jupiter.api.Test;
-import org.zalando.problem.Status;
-import org.zalando.problem.ThrowableProblem;
-
-import se.sundsvall.casemanagement.TestUtil;
-import se.sundsvall.casemanagement.util.CaseUtil;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class CaseUtilTest {
+
+	@Test
+	void testGetFormattedLegalId_Private() {
+		final var legalId = TestUtil.generateRandomPersonalNumber();
+		final var partyType = PartyType.PRIVATE;
+
+		final var result = CaseUtil.getFormattedLegalId(partyType, legalId);
+
+		final var expected = new StringBuilder(legalId).insert(8, "-").toString();
+
+		assertThat(result).isEqualTo(expected);
+	}
+
+	@Test
+	void testGetFormattedLegalId_Enterprise() {
+		final var legalId = TestUtil.generateRandomOrganizationNumber();
+		final var partyType = PartyType.ENTERPRISE;
+
+		final var result = CaseUtil.getFormattedLegalId(partyType, legalId);
+
+		assertThat(result)
+			.startsWith("16")
+			.hasSize(13)
+			.isEqualTo("16" + legalId);
+	}
 
 	@Test
 	void testGetSokigoFormattedOrganizationNumber() {

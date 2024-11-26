@@ -2,7 +2,7 @@
 	"request": {
 		"method": "POST",
 		"bodyPatterns": [{"contains": "INTERNAL_SERVER_ERROR"}],
-		"urlPathPattern": "/case-data/\\d.\\d/2281/(.+)/errands"
+		"urlPathPattern": "/case-data/2281/(.+)/errands"
 	},
 	"response": {
 		"headers": {

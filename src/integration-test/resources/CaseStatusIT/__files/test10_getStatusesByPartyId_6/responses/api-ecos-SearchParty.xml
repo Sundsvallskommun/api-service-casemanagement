@@ -1,0 +1,103 @@
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+	<s:Body>
+		<SearchPartyResponse xmlns="urn:Ecos.API.MinutMiljo.Service.V1">
+			<SearchPartyResult xmlns:a="urn:Ecos.API.MinutMiljo.DataContracts.V1"
+			  xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+				<a:PartySvcDto i:type="a:PersonSvcDto">
+					<a:Addresses>
+						<a:PartyAddressSvcDto>
+							<a:AddressTypes>
+								<a:AddressTypeSvcDto>
+									<a:Id>e19981ad-34b2-4e14-88f5-133f61ca85aa</a:Id>
+									<a:Name>Fakturaadress</a:Name>
+								</a:AddressTypeSvcDto>
+							</a:AddressTypes>
+							<a:CareOfName>Ett annat namn</a:CareOfName>
+							<a:Country>Sverige</a:Country>
+							<a:PostCode>12346</a:PostCode>
+							<a:PostalArea>Sundsvall</a:PostalArea>
+							<a:StreetName>Testargatan</a:StreetName>
+							<a:StreetNumber>20</a:StreetNumber>
+						</a:PartyAddressSvcDto>
+						<a:PartyAddressSvcDto>
+							<a:AddressTypes>
+								<a:AddressTypeSvcDto>
+									<a:Id>e19981ad-34b2-4e14-88f5-133f61ca85aa</a:Id>
+									<a:Name>Postadress</a:Name>
+								</a:AddressTypeSvcDto>
+							</a:AddressTypes>
+							<a:CareOfName>Ett namn</a:CareOfName>
+							<a:Country>Sverige</a:Country>
+							<a:PostCode>12346</a:PostCode>
+							<a:PostalArea>Sundsvall</a:PostalArea>
+							<a:StreetName>Testargatan</a:StreetName>
+							<a:StreetNumber>20</a:StreetNumber>
+						</a:PartyAddressSvcDto>
+						<a:PartyAddressSvcDto>
+							<a:AddressTypes>
+								<a:AddressTypeSvcDto>
+									<a:Id>e19981ad-34b2-4e14-88f5-133f61ca85aa</a:Id>
+									<a:Name>Besöksadress</a:Name>
+								</a:AddressTypeSvcDto>
+							</a:AddressTypes>
+							<a:CareOfName />
+							<a:Country>Sverige</a:Country>
+							<a:PostCode>12346</a:PostCode>
+							<a:PostalArea>Sundsvall</a:PostalArea>
+							<a:StreetName>Testargatan</a:StreetName>
+							<a:StreetNumber>20</a:StreetNumber>
+						</a:PartyAddressSvcDto>
+					</a:Addresses>
+					<a:Certificates />
+					<a:CounterPartCode i:nil="true" />
+					<a:CustomerNumber i:nil="true" />
+					<a:Id>e19981ad-34b2-4e14-88f5-133f61ca85aa</a:Id>
+					<a:NationalIdentificationNumber>16123456-1234</a:NationalIdentificationNumber>
+					<a:ContactInfo>
+						<a:ContactInfoSvcDto>
+							<a:ContactDetails>
+								<a:ContactInfoItemSvcDto>
+									<a:ContactDetailId>e19981ad-34b2-4e14-88f5-133f61ca85aa
+									</a:ContactDetailId>
+									<a:ContactDetailTypeId>e19981ad-34b2-4e14-88f5-133f61ca85aa
+									</a:ContactDetailTypeId>
+									<a:ContactPathId>e19981ad-34b2-4e14-88f5-133f61ca85aa
+									</a:ContactPathId>
+									<a:Note i:nil="true" />
+									<a:Value>060161616</a:Value>
+								</a:ContactInfoItemSvcDto>
+								<a:ContactInfoItemSvcDto>
+									<a:ContactDetailId>e19981ad-34b2-4e14-88f5-133f61ca85aa
+									</a:ContactDetailId>
+									<a:ContactDetailTypeId>e19981ad-34b2-4e14-88f5-133f61ca85aa
+									</a:ContactDetailTypeId>
+									<a:ContactPathId>e19981ad-34b2-4e14-88f5-133f61ca85aa
+									</a:ContactPathId>
+									<a:Note i:nil="true" />
+									<a:Value>firmatecknare@sundsvall.se</a:Value>
+								</a:ContactInfoItemSvcDto>
+								<a:ContactInfoItemSvcDto>
+									<a:ContactDetailId>e19981ad-34b2-4e14-88f5-133f61ca85aa
+									</a:ContactDetailId>
+									<a:ContactDetailTypeId>e19981ad-34b2-4e14-88f5-133f61ca85aa
+									</a:ContactDetailTypeId>
+									<a:ContactPathId>e19981ad-34b2-4e14-88f5-133f61ca85aa
+									</a:ContactPathId>
+									<a:Note i:nil="true" />
+									<a:Value>0701234567</a:Value>
+								</a:ContactInfoItemSvcDto>
+							</a:ContactDetails>
+							<a:ContactId>e19981ad-34b2-4e14-88f5-133f61ca85aa</a:ContactId>
+							<a:Title>Kalle Anka</a:Title>
+						</a:ContactInfoSvcDto>
+					</a:ContactInfo>
+					<a:IsInternalCustomer>false</a:IsInternalCustomer>
+					<a:IsMainOffice>false</a:IsMainOffice>
+					<a:OrganizationName>Kalle Anka AB</a:OrganizationName>
+					<a:Webpage i:nil="true" />
+					<a:IsForeignIdentificationNumber>false</a:IsForeignIdentificationNumber>
+				</a:PartySvcDto>
+			</SearchPartyResult>
+		</SearchPartyResponse>
+	</s:Body>
+</s:Envelope>

@@ -1,6 +1,7 @@
 package se.sundsvall.casemanagement.integration.casedata;
 
 import generated.client.casedata.Errand;
+import generated.client.casedata.ExtraParameter;
 import generated.client.casedata.Status;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
@@ -12,12 +13,14 @@ import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
 import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.api.model.enums.Namespace;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
+import se.sundsvall.casemanagement.integration.casedata.configuration.CaseDataProperties;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.service.CaseMappingService;
 import se.sundsvall.casemanagement.util.Constants;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -29,6 +32,7 @@ import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.to
 import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toErrand;
 import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toPatchErrand;
 import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toStakeholders;
+import static se.sundsvall.casemanagement.util.Constants.SERVICE_NAME;
 
 @Service
 public class CaseDataService {
@@ -42,11 +46,14 @@ public class CaseDataService {
 	private static final String AKTUALISERING_PHASE = "Aktualisering";
 
 	private final CaseMappingService caseMappingService;
-
+	private final CaseDataProperties caseDataProperties;
 	private final CaseDataClient caseDataClient;
 
-	public CaseDataService(final CaseMappingService caseMappingService, final CaseDataClient caseDataClient) {
+	public CaseDataService(final CaseMappingService caseMappingService,
+		final CaseDataProperties caseDataProperties,
+		final CaseDataClient caseDataClient) {
 		this.caseMappingService = caseMappingService;
+		this.caseDataProperties = caseDataProperties;
 		this.caseDataClient = caseDataClient;
 	}
 
@@ -185,7 +192,43 @@ public class CaseDataService {
 	}
 
 	public List<Errand> getErrands(final String municipalityId, final String namespace, final String filter) {
-		return caseDataClient.getErrands(municipalityId, namespace, filter, "1000");
+		var page = caseDataClient.getErrands(municipalityId, namespace, filter, "1000");
+		return page.getContent();
+	}
+
+	public List<CaseStatusDTO> getStatusesByFilter(final String filter, final String municipalityId) {
+		List<CaseStatusDTO> caseStatuses = new ArrayList<>();
+		for (var namespace : caseDataProperties.namespaces().get(municipalityId)) {
+			var errands = getErrands(municipalityId, namespace, filter);
+			errands.forEach(errand -> caseStatuses.add(toCaseStatusDTO(errand)));
+		}
+		return caseStatuses;
+	}
+
+	CaseStatusDTO toCaseStatusDTO(final Errand errand) {
+		var latestStatus = errand.getStatuses().stream()
+			.max(Comparator.comparing(Status::getDateTime))
+			.orElse(null);
+
+		return CaseStatusDTO.builder()
+			.withSystem(SystemType.CASE_DATA)
+			.withExternalCaseId(errand.getExternalCaseId())
+			.withCaseId(String.valueOf(errand.getId()))
+			.withCaseType(errand.getCaseType())
+			.withStatus(Optional.ofNullable(latestStatus)
+				.map(Status::getStatusType)
+				.orElse(null))
+			.withTimestamp(Optional.ofNullable(latestStatus)
+				.map(Status::getDateTime)
+				.map(dateTime -> dateTime.atZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime())
+				.orElse(null))
+			.withServiceName(errand.getExtraParameters().stream()
+				.filter(extraParameter -> SERVICE_NAME.equals(extraParameter.getKey()))
+				.findFirst()
+				.map(ExtraParameter::getValues)
+				.map(List::getFirst)
+				.orElse(null))
+			.build();
 	}
 
 }
