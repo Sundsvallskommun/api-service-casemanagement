@@ -7,6 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
+import se.sundsvall.casemanagement.integration.alkt.AlkTService;
 import se.sundsvall.casemanagement.integration.byggr.ByggrService;
 import se.sundsvall.casemanagement.integration.casedata.CaseDataService;
 import se.sundsvall.casemanagement.integration.ecos.EcosService;
@@ -50,6 +51,9 @@ class StatusServiceTest {
 
 	@Mock
 	private PartyIntegration partyIntegrationMock;
+
+	@Mock
+	private AlkTService alkTServiceMock;
 
 	@InjectMocks
 	private StatusService statusService;
@@ -126,13 +130,14 @@ class StatusServiceTest {
 		var caseStatusDTO = createCaseStatusDTO();
 
 		when(partyIntegrationMock.getLegalIdByPartyId(MUNICIPALITY_ID, PARTY_ID)).thenReturn(partyTypeStringMap);
+		when(alkTServiceMock.getStatusesByPartyId(PARTY_ID, MUNICIPALITY_ID)).thenReturn(List.of(caseStatusDTO));
 		when(caseDataServiceMock.getStatusesByFilter(CASE_DATA_ORGANIZATION_FILTER.formatted(ORGANIZATION_NUMBER), MUNICIPALITY_ID)).thenReturn(List.of(caseStatusDTO));
 		when(byggrServiceMock.getByggrStatusByLegalId(ORGANIZATION_NUMBER, ENTERPRISE, MUNICIPALITY_ID)).thenReturn(List.of(caseStatusDTO));
 		when(ecosServiceMock.getEcosStatusByLegalId(ORGANIZATION_NUMBER, ENTERPRISE, MUNICIPALITY_ID)).thenReturn(List.of(caseStatusDTO));
 
 		var result = statusService.getStatusesByPartyId(MUNICIPALITY_ID, PARTY_ID);
 
-		assertThat(result).hasSize(3);
+		assertThat(result).hasSize(4);
 		verify(partyIntegrationMock).getLegalIdByPartyId(MUNICIPALITY_ID, PARTY_ID);
 		verify(caseDataServiceMock).getStatusesByFilter(CASE_DATA_ORGANIZATION_FILTER.formatted(ORGANIZATION_NUMBER), MUNICIPALITY_ID);
 		verify(byggrServiceMock).getByggrStatusByLegalId(ORGANIZATION_NUMBER, ENTERPRISE, MUNICIPALITY_ID);
@@ -147,13 +152,14 @@ class StatusServiceTest {
 		var caseStatusDTO = createCaseStatusDTO();
 
 		when(partyIntegrationMock.getLegalIdByPartyId(MUNICIPALITY_ID, PARTY_ID)).thenReturn(partyTypeStringMap);
+		when(alkTServiceMock.getStatusesByPartyId(PARTY_ID, MUNICIPALITY_ID)).thenReturn(List.of(caseStatusDTO));
 		when(caseDataServiceMock.getStatusesByFilter(CASE_DATA_PERSON_FILTER.formatted(PARTY_ID), MUNICIPALITY_ID)).thenReturn(List.of(caseStatusDTO));
 		when(byggrServiceMock.getByggrStatusByLegalId(PERSONAL_NUMBER, PRIVATE, MUNICIPALITY_ID)).thenReturn(List.of(caseStatusDTO));
 		when(ecosServiceMock.getEcosStatusByLegalId(PERSONAL_NUMBER, PRIVATE, MUNICIPALITY_ID)).thenReturn(List.of(caseStatusDTO));
 
 		var result = statusService.getStatusesByPartyId(MUNICIPALITY_ID, PARTY_ID);
 
-		assertThat(result).hasSize(3);
+		assertThat(result).hasSize(4);
 		verify(partyIntegrationMock).getLegalIdByPartyId(MUNICIPALITY_ID, PARTY_ID);
 		verify(caseDataServiceMock).getStatusesByFilter(CASE_DATA_PERSON_FILTER.formatted(PARTY_ID), MUNICIPALITY_ID);
 		verify(byggrServiceMock).getByggrStatusByLegalId(PERSONAL_NUMBER, PRIVATE, MUNICIPALITY_ID);

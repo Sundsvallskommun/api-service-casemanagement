@@ -1,0 +1,13 @@
+{
+	"request": {
+		"headers": {"Authorization": {"equalTo": "Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"}},
+		"method": "GET",
+		"urlPath": "/party/2281/PRIVATE/f2af73ba-fa39-474b-b2ff-cc420158266d/legalId"
+	},
+	"response": {
+		"headers": {"Content-Type": "text/plain"},
+		"body": "No legalId found!",
+		"status": 404
+	},
+	"name": "api-party-private-legalId"
+}

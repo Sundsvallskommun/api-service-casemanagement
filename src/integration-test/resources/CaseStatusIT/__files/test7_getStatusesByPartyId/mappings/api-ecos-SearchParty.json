@@ -1,0 +1,25 @@
+{
+	"request": {
+		"method": "POST",
+		"bodyPatterns": [{"and": [
+			{"contains": "SearchParty"},
+			{"matches": "^(?!.*?000000-0404).*"}
+		]}],
+		"url": "/Ecos2PublicServices/MinutMiljoService.svc"
+	},
+	"response": {
+		"headers": {
+			"Server": "Microsoft-IIS/10.0",
+			"Cache-Control": "private",
+			"X-AspNet-Version": "4.0.30319",
+			"Vary": "Accept-Encoding",
+			"Set-Cookie": "ASP.NET_SessionId=2ih1nqy0igdxjlzxular3k4t; path=/; HttpOnly; SameSite=Lax",
+			"Persistent-Auth": "true",
+			"Date": "Wed, 28 Jul 2021 09:32:38 GMT",
+			"Content-Type": "text/xml; charset=utf-8",
+			"X-Powered-By": "ASP.NET"
+		},
+		"bodyFileName": "test7_getStatusesByPartyId/responses/api-ecos-SearchParty.xml",
+		"status": 200
+	}
+}

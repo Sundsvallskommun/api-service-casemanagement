@@ -40,6 +40,11 @@ integration:
       2282:
         - "NAMESPACE_3"
         - "NAMESPACE_4"
+  alk-t:
+    oauth2ClientId: clientId
+    oauth2ClientSecret: clientSecret
+    oauth2TokenUrl: token.url
+    url: alk-t.url
   citizen:
     oauth2ClientId: clientId
     oauth2ClientSecret: clientSecret

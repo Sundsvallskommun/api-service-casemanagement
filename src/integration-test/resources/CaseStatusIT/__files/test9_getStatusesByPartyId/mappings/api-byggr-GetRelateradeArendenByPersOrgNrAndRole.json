@@ -1,0 +1,19 @@
+{
+	"request": {
+		"headers": {"SoapAction": {"equalTo": "www.tekis.se/ServiceContract/V4/IExportArenden/GetRelateradeArendenByPersOrgNrAndRole"}},
+		"method": "POST",
+		"bodyPatterns": [{"contains": "GetRelateradeArendenByPersOrgNrAndRole"}],
+		"url": "/TekisArende/ArendeExportWS.svc"
+	},
+	"response": {
+		"headers": {
+			"Server": "Microsoft-IIS/10.0",
+			"Vary": "Accept-Encoding",
+			"Date": "Wed, 28 Jul 2021 06:31:46 GMT",
+			"Content-Type": "text/xml; charset=utf-8",
+			"X-Powered-By": "ASP.NET"
+		},
+		"bodyFileName": "test9_getStatusesByPartyId/responses/api-byggr-GetRelateradeArendenByPersOrgNrAndRole.xml",
+		"status": 200
+	}
+}

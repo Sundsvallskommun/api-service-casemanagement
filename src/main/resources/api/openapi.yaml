@@ -7,7 +7,7 @@ info:
     url: https://opensource.org/licenses/MIT
   version: "8.1"
 servers:
-  - url: http://localhost:54924
+  - url: http://localhost:54564
     description: Generated server url
 tags:
   - name: Status
@@ -77,6 +77,14 @@ paths:
                 - $ref: "#/components/schemas/OtherCaseDTO"
         required: true
       responses:
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "204":
+          description: No content
         "400":
           description: Bad request
           content:
@@ -93,14 +101,6 @@ paths:
                 $ref: "#/components/schemas/Problem"
         "404":
           description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "204":
-          description: No content
-        "500":
-          description: Internal Server error
           content:
             application/problem+json:
               schema:
@@ -157,6 +157,21 @@ paths:
                 - $ref: "#/components/schemas/OtherCaseDTO"
         required: true
       responses:
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CaseResourceResponseDTO"
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/CaseResourceResponseDTO"
         "400":
           description: Bad request
           content:
@@ -173,21 +188,6 @@ paths:
                 $ref: "#/components/schemas/Problem"
         "404":
           description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/CaseResourceResponseDTO"
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/CaseResourceResponseDTO"
-        "500":
-          description: Internal Server error
           content:
             application/problem+json:
               schema:
@@ -221,6 +221,14 @@ paths:
                 $ref: "#/components/schemas/AttachmentDTO"
         required: true
       responses:
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "204":
+          description: No content - Successful request
         "400":
           description: Bad request
           content:
@@ -237,14 +245,6 @@ paths:
                 $ref: "#/components/schemas/Problem"
         "404":
           description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "204":
-          description: No content - Successful request
-        "500":
-          description: Internal Server error
           content:
             application/problem+json:
               schema:
@@ -271,6 +271,12 @@ paths:
           schema:
             type: string
       responses:
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
         "400":
           description: Bad request
           content:
@@ -304,12 +310,6 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/CaseStatusDTO"
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
   /{municipalityId}/organization/{organizationNumber}/cases/status:
     get:
       tags:
@@ -335,6 +335,12 @@ paths:
             description: Organization number with 10 or 12 digits.
             example: 20220622-2396
       responses:
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
         "400":
           description: Bad request
           content:
@@ -368,12 +374,6 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/CaseStatusDTO"
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
   /{municipalityId}/cases/{externalCaseId}/status:
     get:
       tags:
@@ -396,6 +396,12 @@ paths:
           schema:
             type: string
       responses:
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
         "400":
           description: Bad request
           content:
@@ -425,12 +431,6 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/CaseStatusDTO"
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
   /{municipalityId}/cases/case-mappings:
     get:
       tags:
@@ -454,6 +454,12 @@ paths:
             type: string
           example: 2281
       responses:
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
         "400":
           description: Bad request
           content:
@@ -481,12 +487,6 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/CaseMapping"
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
   /api-docs:
     get:
       tags:
@@ -918,10 +918,6 @@ components:
     Problem:
       type: object
       properties:
-        title:
-          type: string
-        detail:
-          type: string
         instance:
           type: string
           format: uri
@@ -934,6 +930,10 @@ components:
             type: object
         status:
           $ref: "#/components/schemas/StatusType"
+        title:
+          type: string
+        detail:
+          type: string
     StatusType:
       type: object
       properties:
@@ -982,8 +982,6 @@ components:
           type: string
         message:
           type: string
-        detail:
-          type: string
         instance:
           type: string
           format: uri
@@ -991,6 +989,8 @@ components:
           type: object
           additionalProperties:
             type: object
+        detail:
+          type: string
         suppressed:
           type: array
           items:
@@ -1053,10 +1053,6 @@ components:
                 type: boolean
         message:
           type: string
-        title:
-          type: string
-        detail:
-          type: string
         instance:
           type: string
           format: uri
@@ -1069,6 +1065,10 @@ components:
             type: object
         status:
           $ref: "#/components/schemas/StatusType"
+        title:
+          type: string
+        detail:
+          type: string
         suppressed:
           type: array
           items:
@@ -1128,6 +1128,7 @@ components:
             - BYGGR
             - ECOS
             - CASE_DATA
+            - ALKT
         caseType:
           type: string
           description: The case type
@@ -1172,6 +1173,7 @@ components:
             - BYGGR
             - ECOS
             - CASE_DATA
+            - ALKT
         caseType:
           type: string
         serviceName:
