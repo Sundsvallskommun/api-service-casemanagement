@@ -111,7 +111,7 @@ class CaseStatusIT extends AbstractAppTest {
 	 * Tests the scenario where PartyType is PRIVATE and only CaseData case is found.
 	 */
 	@Test
-	void test5_getStatusesByPartyId_1() {
+	void test5_getStatusesByPartyId() {
 		setupCall()
 			.withHttpMethod(GET)
 			.withServicePath(STATUS_BY_PARTY_PATH
@@ -126,7 +126,7 @@ class CaseStatusIT extends AbstractAppTest {
 	 * Tests the scenario where PartyType is ENTERPRISE and only CaseData case is found.
 	 */
 	@Test
-	void test6_getStatusesByPartyId_2() {
+	void test6_getStatusesByPartyId() {
 		setupCall()
 			.withHttpMethod(GET)
 			.withServicePath(STATUS_BY_PARTY_PATH
@@ -141,7 +141,7 @@ class CaseStatusIT extends AbstractAppTest {
 	 * Tests the scenario where PartyType is PRIVATE and only Byggr case is found.
 	 */
 	@Test
-	void test7_getStatusesByPartyId_3() {
+	void test7_getStatusesByPartyId() {
 		setupCall()
 			.withHttpMethod(GET)
 			.withServicePath(STATUS_BY_PARTY_PATH
@@ -156,7 +156,7 @@ class CaseStatusIT extends AbstractAppTest {
 	 * Tests the scenario where PartyType is ENTERPRISE and only Byggr case is found.
 	 */
 	@Test
-	void test8_getStatusesByPartyId_4() {
+	void test8_getStatusesByPartyId() {
 		setupCall()
 			.withHttpMethod(GET)
 			.withServicePath(STATUS_BY_PARTY_PATH
@@ -171,7 +171,7 @@ class CaseStatusIT extends AbstractAppTest {
 	 * Tests the scenario where PartyType is PRIVATE and only Ecos case is found.
 	 */
 	@Test
-	void test9_getStatusesByPartyId_5() {
+	void test9_getStatusesByPartyId() {
 		setupCall()
 			.withHttpMethod(GET)
 			.withServicePath(STATUS_BY_PARTY_PATH
@@ -186,7 +186,7 @@ class CaseStatusIT extends AbstractAppTest {
 	 * Tests the scenario where PartyType is ENTERPRISE and only Ecos case is found.
 	 */
 	@Test
-	void test10_getStatusesByPartyId_6() {
+	void test10_getStatusesByPartyId() {
 		setupCall()
 			.withHttpMethod(GET)
 			.withServicePath(STATUS_BY_PARTY_PATH
@@ -197,4 +197,33 @@ class CaseStatusIT extends AbstractAppTest {
 			.sendRequestAndVerifyResponse();
 	}
 
+	/**
+	 * Tests the scenario where PartyType is PRIVATE and only AlkT case is found.
+	 */
+	@Test
+	void test11_getStatusesByPartyId() {
+		setupCall()
+			.withHttpMethod(GET)
+			.withServicePath(STATUS_BY_PARTY_PATH
+				.replace("{municipalityId}", MUNICIPALITY_ID)
+				.replace("{partyId}", PARTY_ID))
+			.withExpectedResponseStatus(OK)
+			.withExpectedResponse(RESPONSE_FILE)
+			.sendRequestAndVerifyResponse();
+	}
+
+	/**
+	 * Tests the scenario where PartyType is ENTERPRISE and only AlkT case is found.
+	 */
+	@Test
+	void test12_getStatusesByPartyId() {
+		setupCall()
+			.withHttpMethod(GET)
+			.withServicePath(STATUS_BY_PARTY_PATH
+				.replace("{municipalityId}", MUNICIPALITY_ID)
+				.replace("{partyId}", PARTY_ID))
+			.withExpectedResponseStatus(OK)
+			.withExpectedResponse(RESPONSE_FILE)
+			.sendRequestAndVerifyResponse();
+	}
 }

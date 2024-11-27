@@ -1,0 +1,28 @@
+[{
+	"establishments": [{
+		"cases": [{
+			"decision": {
+				"created": "2019-01-01T00:00:00Z",
+				"description": "decision-description"
+			},
+			"registrationNumber": "case-registration-number",
+			"description": "case-description",
+			"closed": "2019-01-01T00:00:00Z",
+			"opened": "2019-01-01T00:00:00Z",
+			"id": 123,
+			"open": true,
+			"events": [{
+				"created": "2019-01-01T00:00:00Z",
+				"description": "event-description",
+				"changed": "2019-01-01T00:00:00Z",
+				"posted": "2019-01-01T00:00:00Z"
+			}],
+			"changed": "2019-01-01T00:00:00Z",
+			"posted": "2019-01-01T00:00:00Z"
+		}],
+		"name": "establishment-name",
+		"posted": "2019-01-01T00:00:00Z",
+		"changed": "2019-01-01T00:00:00Z"
+	}],
+	"organizationName": "organization-name"
+}]

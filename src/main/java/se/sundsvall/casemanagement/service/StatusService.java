@@ -3,6 +3,7 @@ package se.sundsvall.casemanagement.service;
 import generated.client.party.PartyType;
 import org.springframework.stereotype.Service;
 import se.sundsvall.casemanagement.api.model.CaseStatusDTO;
+import se.sundsvall.casemanagement.integration.alkt.AlkTService;
 import se.sundsvall.casemanagement.integration.byggr.ByggrService;
 import se.sundsvall.casemanagement.integration.casedata.CaseDataService;
 import se.sundsvall.casemanagement.integration.ecos.EcosService;
@@ -25,6 +26,7 @@ public class StatusService {
 	private final ByggrService byggrService;
 	private final EcosService ecosService;
 	private final CaseDataService caseDataService;
+	private final AlkTService alkTService;
 	private final CaseMappingService caseMappingService;
 	private final PartyIntegration partyIntegration;
 
@@ -32,12 +34,14 @@ public class StatusService {
 		final EcosService ecosService,
 		final CaseDataService caseDataService,
 		final CaseMappingService caseMappingService,
-		final PartyIntegration partyIntegration) {
+		final PartyIntegration partyIntegration,
+		final AlkTService alkTService) {
 		this.byggrService = byggrService;
 		this.ecosService = ecosService;
 		this.caseDataService = caseDataService;
 		this.caseMappingService = caseMappingService;
 		this.partyIntegration = partyIntegration;
+		this.alkTService = alkTService;
 	}
 
 	public List<CaseStatusDTO> getStatusByOrgNr(final String municipalityId, final String organizationNumber) {
@@ -56,6 +60,7 @@ public class StatusService {
 			case BYGGR -> byggrService.toByggrStatus(caseMapping);
 			case ECOS -> ecosService.getStatus(caseMapping.getCaseId(), caseMapping.getExternalCaseId(), municipalityId);
 			case CASE_DATA -> caseDataService.getStatus(caseMapping, municipalityId);
+			default -> throw new IllegalStateException("Unexpected value: " + caseMapping.getSystem());
 		};
 	}
 
@@ -64,7 +69,11 @@ public class StatusService {
 
 		if (partyTypeAndLegalIdMap.containsKey(PRIVATE)) {
 			List<CaseStatusDTO> caseStatuses = new ArrayList<>();
+			// AlkT statuses
+			caseStatuses.addAll(alkTService.getStatusesByPartyId(partyId, municipalityId));
+			// CaseData statuses
 			caseStatuses.addAll(caseDataService.getStatusesByFilter(CASE_DATA_PERSON_FILTER.formatted(partyId), municipalityId));
+			// ByggR and Ecos statuses
 			caseStatuses.addAll(getCaseStatusesByLegalId(partyTypeAndLegalIdMap.get(PRIVATE), PRIVATE, municipalityId));
 			return caseStatuses;
 		}
@@ -72,7 +81,11 @@ public class StatusService {
 		if (partyTypeAndLegalIdMap.containsKey(ENTERPRISE)) {
 			List<CaseStatusDTO> caseStatuses = new ArrayList<>();
 			var legalId = partyTypeAndLegalIdMap.get(ENTERPRISE);
+			// AlkT statuses
+			caseStatuses.addAll(alkTService.getStatusesByPartyId(partyId, municipalityId));
+			// CaseData statuses
 			caseStatuses.addAll(caseDataService.getStatusesByFilter(CASE_DATA_ORGANIZATION_FILTER.formatted(legalId), municipalityId));
+			// ByggR and Ecos statuses
 			caseStatuses.addAll(getCaseStatusesByLegalId(legalId, ENTERPRISE, municipalityId));
 			return caseStatuses;
 		}

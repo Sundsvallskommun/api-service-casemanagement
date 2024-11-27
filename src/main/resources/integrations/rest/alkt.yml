@@ -1,0 +1,439 @@
+openapi: 3.0.1
+info:
+  title: api-alkt
+  contact: { }
+  license:
+    name: MIT License
+    url: https://opensource.org/licenses/MIT
+  version: "2.0"
+servers:
+  - url: http://localhost:51449
+    description: Generated server url
+tags:
+  - name: Case
+    description: Case operations
+  - name: Owner
+    description: Owner operations
+paths:
+  /{municipalityId}/owners/{partyId}:
+    get:
+      tags:
+        - Owner
+      summary: Get owners and their cases by partyId
+      operationId: getOwners
+      parameters:
+        - name: municipalityId
+          in: path
+          description: Municipality id
+          required: true
+          schema:
+            type: string
+        - name: partyId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful Operation
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Owner"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "500":
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "502":
+          description: Bad Gateway
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+  /{municipalityId}/case/{caseId}:
+    get:
+      tags:
+        - Case
+      summary: Get case by caseId
+      operationId: getCase
+      parameters:
+        - name: municipalityId
+          in: path
+          description: Municipality id
+          required: true
+          schema:
+            type: string
+        - name: caseId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        "200":
+          description: Successful Operation
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Case"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "500":
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "502":
+          description: Bad Gateway
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+  /api-docs:
+    get:
+      tags:
+        - API
+      summary: OpenAPI
+      operationId: getApiDocs
+      responses:
+        "200":
+          description: OK
+          content:
+            application/yaml:
+              schema:
+                type: string
+      x-auth-type: None
+      x-throttling-tier: Unlimited
+      x-wso2-mutual-ssl: Optional
+components:
+  schemas:
+    Problem:
+      type: object
+      properties:
+        instance:
+          type: string
+          format: uri
+        type:
+          type: string
+          format: uri
+        parameters:
+          type: object
+          additionalProperties:
+            type: object
+        status:
+          $ref: "#/components/schemas/StatusType"
+        title:
+          type: string
+        detail:
+          type: string
+    StatusType:
+      type: object
+      properties:
+        reasonPhrase:
+          type: string
+        statusCode:
+          type: integer
+          format: int32
+    ConstraintViolationProblem:
+      type: object
+      properties:
+        cause:
+          $ref: "#/components/schemas/ThrowableProblem"
+        stackTrace:
+          type: array
+          items:
+            type: object
+            properties:
+              classLoaderName:
+                type: string
+              moduleName:
+                type: string
+              moduleVersion:
+                type: string
+              methodName:
+                type: string
+              fileName:
+                type: string
+              lineNumber:
+                type: integer
+                format: int32
+              className:
+                type: string
+              nativeMethod:
+                type: boolean
+        type:
+          type: string
+          format: uri
+        status:
+          $ref: "#/components/schemas/StatusType"
+        violations:
+          type: array
+          items:
+            $ref: "#/components/schemas/Violation"
+        title:
+          type: string
+        message:
+          type: string
+        instance:
+          type: string
+          format: uri
+        parameters:
+          type: object
+          additionalProperties:
+            type: object
+        detail:
+          type: string
+        suppressed:
+          type: array
+          items:
+            type: object
+            properties:
+              stackTrace:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    classLoaderName:
+                      type: string
+                    moduleName:
+                      type: string
+                    moduleVersion:
+                      type: string
+                    methodName:
+                      type: string
+                    fileName:
+                      type: string
+                    lineNumber:
+                      type: integer
+                      format: int32
+                    className:
+                      type: string
+                    nativeMethod:
+                      type: boolean
+              message:
+                type: string
+              localizedMessage:
+                type: string
+        localizedMessage:
+          type: string
+    ThrowableProblem:
+      type: object
+      properties:
+        cause:
+          $ref: "#/components/schemas/ThrowableProblem"
+        stackTrace:
+          type: array
+          items:
+            type: object
+            properties:
+              classLoaderName:
+                type: string
+              moduleName:
+                type: string
+              moduleVersion:
+                type: string
+              methodName:
+                type: string
+              fileName:
+                type: string
+              lineNumber:
+                type: integer
+                format: int32
+              className:
+                type: string
+              nativeMethod:
+                type: boolean
+        message:
+          type: string
+        instance:
+          type: string
+          format: uri
+        type:
+          type: string
+          format: uri
+        parameters:
+          type: object
+          additionalProperties:
+            type: object
+        status:
+          $ref: "#/components/schemas/StatusType"
+        title:
+          type: string
+        detail:
+          type: string
+        suppressed:
+          type: array
+          items:
+            type: object
+            properties:
+              stackTrace:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    classLoaderName:
+                      type: string
+                    moduleName:
+                      type: string
+                    moduleVersion:
+                      type: string
+                    methodName:
+                      type: string
+                    fileName:
+                      type: string
+                    lineNumber:
+                      type: integer
+                      format: int32
+                    className:
+                      type: string
+                    nativeMethod:
+                      type: boolean
+              message:
+                type: string
+              localizedMessage:
+                type: string
+        localizedMessage:
+          type: string
+    Violation:
+      type: object
+      properties:
+        field:
+          type: string
+        message:
+          type: string
+    Case:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Case number
+          format: int32
+          example: 123
+        registrationNumber:
+          type: string
+          description: Registration number
+          example: "1234567890"
+        description:
+          type: string
+          description: Case description
+          example: "Nytt tillstånd, allmänheten"
+        changed:
+          type: string
+          description: When the case was changed
+          format: date-time
+        closed:
+          type: string
+          description: When the case was closed
+          format: date-time
+        opened:
+          type: string
+          description: When the case was opened
+          format: date-time
+        posted:
+          type: string
+          description: When the case was posted
+          format: date-time
+        events:
+          type: array
+          items:
+            $ref: "#/components/schemas/Event"
+        decision:
+          $ref: "#/components/schemas/Decision"
+        open:
+          type: boolean
+      description: All cases on an establishment
+    Decision:
+      type: object
+      properties:
+        description:
+          type: string
+          description: A description of which decision was made
+          example: Tillstånd allmänhet
+        created:
+          type: string
+          description: When the decision was made
+          format: date-time
+      description: A Decision on a case
+    Establishment:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the establishment
+          example: Lelles bar
+        posted:
+          type: string
+          description: When the establishment was first created
+          format: date-time
+        changed:
+          type: string
+          description: When the establishment was changed
+          format: date-time
+        cases:
+          type: array
+          items:
+            $ref: "#/components/schemas/Case"
+      description: List of all establishments
+    Event:
+      type: object
+      properties:
+        description:
+          type: string
+          description: Description of the event
+          example: Remiss till skattemyndigheten
+        changed:
+          type: string
+          description: When the event was changed
+          format: date-time
+        created:
+          type: string
+          description: When the event happened
+          format: date-time
+        posted:
+          type: string
+          description: When the event was posted
+          format: date-time
+      description: List of events on a case
+    Owner:
+      type: object
+      properties:
+        organizationName:
+          type: string
+          description: Name of the organization
+          example: Lelles AB
+        establishments:
+          type: array
+          items:
+            $ref: "#/components/schemas/Establishment"
+  securitySchemes: { }

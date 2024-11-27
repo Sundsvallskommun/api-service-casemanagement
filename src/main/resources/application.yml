@@ -8,6 +8,11 @@ integration:
     oauth2ClientSecret: override
     oauth2TokenUrl: override
     url: override
+  alk-t:
+    oauth2ClientId: override
+    oauth2ClientSecret: override
+    oauth2TokenUrl: override
+    url: override
   citizen:
     oauth2ClientId: override
     oauth2ClientSecret: override

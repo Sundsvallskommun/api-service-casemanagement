@@ -133,6 +133,18 @@
 						</configuration>
 					</execution>
 					<execution>
+						<id>alkt</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>${project.basedir}/src/main/resources/integrations/rest/alkt.yml</inputSpec>
+							<configOptions>
+								<modelPackage>generated.client.alkt</modelPackage>
+							</configOptions>
+						</configuration>
+					</execution>
+					<execution>
 						<id>messaging</id>
 						<goals>
 							<goal>generate</goal>
