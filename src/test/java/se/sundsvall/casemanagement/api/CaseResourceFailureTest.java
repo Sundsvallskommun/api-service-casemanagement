@@ -27,7 +27,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -62,13 +62,13 @@ class CaseResourceFailureTest {
 	@Autowired
 	private WebTestClient webTestClient;
 
-	@MockBean
+	@MockitoBean
 	private CaseMappingService caseMappingServiceMock;
 
-	@MockBean
+	@MockitoBean
 	private CaseService caseServiceMock;
 
-	@MockBean
+	@MockitoBean
 	private CaseDataService caseDataServiceMock;
 
 	@Captor
