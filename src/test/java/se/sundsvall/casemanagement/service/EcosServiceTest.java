@@ -1,6 +1,25 @@
 package se.sundsvall.casemanagement.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static se.sundsvall.casemanagement.TestUtil.ADRESSPLATS_ID;
+import static se.sundsvall.casemanagement.TestUtil.FNR;
+
 import generated.client.party.PartyType;
+import java.nio.charset.StandardCharsets;
+import java.text.MessageFormat;
+import java.time.LocalDateTime;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
 import minutmiljo.AddDocumentsToCase;
 import minutmiljo.ArrayOfOccurrenceListItemSvcDto;
 import minutmiljo.ArrayOfPartySvcDto;
@@ -62,26 +81,6 @@ import se.sundsvall.casemanagement.integration.ecos.MinutMiljoClientV2;
 import se.sundsvall.casemanagement.integration.ecos.PartyService;
 import se.sundsvall.casemanagement.util.CaseUtil;
 import se.sundsvall.casemanagement.util.Constants;
-
-import java.nio.charset.StandardCharsets;
-import java.text.MessageFormat;
-import java.time.LocalDateTime;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static se.sundsvall.casemanagement.TestUtil.ADRESSPLATS_ID;
-import static se.sundsvall.casemanagement.TestUtil.FNR;
 
 @ExtendWith(MockitoExtension.class)
 class EcosServiceTest {

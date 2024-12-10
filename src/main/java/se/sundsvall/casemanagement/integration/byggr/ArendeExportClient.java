@@ -2,11 +2,6 @@ package se.sundsvall.casemanagement.integration.byggr;
 
 import static se.sundsvall.casemanagement.integration.ecos.MinutMiljoClientV2.TEXT_XML_UTF8;
 
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.PostMapping;
-
-import se.sundsvall.casemanagement.integration.byggr.configuration.ArendeExportConfiguration;
-
 import arendeexport.GetArende;
 import arendeexport.GetArendeResponse;
 import arendeexport.GetDocument;
@@ -23,6 +18,9 @@ import arendeexport.SaveNewHandelse;
 import arendeexport.SaveNewHandelseResponse;
 import arendeexport.SaveNewRemissvar;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.PostMapping;
+import se.sundsvall.casemanagement.integration.byggr.configuration.ArendeExportConfiguration;
 
 @FeignClient(name = "arendeexport", url = "${integration.arendeexport.url}", configuration = ArendeExportConfiguration.class)
 @CircuitBreaker(name = "arendeexport")

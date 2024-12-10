@@ -1,5 +1,9 @@
 package se.sundsvall.casemanagement.api;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
+import static se.sundsvall.casemanagement.util.Constants.REQUEST_BODY_MUST_NOT_BE_NULL;
+
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -7,6 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,12 +29,6 @@ import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.integration.ecos.EcosService;
 import se.sundsvall.casemanagement.service.CaseMappingService;
 import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
-
-import java.util.List;
-
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
-import static se.sundsvall.casemanagement.util.Constants.REQUEST_BODY_MUST_NOT_BE_NULL;
 
 @RestController
 @Validated

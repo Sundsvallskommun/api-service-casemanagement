@@ -1,16 +1,15 @@
 package se.sundsvall.casemanagement.util;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import generated.client.party.PartyType;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import org.junit.jupiter.api.Test;
 import org.zalando.problem.Status;
 import org.zalando.problem.ThrowableProblem;
 import se.sundsvall.casemanagement.TestUtil;
-
-import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class CaseUtilTest {
 

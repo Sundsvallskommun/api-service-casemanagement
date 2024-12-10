@@ -1,5 +1,10 @@
 package se.sundsvall.casemanagement.api;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
+import static se.sundsvall.casemanagement.util.Constants.ORGNR_PATTERN_MESSAGE;
+import static se.sundsvall.casemanagement.util.Constants.ORGNR_PATTERN_REGEX;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -7,6 +12,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Pattern;
+import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,13 +25,6 @@ import se.sundsvall.casemanagement.api.model.CaseStatusDTO;
 import se.sundsvall.casemanagement.service.StatusService;
 import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
 import se.sundsvall.dept44.common.validators.annotation.ValidUuid;
-
-import java.util.List;
-
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
-import static se.sundsvall.casemanagement.util.Constants.ORGNR_PATTERN_MESSAGE;
-import static se.sundsvall.casemanagement.util.Constants.ORGNR_PATTERN_REGEX;
 
 @RestController
 @Validated

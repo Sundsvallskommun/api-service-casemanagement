@@ -1,5 +1,12 @@
 package se.sundsvall.casemanagement.api;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static org.zalando.problem.Status.BAD_REQUEST;
+
+import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,14 +20,6 @@ import se.sundsvall.casemanagement.integration.byggr.ByggrService;
 import se.sundsvall.casemanagement.integration.casedata.CaseDataService;
 import se.sundsvall.casemanagement.integration.ecos.EcosService;
 import se.sundsvall.casemanagement.service.CaseMappingService;
-
-import java.util.UUID;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.tuple;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-import static org.zalando.problem.Status.BAD_REQUEST;
 
 @SpringBootTest(classes = Application.class, webEnvironment = RANDOM_PORT)
 @ActiveProfiles("junit")

@@ -12,7 +12,6 @@ import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,7 +19,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.zalando.problem.Status;
 import org.zalando.problem.ThrowableProblem;
-
 import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
 import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
 import se.sundsvall.casemanagement.api.model.enums.CaseType;

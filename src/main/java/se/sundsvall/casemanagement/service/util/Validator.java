@@ -7,18 +7,15 @@ import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.BYGGR_A
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.NEIGHBORHOOD_NOTIFICATION;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.WITH_NULLABLE_FACILITY_TYPE;
 
-import java.text.MessageFormat;
-import java.util.Objects;
-import java.util.Set;
-
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;
-
+import java.text.MessageFormat;
+import java.util.Objects;
+import java.util.Set;
 import org.springframework.stereotype.Component;
 import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
-
 import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
 import se.sundsvall.casemanagement.api.model.EcosCaseDTO;
 import se.sundsvall.casemanagement.api.model.PersonDTO;

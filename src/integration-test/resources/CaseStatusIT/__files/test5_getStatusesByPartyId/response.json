@@ -1,9 +1,11 @@
-[{
-	"system": "CASE_DATA",
-	"externalCaseId": "123",
-	"caseId": "16",
-	"serviceName": "Test service!",
-	"caseType": "PARKING_PERMIT",
-	"status": "Väntar på komplettering",
-	"timestamp": "2022-12-14T09:43:52.538759"
-}]
+[
+	{
+		"system": "CASE_DATA",
+		"externalCaseId": "123",
+		"caseId": "16",
+		"serviceName": "Test service!",
+		"caseType": "PARKING_PERMIT",
+		"status": "Väntar på komplettering",
+		"timestamp": "2022-12-14T09:43:52.538759"
+	}
+]

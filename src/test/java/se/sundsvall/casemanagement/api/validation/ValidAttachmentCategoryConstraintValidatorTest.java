@@ -6,7 +6,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import jakarta.validation.ConstraintValidatorContext;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -14,7 +13,6 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
 import se.sundsvall.casemanagement.api.validation.impl.ValidAttachmentCategoryConstraintValidator;
 

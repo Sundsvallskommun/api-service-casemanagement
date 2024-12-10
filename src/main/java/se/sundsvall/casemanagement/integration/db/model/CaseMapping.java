@@ -1,8 +1,6 @@
 package se.sundsvall.casemanagement.integration.db.model;
 
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -14,14 +12,13 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
-
-import se.sundsvall.casemanagement.api.model.enums.SystemType;
-
-import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import se.sundsvall.casemanagement.api.model.enums.SystemType;
 
 @Entity
 @IdClass(CaseMappingId.class)

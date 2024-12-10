@@ -1,16 +1,28 @@
 {
 	"request": {
 		"headers": {
-			"SOAPAction": {"equalTo": "www.tekis.se/ServiceContract/V4/IExportArenden/SaveNewHandelse"},
-			"Content-Type": {"equalTo": "text/xml;charset=UTF-8"}
+			"SOAPAction": {
+				"equalTo": "www.tekis.se/ServiceContract/V4/IExportArenden/SaveNewHandelse"
+			},
+			"Content-Type": {
+				"equalTo": "text/xml;charset=UTF-8"
+			}
 		},
 		"method": "POST",
-		"bodyPatterns": [{"matchesXPath": "//*[local-name()='SaveNewHandelse']"}],
+		"bodyPatterns": [
+			{
+				"matchesXPath": "//*[local-name()='SaveNewHandelse']"
+			}
+		],
 		"urlPath": "/TekisArende/ArendeExportWS.svc"
 	},
 	"response": {
-		"headers": {"Content-Type": "application/xml"},
-		"transformers": ["response-template"],
+		"headers": {
+			"Content-Type": "application/xml"
+		},
+		"transformers": [
+			"response-template"
+		],
 		"bodyFileName": "test3_addCertifiedInspector/responses/api-byggr-save-new-handelse.xml",
 		"status": 200
 	},

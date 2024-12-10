@@ -1,8 +1,7 @@
 package se.sundsvall.casemanagement.api.model;
 
-import java.io.Serializable;
-
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.io.Serializable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

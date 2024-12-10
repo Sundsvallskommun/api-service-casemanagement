@@ -6,15 +6,6 @@ import static se.sundsvall.casemanagement.integration.ecos.RiskClassMapper.mapTh
 
 import java.util.List;
 import java.util.Optional;
-
-import org.springframework.stereotype.Service;
-import org.zalando.problem.Problem;
-import org.zalando.problem.Status;
-
-import se.sundsvall.casemanagement.api.model.EcosCaseDTO;
-import se.sundsvall.casemanagement.api.model.OrganizationDTO;
-import se.sundsvall.casemanagement.util.CaseUtil;
-
 import minutmiljo.AddFacilityToCase;
 import minutmiljo.ArrayOfFacilityFilterSvcDto;
 import minutmiljo.ArrayOfguid;
@@ -26,6 +17,12 @@ import minutmiljo.SaveFoodFacility2024RiskClassData;
 import minutmiljo.SaveRiskClass2024DataDto;
 import minutmiljo.SearchFacility;
 import minutmiljo.SearchFacilitySvcDto;
+import org.springframework.stereotype.Service;
+import org.zalando.problem.Problem;
+import org.zalando.problem.Status;
+import se.sundsvall.casemanagement.api.model.EcosCaseDTO;
+import se.sundsvall.casemanagement.api.model.OrganizationDTO;
+import se.sundsvall.casemanagement.util.CaseUtil;
 
 @Service
 public class RiskClassService {

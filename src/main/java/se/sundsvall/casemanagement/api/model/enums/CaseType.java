@@ -2,9 +2,8 @@ package se.sundsvall.casemanagement.api.model.enums;
 
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.NYBYGGNAD_ANSOKAN_OM_BYGGLOV;
 
-import java.util.Set;
-
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.Set;
 import lombok.Getter;
 
 @Getter

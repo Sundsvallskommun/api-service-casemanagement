@@ -1,5 +1,8 @@
 package se.sundsvall.casemanagement.service;
 
+import static se.sundsvall.casemanagement.service.mapper.CaseMapper.toCaseEntity;
+
+import java.util.Optional;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
@@ -12,10 +15,6 @@ import se.sundsvall.casemanagement.service.event.IncomingEcosCase;
 import se.sundsvall.casemanagement.service.event.IncomingOtherCase;
 import se.sundsvall.casemanagement.service.event.UpdateByggrCase;
 import se.sundsvall.casemanagement.service.util.Validator;
-
-import java.util.Optional;
-
-import static se.sundsvall.casemanagement.service.mapper.CaseMapper.toCaseEntity;
 
 @Service
 public class CaseService {

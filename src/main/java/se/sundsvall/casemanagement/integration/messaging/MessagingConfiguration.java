@@ -1,16 +1,14 @@
 package se.sundsvall.casemanagement.integration.messaging;
 
+import feign.Request;
+import feign.codec.ErrorDecoder;
 import java.util.concurrent.TimeUnit;
-
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.openfeign.FeignBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
-
-import feign.Request;
-import feign.codec.ErrorDecoder;
 import se.sundsvall.dept44.configuration.feign.FeignConfiguration;
 import se.sundsvall.dept44.configuration.feign.FeignMultiCustomizer;
 import se.sundsvall.dept44.configuration.feign.decoder.ProblemErrorDecoder;

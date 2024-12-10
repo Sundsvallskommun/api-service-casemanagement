@@ -1,7 +1,6 @@
 package se.sundsvall.casemanagement.service.event;
 
 import java.io.Serial;
-
 import se.sundsvall.casemanagement.api.model.EcosCaseDTO;
 
 public class IncomingEcosCase extends Event<EcosCaseDTO> {

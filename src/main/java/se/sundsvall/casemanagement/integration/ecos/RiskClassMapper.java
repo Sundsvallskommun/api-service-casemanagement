@@ -3,7 +3,6 @@ package se.sundsvall.casemanagement.integration.ecos;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
 import minutmiljo.ArrayOfSaveRiskClass2024ActivityDto;
 import minutmiljo.ArrayOfSaveRiskClass2024CertificationDto;
 import minutmiljo.ArrayOfSaveRiskClass2024ProductGroupDto;

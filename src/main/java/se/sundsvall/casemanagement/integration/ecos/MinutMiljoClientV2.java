@@ -1,11 +1,10 @@
 package se.sundsvall.casemanagement.integration.ecos;
 
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.PostMapping;
-
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import minutmiljoV2.RegisterDocument;
 import minutmiljoV2.RegisterDocumentResponse;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.PostMapping;
 import se.sundsvall.casemanagement.integration.ecos.configuration.MinutMiljoConfiguration;
 
 @FeignClient(name = "minutmiljoV2", url = "${integration.minutmiljoV2.url}", configuration = MinutMiljoConfiguration.class)
