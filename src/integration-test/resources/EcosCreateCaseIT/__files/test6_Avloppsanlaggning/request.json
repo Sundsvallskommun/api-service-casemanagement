@@ -1,14 +1,16 @@
 {
 	"externalCaseId": "325594400",
-	"attachments": [{
-		"note": "LZFXxXUUFd",
-		"extension": ".pdf",
-		"file": "dGVzdA==",
-		"name": "fDtCvIojva",
-		"extraParameters": null,
-		"mimeType": "application/pdf",
-		"category": "ANMALAN_ANDRING_AVLOPPSANLAGGNING"
-	}],
+	"attachments": [
+		{
+			"note": "LZFXxXUUFd",
+			"extension": ".pdf",
+			"file": "dGVzdA==",
+			"name": "fDtCvIojva",
+			"extraParameters": null,
+			"mimeType": "application/pdf",
+			"category": "ANMALAN_ANDRING_AVLOPPSANLAGGNING"
+		}
+	],
 	"caseTitleAddition": "Some case title addition",
 	"description": "QTbMmjptuG",
 	"extraParameters": {
@@ -20,33 +22,35 @@
 		{
 			"emailAddress": "AjqaKKHubV@Zmpxd.com",
 			"cellphoneNumber": "zZCAorGTcj",
-			"addresses": [{
-				"country": "Sverige",
-				"city": "ElDdCpecEe",
-				"postalCode": "8897885197",
-				"houseNumber": "kL35hRx58V",
-				"extraParameters": {
-					"GpDiLkWqUH": "JKcVNCGDfDNepCIHSBmX",
-					"gJXOJijVPK": "UZwToiUteLFNCRxOJdny",
-					"oTyFbRedrF": "AbUjcZSXqJYjsHvpLLOh"
-				},
-				"appartmentNumber": "1ZMzZpUoAP",
-				"isZoningPlanArea": false,
-				"invoiceMarking": "9sluZQJ03E",
-				"careOf": "rsUAfUpGZD",
-				"addressCategories": [
-					"VISITING_ADDRESS",
-					"INVOICE_ADDRESS",
-					"POSTAL_ADDRESS"
-				],
-				"street": "QyDWlhSgsv",
-				"attention": "oFIyzLlJgk",
-				"propertyDesignation": "SUNDSVALL FILLA 8:185",
-				"location": {
-					"latitude": 0.5701969069680826,
-					"longitude": 0.46671568390428253
+			"addresses": [
+				{
+					"country": "Sverige",
+					"city": "ElDdCpecEe",
+					"postalCode": "8897885197",
+					"houseNumber": "kL35hRx58V",
+					"extraParameters": {
+						"GpDiLkWqUH": "JKcVNCGDfDNepCIHSBmX",
+						"gJXOJijVPK": "UZwToiUteLFNCRxOJdny",
+						"oTyFbRedrF": "AbUjcZSXqJYjsHvpLLOh"
+					},
+					"appartmentNumber": "1ZMzZpUoAP",
+					"isZoningPlanArea": false,
+					"invoiceMarking": "9sluZQJ03E",
+					"careOf": "rsUAfUpGZD",
+					"addressCategories": [
+						"VISITING_ADDRESS",
+						"INVOICE_ADDRESS",
+						"POSTAL_ADDRESS"
+					],
+					"street": "QyDWlhSgsv",
+					"attention": "oFIyzLlJgk",
+					"propertyDesignation": "SUNDSVALL FILLA 8:185",
+					"location": {
+						"latitude": 0.5701969069680826,
+						"longitude": 0.46671568390428253
+					}
 				}
-			}],
+			],
 			"phoneNumber": "hiBqgWmcFf",
 			"organizationName": "PYRWpvdWmt",
 			"organizationNumber": "773813-1954",
@@ -67,34 +71,38 @@
 			"lastName": "eYMEzulQYh",
 			"emailAddress": "nhoQRZzPiq@pysnU.com",
 			"cellphoneNumber": "DtHTlaldOk",
-			"addresses": [{
-				"country": "Sverige",
-				"city": "kUWCZWcPbl",
-				"postalCode": "5777797246",
-				"houseNumber": "U4QckLsxd1",
-				"extraParameters": {
-					"jimgbrhuXq": "VLwNOATQMbfPefVZefEv",
-					"LVSwPNwXQT": "rbeWEXYxiJKNkxrOrdVw",
-					"sMrmEVHSoE": "WTtRxmThmrwqNViXBjpT"
-				},
-				"appartmentNumber": "eeYpupcJVN",
-				"isZoningPlanArea": false,
-				"invoiceMarking": "uT3AF2ldom",
-				"careOf": "WwpcBKgySP",
-				"addressCategories": [
-					"VISITING_ADDRESS",
-					"POSTAL_ADDRESS"
-				],
-				"street": "MkEDBSHBsz",
-				"attention": "mCxcPyIldV",
-				"propertyDesignation": "SUNDSVALL FILLA 8:185",
-				"location": {
-					"latitude": 0.7589108550698542,
-					"longitude": 0.2551455117294843
+			"addresses": [
+				{
+					"country": "Sverige",
+					"city": "kUWCZWcPbl",
+					"postalCode": "5777797246",
+					"houseNumber": "U4QckLsxd1",
+					"extraParameters": {
+						"jimgbrhuXq": "VLwNOATQMbfPefVZefEv",
+						"LVSwPNwXQT": "rbeWEXYxiJKNkxrOrdVw",
+						"sMrmEVHSoE": "WTtRxmThmrwqNViXBjpT"
+					},
+					"appartmentNumber": "eeYpupcJVN",
+					"isZoningPlanArea": false,
+					"invoiceMarking": "uT3AF2ldom",
+					"careOf": "WwpcBKgySP",
+					"addressCategories": [
+						"VISITING_ADDRESS",
+						"POSTAL_ADDRESS"
+					],
+					"street": "MkEDBSHBsz",
+					"attention": "mCxcPyIldV",
+					"propertyDesignation": "SUNDSVALL FILLA 8:185",
+					"location": {
+						"latitude": 0.7589108550698542,
+						"longitude": 0.2551455117294843
+					}
 				}
-			}],
+			],
 			"phoneNumber": "MnugTwzRnq",
-			"roles": ["CONTACT_PERSON"],
+			"roles": [
+				"CONTACT_PERSON"
+			],
 			"extraParameters": {
 				"WTqjMgbOwm": "FnKSVplAIJNzdVNPcEKH",
 				"jlAKMsXSKZ": "dweCajXVbFPRBpacbEEo",
@@ -109,34 +117,38 @@
 			"lastName": "AvnxzxWYQq",
 			"emailAddress": "eKvfTcZEiG@wprXb.com",
 			"cellphoneNumber": "WJKagAzrBK",
-			"addresses": [{
-				"country": "Sverige",
-				"city": "NVjDcfnnTp",
-				"postalCode": "7567255533",
-				"houseNumber": "x7VLzjZv0N",
-				"extraParameters": {
-					"QOUERIFInr": "ffqduggIcGcJluwlRDKY",
-					"DvfhIFCPws": "rvjsbcTSTAKtvmWjpPoB",
-					"QYTcNYZDPk": "XaglRBvNLUrfzfQNaZFw"
-				},
-				"appartmentNumber": "Uw7jNBHMGu",
-				"isZoningPlanArea": false,
-				"invoiceMarking": "ouZxXSy8eQ",
-				"careOf": "VIunTedhJL",
-				"addressCategories": [
-					"VISITING_ADDRESS",
-					"POSTAL_ADDRESS"
-				],
-				"street": "hargUZAzUu",
-				"attention": "NHplszNLkc",
-				"propertyDesignation": "SUNDSVALL FILLA 8:185",
-				"location": {
-					"latitude": 0.47062119198006735,
-					"longitude": 0.36258105276965025
+			"addresses": [
+				{
+					"country": "Sverige",
+					"city": "NVjDcfnnTp",
+					"postalCode": "7567255533",
+					"houseNumber": "x7VLzjZv0N",
+					"extraParameters": {
+						"QOUERIFInr": "ffqduggIcGcJluwlRDKY",
+						"DvfhIFCPws": "rvjsbcTSTAKtvmWjpPoB",
+						"QYTcNYZDPk": "XaglRBvNLUrfzfQNaZFw"
+					},
+					"appartmentNumber": "Uw7jNBHMGu",
+					"isZoningPlanArea": false,
+					"invoiceMarking": "ouZxXSy8eQ",
+					"careOf": "VIunTedhJL",
+					"addressCategories": [
+						"VISITING_ADDRESS",
+						"POSTAL_ADDRESS"
+					],
+					"street": "hargUZAzUu",
+					"attention": "NHplszNLkc",
+					"propertyDesignation": "SUNDSVALL FILLA 8:185",
+					"location": {
+						"latitude": 0.47062119198006735,
+						"longitude": 0.36258105276965025
+					}
 				}
-			}],
+			],
 			"phoneNumber": "zLSZqcuIgl",
-			"roles": ["CONTACT_PERSON"],
+			"roles": [
+				"CONTACT_PERSON"
+			],
 			"extraParameters": {
 				"SuQtaYeVsf": "mvkIqTrgcMxkhBDvclBG",
 				"UfIqEBMsoi": "inRTqDkjnIhPqMjNJzOM",
@@ -147,41 +159,45 @@
 			"type": "PERSON"
 		}
 	],
-	"facilities": [{
-		"address": {
-			"country": null,
-			"city": null,
-			"postalCode": null,
-			"houseNumber": null,
-			"extraParameters": null,
-			"appartmentNumber": null,
-			"isZoningPlanArea": null,
-			"invoiceMarking": null,
-			"careOf": null,
-			"addressCategories": ["VISITING_ADDRESS"],
-			"street": null,
-			"attention": null,
-			"propertyDesignation": "SUNDSVALL BALDER 2",
-			"location": null
-		},
-		"description": "dVeCBlmlhx",
-		"extraParameters": {
-			"SandFilterSvcDto_Elevated": "true",
-			"SandFilterSvcDto_Area": "-2089156084",
-			"SandFilterSvcDto_WaterTight": "true",
-			"SandFilterSvcDto_HasOverflowAlarm": "true",
-			"SandFilterSvcDto_PersonCapacity": "1736335785",
-			"OnGrantLand": "true",
-			"SandFilterSvcDto_StepNumber": "-213641476",
-			"ProtectionLevelApprovedHealthId": "1f3143a9-3bca-474a-928c-6d066a812480",
-			"WastewaterApprovedForId": "35321154-3db5-466d-8e7f-33b28186d980",
-			"SandFilterSvcDto_LifeTime": "-1862056796",
-			"SandFilterSvcDto_InstallationDate": "2023-06-15",
-			"WasteWaterInboundId": "cc9dcef0-314c-4bd3-b0be-6a4301ebc01e",
-			"ProtectionLevelApprovedEnvironmentId": "206f6e74-1713-4247-b0e2-b665d0c2b5fa"
-		},
-		"facilityCollectionName": "wCLlPBzQkF"
-	}],
+	"facilities": [
+		{
+			"address": {
+				"country": null,
+				"city": null,
+				"postalCode": null,
+				"houseNumber": null,
+				"extraParameters": null,
+				"appartmentNumber": null,
+				"isZoningPlanArea": null,
+				"invoiceMarking": null,
+				"careOf": null,
+				"addressCategories": [
+					"VISITING_ADDRESS"
+				],
+				"street": null,
+				"attention": null,
+				"propertyDesignation": "SUNDSVALL BALDER 2",
+				"location": null
+			},
+			"description": "dVeCBlmlhx",
+			"extraParameters": {
+				"SandFilterSvcDto_Elevated": "true",
+				"SandFilterSvcDto_Area": "-2089156084",
+				"SandFilterSvcDto_WaterTight": "true",
+				"SandFilterSvcDto_HasOverflowAlarm": "true",
+				"SandFilterSvcDto_PersonCapacity": "1736335785",
+				"OnGrantLand": "true",
+				"SandFilterSvcDto_StepNumber": "-213641476",
+				"ProtectionLevelApprovedHealthId": "1f3143a9-3bca-474a-928c-6d066a812480",
+				"WastewaterApprovedForId": "35321154-3db5-466d-8e7f-33b28186d980",
+				"SandFilterSvcDto_LifeTime": "-1862056796",
+				"SandFilterSvcDto_InstallationDate": "2023-06-15",
+				"WasteWaterInboundId": "cc9dcef0-314c-4bd3-b0be-6a4301ebc01e",
+				"ProtectionLevelApprovedEnvironmentId": "206f6e74-1713-4247-b0e2-b665d0c2b5fa"
+			},
+			"facilityCollectionName": "wCLlPBzQkF"
+		}
+	],
 	"startDate": "2023-06-25",
 	"caseType": "ANMALAN_ANDRING_AVLOPPSANLAGGNING"
 }

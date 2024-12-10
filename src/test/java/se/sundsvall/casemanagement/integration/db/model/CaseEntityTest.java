@@ -12,13 +12,10 @@ import static org.hamcrest.CoreMatchers.allOf;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Random;
-
 import javax.sql.rowset.serial.SerialClob;
-
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
 import se.sundsvall.casemanagement.api.model.EcosCaseDTO;
 
 class CaseEntityTest {

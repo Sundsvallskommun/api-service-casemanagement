@@ -1,7 +1,11 @@
 {
 	"request": {
 		"method": "POST",
-		"bodyPatterns": [{"contains": "GetRelateradeArendenByPersOrgNrAndRole"}],
+		"bodyPatterns": [
+			{
+				"contains": "GetRelateradeArendenByPersOrgNrAndRole"
+			}
+		],
 		"url": "/TekisArende/ArendeExportWS.svc"
 	},
 	"response": {

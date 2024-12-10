@@ -1,32 +1,42 @@
 {
 	"externalCaseId": 4397,
-	"attachments": [{
-		"extension": ".pdf",
-		"file": "dGVzdA==",
-		"name": "16700.pdf",
-		"mimeType": "application/pdf",
-		"category": "ANM"
-	}],
+	"attachments": [
+		{
+			"extension": ".pdf",
+			"file": "dGVzdA==",
+			"name": "16700.pdf",
+			"mimeType": "application/pdf",
+			"category": "ANM"
+		}
+	],
 	"extraParameters": {
 		"oepAction": "PUT",
 		"eventCategory": "handelseslag",
 		"serviceName": "Anmälan av kontrollansvarig - TEST",
 		"otherInformation": "Hejhopp"
 	},
-	"stakeholders": [{
-		"firstName": "Test",
-		"lastName": "Testare",
-		"cellphoneNumber": "0703981881",
-		"emailAddress": "test.testare@testsvall.se",
-		"addresses": [{
-			"city": "Testsvall",
-			"addressCategories": ["POSTAL_ADDRESS"],
-			"street": "TestGatan 14B",
-			"postalCode": "123 30"
-		}],
-		"roles": ["APPLICANT"],
-		"personId": "7cc6d5ef-e44c-49ee-890e-888bda8863e1",
-		"type": "PERSON"
-	}],
+	"stakeholders": [
+		{
+			"firstName": "Test",
+			"lastName": "Testare",
+			"cellphoneNumber": "0703981881",
+			"emailAddress": "test.testare@testsvall.se",
+			"addresses": [
+				{
+					"city": "Testsvall",
+					"addressCategories": [
+						"POSTAL_ADDRESS"
+					],
+					"street": "TestGatan 14B",
+					"postalCode": "123 30"
+				}
+			],
+			"roles": [
+				"APPLICANT"
+			],
+			"personId": "7cc6d5ef-e44c-49ee-890e-888bda8863e1",
+			"type": "PERSON"
+		}
+	],
 	"caseType": "BYGGR_ADDITIONAL_DOCUMENTS"
 }

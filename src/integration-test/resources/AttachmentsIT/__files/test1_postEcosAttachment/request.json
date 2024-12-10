@@ -1,9 +1,11 @@
-[{
-	"note": "Anteckning",
-	"extension": ".pdf",
-	"file": "dGVzdA==",
-	"name": "Filnamnet",
-	"extraParameters": null,
-	"mimeType": "application/pdf",
-	"category": "BIL"
-}]
+[
+	{
+		"note": "Anteckning",
+		"extension": ".pdf",
+		"file": "dGVzdA==",
+		"name": "Filnamnet",
+		"extraParameters": null,
+		"mimeType": "application/pdf",
+		"category": "BIL"
+	}
+]

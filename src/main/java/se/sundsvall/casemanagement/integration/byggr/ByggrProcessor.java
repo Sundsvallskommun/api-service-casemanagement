@@ -5,6 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import dev.failsafe.Failsafe;
 import dev.failsafe.RetryPolicy;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.stream.Collectors;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -17,11 +21,6 @@ import se.sundsvall.casemanagement.integration.opene.OpenEIntegration;
 import se.sundsvall.casemanagement.service.event.IncomingByggrCase;
 import se.sundsvall.casemanagement.service.event.UpdateByggrCase;
 import se.sundsvall.casemanagement.util.Processor;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.stream.Collectors;
 
 @Component
 class ByggrProcessor extends Processor {

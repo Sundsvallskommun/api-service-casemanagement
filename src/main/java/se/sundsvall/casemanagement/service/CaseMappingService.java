@@ -1,5 +1,11 @@
 package se.sundsvall.casemanagement.service;
 
+import static org.zalando.problem.Status.NOT_FOUND;
+import static se.sundsvall.casemanagement.service.mapper.CaseMappingMapper.toCaseMapping;
+import static se.sundsvall.casemanagement.util.Constants.ERR_MSG_CASES_NOT_FOUND;
+
+import java.text.MessageFormat;
+import java.util.List;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
@@ -8,13 +14,6 @@ import se.sundsvall.casemanagement.api.model.CaseDTO;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
 import se.sundsvall.casemanagement.integration.db.CaseMappingRepository;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
-
-import java.text.MessageFormat;
-import java.util.List;
-
-import static org.zalando.problem.Status.NOT_FOUND;
-import static se.sundsvall.casemanagement.service.mapper.CaseMappingMapper.toCaseMapping;
-import static se.sundsvall.casemanagement.util.Constants.ERR_MSG_CASES_NOT_FOUND;
 
 @Service
 public class CaseMappingService {

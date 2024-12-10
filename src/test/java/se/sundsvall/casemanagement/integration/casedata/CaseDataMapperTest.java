@@ -1,9 +1,17 @@
 package se.sundsvall.casemanagement.integration.casedata;
 
+import static generated.client.casedata.Stakeholder.TypeEnum.ORGANIZATION;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
+import static se.sundsvall.casemanagement.TestUtil.*;
+import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toContactInformation;
+
 import generated.client.casedata.ContactInformation;
 import generated.client.casedata.Errand;
 import generated.client.casedata.PatchErrand;
 import generated.client.casedata.Stakeholder;
+import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import se.sundsvall.casemanagement.api.model.AttachmentDTO;
 import se.sundsvall.casemanagement.api.model.OrganizationDTO;
@@ -13,15 +21,6 @@ import se.sundsvall.casemanagement.api.model.enums.AddressCategory;
 import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
 import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderType;
-
-import java.util.List;
-import java.util.Map;
-
-import static generated.client.casedata.Stakeholder.TypeEnum.ORGANIZATION;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.tuple;
-import static se.sundsvall.casemanagement.TestUtil.*;
-import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toContactInformation;
 
 class CaseDataMapperTest {
 

@@ -1,6 +1,39 @@
 package se.sundsvall.casemanagement.integration.ecos;
 
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_ANDRING_AVLOPPSANLAGGNING;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_ANDRING_AVLOPPSANORDNING;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_AVHJALPANDEATGARD_FORORENING;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_HALSOSKYDDSVERKSAMHET;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_INSTALLATION_VARMEPUMP;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_KOMPOSTERING;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANSOKAN_TILLSTAND_VARMEPUMP;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.REGISTRERING_AV_LIVSMEDEL;
+import static se.sundsvall.casemanagement.util.Constants.BIOLOGICAL_STEP_SVC_DTO;
+import static se.sundsvall.casemanagement.util.Constants.CHEMICAL_PRETREATMENT_SVC_DTO;
+import static se.sundsvall.casemanagement.util.Constants.CLOSED_TANK_SVC_DTO;
+import static se.sundsvall.casemanagement.util.Constants.CREATE_AIR_HEATING_FACILITY_SVC_DTO_PREFIX;
+import static se.sundsvall.casemanagement.util.Constants.CREATE_GEOTHERMAL_HEATING_FACILITY_SVC_DTO_PREFIX;
+import static se.sundsvall.casemanagement.util.Constants.CREATE_MARINE_HEATING_FACILITY_SVC_DTO_PREFIX;
+import static se.sundsvall.casemanagement.util.Constants.CREATE_SOIL_HEATING_FACILITY_SVC_DTO_PREFIX;
+import static se.sundsvall.casemanagement.util.Constants.DRY_SOLUTION_SVC_DTO;
+import static se.sundsvall.casemanagement.util.Constants.FILTER_BED_SVC_DTO;
+import static se.sundsvall.casemanagement.util.Constants.INFILTRATION_PLANT_SVC_DTO;
+import static se.sundsvall.casemanagement.util.Constants.MINI_SEWAGE_SVC_DTO;
+import static se.sundsvall.casemanagement.util.Constants.PHOSPHORUS_TRAP_SVC_DTO;
+import static se.sundsvall.casemanagement.util.Constants.SAND_FILTER_SVC_DTO;
+import static se.sundsvall.casemanagement.util.Constants.SEPTIC_TANK_SVC_DTO;
+
 import generated.client.party.PartyType;
+import java.text.MessageFormat;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import minutmiljo.AddDocumentsToCase;
 import minutmiljo.AddDocumentsToCaseSvcDto;
 import minutmiljo.AddPartyToFacility;
@@ -74,40 +107,6 @@ import se.sundsvall.casemanagement.service.CaseMappingService;
 import se.sundsvall.casemanagement.service.FbService;
 import se.sundsvall.casemanagement.util.CaseUtil;
 import se.sundsvall.casemanagement.util.Constants;
-
-import java.text.MessageFormat;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_ANDRING_AVLOPPSANLAGGNING;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_ANDRING_AVLOPPSANORDNING;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_AVHJALPANDEATGARD_FORORENING;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_HALSOSKYDDSVERKSAMHET;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_INSTALLATION_VARMEPUMP;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_KOMPOSTERING;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANSOKAN_TILLSTAND_VARMEPUMP;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.REGISTRERING_AV_LIVSMEDEL;
-import static se.sundsvall.casemanagement.util.Constants.BIOLOGICAL_STEP_SVC_DTO;
-import static se.sundsvall.casemanagement.util.Constants.CHEMICAL_PRETREATMENT_SVC_DTO;
-import static se.sundsvall.casemanagement.util.Constants.CLOSED_TANK_SVC_DTO;
-import static se.sundsvall.casemanagement.util.Constants.CREATE_AIR_HEATING_FACILITY_SVC_DTO_PREFIX;
-import static se.sundsvall.casemanagement.util.Constants.CREATE_GEOTHERMAL_HEATING_FACILITY_SVC_DTO_PREFIX;
-import static se.sundsvall.casemanagement.util.Constants.CREATE_MARINE_HEATING_FACILITY_SVC_DTO_PREFIX;
-import static se.sundsvall.casemanagement.util.Constants.CREATE_SOIL_HEATING_FACILITY_SVC_DTO_PREFIX;
-import static se.sundsvall.casemanagement.util.Constants.DRY_SOLUTION_SVC_DTO;
-import static se.sundsvall.casemanagement.util.Constants.FILTER_BED_SVC_DTO;
-import static se.sundsvall.casemanagement.util.Constants.INFILTRATION_PLANT_SVC_DTO;
-import static se.sundsvall.casemanagement.util.Constants.MINI_SEWAGE_SVC_DTO;
-import static se.sundsvall.casemanagement.util.Constants.PHOSPHORUS_TRAP_SVC_DTO;
-import static se.sundsvall.casemanagement.util.Constants.SAND_FILTER_SVC_DTO;
-import static se.sundsvall.casemanagement.util.Constants.SEPTIC_TANK_SVC_DTO;
 
 @Service
 public class EcosService {

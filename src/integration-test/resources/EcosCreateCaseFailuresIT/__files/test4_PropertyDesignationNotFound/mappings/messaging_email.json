@@ -1,20 +1,26 @@
 {
 	"request": {
 		"method": "POST",
-		"bodyPatterns": [{"equalToJson": {
-			"headers": {},
-			"attachments": [],
-			"sender": {
-				"address": "noreply@sundsvall.se",
-				"name": "CaseManagement"
-			},
-			"subject": "Incident from CaseManagement [it]",
-			"message": "[2281][ECOS]Exceeded max sending attempts case with externalCaseId 513913320 Exception: Bad Request: The specified propertyDesignation(RANDOM_PROPERTY_DESIGNATION) could not be found"
-		}}],
+		"bodyPatterns": [
+			{
+				"equalToJson": {
+					"headers": {},
+					"attachments": [],
+					"sender": {
+						"address": "noreply@sundsvall.se",
+						"name": "CaseManagement"
+					},
+					"subject": "Incident from CaseManagement [it]",
+					"message": "[2281][ECOS]Exceeded max sending attempts case with externalCaseId 513913320 Exception: Bad Request: The specified propertyDesignation(RANDOM_PROPERTY_DESIGNATION) could not be found"
+				}
+			}
+		],
 		"urlPathPattern": "/messaging/3.1/2281/email"
 	},
 	"response": {
-		"headers": {"Content-Type": "application/json"},
+		"headers": {
+			"Content-Type": "application/json"
+		},
 		"status": 200
 	},
 	"name": "messaging"

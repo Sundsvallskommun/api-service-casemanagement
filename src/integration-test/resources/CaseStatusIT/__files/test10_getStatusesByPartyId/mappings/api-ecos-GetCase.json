@@ -1,8 +1,16 @@
 {
 	"request": {
-		"headers": {"SoapAction": {"equalTo": "urn:Ecos.API.MinutMiljo.Service.V1/IMinutMiljoService/GetCase"}},
+		"headers": {
+			"SoapAction": {
+				"equalTo": "urn:Ecos.API.MinutMiljo.Service.V1/IMinutMiljoService/GetCase"
+			}
+		},
 		"method": "POST",
-		"bodyPatterns": [{"contains": "GetCase"}],
+		"bodyPatterns": [
+			{
+				"contains": "GetCase"
+			}
+		],
 		"url": "/Ecos2PublicServices/MinutMiljoService.svc"
 	},
 	"response": {

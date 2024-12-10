@@ -3,7 +3,6 @@ package se.sundsvall.casemanagement.integration.db.model;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
-
 import lombok.Data;
 
 @Data
