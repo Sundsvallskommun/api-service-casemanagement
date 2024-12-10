@@ -59,8 +59,10 @@ class CaseResource {
 	}
 
 	@PostMapping(path = "cases")
-	@Operation(description = "Creates a case in ByggR or Ecos2 based on caseType. Also persists a connection between externalCaseId and the created case.")
-	@ApiResponse(responseCode = "200", description = "OK", useReturnTypeSchema = true)
+	@Operation(description = "Creates a case in ByggR or Ecos2 based on caseType. Also persists a connection between externalCaseId and the created case.",
+		responses = {
+			@ApiResponse(responseCode = "200", description = "Successful Operation", useReturnTypeSchema = true)
+		})
 	ResponseEntity<CaseResourceResponseDTO> postCases(
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable(name = "municipalityId") final String municipalityId,
 		@Schema(oneOf = {
@@ -75,8 +77,10 @@ class CaseResource {
 	}
 
 	@PutMapping(path = "cases/{externalCaseId}")
-	@Operation(description = "Update a case.")
-	@ApiResponse(responseCode = "204", description = "No content", useReturnTypeSchema = true)
+	@Operation(description = "Update a case.",
+		responses = {
+			@ApiResponse(responseCode = "204", description = "No content", useReturnTypeSchema = true)
+		})
 	ResponseEntity<Void> putCase(
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable(name = "municipalityId") final String municipalityId,
 		@Parameter(name = "externalCaseId", description = "External case id", example = "1234") @PathVariable(name = "externalCaseId") final String externalCaseId,
