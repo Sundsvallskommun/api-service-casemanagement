@@ -29,7 +29,6 @@ import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
 	APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
 })
 @Tag(name = "CaseMappings", description = "CaseMapping operations")
-@ApiResponse(responseCode = "200", description = "OK - Successful operation", useReturnTypeSchema = true)
 @ApiResponse(responseCode = "400", description = "Bad request", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(oneOf = {
 	Problem.class, ConstraintViolationProblem.class
 })))
@@ -44,7 +43,10 @@ class CaseMappingResource {
 	}
 
 	@GetMapping
-	@Operation(description = "Returns the connection between externalCaseId and the case in the underlying system.")
+	@Operation(description = "Returns the connection between externalCaseId and the case in the underlying system.",
+		responses = {
+			@ApiResponse(responseCode = "200", description = "OK - Successful operation", useReturnTypeSchema = true)
+		})
 	ResponseEntity<List<CaseMapping>> getCaseMapping(
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
 		@Parameter(name = "external-case-id", description = "External case id", example = "2281") @RequestParam(name = "external-case-id", required = false) final String externalCaseId) {
