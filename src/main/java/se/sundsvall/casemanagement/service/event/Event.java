@@ -2,10 +2,8 @@ package se.sundsvall.casemanagement.service.event;
 
 import java.io.Serial;
 import java.io.Serializable;
-
-import org.springframework.context.ApplicationEvent;
-
 import lombok.Getter;
+import org.springframework.context.ApplicationEvent;
 
 @Getter
 public abstract class Event<T extends Serializable> extends ApplicationEvent implements Serializable {

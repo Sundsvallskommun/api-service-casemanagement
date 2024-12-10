@@ -1,6 +1,13 @@
 package se.sundsvall.casemanagement.service;
 
+import static generated.client.party.PartyType.ENTERPRISE;
+import static generated.client.party.PartyType.PRIVATE;
+import static java.util.Collections.emptyList;
+
 import generated.client.party.PartyType;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import org.springframework.stereotype.Service;
 import se.sundsvall.casemanagement.api.model.CaseStatusDTO;
 import se.sundsvall.casemanagement.integration.alkt.AlkTService;
@@ -8,14 +15,6 @@ import se.sundsvall.casemanagement.integration.byggr.ByggrService;
 import se.sundsvall.casemanagement.integration.casedata.CaseDataService;
 import se.sundsvall.casemanagement.integration.ecos.EcosService;
 import se.sundsvall.casemanagement.integration.party.PartyIntegration;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import static generated.client.party.PartyType.ENTERPRISE;
-import static generated.client.party.PartyType.PRIVATE;
-import static java.util.Collections.emptyList;
 
 @Service
 public class StatusService {

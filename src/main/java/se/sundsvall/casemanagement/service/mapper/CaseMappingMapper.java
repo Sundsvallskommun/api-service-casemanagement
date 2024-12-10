@@ -4,7 +4,6 @@ import static se.sundsvall.casemanagement.util.Constants.SERVICE_NAME;
 
 import java.util.Map;
 import java.util.Optional;
-
 import se.sundsvall.casemanagement.api.model.CaseDTO;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;

@@ -4,7 +4,11 @@
 		"urlPathPattern": "/case-data/2281/(.+)/errands/24"
 	},
 	"response": {
-		"headers": {"Content-Type": ["application/json"]},
+		"headers": {
+			"Content-Type": [
+				"application/json"
+			]
+		},
 		"bodyFileName": "test3_GetCaseDataStatusByExternalCaseId/response/CaseData_GetErrandWithId.json",
 		"status": 200
 	}

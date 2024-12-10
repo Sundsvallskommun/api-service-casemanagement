@@ -2,8 +2,12 @@
 	"request": {
 		"method": "GET",
 		"queryParameters": {
-			"maxHits": {"equalTo": "1"},
-			"status": {"equalTo": "gällande"}
+			"maxHits": {
+				"equalTo": "1"
+			},
+			"status": {
+				"equalTo": "gällande"
+			}
 		},
 		"urlPathPattern": "/distribution/produkter/registerbeteckning/v5/referens/fritext?(.+)"
 	},

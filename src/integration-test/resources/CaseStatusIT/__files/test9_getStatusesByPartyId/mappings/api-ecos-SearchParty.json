@@ -1,8 +1,16 @@
 {
 	"request": {
-		"headers": {"SoapAction": {"equalTo": "urn:Ecos.API.MinutMiljo.Service.V1/IMinutMiljoService/SearchParty"}},
+		"headers": {
+			"SoapAction": {
+				"equalTo": "urn:Ecos.API.MinutMiljo.Service.V1/IMinutMiljoService/SearchParty"
+			}
+		},
 		"method": "POST",
-		"bodyPatterns": [{"equalToXml": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\"><SOAP-ENV:Header/><SOAP-ENV:Body><ns2:SearchParty xmlns=\"urn:Ecos.API.MinutMiljo.DataContracts.V1\" xmlns:ns2=\"urn:Ecos.API.MinutMiljo.Service.V1\"><ns2:model><ExactOrganizationName xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/><Name xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\\\" xsi:nil=\"true\"/><OrganizationIdentificationNumber xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/><PersonalIdentificationNumber>199901011234<\/PersonalIdentificationNumber><\/ns2:model><\/ns2:SearchParty><\/SOAP-ENV:Body><\/SOAP-ENV:Envelope>"}],
+		"bodyPatterns": [
+			{
+				"equalToXml": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\"><SOAP-ENV:Header/><SOAP-ENV:Body><ns2:SearchParty xmlns=\"urn:Ecos.API.MinutMiljo.DataContracts.V1\" xmlns:ns2=\"urn:Ecos.API.MinutMiljo.Service.V1\"><ns2:model><ExactOrganizationName xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/><Name xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\\\" xsi:nil=\"true\"/><OrganizationIdentificationNumber xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/><PersonalIdentificationNumber>199901011234</PersonalIdentificationNumber></ns2:model></ns2:SearchParty></SOAP-ENV:Body></SOAP-ENV:Envelope>"
+			}
+		],
 		"url": "/Ecos2PublicServices/MinutMiljoService.svc"
 	},
 	"response": {

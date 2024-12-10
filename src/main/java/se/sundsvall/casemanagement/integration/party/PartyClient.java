@@ -1,14 +1,13 @@
 package se.sundsvall.casemanagement.integration.party;
 
+import static se.sundsvall.casemanagement.integration.party.configuration.PartyConfiguration.CLIENT_ID;
+
 import generated.client.party.PartyType;
+import java.util.Optional;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import se.sundsvall.casemanagement.integration.party.configuration.PartyConfiguration;
-
-import java.util.Optional;
-
-import static se.sundsvall.casemanagement.integration.party.configuration.PartyConfiguration.CLIENT_ID;
 
 @FeignClient(name = CLIENT_ID,
 	url = "${integration.party.url}",

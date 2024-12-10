@@ -1,16 +1,13 @@
 package se.sundsvall.casemanagement.integration.util;
 
-import java.io.IOException;
-
+import feign.Response;
+import feign.codec.ErrorDecoder;
 import jakarta.xml.soap.MessageFactory;
 import jakarta.xml.soap.SOAPConstants;
 import jakarta.xml.soap.SOAPException;
 import jakarta.xml.soap.SOAPMessage;
-
+import java.io.IOException;
 import org.zalando.problem.ThrowableProblem;
-
-import feign.Response;
-import feign.codec.ErrorDecoder;
 
 public abstract class AbstractErrorDecoder implements ErrorDecoder {
 

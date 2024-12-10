@@ -1,22 +1,5 @@
 package se.sundsvall.casemanagement.api;
 
-import generated.client.party.PartyType;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.reactive.server.WebTestClient;
-import se.sundsvall.casemanagement.Application;
-import se.sundsvall.casemanagement.api.model.CaseStatusDTO;
-import se.sundsvall.casemanagement.api.model.enums.SystemType;
-import se.sundsvall.casemanagement.integration.byggr.ByggrService;
-import se.sundsvall.casemanagement.integration.casedata.CaseDataService;
-import se.sundsvall.casemanagement.integration.ecos.EcosService;
-import se.sundsvall.casemanagement.service.CaseMappingService;
-
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -25,6 +8,22 @@ import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static se.sundsvall.casemanagement.TestUtil.createCaseMapping;
 import static se.sundsvall.casemanagement.TestUtil.createCaseStatusDTO;
+
+import generated.client.party.PartyType;
+import java.util.List;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.reactive.server.WebTestClient;
+import se.sundsvall.casemanagement.Application;
+import se.sundsvall.casemanagement.api.model.CaseStatusDTO;
+import se.sundsvall.casemanagement.api.model.enums.SystemType;
+import se.sundsvall.casemanagement.integration.byggr.ByggrService;
+import se.sundsvall.casemanagement.integration.casedata.CaseDataService;
+import se.sundsvall.casemanagement.integration.ecos.EcosService;
+import se.sundsvall.casemanagement.service.CaseMappingService;
 
 @SpringBootTest(classes = Application.class, webEnvironment = RANDOM_PORT)
 @ActiveProfiles("junit")
@@ -36,16 +35,16 @@ class CaseStatusResourceTest {
 
 	private static final String PATH = "/" + MUNICIPALITY_ID + "/cases/{externalCaseId}/status";
 
-	@MockBean
+	@MockitoBean
 	private ByggrService byggrService;
 
-	@MockBean
+	@MockitoBean
 	private EcosService ecosService;
 
-	@MockBean
+	@MockitoBean
 	private CaseDataService caseDataService;
 
-	@MockBean
+	@MockitoBean
 	private CaseMappingService caseMappingService;
 
 	@Autowired

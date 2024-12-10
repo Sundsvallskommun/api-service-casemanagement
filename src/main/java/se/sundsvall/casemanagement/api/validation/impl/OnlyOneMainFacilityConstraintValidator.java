@@ -1,12 +1,10 @@
 package se.sundsvall.casemanagement.api.validation.impl;
 
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
-import jakarta.validation.ConstraintValidator;
-import jakarta.validation.ConstraintValidatorContext;
-
 import se.sundsvall.casemanagement.api.model.FacilityDTO;
 import se.sundsvall.casemanagement.api.validation.OnlyOneMainFacility;
 

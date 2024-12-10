@@ -1,10 +1,9 @@
 package se.sundsvall.casemanagement.integration.messaging;
 
-import org.springframework.stereotype.Component;
-
 import generated.client.messaging.EmailRequest;
 import generated.client.messaging.EmailSender;
 import generated.client.messaging.SlackRequest;
+import org.springframework.stereotype.Component;
 
 @Component
 public class MessagingIntegrationMapper {

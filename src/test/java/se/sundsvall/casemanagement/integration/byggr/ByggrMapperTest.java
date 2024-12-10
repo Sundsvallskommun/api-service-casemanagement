@@ -42,20 +42,25 @@ import static se.sundsvall.casemanagement.util.Constants.BYGGR_STATUS_AVSLUTAT;
 import static se.sundsvall.casemanagement.util.Constants.BYGGR_SYSTEM_HANDLAGGARE_SIGN;
 import static se.sundsvall.casemanagement.util.Constants.HANDELSETYP_ANMALAN;
 
+import arendeexport.Arende;
+import arendeexport.ArendeIntressent;
+import arendeexport.ArrayOfHandelse;
+import arendeexport.Handelse;
+import arendeexport.HandelseIntressent;
+import arendeexport.IntressentAttention;
+import arendeexport.SaveNewHandelse;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.zalando.problem.AbstractThrowableProblem;
-
 import se.sundsvall.casemanagement.TestUtil;
 import se.sundsvall.casemanagement.api.model.AddressDTO;
 import se.sundsvall.casemanagement.api.model.AttachmentDTO;
@@ -72,14 +77,6 @@ import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderType;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.integration.db.model.CaseTypeData;
-
-import arendeexport.Arende;
-import arendeexport.ArendeIntressent;
-import arendeexport.ArrayOfHandelse;
-import arendeexport.Handelse;
-import arendeexport.HandelseIntressent;
-import arendeexport.IntressentAttention;
-import arendeexport.SaveNewHandelse;
 
 class ByggrMapperTest {
 

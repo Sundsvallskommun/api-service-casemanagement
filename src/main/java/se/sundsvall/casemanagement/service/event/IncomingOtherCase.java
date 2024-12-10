@@ -1,7 +1,6 @@
 package se.sundsvall.casemanagement.service.event;
 
 import java.io.Serial;
-
 import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
 
 public class IncomingOtherCase extends Event<OtherCaseDTO> {

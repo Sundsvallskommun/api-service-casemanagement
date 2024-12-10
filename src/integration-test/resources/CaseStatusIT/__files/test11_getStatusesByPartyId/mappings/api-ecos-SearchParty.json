@@ -1,10 +1,18 @@
 {
 	"request": {
 		"method": "POST",
-		"bodyPatterns": [{"and": [
-			{"contains": "SearchParty"},
-			{"matches": "^(?!.*?000000-0404).*"}
-		]}],
+		"bodyPatterns": [
+			{
+				"and": [
+					{
+						"contains": "SearchParty"
+					},
+					{
+						"matches": "^(?!.*?000000-0404).*"
+					}
+				]
+			}
+		],
 		"url": "/Ecos2PublicServices/MinutMiljoService.svc"
 	},
 	"response": {

@@ -10,22 +10,19 @@ import static org.mockito.Mockito.when;
 import static se.sundsvall.casemanagement.api.model.enums.AttachmentCategory.UNDERLAG_RISKKLASSNING;
 
 import java.util.UUID;
-
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import se.sundsvall.casemanagement.TestUtil;
-import se.sundsvall.casemanagement.api.model.enums.CaseType;
-import se.sundsvall.casemanagement.service.CitizenService;
-
 import minutmiljo.CreateOrganizationParty;
 import minutmiljo.CreateOrganizationPartyResponse;
 import minutmiljo.CreatePersonParty;
 import minutmiljo.CreatePersonPartyResponse;
 import minutmiljo.SearchParty;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import se.sundsvall.casemanagement.TestUtil;
+import se.sundsvall.casemanagement.api.model.enums.CaseType;
+import se.sundsvall.casemanagement.service.CitizenService;
 
 @ExtendWith(MockitoExtension.class)
 class PartyServiceTest {

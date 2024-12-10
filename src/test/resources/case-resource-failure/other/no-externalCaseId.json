@@ -1,70 +1,82 @@
 {
 	"externalCaseId": "",
-	"attachments": [{
-		"note": "A note on an attachment",
-		"extension": ".pdf",
-		"file": "dGVzdA==",
-		"name": "The attachment name",
-		"mimeType": "application/pdf",
-		"category": "ARIT"
-	}],
+	"attachments": [
+		{
+			"note": "A note on an attachment",
+			"extension": ".pdf",
+			"file": "dGVzdA==",
+			"name": "The attachment name",
+			"mimeType": "application/pdf",
+			"category": "ARIT"
+		}
+	],
 	"caseTitleAddition": "caseTitleAddition",
 	"description": "description",
-	"stakeholders": [{
-		"firstName": "Test",
-		"lastName": "Testorsson",
-		"cellphoneNumber": "0701234567",
-		"emailAddress": "test.testorsson@sundsvall.se",
-		"addresses": [{
-			"country": "Sverige",
-			"city": "Sundsvall",
-			"postalCode": "123 45",
-			"houseNumber": "18",
-			"appartmentNumber": "LGH 1001",
-			"isZoningPlanArea": false,
-			"invoiceMarking": "invoiceMarking",
-			"careOf": "Test Testorsson",
-			"addressCategories": ["POSTAL_ADDRESS"],
-			"street": "Testargatan",
-			"attention": "Test Testorsson",
-			"propertyDesignation": "SUNDSVALL BALDER 7:2",
-			"location": {
-				"latitude": 62.3908,
-				"longitude": 17.3069
-			}
-		}],
-		"phoneNumber": "060123456",
-		"roles": [
-			"Fakturamottagare",
-			"BETA"
-		],
-		"personId": "3ed5bc30-6308-4fd5-a5a7-78d7f96f4438",
-		"personalNumber": "19900101-1234",
-		"type": "PERSON"
-	}],
-	"facilities": [{
-		"address": {
-			"country": "Sverige",
-			"city": "Sundsvall",
-			"postalCode": "123 45",
-			"houseNumber": "18",
-			"appartmentNumber": "LGH 1001",
-			"isZoningPlanArea": false,
-			"invoiceMarking": "invoiceMarking",
-			"careOf": "Test Testorsson",
-			"addressCategories": ["POSTAL_ADDRESS"],
-			"street": "Testargatan",
-			"attention": "Test Testorsson",
-			"propertyDesignation": "SUNDSVALL BALDER 7:2",
-			"location": {
-				"latitude": 62.3908,
-				"longitude": 17.3069
-			}
-		},
-		"facilityType": "GARAGE",
-		"mainFacility": true,
-		"description": "En fritextbeskrivning av facility",
-		"facilityCollectionName": "Sundsvalls testfabrik"
-	}],
+	"stakeholders": [
+		{
+			"firstName": "Test",
+			"lastName": "Testorsson",
+			"cellphoneNumber": "0701234567",
+			"emailAddress": "test.testorsson@sundsvall.se",
+			"addresses": [
+				{
+					"country": "Sverige",
+					"city": "Sundsvall",
+					"postalCode": "123 45",
+					"houseNumber": "18",
+					"appartmentNumber": "LGH 1001",
+					"isZoningPlanArea": false,
+					"invoiceMarking": "invoiceMarking",
+					"careOf": "Test Testorsson",
+					"addressCategories": [
+						"POSTAL_ADDRESS"
+					],
+					"street": "Testargatan",
+					"attention": "Test Testorsson",
+					"propertyDesignation": "SUNDSVALL BALDER 7:2",
+					"location": {
+						"latitude": 62.3908,
+						"longitude": 17.3069
+					}
+				}
+			],
+			"phoneNumber": "060123456",
+			"roles": [
+				"Fakturamottagare",
+				"BETA"
+			],
+			"personId": "3ed5bc30-6308-4fd5-a5a7-78d7f96f4438",
+			"personalNumber": "19900101-1234",
+			"type": "PERSON"
+		}
+	],
+	"facilities": [
+		{
+			"address": {
+				"country": "Sverige",
+				"city": "Sundsvall",
+				"postalCode": "123 45",
+				"houseNumber": "18",
+				"appartmentNumber": "LGH 1001",
+				"isZoningPlanArea": false,
+				"invoiceMarking": "invoiceMarking",
+				"careOf": "Test Testorsson",
+				"addressCategories": [
+					"POSTAL_ADDRESS"
+				],
+				"street": "Testargatan",
+				"attention": "Test Testorsson",
+				"propertyDesignation": "SUNDSVALL BALDER 7:2",
+				"location": {
+					"latitude": 62.3908,
+					"longitude": 17.3069
+				}
+			},
+			"facilityType": "GARAGE",
+			"mainFacility": true,
+			"description": "En fritextbeskrivning av facility",
+			"facilityCollectionName": "Sundsvalls testfabrik"
+		}
+	],
 	"caseType": "PARKING_PERMIT"
 }

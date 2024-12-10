@@ -1,5 +1,12 @@
 package se.sundsvall.casemanagement.integration.casedata;
 
+import static generated.client.casedata.ContactInformation.ContactTypeEnum.CELLPHONE;
+import static generated.client.casedata.ContactInformation.ContactTypeEnum.EMAIL;
+import static generated.client.casedata.ContactInformation.ContactTypeEnum.PHONE;
+import static generated.client.casedata.Stakeholder.TypeEnum.ORGANIZATION;
+import static generated.client.casedata.Stakeholder.TypeEnum.PERSON;
+import static java.util.Collections.emptyList;
+
 import generated.client.casedata.Address;
 import generated.client.casedata.ContactInformation;
 import generated.client.casedata.Coordinates;
@@ -8,6 +15,13 @@ import generated.client.casedata.ExtraParameter;
 import generated.client.casedata.Facility;
 import generated.client.casedata.PatchErrand;
 import generated.client.casedata.Stakeholder;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import se.sundsvall.casemanagement.api.model.AddressDTO;
 import se.sundsvall.casemanagement.api.model.AttachmentDTO;
@@ -17,21 +31,6 @@ import se.sundsvall.casemanagement.api.model.OrganizationDTO;
 import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
 import se.sundsvall.casemanagement.api.model.PersonDTO;
 import se.sundsvall.casemanagement.api.model.StakeholderDTO;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Stream;
-
-import static generated.client.casedata.ContactInformation.ContactTypeEnum.CELLPHONE;
-import static generated.client.casedata.ContactInformation.ContactTypeEnum.EMAIL;
-import static generated.client.casedata.ContactInformation.ContactTypeEnum.PHONE;
-import static generated.client.casedata.Stakeholder.TypeEnum.ORGANIZATION;
-import static generated.client.casedata.Stakeholder.TypeEnum.PERSON;
-import static java.util.Collections.emptyList;
 
 public final class CaseDataMapper {
 

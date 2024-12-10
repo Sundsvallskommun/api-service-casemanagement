@@ -1,8 +1,10 @@
 {
-	"violations": [{
-		"field": "facilities",
-		"message": "Only one facility can be defined as main facility"
-	}],
+	"violations": [
+		{
+			"field": "facilities",
+			"message": "Only one facility can be defined as main facility"
+		}
+	],
 	"type": "https://zalando.github.io/problem/constraint-violation",
 	"title": "Constraint Violation",
 	"status": 400

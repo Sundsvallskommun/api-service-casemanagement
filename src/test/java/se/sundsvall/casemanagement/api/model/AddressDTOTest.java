@@ -10,10 +10,8 @@ import static org.hamcrest.CoreMatchers.allOf;
 
 import java.util.List;
 import java.util.Map;
-
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
-
 import se.sundsvall.casemanagement.api.model.enums.AddressCategory;
 import se.sundsvall.casemanagement.util.Constants;
 

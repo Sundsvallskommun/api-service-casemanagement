@@ -1,8 +1,7 @@
 package se.sundsvall.casemanagement.api.model.enums;
 
-import java.util.Arrays;
-
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.Arrays;
 import lombok.Getter;
 
 @Getter

@@ -2,7 +2,6 @@ package se.sundsvall.casemanagement.api.validation.impl;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-
 import se.sundsvall.casemanagement.api.model.EcosCaseDTO;
 import se.sundsvall.casemanagement.api.validation.EcosCaseDateOrder;
 

@@ -1,21 +1,5 @@
 package se.sundsvall.casemanagement.service;
 
-import generated.client.party.PartyType;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import se.sundsvall.casemanagement.api.model.enums.SystemType;
-import se.sundsvall.casemanagement.integration.alkt.AlkTService;
-import se.sundsvall.casemanagement.integration.byggr.ByggrService;
-import se.sundsvall.casemanagement.integration.casedata.CaseDataService;
-import se.sundsvall.casemanagement.integration.ecos.EcosService;
-import se.sundsvall.casemanagement.integration.party.PartyIntegration;
-
-import java.util.List;
-import java.util.Map;
-
 import static generated.client.party.PartyType.ENTERPRISE;
 import static generated.client.party.PartyType.PRIVATE;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,6 +11,21 @@ import static se.sundsvall.casemanagement.TestUtil.createCaseMapping;
 import static se.sundsvall.casemanagement.TestUtil.createCaseStatusDTO;
 import static se.sundsvall.casemanagement.service.StatusService.CASE_DATA_ORGANIZATION_FILTER;
 import static se.sundsvall.casemanagement.service.StatusService.CASE_DATA_PERSON_FILTER;
+
+import generated.client.party.PartyType;
+import java.util.List;
+import java.util.Map;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import se.sundsvall.casemanagement.api.model.enums.SystemType;
+import se.sundsvall.casemanagement.integration.alkt.AlkTService;
+import se.sundsvall.casemanagement.integration.byggr.ByggrService;
+import se.sundsvall.casemanagement.integration.casedata.CaseDataService;
+import se.sundsvall.casemanagement.integration.ecos.EcosService;
+import se.sundsvall.casemanagement.integration.party.PartyIntegration;
 
 @ExtendWith(MockitoExtension.class)
 class StatusServiceTest {

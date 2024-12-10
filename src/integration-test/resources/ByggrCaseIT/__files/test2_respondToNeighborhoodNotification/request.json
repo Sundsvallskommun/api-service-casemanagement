@@ -1,25 +1,31 @@
 {
 	"externalCaseId": 4565,
-	"attachments": [{
-		"extension": ".pdf",
-		"file": "base64",
-		"name": "16942.pdf",
-		"mimeType": "application/pdf",
-		"category": "GRASV"
-	}],
+	"attachments": [
+		{
+			"extension": ".pdf",
+			"file": "base64",
+			"name": "16942.pdf",
+			"mimeType": "application/pdf",
+			"category": "GRASV"
+		}
+	],
 	"extraParameters": {
 		"oepAction": "PUT",
 		"errandNr": "BYGG 2024-000019 [12345]",
 		"comment": "Jag har inga synpunkter",
 		"serviceName": "Lämna svar på grannehörande - TEST"
 	},
-	"stakeholders": [{
-		"firstName": "o",
-		"lastName": "o",
-		"emailAddress": "o@o.se",
-		"roles": ["APPLICANT"],
-		"personId": "97ed4de2-9f80-427d-b010-5d81267ef96b",
-		"type": "PERSON"
-	}],
+	"stakeholders": [
+		{
+			"firstName": "o",
+			"lastName": "o",
+			"emailAddress": "o@o.se",
+			"roles": [
+				"APPLICANT"
+			],
+			"personId": "97ed4de2-9f80-427d-b010-5d81267ef96b",
+			"type": "PERSON"
+		}
+	],
 	"caseType": "NEIGHBORHOOD_NOTIFICATION"
 }

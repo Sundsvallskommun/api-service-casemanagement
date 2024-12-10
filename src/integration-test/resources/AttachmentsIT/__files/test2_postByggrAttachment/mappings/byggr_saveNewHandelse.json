@@ -1,7 +1,11 @@
 {
 	"request": {
 		"method": "POST",
-		"bodyPatterns": [{"contains": "SaveNewHandelse"}],
+		"bodyPatterns": [
+			{
+				"contains": "SaveNewHandelse"
+			}
+		],
 		"url": "/TekisArende/ArendeExportWS.svc"
 	},
 	"response": {
@@ -12,7 +16,7 @@
 			"Content-Type": "text/xml; charset=utf-8",
 			"X-Powered-By": "ASP.NET"
 		},
-		"body": "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\"><s:Body><SaveNewHandelseResponse xmlns=\"www.tekis.se/ServiceContract\"><SaveNewHandelseResult><HandelseId>362294<\/HandelseId><\/SaveNewHandelseResult><\/SaveNewHandelseResponse><\/s:Body><\/s:Envelope>",
+		"body": "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\"><s:Body><SaveNewHandelseResponse xmlns=\"www.tekis.se/ServiceContract\"><SaveNewHandelseResult><HandelseId>362294</HandelseId></SaveNewHandelseResult></SaveNewHandelseResponse></s:Body></s:Envelope>",
 		"status": 200
 	},
 	"name": "tekisarende_arendeexportwssvc",

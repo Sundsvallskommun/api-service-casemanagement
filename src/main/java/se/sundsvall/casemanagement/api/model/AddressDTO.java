@@ -1,12 +1,11 @@
 package se.sundsvall.casemanagement.api.model;
 
-import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

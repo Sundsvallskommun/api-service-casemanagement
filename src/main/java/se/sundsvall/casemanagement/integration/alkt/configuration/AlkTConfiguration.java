@@ -1,6 +1,7 @@
 package se.sundsvall.casemanagement.integration.alkt.configuration;
 
 import feign.codec.ErrorDecoder;
+import java.util.List;
 import org.springframework.cloud.openfeign.FeignBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
@@ -10,8 +11,6 @@ import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import se.sundsvall.dept44.configuration.feign.FeignConfiguration;
 import se.sundsvall.dept44.configuration.feign.FeignMultiCustomizer;
 import se.sundsvall.dept44.configuration.feign.decoder.ProblemErrorDecoder;
-
-import java.util.List;
 
 @Import(FeignConfiguration.class)
 public class AlkTConfiguration {

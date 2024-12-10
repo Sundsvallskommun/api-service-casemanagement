@@ -1,9 +1,8 @@
 package se.sundsvall.casemanagement.configuration;
 
+import java.util.Map;
 import org.slf4j.MDC;
 import org.springframework.core.task.TaskDecorator;
-
-import java.util.Map;
 
 public class MDCTaskDecorator implements TaskDecorator {
 

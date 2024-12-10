@@ -1,13 +1,12 @@
 package se.sundsvall.casemanagement.service;
 
+import java.util.Objects;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
 import org.zalando.problem.ThrowableProblem;
 import se.sundsvall.casemanagement.integration.citizen.CitizenClient;
 import se.sundsvall.casemanagement.util.Constants;
-
-import java.util.Objects;
 
 @Service
 public class CitizenService {

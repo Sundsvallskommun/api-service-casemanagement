@@ -1,16 +1,13 @@
 package se.sundsvall.casemanagement.api.model;
 
-import java.util.Map;
-
-import jakarta.validation.constraints.NotBlank;
-
-import se.sundsvall.casemanagement.api.validation.ValidAttachmentCategory;
-
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import se.sundsvall.casemanagement.api.validation.ValidAttachmentCategory;
 
 @Data
 @Builder(setterPrefix = "with")

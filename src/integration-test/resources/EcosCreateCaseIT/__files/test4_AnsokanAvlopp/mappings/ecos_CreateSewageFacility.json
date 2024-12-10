@@ -1,7 +1,11 @@
 {
 	"request": {
 		"method": "POST",
-		"bodyPatterns": [{"contains": "CreateIndividualSewageFacility"}],
+		"bodyPatterns": [
+			{
+				"contains": "CreateIndividualSewageFacility"
+			}
+		],
 		"url": "/Ecos2PublicServices/MinutMiljoService.svc"
 	},
 	"response": {
@@ -16,7 +20,7 @@
 			"Content-Type": "text/xml; charset=utf-8",
 			"X-Powered-By": "ASP.NET"
 		},
-		"body": "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\"><s:Body><CreateIndividualSewageFacilityResponse xmlns=\"urn:Ecos.API.MinutMiljo.Service.V1\"><CreateIndividualSewageFacilityResult>e19981ad-34b2-4e14-88f5-133f61ca85aa<\/CreateIndividualSewageFacilityResult><\/CreateIndividualSewageFacilityResponse><\/s:Body><\/s:Envelope>",
+		"body": "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\"><s:Body><CreateIndividualSewageFacilityResponse xmlns=\"urn:Ecos.API.MinutMiljo.Service.V1\"><CreateIndividualSewageFacilityResult>e19981ad-34b2-4e14-88f5-133f61ca85aa</CreateIndividualSewageFacilityResult></CreateIndividualSewageFacilityResponse></s:Body></s:Envelope>",
 		"status": 200
 	}
 }

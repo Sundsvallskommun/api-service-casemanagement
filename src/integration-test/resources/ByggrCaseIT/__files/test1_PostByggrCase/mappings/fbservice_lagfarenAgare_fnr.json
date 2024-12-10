@@ -2,9 +2,15 @@
 	"request": {
 		"method": "POST",
 		"queryParameters": {
-			"User": {"matches": "\\w+"},
-			"Database": {"matches": "\\w+"},
-			"Password": {"matches": "\\w+"}
+			"User": {
+				"matches": "\\w+"
+			},
+			"Database": {
+				"matches": "\\w+"
+			},
+			"Password": {
+				"matches": "\\w+"
+			}
 		},
 		"urlPath": "/fbservice/agare/search/lagfarenAgare/fastighet/fnr"
 	},

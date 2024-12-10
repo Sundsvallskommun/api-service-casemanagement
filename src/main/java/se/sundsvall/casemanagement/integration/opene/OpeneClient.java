@@ -1,15 +1,13 @@
 package se.sundsvall.casemanagement.integration.opene;
 
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-
-import se.sundsvall.casemanagement.integration.opene.configuration.OpeneConfiguration;
-
 import callback.ConfirmDelivery;
 import callback.SetStatus;
 import callback.SetStatusResponse;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import se.sundsvall.casemanagement.integration.opene.configuration.OpeneConfiguration;
 
 @FeignClient(name = "opene", url = "${integration.opene.url}", configuration = OpeneConfiguration.class)
 @CircuitBreaker(name = "opene")

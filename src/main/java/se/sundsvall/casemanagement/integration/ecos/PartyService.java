@@ -1,6 +1,10 @@
 package se.sundsvall.casemanagement.integration.ecos;
 
 import generated.client.party.PartyType;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import minutmiljo.AddPartyToCase;
 import minutmiljo.AddPartyToCaseSvcDto;
 import minutmiljo.AddressTypeSvcDto;
@@ -32,11 +36,6 @@ import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
 import se.sundsvall.casemanagement.service.CitizenService;
 import se.sundsvall.casemanagement.util.CaseUtil;
 import se.sundsvall.casemanagement.util.Constants;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @Service
 public class PartyService {

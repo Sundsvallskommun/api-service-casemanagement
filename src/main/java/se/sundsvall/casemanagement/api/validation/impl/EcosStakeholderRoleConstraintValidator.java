@@ -2,13 +2,11 @@ package se.sundsvall.casemanagement.api.validation.impl;
 
 import static java.util.Collections.emptyList;
 
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
-import jakarta.validation.ConstraintValidator;
-import jakarta.validation.ConstraintValidatorContext;
-
 import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
 import se.sundsvall.casemanagement.api.validation.EcosStakeholderRole;
 

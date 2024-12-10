@@ -2,17 +2,14 @@ package se.sundsvall.casemanagement.service.mapper;
 
 import static se.sundsvall.casemanagement.integration.db.model.DeliveryStatus.PENDING;
 
-import java.sql.Clob;
-import java.sql.SQLException;
-
-import javax.sql.rowset.serial.SerialClob;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import java.sql.Clob;
+import java.sql.SQLException;
+import javax.sql.rowset.serial.SerialClob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import se.sundsvall.casemanagement.api.model.CaseDTO;
 import se.sundsvall.casemanagement.integration.db.model.CaseEntity;
 

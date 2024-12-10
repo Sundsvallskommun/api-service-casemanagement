@@ -1,9 +1,6 @@
 package se.sundsvall.casemanagement.util;
 
 import generated.client.party.PartyType;
-import org.zalando.problem.Problem;
-import org.zalando.problem.Status;
-
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -11,6 +8,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.IntStream;
+import org.zalando.problem.Problem;
+import org.zalando.problem.Status;
 
 public final class CaseUtil {
 

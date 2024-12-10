@@ -1,8 +1,16 @@
 {
 	"request": {
-		"headers": {"SoapAction": {"equalTo": "www.tekis.se/ServiceContract/V4/IExportArenden/GetRelateradeArendenByPersOrgNrAndRole"}},
+		"headers": {
+			"SoapAction": {
+				"equalTo": "www.tekis.se/ServiceContract/V4/IExportArenden/GetRelateradeArendenByPersOrgNrAndRole"
+			}
+		},
 		"method": "POST",
-		"bodyPatterns": [{"contains": "GetRelateradeArendenByPersOrgNrAndRole"}],
+		"bodyPatterns": [
+			{
+				"contains": "GetRelateradeArendenByPersOrgNrAndRole"
+			}
+		],
 		"url": "/TekisArende/ArendeExportWS.svc"
 	},
 	"response": {

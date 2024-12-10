@@ -5,12 +5,24 @@
 	},
 	"response": {
 		"headers": {
-			"Access-Control-Expose-Headers": [""],
-			"Access-Control-Allow-Origin": ["*"],
-			"X-Request-ID": ["e19981ad-34b2-4e14-88f5-133f61ca85aa"],
-			"Access-Control-Allow-Methods": ["*"],
-			"Access-Control-Allow-Headers": ["*"],
-			"Date": ["Thu, 01 Sep 2022 13:00:24 GMT"]
+			"Access-Control-Expose-Headers": [
+				""
+			],
+			"Access-Control-Allow-Origin": [
+				"*"
+			],
+			"X-Request-ID": [
+				"e19981ad-34b2-4e14-88f5-133f61ca85aa"
+			],
+			"Access-Control-Allow-Methods": [
+				"*"
+			],
+			"Access-Control-Allow-Headers": [
+				"*"
+			],
+			"Date": [
+				"Thu, 01 Sep 2022 13:00:24 GMT"
+			]
 		},
 		"status": 201
 	}

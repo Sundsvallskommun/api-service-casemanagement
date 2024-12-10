@@ -13,13 +13,11 @@ import static se.sundsvall.casemanagement.service.mapper.FbMapper.toPropertyUuid
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
-
 import se.sundsvall.casemanagement.api.model.AddressDTO;
 import se.sundsvall.casemanagement.api.model.StakeholderDTO;
 import se.sundsvall.casemanagement.integration.fb.FbClient;

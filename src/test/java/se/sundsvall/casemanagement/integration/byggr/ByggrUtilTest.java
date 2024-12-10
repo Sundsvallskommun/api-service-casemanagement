@@ -4,20 +4,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static se.sundsvall.casemanagement.api.model.enums.StakeholderRole.CONTROL_OFFICIAL;
 import static se.sundsvall.casemanagement.util.Constants.BYGGR_STATUS_AVSLUTAT;
 
-import java.util.List;
-
-import org.junit.jupiter.api.Test;
-
-import se.sundsvall.casemanagement.api.model.AddressDTO;
-import se.sundsvall.casemanagement.api.model.FacilityDTO;
-import se.sundsvall.casemanagement.api.model.PersonDTO;
-import se.sundsvall.casemanagement.api.model.StakeholderDTO;
-
 import arendeexport.Arende;
 import arendeexport.ArendeIntressent;
 import arendeexport.ArrayOfHandelse;
 import arendeexport.ArrayOfString2;
 import arendeexport.Handelse;
+import java.util.List;
+import org.junit.jupiter.api.Test;
+import se.sundsvall.casemanagement.api.model.AddressDTO;
+import se.sundsvall.casemanagement.api.model.FacilityDTO;
+import se.sundsvall.casemanagement.api.model.PersonDTO;
+import se.sundsvall.casemanagement.api.model.StakeholderDTO;
 
 class ByggrUtilTest {
 

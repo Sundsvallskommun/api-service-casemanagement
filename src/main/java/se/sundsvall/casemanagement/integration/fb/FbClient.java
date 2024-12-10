@@ -2,14 +2,12 @@ package se.sundsvall.casemanagement.integration.fb;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import java.util.List;
-
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import se.sundsvall.casemanagement.integration.fb.configuration.FbConfiguration;
 import se.sundsvall.casemanagement.integration.fb.model.ResponseDto;
 
