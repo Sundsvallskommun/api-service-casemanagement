@@ -32,7 +32,6 @@ import se.sundsvall.dept44.common.validators.annotation.ValidUuid;
 	APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
 })
 @Tag(name = "Status", description = "Status operations")
-@ApiResponse(responseCode = "200", description = "OK - Successful operation", useReturnTypeSchema = true)
 @ApiResponse(responseCode = "400", description = "Bad request", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(oneOf = {
 	Problem.class, ConstraintViolationProblem.class
 })))
@@ -48,18 +47,22 @@ class CaseStatusResource {
 	}
 
 	@GetMapping(path = "/organization/{organizationNumber}/cases/status")
-	@Operation(description = "Returns the latest status for each of the cases where the specified organization has the role \"applicant\".")
+	@Operation(description = "Returns the latest status for each of the cases where the specified organization has the role \"applicant\".", responses = {
+		@ApiResponse(responseCode = "200", description = "OK - Successful operation", useReturnTypeSchema = true)
+	})
 	ResponseEntity<List<CaseStatusDTO>> getStatusByOrgNr(
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable(name = "municipalityId") final String municipalityId,
 		@Pattern(regexp = ORGNR_PATTERN_REGEX, message = ORGNR_PATTERN_MESSAGE) @Schema(description = "Organization number with 10 or 12 digits.", example = "20220622-2396") @Parameter(name = "organizationNumber",
 			description = "OrganizationNumber") @PathVariable(name = "organizationNumber") final String organizationNumber) {
-		var caseStatuses = statusService.getStatusByOrgNr(municipalityId, organizationNumber);
+		final var caseStatuses = statusService.getStatusByOrgNr(municipalityId, organizationNumber);
 
 		return caseStatuses.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(caseStatuses);
 	}
 
 	@GetMapping(path = "/cases/{externalCaseId}/status")
-	@Operation(description = "Returns the latest status for the case in the underlying system connected to the specified externalCaseId.")
+	@Operation(description = "Returns the latest status for the case in the underlying system connected to the specified externalCaseId.", responses = {
+		@ApiResponse(responseCode = "200", description = "OK - Successful operation", useReturnTypeSchema = true)
+	})
 	ResponseEntity<CaseStatusDTO> getStatusByExternalCaseId(
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable(name = "municipalityId") final String municipalityId,
 		@Parameter(name = "externalCaseId", description = "External case id") @PathVariable(name = "externalCaseId") final String externalCaseId) {
@@ -67,7 +70,9 @@ class CaseStatusResource {
 	}
 
 	@GetMapping(path = "/{partyId}/statuses")
-	@Operation(description = "Returns the case status for all cases where the specified party is involved.")
+	@Operation(description = "Returns the case status for all cases where the specified party is involved.", responses = {
+		@ApiResponse(responseCode = "200", description = "OK - Successful operation", useReturnTypeSchema = true)
+	})
 	ResponseEntity<List<CaseStatusDTO>> getStatusesByPartyId(
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable(name = "municipalityId") final String municipalityId,
 		@Parameter(name = "partyId", description = "Party id") @ValidUuid @PathVariable(name = "partyId") final String partyId) {
