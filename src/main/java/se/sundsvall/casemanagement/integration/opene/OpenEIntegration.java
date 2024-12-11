@@ -1,12 +1,11 @@
 package se.sundsvall.casemanagement.integration.opene;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-
 import callback.ConfirmDelivery;
 import callback.ExternalID;
 import callback.SetStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 @Component
 public class OpenEIntegration {

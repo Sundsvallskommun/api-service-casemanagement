@@ -7,59 +7,87 @@
 	"messageIds": [],
 	"extraParameters": [
 		{
-			"values": ["true"],
+			"values": [
+				"true"
+			],
 			"key": "disability.walkingAbility"
 		},
 		{
-			"values": ["true"],
+			"values": [
+				"true"
+			],
 			"key": "application.applicant.testimonial"
 		},
 		{
-			"values": ["false"],
+			"values": [
+				"false"
+			],
 			"key": "consent.view.transportationServiceDetails"
 		},
 		{
-			"values": ["Inget"],
+			"values": [
+				"Inget"
+			],
 			"key": "disability.aid"
 		},
 		{
-			"values": ["true"],
+			"values": [
+				"true"
+			],
 			"key": "disability.canBeAloneWhileParking"
 		},
 		{
-			"values": ["SELF"],
+			"values": [
+				"SELF"
+			],
 			"key": "application.role"
 		},
 		{
-			"values": ["DRIVER"],
+			"values": [
+				"DRIVER"
+			],
 			"key": "application.applicant.capacity"
 		},
 		{
-			"values": ["false"],
+			"values": [
+				"false"
+			],
 			"key": "application.applicant.signingAbility"
 		},
 		{
-			"values": [""],
+			"values": [
+				""
+			],
 			"key": "disability.walkingDistance.max"
 		},
 		{
-			"values": [""],
+			"values": [
+				""
+			],
 			"key": "disability.walkingDistance.beforeRest"
 		},
 		{
-			"values": ["false"],
+			"values": [
+				"false"
+			],
 			"key": "consent.contact.doctor"
 		},
 		{
-			"values": [""],
+			"values": [
+				""
+			],
 			"key": "application.reason"
 		},
 		{
-			"values": [""],
+			"values": [
+				""
+			],
 			"key": "disability.canBeAloneWhileParking.note"
 		},
 		{
-			"values": ["P6M"],
+			"values": [
+				"P6M"
+			],
 			"key": "disability.duration"
 		}
 	],
@@ -69,13 +97,17 @@
 			"firstName": "Test",
 			"lastName": "Testsson",
 			"addresses": [],
-			"contactInformation": [{
-				"contactType": "EMAIL",
-				"value": "test@sundsvall.se"
-			}],
+			"contactInformation": [
+				{
+					"contactType": "EMAIL",
+					"value": "test@sundsvall.se"
+				}
+			],
 			"adAccount": "GUNNBE",
 			"created": "2022-10-25T11:20:28.88606+02:00",
-			"roles": ["ADMINISTRATOR"],
+			"roles": [
+				"ADMINISTRATOR"
+			],
 			"extraParameters": {},
 			"id": 1,
 			"type": "PERSON",
@@ -85,11 +117,13 @@
 		{
 			"firstName": "Kim",
 			"lastName": "Svensson",
-			"addresses": [{
-				"city": "SUNDSVALL",
-				"street": "TESTARGATAN 1",
-				"postalCode": "123 45"
-			}],
+			"addresses": [
+				{
+					"city": "SUNDSVALL",
+					"street": "TESTARGATAN 1",
+					"postalCode": "123 45"
+				}
+			],
 			"contactInformation": [
 				{
 					"contactType": "PHONE",
@@ -101,7 +135,9 @@
 				}
 			],
 			"created": "2022-10-25T11:20:28.888013+02:00",
-			"roles": ["APPLICANT"],
+			"roles": [
+				"APPLICANT"
+			],
 			"extraParameters": {},
 			"personId": "e19981ad-34b2-4e14-88f5-133f61ca85aa",
 			"id": 2,
@@ -123,11 +159,13 @@
 	"priority": "HIGH",
 	"version": 1,
 	"createdBy": "kar52and",
-	"statuses": [{
-		"dateTime": "2022-10-25T11:20:28.692+02:00",
-		"statusType": "Ärende inkommit",
-		"description": "Ärende inkommit"
-	}],
+	"statuses": [
+		{
+			"dateTime": "2022-10-25T11:20:28.692+02:00",
+			"statusType": "Ärende inkommit",
+			"description": "Ärende inkommit"
+		}
+	],
 	"facilities": [],
 	"updated": "2022-10-25T11:20:29.363269+02:00"
 }

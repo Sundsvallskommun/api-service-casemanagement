@@ -1,5 +1,10 @@
 package se.sundsvall.casemanagement.api;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
+import static se.sundsvall.casemanagement.util.Constants.REQUEST_BODY_MUST_NOT_BE_NULL;
+
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -7,6 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,19 +31,12 @@ import se.sundsvall.casemanagement.integration.ecos.EcosService;
 import se.sundsvall.casemanagement.service.CaseMappingService;
 import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
 
-import java.util.List;
-
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
-import static se.sundsvall.casemanagement.util.Constants.REQUEST_BODY_MUST_NOT_BE_NULL;
-
 @RestController
 @Validated
 @RequestMapping(value = "/{municipalityId}", consumes = APPLICATION_JSON_VALUE, produces = {
 	APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
 })
 @Tag(name = "Attachments", description = "Attachment operations")
-@ApiResponse(responseCode = "204", description = "No content - Successful request", useReturnTypeSchema = true)
 @ApiResponse(responseCode = "400", description = "Bad request", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(oneOf = {
 	Problem.class, ConstraintViolationProblem.class
 })))
@@ -59,6 +58,9 @@ class AttachmentResource {
 		this.caseMappingService = caseMappingService;
 	}
 
+	@Operation(description = "Post attachments to a case", responses = {
+		@ApiResponse(responseCode = "204", description = "No content - Successful request", useReturnTypeSchema = true)
+	})
 	@PostMapping(path = "cases/{externalCaseId}/attachments")
 	ResponseEntity<Void> postAttachmentsToCase(
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable(name = "municipalityId") final String municipalityId,

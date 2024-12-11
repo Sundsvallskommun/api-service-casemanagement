@@ -1,8 +1,7 @@
 package se.sundsvall.casemanagement.service.event;
 
-import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
-
 import java.io.Serial;
+import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
 
 public class UpdateByggrCase extends Event<ByggRCaseDTO> {
 

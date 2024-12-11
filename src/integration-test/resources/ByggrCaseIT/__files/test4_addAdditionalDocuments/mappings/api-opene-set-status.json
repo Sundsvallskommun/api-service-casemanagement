@@ -1,13 +1,25 @@
 {
 	"request": {
-		"headers": {"Content-Type": {"equalTo": "text/xml; charset=UTF-8"}},
+		"headers": {
+			"Content-Type": {
+				"equalTo": "text/xml; charset=UTF-8"
+			}
+		},
 		"method": "POST",
-		"bodyPatterns": [{"matchesXPath": "//*[local-name()='setStatus']"}],
+		"bodyPatterns": [
+			{
+				"matchesXPath": "//*[local-name()='setStatus']"
+			}
+		],
 		"urlPath": "/opene/1.0"
 	},
 	"response": {
-		"headers": {"Content-Type": "application/xml"},
-		"transformers": ["response-template"],
+		"headers": {
+			"Content-Type": "application/xml"
+		},
+		"transformers": [
+			"response-template"
+		],
 		"bodyFileName": "test4_addAdditionalDocuments/responses/api-opene-set-status.xml",
 		"status": 200
 	},

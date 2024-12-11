@@ -1,8 +1,23 @@
 package se.sundsvall.casemanagement.integration.casedata;
 
+import static java.util.Collections.emptyList;
+import static org.zalando.problem.Status.NOT_FOUND;
+import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toAttachment;
+import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toErrand;
+import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toPatchErrand;
+import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toStakeholders;
+import static se.sundsvall.casemanagement.util.Constants.SERVICE_NAME;
+
 import generated.client.casedata.Errand;
 import generated.client.casedata.ExtraParameter;
 import generated.client.casedata.Status;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
@@ -17,22 +32,6 @@ import se.sundsvall.casemanagement.integration.casedata.configuration.CaseDataPr
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.service.CaseMappingService;
 import se.sundsvall.casemanagement.util.Constants;
-
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
-import static java.util.Collections.emptyList;
-import static org.zalando.problem.Status.NOT_FOUND;
-import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toAttachment;
-import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toErrand;
-import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toPatchErrand;
-import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toStakeholders;
-import static se.sundsvall.casemanagement.util.Constants.SERVICE_NAME;
 
 @Service
 public class CaseDataService {

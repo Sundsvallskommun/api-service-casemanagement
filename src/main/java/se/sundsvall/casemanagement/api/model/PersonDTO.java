@@ -1,17 +1,15 @@
 package se.sundsvall.casemanagement.api.model;
 
-import jakarta.validation.constraints.NotBlank;
-
-import se.sundsvall.casemanagement.api.validation.PersonConstraints;
-import se.sundsvall.dept44.common.validators.annotation.ValidUuid;
-
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import se.sundsvall.casemanagement.api.validation.PersonConstraints;
+import se.sundsvall.dept44.common.validators.annotation.ValidUuid;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)

@@ -7,7 +7,7 @@ info:
     url: https://opensource.org/licenses/MIT
   version: "8.1"
 servers:
-  - url: http://localhost:54564
+  - url: http://localhost:63306
     description: Generated server url
 tags:
   - name: Status
@@ -44,45 +44,9 @@ paths:
         content:
           application/json:
             schema:
-              example:
-                externalCaseId: e19981ad-34b2-4e14-88f5-133f61ca85aa
-                caseType: NYBYGGNAD_ANSOKAN_OM_BYGGLOV
-                facilities:
-                  - facilityType: STOREHOUSE
-                    address:
-                      addressCategories:
-                        - VISITING_ADDRESS
-                      propertyDesignation: SUNDSVALL BALDER 2
-                stakeholders:
-                  - type: ORGANIZATION
-                    roles:
-                      - APPLICANT
-                      - PAYMENT_PERSON
-                    organizationName: Testorganisationen
-                    organizationNumber: 123456-1234
-                  - type: PERSON
-                    roles:
-                      - CONTACT_PERSON
-                    firstName: Test
-                    lastName: Testsson
-                    personId: e19981ad-34b2-4e14-88f5-133f61ca85aa
-                attachments:
-                  - category: ANS
-                    name: Some_name_2022-03-07
-                    extension: .pdf
-                    file: dGVzdA==
-              oneOf:
-                - $ref: "#/components/schemas/ByggRCaseDTO"
-                - $ref: "#/components/schemas/EcosCaseDTO"
-                - $ref: "#/components/schemas/OtherCaseDTO"
+              $ref: "#/components/schemas/CaseDTO"
         required: true
       responses:
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
         "204":
           description: No content
         "400":
@@ -93,14 +57,20 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/Problem"
                   - $ref: "#/components/schemas/ConstraintViolationProblem"
-        "502":
-          description: Bad Gateway
+        "500":
+          description: Internal Server error
           content:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
         "404":
           description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "502":
+          description: Bad Gateway
           content:
             application/problem+json:
               schema:
@@ -124,45 +94,9 @@ paths:
         content:
           application/json:
             schema:
-              example:
-                externalCaseId: e19981ad-34b2-4e14-88f5-133f61ca85aa
-                caseType: NYBYGGNAD_ANSOKAN_OM_BYGGLOV
-                facilities:
-                  - facilityType: STOREHOUSE
-                    address:
-                      addressCategories:
-                        - VISITING_ADDRESS
-                      propertyDesignation: SUNDSVALL BALDER 2
-                stakeholders:
-                  - type: ORGANIZATION
-                    roles:
-                      - APPLICANT
-                      - PAYMENT_PERSON
-                    organizationName: Testorganisationen
-                    organizationNumber: 123456-1234
-                  - type: PERSON
-                    roles:
-                      - CONTACT_PERSON
-                    firstName: Test
-                    lastName: Testsson
-                    personId: e19981ad-34b2-4e14-88f5-133f61ca85aa
-                attachments:
-                  - category: ANS
-                    name: Some_name_2022-03-07
-                    extension: .pdf
-                    file: dGVzdA==
-              oneOf:
-                - $ref: "#/components/schemas/ByggRCaseDTO"
-                - $ref: "#/components/schemas/EcosCaseDTO"
-                - $ref: "#/components/schemas/OtherCaseDTO"
+              $ref: "#/components/schemas/CaseDTO"
         required: true
       responses:
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
         "200":
           description: OK
           content:
@@ -180,8 +114,8 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/Problem"
                   - $ref: "#/components/schemas/ConstraintViolationProblem"
-        "502":
-          description: Bad Gateway
+        "500":
+          description: Internal Server error
           content:
             application/problem+json:
               schema:
@@ -192,10 +126,17 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
+        "502":
+          description: Bad Gateway
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
   /{municipalityId}/cases/{externalCaseId}/attachments:
     post:
       tags:
         - Attachments
+      description: Post attachments to a case
       operationId: postAttachmentsToCase
       parameters:
         - name: municipalityId
@@ -221,12 +162,6 @@ paths:
                 $ref: "#/components/schemas/AttachmentDTO"
         required: true
       responses:
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
         "204":
           description: No content - Successful request
         "400":
@@ -237,14 +172,20 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/Problem"
                   - $ref: "#/components/schemas/ConstraintViolationProblem"
-        "502":
-          description: Bad Gateway
+        "500":
+          description: Internal Server error
           content:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
         "404":
           description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "502":
+          description: Bad Gateway
           content:
             application/problem+json:
               schema:
@@ -271,32 +212,6 @@ paths:
           schema:
             type: string
       responses:
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                oneOf:
-                  - $ref: "#/components/schemas/Problem"
-                  - $ref: "#/components/schemas/ConstraintViolationProblem"
-        "502":
-          description: Bad Gateway
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "404":
-          description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
         "200":
           description: OK - Successful operation
           content:
@@ -310,6 +225,32 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/CaseStatusDTO"
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "502":
+          description: Bad Gateway
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
   /{municipalityId}/organization/{organizationNumber}/cases/status:
     get:
       tags:
@@ -335,32 +276,6 @@ paths:
             description: Organization number with 10 or 12 digits.
             example: 20220622-2396
       responses:
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                oneOf:
-                  - $ref: "#/components/schemas/Problem"
-                  - $ref: "#/components/schemas/ConstraintViolationProblem"
-        "502":
-          description: Bad Gateway
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "404":
-          description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
         "200":
           description: OK - Successful operation
           content:
@@ -374,6 +289,32 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/CaseStatusDTO"
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "502":
+          description: Bad Gateway
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
   /{municipalityId}/cases/{externalCaseId}/status:
     get:
       tags:
@@ -396,12 +337,15 @@ paths:
           schema:
             type: string
       responses:
-        "500":
-          description: Internal Server error
+        "200":
+          description: OK - Successful operation
           content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CaseStatusDTO"
             application/problem+json:
               schema:
-                $ref: "#/components/schemas/Problem"
+                $ref: "#/components/schemas/CaseStatusDTO"
         "400":
           description: Bad request
           content:
@@ -410,8 +354,8 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/Problem"
                   - $ref: "#/components/schemas/ConstraintViolationProblem"
-        "502":
-          description: Bad Gateway
+        "500":
+          description: Internal Server error
           content:
             application/problem+json:
               schema:
@@ -422,15 +366,12 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-        "200":
-          description: OK - Successful operation
+        "502":
+          description: Bad Gateway
           content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/CaseStatusDTO"
             application/problem+json:
               schema:
-                $ref: "#/components/schemas/CaseStatusDTO"
+                $ref: "#/components/schemas/Problem"
   /{municipalityId}/cases/case-mappings:
     get:
       tags:
@@ -454,26 +395,6 @@ paths:
             type: string
           example: 2281
       responses:
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                oneOf:
-                  - $ref: "#/components/schemas/Problem"
-                  - $ref: "#/components/schemas/ConstraintViolationProblem"
-        "404":
-          description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
         "200":
           description: OK - Successful operation
           content:
@@ -487,6 +408,26 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/CaseMapping"
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
   /api-docs:
     get:
       tags:
@@ -613,6 +554,27 @@ components:
         - facilities
         - stakeholders
       type: object
+      description: ByggR-cases
+      allOf:
+        - $ref: "#/components/schemas/CaseDTO"
+        - type: object
+          properties:
+            diaryNumber:
+              type: string
+              description: The case diary number
+              example: 2021-1234
+            facilities:
+              type: array
+              description: The facilities in the case
+              items:
+                $ref: "#/components/schemas/FacilityDTO"
+    CaseDTO:
+      required:
+        - attachments
+        - caseType
+        - externalCaseId
+        - stakeholders
+      type: object
       properties:
         externalCaseId:
           type: string
@@ -649,16 +611,40 @@ components:
             type: string
             description: Extra parameters for the case.
           description: Extra parameters for the case.
-        diaryNumber:
-          type: string
-          description: The case diary number
-          example: 2021-1234
+      description: Base case model
+      example:
+        externalCaseId: e19981ad-34b2-4e14-88f5-133f61ca85aa
+        caseType: NYBYGGNAD_ANSOKAN_OM_BYGGLOV
         facilities:
-          type: array
-          description: The facilities in the case
-          items:
-            $ref: "#/components/schemas/FacilityDTO"
-      description: ByggR-cases
+          - facilityType: STOREHOUSE
+            address:
+              addressCategories:
+                - VISITING_ADDRESS
+              propertyDesignation: SUNDSVALL BALDER 2
+        stakeholders:
+          - type: ORGANIZATION
+            roles:
+              - APPLICANT
+              - PAYMENT_PERSON
+            organizationName: Testorganisationen
+            organizationNumber: 123456-1234
+          - type: PERSON
+            roles:
+              - CONTACT_PERSON
+            firstName: Test
+            lastName: Testsson
+            personId: e19981ad-34b2-4e14-88f5-133f61ca85aa
+        attachments:
+          - category: ANS
+            name: Some_name_2022-03-07
+            extension: .pdf
+            file: dGVzdA==
+      discriminator:
+        propertyName: caseType
+      oneOf:
+        - $ref: "#/components/schemas/ByggRCaseDTO"
+        - $ref: "#/components/schemas/EcosCaseDTO"
+        - $ref: "#/components/schemas/OtherCaseDTO"
     CoordinatesDTO:
       type: object
       properties:
@@ -673,6 +659,36 @@ components:
           format: double
           example: 17.306616
       description: Coordinates model
+    EcosCaseDTO:
+      required:
+        - attachments
+        - caseType
+        - externalCaseId
+        - facilities
+        - stakeholders
+      type: object
+      description: Ecos2-case model class
+      allOf:
+        - $ref: "#/components/schemas/CaseDTO"
+        - type: object
+          properties:
+            startDate:
+              type: string
+              description: Start date for the business.
+              format: date
+              example: 2022-01-01
+            endDate:
+              type: string
+              description: End date of the business if it is time-limited.
+              format: date
+              example: 2022-06-01
+            facilities:
+              maxItems: 1
+              minItems: 1
+              type: array
+              description: The facilities in the case
+              items:
+                $ref: "#/components/schemas/FacilityDTO"
     FacilityDTO:
       required:
         - address
@@ -726,6 +742,23 @@ components:
               type: string
               description: The authorized signatory
               example: Test Testorsson
+    OtherCaseDTO:
+      required:
+        - attachments
+        - caseType
+        - externalCaseId
+        - stakeholders
+      type: object
+      description: Other case model
+      allOf:
+        - $ref: "#/components/schemas/CaseDTO"
+        - type: object
+          properties:
+            facilities:
+              type: array
+              description: The facilities in the case
+              items:
+                $ref: "#/components/schemas/FacilityDTO"
     PersonDTO:
       required:
         - firstName
@@ -804,117 +837,6 @@ components:
       description: Stakeholder model
       discriminator:
         propertyName: type
-    EcosCaseDTO:
-      required:
-        - attachments
-        - caseType
-        - externalCaseId
-        - facilities
-        - stakeholders
-      type: object
-      properties:
-        externalCaseId:
-          type: string
-          description: Case ID from the client.
-          example: caa230c6-abb4-4592-ad9a-34e263c2787b
-        caseType:
-          type: string
-          description: The case type
-          example: NYBYGGNAD_ANSOKAN_OM_BYGGLOV
-        description:
-          type: string
-          description: Some description of the case.
-          example: En fritextbeskrivning av case.
-        caseTitleAddition:
-          type: string
-          description: "Additions to the case title. Right now only applicable to\
-            \ cases of CaseType: NYBYGGNAD_ANSOKAN_OM_BYGGLOV."
-          example: "Eldstad/rökkanal, Skylt"
-        stakeholders:
-          type: array
-          description: The stakeholders in the case
-          items:
-            oneOf:
-              - $ref: "#/components/schemas/OrganizationDTO"
-              - $ref: "#/components/schemas/PersonDTO"
-        attachments:
-          type: array
-          description: The attachments in the case
-          items:
-            $ref: "#/components/schemas/AttachmentDTO"
-        extraParameters:
-          type: object
-          additionalProperties:
-            type: string
-            description: Extra parameters for the case.
-          description: Extra parameters for the case.
-        startDate:
-          type: string
-          description: Start date for the business.
-          format: date
-          example: 2022-01-01
-        endDate:
-          type: string
-          description: End date of the business if it is time-limited.
-          format: date
-          example: 2022-06-01
-        facilities:
-          maxItems: 1
-          minItems: 1
-          type: array
-          description: The facilities in the case
-          items:
-            $ref: "#/components/schemas/FacilityDTO"
-      description: Ecos2-case model class
-    OtherCaseDTO:
-      required:
-        - attachments
-        - caseType
-        - externalCaseId
-        - stakeholders
-      type: object
-      properties:
-        externalCaseId:
-          type: string
-          description: Case ID from the client.
-          example: caa230c6-abb4-4592-ad9a-34e263c2787b
-        caseType:
-          type: string
-          description: The case type
-          example: NYBYGGNAD_ANSOKAN_OM_BYGGLOV
-        description:
-          type: string
-          description: Some description of the case.
-          example: En fritextbeskrivning av case.
-        caseTitleAddition:
-          type: string
-          description: "Additions to the case title. Right now only applicable to\
-            \ cases of CaseType: NYBYGGNAD_ANSOKAN_OM_BYGGLOV."
-          example: "Eldstad/rökkanal, Skylt"
-        stakeholders:
-          type: array
-          description: The stakeholders in the case
-          items:
-            oneOf:
-              - $ref: "#/components/schemas/OrganizationDTO"
-              - $ref: "#/components/schemas/PersonDTO"
-        attachments:
-          type: array
-          description: The attachments in the case
-          items:
-            $ref: "#/components/schemas/AttachmentDTO"
-        extraParameters:
-          type: object
-          additionalProperties:
-            type: string
-            description: Extra parameters for the case.
-          description: Extra parameters for the case.
-        facilities:
-          type: array
-          description: The facilities in the case
-          items:
-            $ref: "#/components/schemas/FacilityDTO"
-      description: Other case model
     Problem:
       type: object
       properties:
@@ -928,20 +850,20 @@ components:
           type: object
           additionalProperties:
             type: object
-        status:
-          $ref: "#/components/schemas/StatusType"
         title:
           type: string
         detail:
           type: string
+        status:
+          $ref: "#/components/schemas/StatusType"
     StatusType:
       type: object
       properties:
+        reasonPhrase:
+          type: string
         statusCode:
           type: integer
           format: int32
-        reasonPhrase:
-          type: string
     ConstraintViolationProblem:
       type: object
       properties:
@@ -1063,12 +985,12 @@ components:
           type: object
           additionalProperties:
             type: object
-        status:
-          $ref: "#/components/schemas/StatusType"
         title:
           type: string
         detail:
           type: string
+        status:
+          $ref: "#/components/schemas/StatusType"
         suppressed:
           type: array
           items:

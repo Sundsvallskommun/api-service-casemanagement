@@ -1,14 +1,16 @@
 {
 	"externalCaseId": "231",
-	"attachments": [{
-		"note": "cEeYRpiGmO",
-		"extension": ".pdf",
-		"file": "dGVzdA==",
-		"name": "JEwVPjvGLO",
-		"extraParameters": null,
-		"mimeType": "application/pdf",
-		"category": "PASSPORT_PHOTO"
-	}],
+	"attachments": [
+		{
+			"note": "cEeYRpiGmO",
+			"extension": ".pdf",
+			"file": "dGVzdA==",
+			"name": "JEwVPjvGLO",
+			"extraParameters": null,
+			"mimeType": "application/pdf",
+			"category": "PASSPORT_PHOTO"
+		}
+	],
 	"caseTitleAddition": "GrJoyTZTFj",
 	"description": "bYjiixHhay",
 	"extraParameters": {
@@ -20,33 +22,35 @@
 		{
 			"emailAddress": "BGIuDByJEO@PaxRL.com",
 			"cellphoneNumber": "ApqiBtfUmB",
-			"addresses": [{
-				"country": "Sverige",
-				"city": "iGcTNVRgoI",
-				"postalCode": "9066043106",
-				"houseNumber": "TbyX0urkAs",
-				"extraParameters": {
-					"PTvpHNZWpU": "LMYaRuxRnITCslAinBwM",
-					"FvFuALoWLK": "BEhKHdEdGEqNhStswrZA",
-					"cKPySIklbM": "SNhdbzQGbJpgNnAqVdwa"
-				},
-				"appartmentNumber": "IY7qibFDCX",
-				"isZoningPlanArea": false,
-				"invoiceMarking": "455ziWFtz9",
-				"careOf": "SsNTHSOOLm",
-				"addressCategories": [
-					"VISITING_ADDRESS",
-					"INVOICE_ADDRESS",
-					"POSTAL_ADDRESS"
-				],
-				"street": "nglZLKCZzv",
-				"attention": "bLVsdiGwwZ",
-				"propertyDesignation": "SUNDSVALL FILLA 8:185",
-				"location": {
-					"latitude": 0.8374697048172093,
-					"longitude": 0.7735614594059279
+			"addresses": [
+				{
+					"country": "Sverige",
+					"city": "iGcTNVRgoI",
+					"postalCode": "9066043106",
+					"houseNumber": "TbyX0urkAs",
+					"extraParameters": {
+						"PTvpHNZWpU": "LMYaRuxRnITCslAinBwM",
+						"FvFuALoWLK": "BEhKHdEdGEqNhStswrZA",
+						"cKPySIklbM": "SNhdbzQGbJpgNnAqVdwa"
+					},
+					"appartmentNumber": "IY7qibFDCX",
+					"isZoningPlanArea": false,
+					"invoiceMarking": "455ziWFtz9",
+					"careOf": "SsNTHSOOLm",
+					"addressCategories": [
+						"VISITING_ADDRESS",
+						"INVOICE_ADDRESS",
+						"POSTAL_ADDRESS"
+					],
+					"street": "nglZLKCZzv",
+					"attention": "bLVsdiGwwZ",
+					"propertyDesignation": "SUNDSVALL FILLA 8:185",
+					"location": {
+						"latitude": 0.8374697048172093,
+						"longitude": 0.7735614594059279
+					}
 				}
-			}],
+			],
 			"phoneNumber": "GRSyyQFYvt",
 			"organizationName": "BoikvQgeLL",
 			"organizationNumber": "133025-4174",
@@ -67,34 +71,38 @@
 			"lastName": "echycleKGM",
 			"emailAddress": "PmrnBPaNMp@vXxzt.com",
 			"cellphoneNumber": "HSgruXyAkP",
-			"addresses": [{
-				"country": "Sverige",
-				"city": "mNeVfQlzZX",
-				"postalCode": "0442039801",
-				"houseNumber": "UGKRFeZk7j",
-				"extraParameters": {
-					"yMUrTIvFfo": "xMhjtELUwiqUddpDxRLg",
-					"MVpaNeZmwT": "bYvdQREowtsDmZRmdYsO",
-					"jqTvHarJPX": "mEZMwQpfWvRyiUAoHvwH"
-				},
-				"appartmentNumber": "h7hdH1tudv",
-				"isZoningPlanArea": false,
-				"invoiceMarking": "NIYljIY5qM",
-				"careOf": "VNqzNJTvaK",
-				"addressCategories": [
-					"VISITING_ADDRESS",
-					"POSTAL_ADDRESS"
-				],
-				"street": "eMmNXcfynd",
-				"attention": "ffnrmNbtUm",
-				"propertyDesignation": "SUNDSVALL FILLA 8:185",
-				"location": {
-					"latitude": 0.5933378271805908,
-					"longitude": 0.6124454473327966
+			"addresses": [
+				{
+					"country": "Sverige",
+					"city": "mNeVfQlzZX",
+					"postalCode": "0442039801",
+					"houseNumber": "UGKRFeZk7j",
+					"extraParameters": {
+						"yMUrTIvFfo": "xMhjtELUwiqUddpDxRLg",
+						"MVpaNeZmwT": "bYvdQREowtsDmZRmdYsO",
+						"jqTvHarJPX": "mEZMwQpfWvRyiUAoHvwH"
+					},
+					"appartmentNumber": "h7hdH1tudv",
+					"isZoningPlanArea": false,
+					"invoiceMarking": "NIYljIY5qM",
+					"careOf": "VNqzNJTvaK",
+					"addressCategories": [
+						"VISITING_ADDRESS",
+						"POSTAL_ADDRESS"
+					],
+					"street": "eMmNXcfynd",
+					"attention": "ffnrmNbtUm",
+					"propertyDesignation": "SUNDSVALL FILLA 8:185",
+					"location": {
+						"latitude": 0.5933378271805908,
+						"longitude": 0.6124454473327966
+					}
 				}
-			}],
+			],
 			"phoneNumber": "ryyFSioQTT",
-			"roles": ["CONTACT_PERSON"],
+			"roles": [
+				"CONTACT_PERSON"
+			],
 			"extraParameters": {
 				"roles": "OPERATOR",
 				"zZtWxtcJYF": "CQMCsfoavTBQrPgylIcW",
@@ -109,34 +117,38 @@
 			"lastName": "zAFfkPtctu",
 			"emailAddress": "iKzVGwgYje@rCHcy.com",
 			"cellphoneNumber": "QVKWtaojhd",
-			"addresses": [{
-				"country": "Sverige",
-				"city": "iacdYaHwUW",
-				"postalCode": "8168729702",
-				"houseNumber": "KjnkqZyOtj",
-				"extraParameters": {
-					"iNpXuUqmwP": "sBskKAYIvTXahLIsEoxh",
-					"vAJDgRUQHF": "DUrFshYTxuTvTuTDoYPZ",
-					"wgDDFEVzQa": "qfISswyzFWjBVekJvNuZ"
-				},
-				"appartmentNumber": "lB9sD8UAFN",
-				"isZoningPlanArea": false,
-				"invoiceMarking": "HhW5r415vV",
-				"careOf": "xWNybhcDKZ",
-				"addressCategories": [
-					"VISITING_ADDRESS",
-					"POSTAL_ADDRESS"
-				],
-				"street": "xcloMUfEDl",
-				"attention": "ahfaBjEggE",
-				"propertyDesignation": "SUNDSVALL FILLA 8:185",
-				"location": {
-					"latitude": 0.10402746548652309,
-					"longitude": 0.7480522108254308
+			"addresses": [
+				{
+					"country": "Sverige",
+					"city": "iacdYaHwUW",
+					"postalCode": "8168729702",
+					"houseNumber": "KjnkqZyOtj",
+					"extraParameters": {
+						"iNpXuUqmwP": "sBskKAYIvTXahLIsEoxh",
+						"vAJDgRUQHF": "DUrFshYTxuTvTuTDoYPZ",
+						"wgDDFEVzQa": "qfISswyzFWjBVekJvNuZ"
+					},
+					"appartmentNumber": "lB9sD8UAFN",
+					"isZoningPlanArea": false,
+					"invoiceMarking": "HhW5r415vV",
+					"careOf": "xWNybhcDKZ",
+					"addressCategories": [
+						"VISITING_ADDRESS",
+						"POSTAL_ADDRESS"
+					],
+					"street": "xcloMUfEDl",
+					"attention": "ahfaBjEggE",
+					"propertyDesignation": "SUNDSVALL FILLA 8:185",
+					"location": {
+						"latitude": 0.10402746548652309,
+						"longitude": 0.7480522108254308
+					}
 				}
-			}],
+			],
 			"phoneNumber": "niYuDjWVuW",
-			"roles": ["CONTACT_PERSON"],
+			"roles": [
+				"CONTACT_PERSON"
+			],
 			"extraParameters": {
 				"UehoSLODwt": "VeGkXqqRhcGXurcoCepx",
 				"VYtbIbqvLF": "XhGUHjYYrMmfbdGxqXVR",
