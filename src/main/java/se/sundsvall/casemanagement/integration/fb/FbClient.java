@@ -1,6 +1,7 @@
 package se.sundsvall.casemanagement.integration.fb;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static se.sundsvall.casemanagement.integration.fb.configuration.FbConfiguration.REGISTRATION_ID;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import java.util.List;
@@ -11,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import se.sundsvall.casemanagement.integration.fb.configuration.FbConfiguration;
 import se.sundsvall.casemanagement.integration.fb.model.ResponseDto;
 
-@FeignClient(name = FbConfiguration.REGISTRATION_ID, url = "${integration.fb.url}", configuration = FbConfiguration.class)
-@CircuitBreaker(name = FbConfiguration.REGISTRATION_ID)
+@FeignClient(name = REGISTRATION_ID, url = "${integration.fb.url}", configuration = FbConfiguration.class)
+@CircuitBreaker(name = REGISTRATION_ID)
 public interface FbClient {
 
 	@PostMapping(path = "/fbservice/Fastighet/info/uuid", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)

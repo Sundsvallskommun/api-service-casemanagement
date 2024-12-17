@@ -2,6 +2,7 @@ package se.sundsvall.casemanagement.integration.casedata;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
+import static se.sundsvall.casemanagement.integration.casedata.configuration.CaseDataConfiguration.CLIENT_ID;
 
 import generated.client.casedata.Attachment;
 import generated.client.casedata.Errand;
@@ -29,8 +30,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import se.sundsvall.casemanagement.integration.casedata.configuration.CaseDataConfiguration;
 
-@FeignClient(name = CaseDataConfiguration.REGISTRATION_ID, url = "${integration.case-data.url}", configuration = CaseDataConfiguration.class)
-@CircuitBreaker(name = CaseDataConfiguration.REGISTRATION_ID)
+@FeignClient(name = CLIENT_ID, url = "${integration.case-data.url}", configuration = CaseDataConfiguration.class)
+@CircuitBreaker(name = CLIENT_ID)
 public interface CaseDataClient {
 
 	@PostMapping(path = "/{municipalityId}/{namespace}/errands", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_PROBLEM_JSON_VALUE)

@@ -3,6 +3,7 @@ package se.sundsvall.casemanagement.integration.party;
 import static se.sundsvall.casemanagement.integration.party.configuration.PartyConfiguration.CLIENT_ID;
 
 import generated.client.party.PartyType;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import java.util.Optional;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +14,7 @@ import se.sundsvall.casemanagement.integration.party.configuration.PartyConfigur
 	url = "${integration.party.url}",
 	configuration = PartyConfiguration.class,
 	dismiss404 = true)
+@CircuitBreaker(name = CLIENT_ID)
 public interface PartyClient {
 
 	@GetMapping("/{municipalityId}/{type}/{partyId}/legalId")

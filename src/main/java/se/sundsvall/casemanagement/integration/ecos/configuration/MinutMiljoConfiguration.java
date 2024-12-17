@@ -28,7 +28,7 @@ import se.sundsvall.dept44.security.Truststore;
 @Import(FeignConfiguration.class)
 public class MinutMiljoConfiguration {
 
-	public static final String REGISTRATION_ID = "minutmiljo";
+	public static final String CLIENT_ID = "minutmiljo";
 
 	private static final Logger log = LoggerFactory.getLogger(MinutMiljoConfiguration.class);
 
