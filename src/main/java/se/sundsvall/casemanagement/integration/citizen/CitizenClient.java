@@ -4,7 +4,7 @@ import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
 import static se.sundsvall.casemanagement.integration.citizen.configuration.CitizenConfiguration.CLIENT_ID;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import se.sundsvall.casemanagement.integration.citizen.configuration.CitizenConfiguration;
