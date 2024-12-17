@@ -1,5 +1,7 @@
 package se.sundsvall.casemanagement.integration.lantmateriet;
 
+import static se.sundsvall.casemanagement.integration.lantmateriet.configuration.LantmaterietConfiguration.REGISTRATION_ID;
+
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import java.util.List;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -9,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import se.sundsvall.casemanagement.integration.lantmateriet.configuration.LantmaterietConfiguration;
 import se.sundsvall.casemanagement.integration.lantmateriet.model.Registerbeteckningsreferens;
 
-@FeignClient(name = LantmaterietConfiguration.REGISTRATION_ID, url = "${integration.lantmateriet.registerbeteckning.url}", configuration = LantmaterietConfiguration.class)
-@CircuitBreaker(name = LantmaterietConfiguration.REGISTRATION_ID)
+@FeignClient(name = REGISTRATION_ID, url = "${integration.lantmateriet.registerbeteckning.url}", configuration = LantmaterietConfiguration.class)
+@CircuitBreaker(name = REGISTRATION_ID)
 public interface RegisterbeteckningClient {
 
 	@GetMapping(path = "/referens/fritext", produces = MediaType.APPLICATION_JSON_VALUE)

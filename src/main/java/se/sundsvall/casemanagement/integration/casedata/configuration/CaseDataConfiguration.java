@@ -15,7 +15,7 @@ import se.sundsvall.dept44.configuration.feign.decoder.ProblemErrorDecoder;
 @Import(FeignConfiguration.class)
 public class CaseDataConfiguration {
 
-	public static final String REGISTRATION_ID = "case-data";
+	public static final String CLIENT_ID = "case-data";
 
 	private final CaseDataProperties caseDataProperties;
 
@@ -25,14 +25,14 @@ public class CaseDataConfiguration {
 
 	private ErrorDecoder errorDecoder() {
 		// We want to return 404 as a 404.
-		return new ProblemErrorDecoder(REGISTRATION_ID, List.of(HttpStatus.NOT_FOUND.value()));
+		return new ProblemErrorDecoder(CLIENT_ID, List.of(HttpStatus.NOT_FOUND.value()));
 	}
 
 	@Bean
 	FeignBuilderCustomizer feignBuilderCustomizer() {
 		return FeignMultiCustomizer.create()
 			.withErrorDecoder(errorDecoder())
-			.withRetryableOAuth2InterceptorForClientRegistration(ClientRegistration.withRegistrationId(REGISTRATION_ID)
+			.withRetryableOAuth2InterceptorForClientRegistration(ClientRegistration.withRegistrationId(CLIENT_ID)
 				.tokenUri(caseDataProperties.oauth2TokenUrl())
 				.clientId(caseDataProperties.oauth2ClientId())
 				.clientSecret(caseDataProperties.oauth2ClientSecret())

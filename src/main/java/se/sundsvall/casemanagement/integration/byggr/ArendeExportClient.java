@@ -18,7 +18,7 @@ import arendeexport.SaveNewHandelse;
 import arendeexport.SaveNewHandelseResponse;
 import arendeexport.SaveNewRemissvar;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-import org.springframework.cloud.openfeign.FeignClient;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import se.sundsvall.casemanagement.integration.byggr.configuration.ArendeExportConfiguration;
 

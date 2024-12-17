@@ -1,6 +1,7 @@
 package se.sundsvall.casemanagement.integration.messaging;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static se.sundsvall.casemanagement.integration.messaging.MessagingConfiguration.REGISTRATION_ID;
 
 import generated.client.messaging.EmailRequest;
 import generated.client.messaging.SlackRequest;
@@ -11,8 +12,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name = MessagingConfiguration.REGISTRATION_ID, url = "${integration.messaging.url}", configuration = MessagingConfiguration.class)
-@CircuitBreaker(name = MessagingConfiguration.REGISTRATION_ID)
+@FeignClient(name = REGISTRATION_ID, url = "${integration.messaging.url}", configuration = MessagingConfiguration.class)
+@CircuitBreaker(name = REGISTRATION_ID)
 public interface MessagingClient {
 
 	@PostMapping("/{municipalityId}/slack")

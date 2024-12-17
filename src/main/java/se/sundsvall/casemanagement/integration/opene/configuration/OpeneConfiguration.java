@@ -15,7 +15,7 @@ import se.sundsvall.dept44.configuration.feign.FeignMultiCustomizer;
 @Import(FeignConfiguration.class)
 public class OpeneConfiguration {
 
-	public static final String REGISTRATION_ID = "opene";
+	public static final String CLIENT_ID = "opene";
 
 	private static final JAXBContextFactory JAXB_FACTORY = new JAXBContextFactory.Builder()
 		.withMarshallerJAXBEncoding(StandardCharsets.UTF_8.toString())

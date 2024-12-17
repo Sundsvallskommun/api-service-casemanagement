@@ -1,5 +1,7 @@
 package se.sundsvall.casemanagement.integration.opene;
 
+import static se.sundsvall.casemanagement.integration.opene.configuration.OpeneConfiguration.CLIENT_ID;
+
 import callback.ConfirmDelivery;
 import callback.SetStatus;
 import callback.SetStatusResponse;
@@ -9,8 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import se.sundsvall.casemanagement.integration.opene.configuration.OpeneConfiguration;
 
-@FeignClient(name = "opene", url = "${integration.opene.url}", configuration = OpeneConfiguration.class)
-@CircuitBreaker(name = "opene")
+@FeignClient(name = CLIENT_ID, url = "${integration.opene.url}", configuration = OpeneConfiguration.class)
+@CircuitBreaker(name = CLIENT_ID)
 public interface OpeneClient {
 
 	String TEXT_XML_UTF_8 = "text/xml; charset=UTF-8";

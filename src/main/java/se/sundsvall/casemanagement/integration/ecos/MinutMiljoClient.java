@@ -1,5 +1,7 @@
 package se.sundsvall.casemanagement.integration.ecos;
 
+import static se.sundsvall.casemanagement.integration.ecos.configuration.MinutMiljoConfiguration.CLIENT_ID;
+
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import minutmiljo.AddDocumentsToCase;
 import minutmiljo.AddFacilityToCase;
@@ -31,8 +33,8 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import se.sundsvall.casemanagement.integration.ecos.configuration.MinutMiljoConfiguration;
 
-@FeignClient(name = "minutmiljo", url = "${integration.minutmiljo.url}", configuration = MinutMiljoConfiguration.class)
-@CircuitBreaker(name = "minutmiljo")
+@FeignClient(name = CLIENT_ID, url = "${integration.minutmiljo.url}", configuration = MinutMiljoConfiguration.class)
+@CircuitBreaker(name = CLIENT_ID)
 public interface MinutMiljoClient {
 
 	@PostMapping(consumes = MinutMiljoClientV2.TEXT_XML_UTF8, headers = {
