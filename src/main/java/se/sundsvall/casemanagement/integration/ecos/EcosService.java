@@ -590,9 +590,16 @@ public class EcosService {
 
 		final var eFacility = eCase.getFacilities().getFirst();
 
-		final var fixedFacilityType = Optional.ofNullable(Optional.ofNullable(eCase.getExtraParameters()).orElse(Map.of()).get("fixedFacilityType")).orElse("").trim();
+		final var fixedFacilityType = Optional.ofNullable(eCase.getExtraParameters())
+			.map(params -> params.get("fixedFacilityType"))
+			.orElse("")
+			.trim();
 
-		final var propertyDesignation = Optional.ofNullable(Optional.ofNullable(eFacility.getAddress()).orElse(new AddressDTO()).getPropertyDesignation()).orElse("").trim().toUpperCase();
+		final var propertyDesignation = Optional.ofNullable(eFacility.getAddress())
+			.map(AddressDTO::getPropertyDesignation)
+			.orElse("")
+			.trim()
+			.toUpperCase();
 
 		if (!fixedFacilityType.isEmpty()) {
 			registerDocumentCaseSvcDtoV2.setCaseSubtitle(fixedFacilityType);
@@ -619,7 +626,8 @@ public class EcosService {
 
 	private String getDiaryPlanId(final String caseType) {
 		return switch (CaseType.valueOf(caseType)) {
-			case REGISTRERING_AV_LIVSMEDEL, UPPDATERING_RISKKLASSNING -> Constants.ECOS_DIARY_PLAN_LIVSMEDEL;
+			case REGISTRERING_AV_LIVSMEDEL, UPPDATERING_RISKKLASSNING,
+				ANDRING_AV_LIVSMEDELSVERKSAMHET, INFORMATION_OM_UPPHORANDE_AV_VERKSAMHET -> Constants.ECOS_DIARY_PLAN_LIVSMEDEL;
 			case ANMALAN_ANDRING_AVLOPPSANLAGGNING, ANMALAN_ANDRING_AVLOPPSANORDNING,
 				ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC,
 				ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, ANMALAN_INSTALLATION_VARMEPUMP,
@@ -631,7 +639,6 @@ public class EcosService {
 	}
 
 	private String getProcessTypeId(final String caseType) {
-
 		return switch (CaseType.valueOf(caseType)) {
 			case REGISTRERING_AV_LIVSMEDEL -> Constants.ECOS_PROCESS_TYPE_ID_REGISTRERING_AV_LIVSMEDEL;
 			case ANMALAN_INSTALLATION_VARMEPUMP -> Constants.ECOS_PROCESS_TYPE_ID_ANMALAN_INSTALLATION_VARMEPUMP;
@@ -644,6 +651,8 @@ public class EcosService {
 			case UPPDATERING_RISKKLASSNING -> Constants.ECOS_PROCESS_TYPE_ID_UPPDATERING_RISKKLASS;
 			case ANMALAN_KOMPOSTERING -> Constants.ECOS_PROCESS_TYPE_ID_ANMALAN_KOMPOSTERING;
 			case ANMALAN_AVHJALPANDEATGARD_FORORENING -> Constants.ECOS_PROCESS_TYPE_ID_ANMALAN_AVHJALPANDEATGARD_FORORENING;
+			case ANDRING_AV_LIVSMEDELSVERKSAMHET -> Constants.ECOS_PROCESS_TYPE_ID_ANDRING_AV_LIVSMEDELSVERKSAMHET;
+			case INFORMATION_OM_UPPHORANDE_AV_VERKSAMHET -> Constants.ECOS_PROCESS_TYPE_ID_INFORMATION_OM_UPPHORANDE_AV_VERKSAMHET;
 			default -> throw Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "CaseType: " + caseType + " is not valid...");
 		};
 	}

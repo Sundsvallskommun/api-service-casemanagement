@@ -1,6 +1,7 @@
 package se.sundsvall.casemanagement.api.model;
 
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANDRING_ANSOKAN_OM_BYGGLOV;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANDRING_AV_LIVSMEDELSVERKSAMHET;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANDRING_BARANDE_KONSTRUKTION;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANDRING_BRANDSKYDD;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANDRING_PLANLOSNING;
@@ -21,6 +22,7 @@ import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANSOKAN
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANSOKAN_TILLSTAND_VARMEPUMP;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.BYGGR_ADDITIONAL_DOCUMENTS;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.BYGGR_ADD_CERTIFIED_INSPECTOR;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.INFORMATION_OM_UPPHORANDE_AV_VERKSAMHET;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.INSTALLATION_VA;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.INSTALLATION_VENTILATION;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.INSTALLLATION_HISS;
@@ -120,7 +122,9 @@ import lombok.experimental.SuperBuilder;
 		UPPDATERING_RISKKLASSNING,
 		ANMALAN_HALSOSKYDDSVERKSAMHET,
 		ANMALAN_KOMPOSTERING,
-		ANMALAN_AVHJALPANDEATGARD_FORORENING
+		ANMALAN_AVHJALPANDEATGARD_FORORENING,
+		ANDRING_AV_LIVSMEDELSVERKSAMHET,
+		INFORMATION_OM_UPPHORANDE_AV_VERKSAMHET
 	}),
 	@Type(value = OtherCaseDTO.class, names = {
 		PARKING_PERMIT,
