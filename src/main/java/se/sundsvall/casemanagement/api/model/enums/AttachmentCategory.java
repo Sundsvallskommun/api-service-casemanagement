@@ -10,7 +10,7 @@ public enum AttachmentCategory {
 
 	///////////////////////////////////
 	// ByggR
-	///////////////////////////////////
+	/// ////////////////////////////////
 	LAND_SECTION_DRAWING("MASE", "Marksektionsritning"),
 	LAND_PLANNING_DRAWING("MAPL", "Markplaneringsritning"),
 	PROJECT_DESCRIPTION("PROJ", "Projektbeskrivning"),
@@ -142,7 +142,7 @@ public enum AttachmentCategory {
 	DETAIL_DRAWING("DETALJ", "Detaljritning"),
 	YOU_HAVE_BEEN_GRANTED_BUILD("DHBHUR", "Du har fått bygglov/ Hur man överklagar"),
 	BURN_RIGHT("ELD", "Elda rätt"),
-	EMAIL("EPOS", "E-post"),
+	E_MAIL("EPOS", "E-post"),
 	EXAMPLE_DRAWING("EXRIT", "Exempelritning"),
 	INVOICE_DOCUMENT("FAKTU", "Fakturaunderlag"),
 	SANCTION_FEE_INVOICE_DOCUMENTATION("FAKTUS", "Fakturaunderlag sanktionsavgift"),
@@ -195,8 +195,8 @@ public enum AttachmentCategory {
 	CONSULTATION_REPORT_PART_1("KP", "Samrådsredogörelse del 1"),
 	CONSULTATION_REPORT_PART_2("KR", "Samrådsredogörelse del 2"),
 	SIGNED_CONTROL_PLAN_2("SIN", "Signerad kontrollplan"),
-	LETTER("SKR", "Skrivelse"),
-	LETTERS("KA", "Skrivelser"),
+	OFFICIAL_LETTER("SKR", "Skrivelse"),
+	OFFICIAL_LETTERS("KA", "Skrivelser"),
 	SHELTER_INQUIRY("SKY", "Skyddsrumsförfrågan"),
 	FINAL_PROOF("SLUT", "Slutbevis"),
 	STATISTICS_FORM_SCB("SCB", "Statistikblankett SCB"),
@@ -245,7 +245,7 @@ public enum AttachmentCategory {
 	NEIGHBORHOOD_NOTIFICATION_RESPONSE_NOK("UNDERE", "Svar på grannehörende, med erinran"),
 	///////////////////////////////////
 	// ECOS
-	///////////////////////////////////
+	/// ////////////////////////////////
 	ANMALAN_AVHJALPANDEATGARD_FORORENING("ANMALAN_AVHJALPANDEATGARD_FORORENING", "FACD0F1D-BAFF-4506-95C9-99014EA8D827"),
 	ANMALAN_LIVSMEDELSANLAGGNING("ANMALAN_LIVSMEDELSANLAGGNING", "3AD42CEE-C09E-401B-ABE8-0CD5D03FE6B4"),
 	UNDERLAG_RISKKLASSNING("UNDERLAG_RISKKLASSNING", "77DBC762-4EDC-46A8-983C-BE03EDC07E13"),
@@ -262,7 +262,7 @@ public enum AttachmentCategory {
 
 	///////////////////////////////////
 	// Parking permit
-	///////////////////////////////////
+	/// ////////////////////////////////
 	MEDICAL_CONFIRMATION("MEDICAL_CONFIRMATION", "Läkarintyg"),
 	POLICE_REPORT("POLICE_REPORT", "Polisanmälan"),
 	PASSPORT_PHOTO("PASSPORT_PHOTO", "Passfoto"),
@@ -270,7 +270,7 @@ public enum AttachmentCategory {
 	POWER_OF_ATTORNEY("POWER_OF_ATTORNEY", "Fullmakt"),
 	///////////////////////////////////
 	// MEX
-	///////////////////////////////////
+	/// ////////////////////////////////
 	LEASE_REQUEST("LEASE_REQUEST", "Förfrågan arrende"),
 	RECEIVED_MAP("RECEIVED_MAP", "Karta inkommen"),
 	RECEIVED_CONTRACT("RECEIVED_CONTRACT", "Avtal inkommit"),
@@ -284,7 +284,11 @@ public enum AttachmentCategory {
 	OEP_APPLICATION("OEP_APPLICATION", "Ansökan"),
 	ROAD_ALLOWANCE_APPROVAL("ROAD_ALLOWANCE_APPROVAL", "Godkännande för vägbidrag"),
 	MEX_PROTOCOL("PROTOCOL", "Protokoll"),
-	PREVIOUS_AGREEMENT("PREVIOUS_AGREEMENT", "Tidigare avtal");
+	PREVIOUS_AGREEMENT("PREVIOUS_AGREEMENT", "Tidigare avtal"),
+
+	SITUATION_PLAN("SITUATION_PLAN", "Situationsplan"),
+	LETTER("LETTER", "Brev"),
+	EMAIL("EMAIL", "E-post");
 
 	private final String description;
 

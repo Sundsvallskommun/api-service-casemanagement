@@ -30,6 +30,7 @@ public class ValidAttachmentCategoryConstraintValidator implements ConstraintVal
 				.addConstraintViolation();
 		}
 		return isValid;
+
 	}
 
 }
