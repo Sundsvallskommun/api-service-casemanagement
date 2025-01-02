@@ -152,7 +152,6 @@ public class EcosService {
 	public RegisterDocumentCaseResultSvcDto postCase(final EcosCaseDTO caseInput, final String municipalityId) {
 
 		final var eFacility = caseInput.getFacilities().getFirst();
-		// TODO : Kolla om det skickas en facility eller inte i nya ärendetyperna. Vore bra med ett exempelandrop.
 		FbPropertyInfo propertyInfo = null;
 		if ((eFacility.getAddress() != null) && (eFacility.getAddress().getPropertyDesignation() != null)) {
 			// Collects this early to avoid creating something before we discover potential errors
