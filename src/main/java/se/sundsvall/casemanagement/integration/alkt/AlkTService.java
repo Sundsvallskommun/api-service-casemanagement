@@ -13,8 +13,8 @@ import se.sundsvall.casemanagement.api.model.enums.SystemType;
 public class AlkTService {
 
 	static final String CASE_TYPE = "ALKOHOLTOBAK";
-	static final String ONGOING = "Pågående";
-	static final String FINISHED = "Avslutad";
+	static final String ONGOING = "Under granskning";
+	static final String FINISHED = "Ärende avslutat";
 	private static final Logger LOG = LoggerFactory.getLogger(AlkTService.class);
 	private final AlkTClient alkTClient;
 
