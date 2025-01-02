@@ -66,14 +66,14 @@ class EcosProcessor extends Processor {
 		}
 
 		final var objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
-		final var environmentalCaseDTO = objectMapper.readValue(json, EcosCaseDTO.class);
+		final var ecosCaseDTO = objectMapper.readValue(json, EcosCaseDTO.class);
 
 		try {
 			Failsafe
 				.with(retryPolicy)
 				.onSuccess(successEvent -> handleSuccessfulDelivery(caseEntity.getId(), "ECOS", successEvent.getResult().getCaseNumber(), event.getMunicipalityId()))
 				.onFailure(failureEvent -> handleMaximumDeliveryAttemptsExceeded(failureEvent.getException(), caseEntity, "ECOS", event.getMunicipalityId()))
-				.get(() -> ecosService.postCase(environmentalCaseDTO, event.getMunicipalityId()));
+				.get(() -> ecosService.postCase(ecosCaseDTO, event.getMunicipalityId()));
 		} catch (final Exception e) {
 			cleanAttachmentBase64(event);
 			log.warn("Unable to create ecos errand {}: {}", event.getPayload(), e.getMessage());
