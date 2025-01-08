@@ -1,5 +1,6 @@
 package se.sundsvall.casemanagement.api;
 
+import static org.springframework.http.MediaType.ALL_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
 import static org.springframework.http.ResponseEntity.noContent;
@@ -35,9 +36,7 @@ import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
 
 @RestController
 @Validated
-@RequestMapping(value = "/{municipalityId}", consumes = APPLICATION_JSON_VALUE, produces = {
-	APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
-})
+@RequestMapping(value = "/{municipalityId}")
 @Tag(name = "Cases", description = "Cases operations")
 @ApiResponse(responseCode = "400", description = "Bad request", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(oneOf = {
 	Problem.class, ConstraintViolationProblem.class
@@ -58,7 +57,7 @@ class CaseResource {
 		this.caseDataService = caseDataService;
 	}
 
-	@PostMapping(path = "cases")
+	@PostMapping(path = "cases", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
 	@Operation(description = "Creates a case in ByggR or Ecos2 based on caseType. Also persists a connection between externalCaseId and the created case.",
 		responses = {
 			@ApiResponse(responseCode = "200", description = "OK", useReturnTypeSchema = true)
@@ -76,7 +75,7 @@ class CaseResource {
 		return ResponseEntity.ok(new CaseResourceResponseDTO("Inskickat"));
 	}
 
-	@PutMapping(path = "cases/{externalCaseId}")
+	@PutMapping(path = "cases/{externalCaseId}", consumes = APPLICATION_JSON_VALUE, produces = ALL_VALUE)
 	@Operation(description = "Update a case.",
 		responses = {
 			@ApiResponse(responseCode = "204", description = "No content", useReturnTypeSchema = true)

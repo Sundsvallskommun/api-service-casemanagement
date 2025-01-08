@@ -33,9 +33,7 @@ import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
 
 @RestController
 @Validated
-@RequestMapping(value = "/{municipalityId}", consumes = APPLICATION_JSON_VALUE, produces = {
-	APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
-})
+@RequestMapping(value = "/{municipalityId}")
 @Tag(name = "Attachments", description = "Attachment operations")
 @ApiResponse(responseCode = "400", description = "Bad request", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(oneOf = {
 	Problem.class, ConstraintViolationProblem.class
@@ -61,7 +59,7 @@ class AttachmentResource {
 	@Operation(description = "Post attachments to a case", responses = {
 		@ApiResponse(responseCode = "204", description = "No content - Successful request", useReturnTypeSchema = true)
 	})
-	@PostMapping(path = "cases/{externalCaseId}/attachments")
+	@PostMapping(path = "cases/{externalCaseId}/attachments", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
 	ResponseEntity<Void> postAttachmentsToCase(
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable(name = "municipalityId") final String municipalityId,
 		@Parameter(name = "externalCaseId", description = "External case id", example = "1234") @PathVariable(name = "externalCaseId") final String externalCaseId,

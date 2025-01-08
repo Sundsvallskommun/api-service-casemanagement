@@ -1,6 +1,5 @@
 package se.sundsvall.casemanagement.integration.citizen;
 
-import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
 import static se.sundsvall.casemanagement.integration.citizen.configuration.CitizenConfiguration.CLIENT_ID;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
@@ -13,7 +12,7 @@ import se.sundsvall.casemanagement.integration.citizen.configuration.CitizenConf
 @CircuitBreaker(name = CLIENT_ID)
 public interface CitizenClient {
 
-	@GetMapping(path = "/{personId}/personnumber", produces = TEXT_PLAIN_VALUE)
+	@GetMapping(path = "/{personId}/personnumber")
 	String getPersonalNumber(@PathVariable("personId") String personId);
 
 }
