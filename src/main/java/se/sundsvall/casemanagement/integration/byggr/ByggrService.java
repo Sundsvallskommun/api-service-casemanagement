@@ -212,25 +212,27 @@ public class ByggrService {
 		return remisser.stream()
 			.filter(remiss -> stakeholderId.equals(remiss.getMottagare().getPersOrgNr()))
 			.filter(remiss -> // Kontrollerar att alla roller i intressenten finns i remissen och vice versa
-				new HashSet<>(intressent.getRollLista().getRoll()).containsAll(remiss.getMottagare().getRollLista().getRoll()) &&
-					new HashSet<>(remiss.getMottagare().getRollLista().getRoll()).containsAll(intressent.getRollLista().getRoll()))
+			new HashSet<>(intressent.getRollLista().getRoll()).containsAll(remiss.getMottagare().getRollLista().getRoll()) &&
+				new HashSet<>(remiss.getMottagare().getRollLista().getRoll()).containsAll(intressent.getRollLista().getRoll()))
 			.findFirst().orElseThrow(() -> Problem.valueOf(BAD_REQUEST, "No remiss with equal rollLista found for stakeholderId %s".formatted(stakeholderId)));
 	}
 
 	private List<Remiss> getRemisserByPersOrgNrAndFilterByDnr(final String persOrgNr, final String dnr) {
 		return arendeExportClient.getRemisserByPersOrgNr(new GetRemisserByPersOrgNr()
-				.withPersOrgNr(persOrgNr)
-				.withStatusFilter(RemissStatusFilter.NONE)).getGetRemisserByPersOrgNrResult().getRemiss().stream()
+			.withPersOrgNr(persOrgNr)
+			.withStatusFilter(RemissStatusFilter.NONE)).getGetRemisserByPersOrgNrResult().getRemiss().stream()
 			.filter(remiss -> remiss.getDnr().equals(dnr))
 			.toList();
 	}
 
 	/**
-	 * The incoming request might have one or two stakeholders. If any stakeholder is of type Organization, we should use the organization number as stakeholderId. If no organization is found, we should use the personId to fetch a personal number from
+	 * The incoming request might have one or two stakeholders. If any stakeholder is of type Organization, we should use
+	 * the organization number as stakeholderId. If no organization is found, we should use the personId to fetch a personal
+	 * number from
 	 * citizenService and use this personal number as the stakeholder id.
 	 *
-	 * @param stakeholders List of stakeholders
-	 * @return String, organization number or personal number of the stakeholder.
+	 * @param  stakeholders List of stakeholders
+	 * @return              String, organization number or personal number of the stakeholder.
 	 */
 	public String extractStakeholderId(final List<StakeholderDTO> stakeholders) {
 		final var organizationId = stakeholders.stream()
@@ -257,8 +259,8 @@ public class ByggrService {
 	/**
 	 * Fetches a ByggR case based on the case number.
 	 *
-	 * @param dnr the case number
-	 * @return Arende, a ByggR case
+	 * @param  dnr the case number
+	 * @return     Arende, a ByggR case
 	 */
 	public Arende getByggRCase(final String dnr) {
 		return arendeExportClient.getArende(new GetArende().withDnr(dnr)).getGetArendeResult();
@@ -331,13 +333,13 @@ public class ByggrService {
 		}
 
 		return arrayOfByggrArende.getArende().stream().map(byggrArende -> {
-				final var caseMappingList = caseMappingService.getCaseMapping(null, byggrArende.getDnr(), municipalityId);
+			final var caseMappingList = caseMappingService.getCaseMapping(null, byggrArende.getDnr(), municipalityId);
 
-				return toByggrStatus(byggrArende, Optional.ofNullable(caseMappingList)
-					.filter(list -> !list.isEmpty())
-					.map(list -> list.getFirst().getExternalCaseId())
-					.orElse(null), municipalityId);
-			})
+			return toByggrStatus(byggrArende, Optional.ofNullable(caseMappingList)
+				.filter(list -> !list.isEmpty())
+				.map(list -> list.getFirst().getExternalCaseId())
+				.orElse(null), municipalityId);
+		})
 			.toList();
 	}
 
