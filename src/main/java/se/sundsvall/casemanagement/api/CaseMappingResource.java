@@ -25,9 +25,7 @@ import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
 
 @RestController
 @Validated
-@RequestMapping(value = "/{municipalityId}/cases/case-mappings", produces = {
-	APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
-})
+@RequestMapping(value = "/{municipalityId}/cases/case-mappings")
 @Tag(name = "CaseMappings", description = "CaseMapping operations")
 @ApiResponse(responseCode = "400", description = "Bad request", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(oneOf = {
 	Problem.class, ConstraintViolationProblem.class
@@ -42,7 +40,7 @@ class CaseMappingResource {
 		this.caseMappingService = caseMappingService;
 	}
 
-	@GetMapping
+	@GetMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
 	@Operation(description = "Returns the connection between externalCaseId and the case in the underlying system.", responses = {
 		@ApiResponse(responseCode = "200", description = "OK - Successful operation", useReturnTypeSchema = true)
 	})

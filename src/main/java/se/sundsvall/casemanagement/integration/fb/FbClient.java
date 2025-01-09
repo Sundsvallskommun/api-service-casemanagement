@@ -1,6 +1,5 @@
 package se.sundsvall.casemanagement.integration.fb;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static se.sundsvall.casemanagement.integration.fb.configuration.FbConfiguration.REGISTRATION_ID;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
@@ -16,23 +15,23 @@ import se.sundsvall.casemanagement.integration.fb.model.ResponseDto;
 @CircuitBreaker(name = REGISTRATION_ID)
 public interface FbClient {
 
-	@PostMapping(path = "/fbservice/Fastighet/info/uuid", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+	@PostMapping(path = "/fbservice/Fastighet/info/uuid")
 	ResponseDto getPropertyInfoByUuid(@RequestBody List<String> registerenheter, @RequestParam(name = "Database") String database,
 		@RequestParam(name = "User") String user, @RequestParam(name = "Password") String password);
 
-	@PostMapping(path = "/fbservice/adress/search/fastighet/uuid", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+	@PostMapping(path = "/fbservice/adress/search/fastighet/uuid")
 	ResponseDto getAddressInfoByUuid(@RequestBody List<String> registerenheter, @RequestParam(name = "Database") String database,
 		@RequestParam("User") String user, @RequestParam("Password") String password);
 
-	@PostMapping(path = "/fbservice/agare/search/lagfarenAgare/fastighet/fnr", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+	@PostMapping(path = "/fbservice/agare/search/lagfarenAgare/fastighet/fnr")
 	ResponseDto getPropertyOwnerByFnr(@RequestBody List<Integer> fnrList, @RequestParam(name = "Database") String database,
 		@RequestParam(name = "User") String user, @RequestParam(name = "Password") String password);
 
-	@PostMapping(path = "/fbservice/Agare/inskriven/inskrivenAgareUuid", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+	@PostMapping(path = "/fbservice/Agare/inskriven/inskrivenAgareUuid")
 	ResponseDto getPropertyOwnerInfoByUuid(@RequestBody List<String> uuidList, @RequestParam(name = "Database") String database,
 		@RequestParam(name = "User") String user, @RequestParam(name = "Password") String password);
 
-	@PostMapping(path = "/fbservice/Agare/adress/personOrganisationsNummer", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+	@PostMapping(path = "/fbservice/Agare/adress/personOrganisationsNummer")
 	ResponseDto getPropertyOwnerAddressByPersOrgNr(@RequestBody List<String> persOrgNrList, @RequestParam(name = "Database") String database,
 		@RequestParam(name = "User") String user, @RequestParam(name = "Password") String password);
 }

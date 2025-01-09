@@ -1,6 +1,5 @@
 package se.sundsvall.casemanagement.integration.messaging;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static se.sundsvall.casemanagement.integration.messaging.MessagingConfiguration.REGISTRATION_ID;
 
 import generated.client.messaging.EmailRequest;
@@ -19,7 +18,7 @@ public interface MessagingClient {
 	@PostMapping("/{municipalityId}/slack")
 	ResponseEntity<Void> sendSlack(@PathVariable("municipalityId") final String municipalityId, SlackRequest request);
 
-	@PostMapping(path = "/{municipalityId}/email", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
+	@PostMapping(path = "/{municipalityId}/email")
 	ResponseEntity<Void> sendEmail(@PathVariable("municipalityId") final String municipalityId, @RequestBody EmailRequest emailRequest);
 
 }

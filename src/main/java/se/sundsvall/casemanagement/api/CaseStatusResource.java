@@ -28,9 +28,7 @@ import se.sundsvall.dept44.common.validators.annotation.ValidUuid;
 
 @RestController
 @Validated
-@RequestMapping(value = "/{municipalityId}", produces = {
-	APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
-})
+@RequestMapping(value = "/{municipalityId}")
 @Tag(name = "Status", description = "Status operations")
 @ApiResponse(responseCode = "400", description = "Bad request", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(oneOf = {
 	Problem.class, ConstraintViolationProblem.class
@@ -46,7 +44,7 @@ class CaseStatusResource {
 		this.statusService = statusService;
 	}
 
-	@GetMapping(path = "/organization/{organizationNumber}/cases/status")
+	@GetMapping(path = "/organization/{organizationNumber}/cases/status", produces = APPLICATION_JSON_VALUE)
 	@Operation(description = "Returns the latest status for each of the cases where the specified organization has the role \"applicant\".", responses = {
 		@ApiResponse(responseCode = "200", description = "OK - Successful operation", useReturnTypeSchema = true)
 	})
@@ -59,7 +57,7 @@ class CaseStatusResource {
 		return caseStatuses.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(caseStatuses);
 	}
 
-	@GetMapping(path = "/cases/{externalCaseId}/status")
+	@GetMapping(path = "/cases/{externalCaseId}/status", produces = APPLICATION_JSON_VALUE)
 	@Operation(description = "Returns the latest status for the case in the underlying system connected to the specified externalCaseId.", responses = {
 		@ApiResponse(responseCode = "200", description = "OK - Successful operation", useReturnTypeSchema = true)
 	})
@@ -69,7 +67,7 @@ class CaseStatusResource {
 		return ResponseEntity.ok(statusService.getStatusByExternalCaseId(municipalityId, externalCaseId));
 	}
 
-	@GetMapping(path = "/{partyId}/statuses")
+	@GetMapping(path = "/{partyId}/statuses", produces = APPLICATION_JSON_VALUE)
 	@Operation(description = "Returns the case status for all cases where the specified party is involved.", responses = {
 		@ApiResponse(responseCode = "200", description = "OK - Successful operation", useReturnTypeSchema = true)
 	})
