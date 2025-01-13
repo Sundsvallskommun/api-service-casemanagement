@@ -275,8 +275,7 @@ class CaseDataServiceTest {
 		final var namespace = "OTHER";
 		final var caseMapping = CaseMapping.builder().withCaseId(String.valueOf(errandId)).withExternalCaseId(errandNumber).build();
 
-		when(caseDataClientMock.getErrand(MUNICIPALITY_ID, namespace, errandId)).thenReturn(new Errand());
-		when(caseDataClientMock.postAttachment(MUNICIPALITY_ID, namespace, errandId, toAttachment(attachment, null))).thenThrow(Problem.valueOf(Status.NOT_FOUND));
+		when(caseDataClientMock.postAttachment(MUNICIPALITY_ID, namespace, errandId, toAttachment(attachment, errandId))).thenThrow(Problem.valueOf(Status.NOT_FOUND));
 
 		assertThatThrownBy(() -> caseDataService.patchErrandWithAttachment(caseMapping, attachments, MUNICIPALITY_ID))
 			.isInstanceOf(ThrowableProblem.class)

@@ -186,7 +186,8 @@
 					],
 					"priority": "MEDIUM",
 					"caseType": "PARKING_PERMIT",
-					"appeals": [],
+					"labels": [],
+					"relatesTo": [],
 					"caseTitleAddition": "Some case title addition",
 					"statuses": [
 						{

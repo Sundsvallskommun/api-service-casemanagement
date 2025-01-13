@@ -40,7 +40,7 @@ public final class CaseDataMapper {
 		// Prevent instantiation
 	}
 
-	public static generated.client.casedata.Attachment toAttachment(final AttachmentDTO attachment, final String errandNumber) {
+	public static generated.client.casedata.Attachment toAttachment(final AttachmentDTO attachment, final Long errandId) {
 		return new generated.client.casedata.Attachment()
 			.category(attachment.getCategory())
 			.note(attachment.getNote())
@@ -49,7 +49,7 @@ public final class CaseDataMapper {
 			.mimeType(attachment.getMimeType())
 			.file(attachment.getFile())
 			.extraParameters(attachment.getExtraParameters())
-			.errandNumber(errandNumber);
+			.errandId(errandId);
 	}
 
 	public static Errand toErrand(final OtherCaseDTO otherCase) {
