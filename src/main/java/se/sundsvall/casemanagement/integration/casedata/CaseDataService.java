@@ -85,7 +85,7 @@ public class CaseDataService {
 
 		if (errandNumber != null) {
 			otherCase.getAttachments().stream().map(
-				attachment -> toAttachment(attachment, errandNumber))
+				attachment -> toAttachment(attachment, id))
 				.forEach(attachmentDTO -> caseDataClient.postAttachment(municipalityId, namespace, id, attachmentDTO));
 		}
 		caseMappingService.postCaseMapping(otherCase, String.valueOf(id), SystemType.CASE_DATA, municipalityId);
@@ -97,9 +97,8 @@ public class CaseDataService {
 
 		final var errandId = Long.valueOf(caseMapping.getCaseId());
 		final var namespace = mapNamespace(caseMapping.getCaseType());
-		final var errandNumber = getErrand(errandId, municipalityId, namespace).getErrandNumber();
 		try {
-			attachmentDTOS.forEach(attachment -> caseDataClient.postAttachment(municipalityId, namespace, errandId, toAttachment(attachment, errandNumber)));
+			attachmentDTOS.forEach(attachment -> caseDataClient.postAttachment(municipalityId, namespace, errandId, toAttachment(attachment, errandId)));
 		} catch (final ThrowableProblem e) {
 			if (Objects.equals(e.getStatus(), NOT_FOUND)) {
 				throw Problem.valueOf(NOT_FOUND, NO_CASE_WAS_FOUND_IN_CASE_DATA_WITH_CASE_ID + errandId);
@@ -172,7 +171,7 @@ public class CaseDataService {
 		if (result != null) {
 			result.forEach(attachment -> caseDataClient.deleteAttachment(municipalityId, namespace, caseId, attachment.getId()));
 		}
-		otherCaseDTO.getAttachments().stream().map(attachment -> toAttachment(attachment, otherCaseDTO.getExternalCaseId()))
+		otherCaseDTO.getAttachments().stream().map(attachment -> toAttachment(attachment, caseId))
 			.forEach(attachmentDTO -> caseDataClient.postAttachment(municipalityId, namespace, caseId, attachmentDTO));
 	}
 
@@ -191,21 +190,21 @@ public class CaseDataService {
 	}
 
 	public List<Errand> getErrands(final String municipalityId, final String namespace, final String filter) {
-		var page = caseDataClient.getErrands(municipalityId, namespace, filter, "1000");
+		final var page = caseDataClient.getErrands(municipalityId, namespace, filter, "1000");
 		return page.getContent();
 	}
 
 	public List<CaseStatusDTO> getStatusesByFilter(final String filter, final String municipalityId) {
-		List<CaseStatusDTO> caseStatuses = new ArrayList<>();
-		for (var namespace : caseDataProperties.namespaces().get(municipalityId)) {
-			var errands = getErrands(municipalityId, namespace, filter);
+		final List<CaseStatusDTO> caseStatuses = new ArrayList<>();
+		for (final var namespace : caseDataProperties.namespaces().get(municipalityId)) {
+			final var errands = getErrands(municipalityId, namespace, filter);
 			errands.forEach(errand -> caseStatuses.add(toCaseStatusDTO(errand)));
 		}
 		return caseStatuses;
 	}
 
 	CaseStatusDTO toCaseStatusDTO(final Errand errand) {
-		var latestStatus = errand.getStatuses().stream()
+		final var latestStatus = errand.getStatuses().stream()
 			.max(Comparator.comparing(Status::getDateTime))
 			.orElse(null);
 

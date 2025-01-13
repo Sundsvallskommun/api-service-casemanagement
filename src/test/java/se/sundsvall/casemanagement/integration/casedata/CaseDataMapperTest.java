@@ -3,7 +3,13 @@ package se.sundsvall.casemanagement.integration.casedata;
 import static generated.client.casedata.Stakeholder.TypeEnum.ORGANIZATION;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
-import static se.sundsvall.casemanagement.TestUtil.*;
+import static se.sundsvall.casemanagement.TestUtil.createAddressDTO;
+import static se.sundsvall.casemanagement.TestUtil.createAttachmentDTO;
+import static se.sundsvall.casemanagement.TestUtil.createCoordinatesDTO;
+import static se.sundsvall.casemanagement.TestUtil.createExtraParameters;
+import static se.sundsvall.casemanagement.TestUtil.createFacilityDTO;
+import static se.sundsvall.casemanagement.TestUtil.createOtherCaseDTO;
+import static se.sundsvall.casemanagement.TestUtil.createStakeholderDTO;
 import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toContactInformation;
 
 import generated.client.casedata.ContactInformation;
@@ -34,9 +40,9 @@ class CaseDataMapperTest {
 			.withNote("someNote")
 			.withExtraParameters(createExtraParameters())
 			.build();
-		final var errandNumber = "someErrandNumber";
+		final var errandId = 1L;
 
-		final var result = CaseDataMapper.toAttachment(attachmentDTO, errandNumber);
+		final var result = CaseDataMapper.toAttachment(attachmentDTO, errandId);
 
 		assertThat(result).satisfies(bean -> {
 			assertThat(bean.getExtension()).isEqualTo(attachmentDTO.getExtension());
@@ -45,7 +51,7 @@ class CaseDataMapperTest {
 			assertThat(bean.getName()).isEqualTo(attachmentDTO.getName());
 			assertThat(bean.getNote()).isEqualTo(attachmentDTO.getNote());
 			assertThat(bean.getExtraParameters()).isEqualTo(attachmentDTO.getExtraParameters());
-			assertThat(bean.getErrandNumber()).isEqualTo(errandNumber);
+			assertThat(bean.getErrandId()).isEqualTo(errandId);
 		});
 	}
 
