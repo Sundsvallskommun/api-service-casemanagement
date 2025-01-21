@@ -8,9 +8,7 @@ import lombok.Getter;
 @Schema(description = "Attachment category")
 public enum AttachmentCategory {
 
-	///////////////////////////////////
 	// ByggR
-	/// ////////////////////////////////
 	LAND_SECTION_DRAWING("MASE", "Marksektionsritning"),
 	LAND_PLANNING_DRAWING("MAPL", "Markplaneringsritning"),
 	PROJECT_DESCRIPTION("PROJ", "Projektbeskrivning"),
@@ -243,9 +241,7 @@ public enum AttachmentCategory {
 	FSSI("FSSI", "FSSI"),
 	NEIGHBORHOOD_NOTIFICATION_RESPONSE("GRASV", "Svar på grannehörande, utan erinran"),
 	NEIGHBORHOOD_NOTIFICATION_RESPONSE_NOK("UNDERE", "Svar på grannehörende, med erinran"),
-	///////////////////////////////////
 	// ECOS
-	/// ////////////////////////////////
 	ANMALAN_AVHJALPANDEATGARD_FORORENING("ANMALAN_AVHJALPANDEATGARD_FORORENING", "FACD0F1D-BAFF-4506-95C9-99014EA8D827"),
 	ANMALAN_LIVSMEDELSANLAGGNING("ANMALAN_LIVSMEDELSANLAGGNING", "3AD42CEE-C09E-401B-ABE8-0CD5D03FE6B4"),
 	UNDERLAG_RISKKLASSNING("UNDERLAG_RISKKLASSNING", "77DBC762-4EDC-46A8-983C-BE03EDC07E13"),
@@ -259,18 +255,13 @@ public enum AttachmentCategory {
 	ANMALAN_HALSOSKYDDSVERKSAMHET("ANMALAN_HALSOSKYDDSVERKSAMHET", "EA5D5EBE-DCBE-4EAA-A2B9-8662B128BD96"),
 	SITUATIONSPLAN("SITUATIONSPLAN", "9288F033-8E1A-48AE-858F-CB7345F81359"),
 	SKRIVELSE("SKRIVELSE", "A06E65AD-E4B1-4B84-BCC6-7843CDE6B0A1"),
-
-	///////////////////////////////////
 	// Parking permit
-	/// ////////////////////////////////
 	MEDICAL_CONFIRMATION("MEDICAL_CONFIRMATION", "Läkarintyg"),
 	POLICE_REPORT("POLICE_REPORT", "Polisanmälan"),
 	PASSPORT_PHOTO("PASSPORT_PHOTO", "Passfoto"),
 	SIGNATURE("SIGNATURE", "Namnunderskrift"),
 	POWER_OF_ATTORNEY("POWER_OF_ATTORNEY", "Fullmakt"),
-	///////////////////////////////////
 	// MEX
-	/// ////////////////////////////////
 	LEASE_REQUEST("LEASE_REQUEST", "Förfrågan arrende"),
 	RECEIVED_MAP("RECEIVED_MAP", "Karta inkommen"),
 	RECEIVED_CONTRACT("RECEIVED_CONTRACT", "Avtal inkommit"),

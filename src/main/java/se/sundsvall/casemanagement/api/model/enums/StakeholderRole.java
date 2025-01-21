@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 public enum StakeholderRole {
 
-	////////// ByggR //////////
+	// ByggR
 	// Kontrollansvarig
 	CONTROL_OFFICIAL("KOA"),
 	// Fastighetsägare
@@ -15,7 +15,7 @@ public enum StakeholderRole {
 	// Betalningsansvarig
 	PAYMENT_PERSON("BETA"),
 
-	////////// Ecos2 //////////
+	// Ecos2
 	INVOICE_RECIPIENT("Fakturamottagare"),
 	// "Fakturamottagare" Remove when Open-E platform is ready
 	@Deprecated(since = "2024-02-27")
@@ -23,15 +23,13 @@ public enum StakeholderRole {
 	OPERATOR("Verksamhetsutövare"),
 	INSTALLER("Installatör"),
 
-	////////// General //////////
+	// General
 	// Sökande
 	APPLICANT("SOK"),
 	// Kontaktperson
 	CONTACT_PERSON("KPER"),
 
-	///////////////////////////////////
 	// Parking permit
-	///////////////////////////////////
 	ADMINISTRATOR("Handläggare"),
 	FELLOW_APPLICANT("Medsökande"),
 	DRIVER("Förare"),
