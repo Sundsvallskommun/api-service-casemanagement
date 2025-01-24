@@ -75,6 +75,7 @@ import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderType;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
+import se.sundsvall.casemanagement.integration.ecos.EcosIntegration;
 import se.sundsvall.casemanagement.integration.ecos.EcosService;
 import se.sundsvall.casemanagement.integration.ecos.MinutMiljoClient;
 import se.sundsvall.casemanagement.integration.ecos.MinutMiljoClientV2;
@@ -105,6 +106,9 @@ class EcosServiceTest {
 
 	@Mock
 	private MinutMiljoClientV2 minutMiljoClientV2Mock;
+
+	@Mock
+	private EcosIntegration ecosIntegrationMock;
 
 	@Mock
 	private FbService fbServiceMock;

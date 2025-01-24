@@ -49,24 +49,23 @@ public class RiskClassService {
 
 	private static final String FACILITY_STATUS_ID_ACTIVE = "D203BB33-EB9A-4679-8E1C-BBD8AF86E554"; // Aktiv
 
-	private static final String FACILITY_STATUS_ID_GRANTED = "C5A98B2B-C2B8-428E-B597-A3F97A77B818";
-	/// Beviljad
+	private static final String FACILITY_STATUS_ID_GRANTED = "C5A98B2B-C2B8-428E-B597-A3F97A77B818"; // Beviljad
 
 	private static final String FACILITY_STATUS_ID_REVOKED = "9A748E4E-BD7E-481A-B449-73CBD0992213"; // Upphörd/Skrotad
 
 	private static final String FACILITY_STATUS_ID_DISCARDED = "80FFA45C-B3DF-4A10-8DB3-A042F36C64B7"; // Makulerad
 
-	private final MinutMiljoClient minutMiljoClient;
+	private final EcosIntegration ecosIntegration;
 
-	public RiskClassService(final MinutMiljoClient minutMiljoClient) {
-		this.minutMiljoClient = minutMiljoClient;
+	public RiskClassService(final EcosIntegration ecosIntegration) {
+		this.ecosIntegration = ecosIntegration;
 	}
 
 	public void updateRiskClass(final EcosCaseDTO caseInput, final String caseId) {
 		final var facilityId = searchFacility(extractOrgNr(caseInput), caseInput.getFacilities().getFirst().getFacilityCollectionName());
 		addFacilityToCase(facilityId, caseId);
 		final var data = createSaveRiskClassObject(facilityId, caseId, caseInput);
-		minutMiljoClient.updateRiskClass(data);
+		ecosIntegration.updateRiskClass(data);
 	}
 
 	private String extractOrgNr(final EcosCaseDTO eCase) {
@@ -87,20 +86,19 @@ public class RiskClassService {
 		final var notFacilityStatusFilters = createNotFacilityStatusFilters();
 		final var orgFilter = createOrgFilter(orgNr);
 
-		final var result = Optional.ofNullable(minutMiljoClient
-			.searchFacility(new SearchFacility().withSearchFacilitySvcDto(new SearchFacilitySvcDto()
+		final var searchFacility = new SearchFacility()
+			.withSearchFacilitySvcDto(new SearchFacilitySvcDto()
 				.withFacilityFilters(new ArrayOfFacilityFilterSvcDto()
-					.withFacilityFilterSvcDto(facilityStatusFilter, facilityTypeFilter, notFacilityStatusFilters, orgFilter))))
-			.getSearchFacilityResult()
-			.getSearchFacilityResultSvcDto())
-			.orElseThrow(() -> Problem.valueOf(Status.NOT_FOUND, "Could not find facility "));
+					.withFacilityFilterSvcDto(facilityStatusFilter, facilityTypeFilter, notFacilityStatusFilters, orgFilter)));
 
-		return result.stream()
+		;
+
+		return ecosIntegration.searchFacility(searchFacility).stream()
 			.filter(resultSvcDto -> resultSvcDto.getFacilityName() != null)
 			.filter(resultSvcDto -> resultSvcDto.getFacilityName().trim().equalsIgnoreCase(facilityName.trim()))
 			.findFirst()
 			.orElseThrow(() -> Problem.valueOf(Status.BAD_REQUEST,
-				("Could not match facilityName: %s to a facility belonging to organization with organizationNumber: %s")
+				"Could not match facilityName: %s to a facility belonging to organization with organizationNumber: %s"
 					.formatted(facilityName, orgNr)))
 			.getFacilityId();
 	}
@@ -132,10 +130,11 @@ public class RiskClassService {
 	}
 
 	private void addFacilityToCase(final String facilityId, final String caseId) {
-		minutMiljoClient.addFacilityToCase(new AddFacilityToCase()
+		var addFacilityToCase = new AddFacilityToCase()
 			.withFacilityId(facilityId)
-			.withCaseId(caseId));
+			.withCaseId(caseId);
 
+		ecosIntegration.addFacilityToCase(addFacilityToCase);
 	}
 
 	private SaveFoodFacility2024RiskClassData createSaveRiskClassObject(final String facilityId,

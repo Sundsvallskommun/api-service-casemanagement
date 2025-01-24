@@ -4,7 +4,6 @@ import generated.client.party.PartyType;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import minutmiljo.AddPartyToCase;
 import minutmiljo.AddPartyToCaseSvcDto;
 import minutmiljo.AddressTypeSvcDto;
@@ -22,7 +21,6 @@ import minutmiljo.OrganizationSvcDto;
 import minutmiljo.PartyAddressSvcDto;
 import minutmiljo.PersonSvcDto;
 import minutmiljo.SearchParty;
-import minutmiljo.SearchPartyResponse;
 import minutmiljo.SearchPartySvcDto;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
@@ -43,10 +41,12 @@ public class PartyService {
 	private final MinutMiljoClient minutMiljoClient;
 
 	private final CitizenService citizenService;
+	private final EcosIntegration ecosIntegration;
 
-	public PartyService(final MinutMiljoClient minutMiljoClient, final CitizenService citizenService) {
+	public PartyService(final MinutMiljoClient minutMiljoClient, final CitizenService citizenService, EcosIntegration ecosIntegration) {
 		this.minutMiljoClient = minutMiljoClient;
 		this.citizenService = citizenService;
+		this.ecosIntegration = ecosIntegration;
 	}
 
 	public List<Map<String, ArrayOfguid>> findAndAddPartyToCase(final EcosCaseDTO ecosCaseDTO, final String caseId) {
@@ -96,7 +96,7 @@ public class PartyService {
 						.stream())
 					.toList()));
 
-			final var result = minutMiljoClient.createOrganizationParty(new CreateOrganizationParty().withOrganizationParty(dto));
+			final var result = ecosIntegration.createOrganizationParty(new CreateOrganizationParty().withOrganizationParty(dto));
 
 			if (result == null) {
 				return Collections.emptyMap();
@@ -117,7 +117,7 @@ public class PartyService {
 		} else {
 			dto = getPersonSvcDto(personDTO);
 
-			final var result = minutMiljoClient.createPersonParty(new CreatePersonParty().withPersonParty(dto));
+			final var result = ecosIntegration.createPersonParty(new CreatePersonParty().withPersonParty(dto));
 			dto.setId(result.getCreatePersonPartyResult());
 		}
 		final var roles = getEcosFacilityRoles(personDTO);
@@ -134,7 +134,7 @@ public class PartyService {
 					.withPartyId(partyId)
 					.withRoles(roles));
 
-			minutMiljoClient.addPartyToCase(addPartyToCase);
+			ecosIntegration.addPartyToCase(addPartyToCase);
 		});
 	}
 
@@ -182,16 +182,16 @@ public class PartyService {
 				.withPersonalIdentificationNumber((CaseUtil
 					.getSokigoFormattedPersonalNumber(citizenService.getPersonalNumber(personId)))));
 
-		final var resultWithHyphen = minutMiljoClient.searchParty(searchPartyWithHyphen);
+		var resultWithHyphen = ecosIntegration.searchParty(searchPartyWithHyphen);
 
-		if (resultWithHyphen != null && !resultWithHyphen.getSearchPartyResult().getPartySvcDto().isEmpty()) {
-			return resultWithHyphen.getSearchPartyResult();
-		} else {
-			final var searchPartyWithoutHyphen = new SearchParty().withModel(new SearchPartySvcDto()
-				.withPersonalIdentificationNumber(citizenService.getPersonalNumber(personId)));
-
-			return Optional.ofNullable(minutMiljoClient.searchParty(searchPartyWithoutHyphen)).orElse(new SearchPartyResponse()).getSearchPartyResult();
+		if (!resultWithHyphen.getPartySvcDto().isEmpty()) {
+			return resultWithHyphen;
 		}
+
+		final var searchPartyWithoutHyphen2 = new SearchParty()
+			.withModel(new SearchPartySvcDto()
+				.withPersonalIdentificationNumber(citizenService.getPersonalNumber(personId)));
+		return ecosIntegration.searchParty(searchPartyWithoutHyphen2);
 	}
 
 	private ArrayOfContactInfoSvcDto getEcosContactInfo(final StakeholderDTO s) {
@@ -280,20 +280,19 @@ public class PartyService {
 			.withModel(new SearchPartySvcDto()
 				.withOrganizationIdentificationNumber(organizationNumber));
 
-		final var partiesWithoutPrefix = minutMiljoClient.searchParty(searchPartyWithoutPrefix);
-
 		// Search for party with prefix
 		final var searchPartyWithPrefix = new SearchParty()
 			.withModel(new SearchPartySvcDto()
 				.withOrganizationIdentificationNumber(CaseUtil.getSokigoFormattedOrganizationNumber(organizationNumber)));
 
-		final var partiesWithPrefix = minutMiljoClient.searchParty(searchPartyWithPrefix);
+		final var partiesWithoutPrefix = ecosIntegration.searchParty(searchPartyWithoutPrefix);
+		final var partiesWithPrefix = ecosIntegration.searchParty(searchPartyWithPrefix);
 
 		if (partiesWithoutPrefix != null) {
-			allParties.getPartySvcDto().addAll(partiesWithoutPrefix.getSearchPartyResult().getPartySvcDto());
+			allParties.getPartySvcDto().addAll(partiesWithoutPrefix.getPartySvcDto());
 		}
 		if (partiesWithPrefix != null) {
-			allParties.getPartySvcDto().addAll(partiesWithPrefix.getSearchPartyResult().getPartySvcDto());
+			allParties.getPartySvcDto().addAll(partiesWithPrefix.getPartySvcDto());
 		}
 
 		return allParties;
@@ -304,14 +303,14 @@ public class PartyService {
 		// Find party both with and without prefix "16"
 		final var allParties = new ArrayOfPartySvcDto();
 
-		final var partiesWithoutPrefix = minutMiljoClient.searchParty(createSearchPartyWithoutPrefixedLegalId(legalId, partyType));
-		final var partiesWithPrefix = minutMiljoClient.searchParty(createSearchPartyWithPrefixedLegalId(legalId, partyType));
+		var partiesWithoutPrefix = ecosIntegration.searchParty(createSearchPartyWithoutPrefixedLegalId(legalId, partyType));
+		var partiesWithPrefix = ecosIntegration.searchParty(createSearchPartyWithPrefixedLegalId(legalId, partyType));
 
 		if (partiesWithoutPrefix != null) {
-			allParties.getPartySvcDto().addAll(partiesWithoutPrefix.getSearchPartyResult().getPartySvcDto());
+			allParties.getPartySvcDto().addAll(partiesWithoutPrefix.getPartySvcDto());
 		}
 		if (partiesWithPrefix != null) {
-			allParties.getPartySvcDto().addAll(partiesWithPrefix.getSearchPartyResult().getPartySvcDto());
+			allParties.getPartySvcDto().addAll(partiesWithPrefix.getPartySvcDto());
 		}
 
 		return allParties;
