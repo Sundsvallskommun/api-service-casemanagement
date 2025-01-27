@@ -223,6 +223,22 @@ public final class Constants {
 		Denna anläggning och tillhörande part/-er måste registreras manuellt.
 		Informationen finns i handlingen "Anmälan livsmedelsanläggning".""";
 
+	// Ecos constants
+	public static final String FACILITY_TYPE_ID = "4958BC00-76E8-4D5B-A862-AAF8E815202A"; // Livsmedelsanläggning
+	public static final String FACILITY_STATUS_ID_APPLIED = "88E11CAA-DF35-4C5E-94A8-3C7B0369D8F2"; // Anmäld/Ansökt
+	public static final String FACILITY_STATUS_ID_INACTIVE = "64B2DB7A-9A11-4F20-A57C-8122B1A469E6"; // Inaktiv
+	public static final String FACILITY_STATUS_ID_ACTIVE = "D203BB33-EB9A-4679-8E1C-BBD8AF86E554"; // Aktiv
+	public static final String FACILITY_STATUS_ID_GRANTED = "C5A98B2B-C2B8-428E-B597-A3F97A77B818"; // Beviljad
+	public static final String FACILITY_STATUS_ID_REVOKED = "9A748E4E-BD7E-481A-B449-73CBD0992213"; // Upphörd/Skrotad
+	public static final String FACILITY_STATUS_ID_DISCARDED = "80FFA45C-B3DF-4A10-8DB3-A042F36C64B7"; // Makulerad
+	public static final String MAIN_ORIENTATION_ID = "MainOrientationId";
+	public static final String PROD_SIZE_ID = "ProductionSizeId";
+	public static final String IS_SEASONAL = "IsSeasonal";
+	public static final String SEASONAL_NOTE = "seasonalNote";
+	public static final String ACTIVITIES = "activities";
+	public static final String PRODUCT_GROUPS = "productGroups";
+	public static final String THIRD_PARTY_CERTS = "thirdPartyCertifications";
+
 	////////////////// Error messages
 	public static final String ERR_MSG_ONLY_ONE_MAIN_FACILITY = "Only one facility can be defined as main facility";
 

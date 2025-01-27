@@ -12,6 +12,10 @@ import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANSOKAN
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANSOKAN_TILLSTAND_VARMEPUMP;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.INFORMATION_OM_UPPHORANDE_AV_VERKSAMHET;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.REGISTRERING_AV_LIVSMEDEL;
+import static se.sundsvall.casemanagement.integration.ecos.RiskClassMapper.mapActivities;
+import static se.sundsvall.casemanagement.integration.ecos.RiskClassMapper.mapProductGroups;
+import static se.sundsvall.casemanagement.integration.ecos.RiskClassMapper.mapThirdPartyCertifications;
+import static se.sundsvall.casemanagement.util.Constants.ACTIVITIES;
 import static se.sundsvall.casemanagement.util.Constants.BIOLOGICAL_STEP_SVC_DTO;
 import static se.sundsvall.casemanagement.util.Constants.CHEMICAL_PRETREATMENT_SVC_DTO;
 import static se.sundsvall.casemanagement.util.Constants.CLOSED_TANK_SVC_DTO;
@@ -20,12 +24,25 @@ import static se.sundsvall.casemanagement.util.Constants.CREATE_GEOTHERMAL_HEATI
 import static se.sundsvall.casemanagement.util.Constants.CREATE_MARINE_HEATING_FACILITY_SVC_DTO_PREFIX;
 import static se.sundsvall.casemanagement.util.Constants.CREATE_SOIL_HEATING_FACILITY_SVC_DTO_PREFIX;
 import static se.sundsvall.casemanagement.util.Constants.DRY_SOLUTION_SVC_DTO;
+import static se.sundsvall.casemanagement.util.Constants.FACILITY_STATUS_ID_ACTIVE;
+import static se.sundsvall.casemanagement.util.Constants.FACILITY_STATUS_ID_APPLIED;
+import static se.sundsvall.casemanagement.util.Constants.FACILITY_STATUS_ID_DISCARDED;
+import static se.sundsvall.casemanagement.util.Constants.FACILITY_STATUS_ID_GRANTED;
+import static se.sundsvall.casemanagement.util.Constants.FACILITY_STATUS_ID_INACTIVE;
+import static se.sundsvall.casemanagement.util.Constants.FACILITY_STATUS_ID_REVOKED;
+import static se.sundsvall.casemanagement.util.Constants.FACILITY_TYPE_ID;
 import static se.sundsvall.casemanagement.util.Constants.FILTER_BED_SVC_DTO;
 import static se.sundsvall.casemanagement.util.Constants.INFILTRATION_PLANT_SVC_DTO;
+import static se.sundsvall.casemanagement.util.Constants.IS_SEASONAL;
+import static se.sundsvall.casemanagement.util.Constants.MAIN_ORIENTATION_ID;
 import static se.sundsvall.casemanagement.util.Constants.MINI_SEWAGE_SVC_DTO;
 import static se.sundsvall.casemanagement.util.Constants.PHOSPHORUS_TRAP_SVC_DTO;
+import static se.sundsvall.casemanagement.util.Constants.PRODUCT_GROUPS;
+import static se.sundsvall.casemanagement.util.Constants.PROD_SIZE_ID;
 import static se.sundsvall.casemanagement.util.Constants.SAND_FILTER_SVC_DTO;
+import static se.sundsvall.casemanagement.util.Constants.SEASONAL_NOTE;
 import static se.sundsvall.casemanagement.util.Constants.SEPTIC_TANK_SVC_DTO;
+import static se.sundsvall.casemanagement.util.Constants.THIRD_PARTY_CERTS;
 
 import generated.client.party.PartyType;
 import java.text.MessageFormat;
@@ -38,10 +55,12 @@ import java.util.Map;
 import java.util.Optional;
 import minutmiljo.AddDocumentsToCase;
 import minutmiljo.AddDocumentsToCaseSvcDto;
+import minutmiljo.AddFacilityToCase;
 import minutmiljo.AddPartyToFacility;
 import minutmiljo.AddPartyToFacilitySvcDto;
 import minutmiljo.ArrayOfBoreholeSvcDto;
 import minutmiljo.ArrayOfDocumentSvcDto;
+import minutmiljo.ArrayOfFacilityFilterSvcDto;
 import minutmiljo.ArrayOfFilterSvcDto;
 import minutmiljo.ArrayOfHeatCollectorTubeSvcDto;
 import minutmiljo.ArrayOfPartySvcDto;
@@ -71,6 +90,10 @@ import minutmiljo.DocumentSvcDto;
 import minutmiljo.DrySolutionSvcDto;
 import minutmiljo.EstateSvcDto;
 import minutmiljo.FacilityAddressSvcDto;
+import minutmiljo.FacilityFacilityStatusIdsFilterSvcDto;
+import minutmiljo.FacilityFacilityTypeIdsFilterSvcDto;
+import minutmiljo.FacilityNotFilterSvcDto;
+import minutmiljo.FacilityPartyOrganizationNumberFilterSvcDto;
 import minutmiljo.FilterBedSvcDto;
 import minutmiljo.GetCase;
 import minutmiljo.HeatCollectorTubeSvcDto;
@@ -81,8 +104,12 @@ import minutmiljo.OccurrenceListItemSvcDto;
 import minutmiljo.PhosphorusTrapSvcDto;
 import minutmiljo.PurificationStepSvcDto;
 import minutmiljo.SandFilterSvcDto;
+import minutmiljo.SaveFoodFacility2024RiskClassData;
+import minutmiljo.SaveRiskClass2024DataDto;
 import minutmiljo.SearchCase;
 import minutmiljo.SearchCaseSvcDto;
+import minutmiljo.SearchFacility;
+import minutmiljo.SearchFacilitySvcDto;
 import minutmiljo.SepticTankSvcDto;
 import minutmiljo.SinglePartyRoleFilterSvcDto;
 import minutmiljoV2.RegisterDocument;
@@ -100,6 +127,7 @@ import se.sundsvall.casemanagement.api.model.AttachmentDTO;
 import se.sundsvall.casemanagement.api.model.CaseStatusDTO;
 import se.sundsvall.casemanagement.api.model.EcosCaseDTO;
 import se.sundsvall.casemanagement.api.model.FacilityDTO;
+import se.sundsvall.casemanagement.api.model.OrganizationDTO;
 import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
 import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
@@ -113,29 +141,28 @@ import se.sundsvall.casemanagement.util.Constants;
 @Service
 public class EcosService {
 
+	private static final Logger LOG = LoggerFactory.getLogger(EcosService.class);
 	private static final String VOLUME = "Volume";
 
-	private static final Logger log = LoggerFactory.getLogger(EcosService.class);
-
 	private final CaseMappingService caseMappingService;
-
 	private final PartyService partyService;
-
-	private final MinutMiljoClient minutMiljoClient;
-
-	private final MinutMiljoClientV2 minutMiljoClientV2;
-
 	private final FbService fbService;
 
-	private final RiskClassService riskClassService;
+	private final MinutMiljoClient minutMiljoClient;
+	private final MinutMiljoClientV2 minutMiljoClientV2;
 
-	public EcosService(final CaseMappingService caseMappingService, final PartyService partyService, final MinutMiljoClient minutMiljoClient, final MinutMiljoClientV2 minutMiljoClientV2, final FbService fbService, final RiskClassService riskClassService) {
+	public EcosService(
+		final CaseMappingService caseMappingService,
+		final PartyService partyService,
+		final MinutMiljoClient minutMiljoClient,
+		final MinutMiljoClientV2 minutMiljoClientV2,
+		final FbService fbService) {
+
 		this.caseMappingService = caseMappingService;
 		this.partyService = partyService;
 		this.minutMiljoClient = minutMiljoClient;
 		this.minutMiljoClientV2 = minutMiljoClientV2;
 		this.fbService = fbService;
-		this.riskClassService = riskClassService;
 	}
 
 	@NotNull
@@ -173,7 +200,12 @@ public class EcosService {
 					ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC,
 					ANMALAN_ANDRING_AVLOPPSANLAGGNING, ANMALAN_ANDRING_AVLOPPSANORDNING -> createIndividualSewage(eFacility, propertyInfo, registerDocumentResult);
 				case ANMALAN_HALSOSKYDDSVERKSAMHET -> createHealthProtectionFacility(eFacility, propertyInfo, registerDocumentResult);
-				case ANMALAN_KOMPOSTERING, ANMALAN_AVHJALPANDEATGARD_FORORENING, ANDRING_AV_LIVSMEDELSVERKSAMHET, INFORMATION_OM_UPPHORANDE_AV_VERKSAMHET -> "";
+				case ANMALAN_KOMPOSTERING, ANMALAN_AVHJALPANDEATGARD_FORORENING -> "";
+				case ANDRING_AV_LIVSMEDELSVERKSAMHET, INFORMATION_OM_UPPHORANDE_AV_VERKSAMHET -> {
+					var facilityId = searchFacility(extractOrgNr(caseInput), registerDocumentResult.getCaseId());
+					addFacilityToCase(facilityId, registerDocumentResult.getCaseId());
+					yield facilityId;
+				}
 				default -> throw Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "CaseType: " + caseInput.getCaseType() + " is not valid. There is a problem in the API validation.");
 			};
 
@@ -185,9 +217,9 @@ public class EcosService {
 		} else {
 			if (CaseType.UPPDATERING_RISKKLASSNING.toString().equals(caseInput.getCaseType())) {
 				try {
-					riskClassService.updateRiskClass(caseInput, registerDocumentResult.getCaseId());
+					updateRiskClass(caseInput, registerDocumentResult.getCaseId());
 				} catch (final Exception e) {
-					log.warn("Error when updating risk class for case with OpenE-ID: {}", caseInput.getExternalCaseId(), e);
+					LOG.warn("Error when updating risk class for case with OpenE-ID: {}", caseInput.getExternalCaseId(), e);
 				}
 			} else {
 				createOccurrenceOnCase(registerDocumentResult.getCaseId());
@@ -197,6 +229,97 @@ public class EcosService {
 		// Persist the connection between OeP-case and Ecos-case
 		caseMappingService.postCaseMapping(caseInput, registerDocumentResult.getCaseId(), SystemType.ECOS, municipalityId);
 		return registerDocumentResult;
+	}
+
+	void updateRiskClass(final EcosCaseDTO caseInput, final String caseId) {
+		final var facilityId = searchFacility(extractOrgNr(caseInput), caseInput.getFacilities().getFirst().getFacilityCollectionName());
+		addFacilityToCase(facilityId, caseId);
+		final var data = createSaveRiskClassObject(facilityId, caseId, caseInput);
+		minutMiljoClient.updateRiskClass(data);
+	}
+
+	String searchFacility(final String orgNr, final String facilityName) {
+		final var facilityTypeFilter = createFacilityTypeFilter();
+		final var facilityStatusFilter = createFacilityStatusFilter();
+		final var notFacilityStatusFilters = createNotFacilityStatusFilters();
+		final var orgFilter = createOrgFilter(orgNr);
+
+		final var result = Optional.ofNullable(minutMiljoClient
+			.searchFacility(new SearchFacility().withSearchFacilitySvcDto(new SearchFacilitySvcDto()
+				.withFacilityFilters(new ArrayOfFacilityFilterSvcDto()
+					.withFacilityFilterSvcDto(facilityStatusFilter, facilityTypeFilter, notFacilityStatusFilters, orgFilter))))
+			.getSearchFacilityResult()
+			.getSearchFacilityResultSvcDto())
+			.orElseThrow(() -> Problem.valueOf(Status.NOT_FOUND, "Could not find facility "));
+
+		return result.stream()
+			.filter(resultSvcDto -> resultSvcDto.getFacilityName() != null)
+			.filter(resultSvcDto -> resultSvcDto.getFacilityName().trim().equalsIgnoreCase(facilityName.trim()))
+			.findFirst()
+			.orElseThrow(() -> Problem.valueOf(Status.BAD_REQUEST,
+				("Could not match facilityName: %s to a facility belonging to organization with organizationNumber: %s")
+					.formatted(facilityName, orgNr)))
+			.getFacilityId();
+	}
+
+	void addFacilityToCase(final String facilityId, final String caseId) {
+		minutMiljoClient.addFacilityToCase(new AddFacilityToCase()
+			.withFacilityId(facilityId)
+			.withCaseId(caseId));
+	}
+
+	String extractOrgNr(final EcosCaseDTO eCase) {
+		return CaseUtil.getSokigoFormattedOrganizationNumber(eCase.getStakeholders().stream()
+			.map(stakeholderDTO -> {
+				if (stakeholderDTO instanceof final OrganizationDTO orgDTO) {
+					return orgDTO.getOrganizationNumber();
+				}
+				return "";
+			})
+			.findFirst()
+			.orElse(""));
+	}
+
+	private FacilityFacilityTypeIdsFilterSvcDto createFacilityTypeFilter() {
+		return new FacilityFacilityTypeIdsFilterSvcDto()
+			.withFacilityTypeIds(FACILITY_TYPE_ID);
+	}
+
+	private FacilityFacilityStatusIdsFilterSvcDto createFacilityStatusFilter() {
+		return new FacilityFacilityStatusIdsFilterSvcDto()
+			.withFacilityStatusIds(new ArrayOfguid().withGuid(FACILITY_STATUS_ID_APPLIED,
+				FACILITY_STATUS_ID_INACTIVE,
+				FACILITY_STATUS_ID_ACTIVE,
+				FACILITY_STATUS_ID_GRANTED));
+	}
+
+	private FacilityNotFilterSvcDto createNotFacilityStatusFilters() {
+		return new FacilityNotFilterSvcDto()
+			.withFilter(new FacilityFacilityStatusIdsFilterSvcDto()
+				.withFacilityStatusIds(new ArrayOfguid()
+					.withGuid(List.of(FACILITY_STATUS_ID_REVOKED,
+						FACILITY_STATUS_ID_DISCARDED))));
+	}
+
+	private FacilityPartyOrganizationNumberFilterSvcDto createOrgFilter(final String orgNr) {
+		return new FacilityPartyOrganizationNumberFilterSvcDto()
+			.withOrganizationNumber(orgNr);
+	}
+
+	private SaveFoodFacility2024RiskClassData createSaveRiskClassObject(final String facilityId,
+		final String caseId, final EcosCaseDTO dto) {
+
+		return new SaveFoodFacility2024RiskClassData()
+			.withModel(new SaveRiskClass2024DataDto()
+				.withCaseId(caseId)
+				.withFacilityId(facilityId)
+				.withMainOrientationSlvCode(dto.getExtraParameters().get(MAIN_ORIENTATION_ID))
+				.withProductionSizeSlvCode(dto.getExtraParameters().get(PROD_SIZE_ID))
+				.withIsSeasonal("true".equalsIgnoreCase(Optional.ofNullable(dto.getExtraParameters().get(IS_SEASONAL)).orElse("")))
+				.withSeasonalNote(dto.getExtraParameters().get(SEASONAL_NOTE))
+				.withActivities(mapActivities(dto.getExtraParameters().get(ACTIVITIES)))
+				.withProductGroups(mapProductGroups(dto.getExtraParameters().get(PRODUCT_GROUPS)))
+				.withThirdPartyCertifications(mapThirdPartyCertifications(dto.getExtraParameters().get(THIRD_PARTY_CERTS))));
 	}
 
 	private void addPartyToFacility(final String foodFacilityGuid, final Map<String, ArrayOfguid> partyRoles) {
@@ -226,9 +349,10 @@ public class EcosService {
 		createFoodFacility.setCreateFoodFacilitySvcDto(createFoodFacilitySvcDto);
 
 		final String foodFacilityGuid = minutMiljoClient.createFoodFacility(createFoodFacility).getCreateFoodFacilityResult();
+		addFacilityToCase(foodFacilityGuid, registerDocumentResult.getCaseId());
 
 		if (foodFacilityGuid != null) {
-			log.debug("FoodFacility created: {}", foodFacilityGuid);
+			LOG.debug("FoodFacility created: {}", foodFacilityGuid);
 			return foodFacilityGuid;
 		}
 		throw Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "FoodFacility could not be created.");
@@ -245,7 +369,7 @@ public class EcosService {
 		final String marinePrefix = CREATE_MARINE_HEATING_FACILITY_SVC_DTO_PREFIX;
 
 		if ((facilityExtraParameters == null) || facilityExtraParameters.isEmpty()) {
-			log.info("facilityExtraParameters was null or empty, do not create facility. Return null.");
+			LOG.info("facilityExtraParameters was null or empty, do not create facility. Return null.");
 			return null;
 		}
 		if (facilityExtraParameters.keySet().stream().anyMatch(s -> s.startsWith(airPrefix))) {
@@ -263,9 +387,10 @@ public class EcosService {
 
 		createHeatPumpFacility.setCreateIndividualSewageSvcDto(createHeatPumpFacilitySvcDto);
 		final String facilityGuid = minutMiljoClient.createHeatPumpFacility(createHeatPumpFacility).getCreateHeatPumpFacilityResult();
+		addFacilityToCase(facilityGuid, registerDocumentResult.getCaseId());
 
 		if (facilityGuid != null) {
-			log.debug("HeatPumpFacility created: {}", facilityGuid);
+			LOG.debug("HeatPumpFacility created: {}", facilityGuid);
 			return facilityGuid;
 		}
 		throw Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "HeatPumpFacility could not be created");
@@ -404,9 +529,10 @@ public class EcosService {
 		createIndividualSewageFacility.setCreateIndividualSewageSvcDto(createIndividualSewageFacilitySvcDto);
 
 		final String facilityGuid = minutMiljoClient.createIndividualSewageFacility(createIndividualSewageFacility).getCreateIndividualSewageFacilityResult();
+		addFacilityToCase(facilityGuid, registerDocumentResult.getCaseId());
 
 		if (facilityGuid != null) {
-			log.debug("Individual Sewage created: {}", facilityGuid);
+			LOG.debug("Individual Sewage created: {}", facilityGuid);
 			return facilityGuid;
 		}
 		throw Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "Individual Sewage could not be created");
@@ -621,7 +747,7 @@ public class EcosService {
 		if (registerDocumentResult == null) {
 			throw Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "Case could not be created.");
 		}
-		log.debug("Case created with ByggR case number: {}", registerDocumentResult.getCaseNumber());
+		LOG.debug("Case created with ByggR case number: {}", registerDocumentResult.getCaseNumber());
 		return registerDocumentResult;
 	}
 
@@ -813,9 +939,10 @@ public class EcosService {
 		createHealthProtectionFacility.setCreateHealthProtectionFacilitySvcDto(createHealthProtectionFacilitySvcDto);
 
 		final String facilityGuid = minutMiljoClient.createHealthProtectionFacility(createHealthProtectionFacility).getCreateHealthProtectionFacilityResult();
+		addFacilityToCase(facilityGuid, registerDocumentResult.getCaseId());
 
 		if (facilityGuid != null) {
-			log.debug("Health Protection Facility created: {}", facilityGuid);
+			LOG.debug("Health Protection Facility created: {}", facilityGuid);
 			return facilityGuid;
 		}
 		throw Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "Health Protection Facility could not be created");

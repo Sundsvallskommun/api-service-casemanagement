@@ -1,4 +1,4 @@
-package se.sundsvall.casemanagement.service;
+package se.sundsvall.casemanagement.integration.ecos;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static se.sundsvall.casemanagement.TestUtil.ADRESSPLATS_ID;
 import static se.sundsvall.casemanagement.TestUtil.FNR;
@@ -24,6 +25,7 @@ import minutmiljo.AddDocumentsToCase;
 import minutmiljo.ArrayOfOccurrenceListItemSvcDto;
 import minutmiljo.ArrayOfPartySvcDto;
 import minutmiljo.ArrayOfSearchCaseResultSvcDto;
+import minutmiljo.ArrayOfSearchFacilityResultSvcDto;
 import minutmiljo.BiologicalStepSvcDto;
 import minutmiljo.CaseSvcDto;
 import minutmiljo.ClosedTankSvcDto;
@@ -48,6 +50,8 @@ import minutmiljo.PartySvcDto;
 import minutmiljo.SandFilterSvcDto;
 import minutmiljo.SearchCaseResponse;
 import minutmiljo.SearchCaseResultSvcDto;
+import minutmiljo.SearchFacilityResponse;
+import minutmiljo.SearchFacilityResultSvcDto;
 import minutmiljo.SepticTankSvcDto;
 import minutmiljoV2.RegisterDocument;
 import minutmiljoV2.RegisterDocumentCaseSvcDtoV2;
@@ -75,10 +79,9 @@ import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderType;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
-import se.sundsvall.casemanagement.integration.ecos.EcosService;
-import se.sundsvall.casemanagement.integration.ecos.MinutMiljoClient;
-import se.sundsvall.casemanagement.integration.ecos.MinutMiljoClientV2;
-import se.sundsvall.casemanagement.integration.ecos.PartyService;
+import se.sundsvall.casemanagement.service.CaseMappingService;
+import se.sundsvall.casemanagement.service.CitizenService;
+import se.sundsvall.casemanagement.service.FbService;
 import se.sundsvall.casemanagement.util.CaseUtil;
 import se.sundsvall.casemanagement.util.Constants;
 
@@ -150,8 +153,6 @@ class EcosServiceTest {
 		TestUtil.standardMockFb(fbServiceMock);
 		TestUtil.standardMockCitizen(citizenServiceMock);
 		TestUtil.standardMockMinutMiljo(minutMiljoClientMock, minutMiljoClientV2Mock);
-		TestUtil.standardMockFb(fbServiceMock);
-		TestUtil.standardMockCitizen(citizenServiceMock);
 		TestUtil.standardMockPartyService(partyServiceMock);
 	}
 
@@ -880,7 +881,70 @@ class EcosServiceTest {
 						assertThat(document.getNote()).isEqualTo(note);
 					});
 			});
+	}
 
+	@Test
+	void updateRiskClass() {
+
+		final var facility = new FacilityDTO();
+		facility.setFacilityCollectionName("someFacilityName");
+
+		when(minutMiljoClientMock.searchFacility(any()))
+			.thenReturn(new SearchFacilityResponse()
+				.withSearchFacilityResult(new ArrayOfSearchFacilityResultSvcDto()
+					.withSearchFacilityResultSvcDto(new SearchFacilityResultSvcDto()
+						.withFacilityName("someFacilityName")
+						.withFacilityCollectionName("someFacilityName")
+						.withFacilityId("someFacilityId"))));
+
+		final var dto = getEnvironmentalCaseDTO(facility, Map.of("activities", ", , , , , , SLHA003, SLHA004, , , SLUA003, SLUA033, SLUA001, SLUA002, , , , , , , , , , , , , SLUA014, , , , , , , , , , , , , , ,",
+			"fixedFacilityType", "Riskklassning",
+			"IsSeasonal", "false",
+			"MainOrientationId", "SLI",
+			"serviceName", "someTest"
+
+		));
+
+		ecosService.updateRiskClass(dto, "someCaseId");
+
+		verify(minutMiljoClientMock, times(1)).searchFacility(any());
+		verify(minutMiljoClientMock, times(1)).addFacilityToCase(any());
+		verify(minutMiljoClientMock, times(1)).updateRiskClass(any());
+		verifyNoMoreInteractions(minutMiljoClientMock);
+	}
+
+	private static EcosCaseDTO getEnvironmentalCaseDTO(final FacilityDTO facility, final Map<String, String> extraParam) {
+		final var dto = new EcosCaseDTO();
+		final var stakeholder = new OrganizationDTO();
+		stakeholder.setOrganizationNumber("123456-7890");
+		dto.setFacilities(List.of(facility));
+		dto.setStakeholders(List.of(stakeholder));
+		dto.setExtraParameters(extraParam);
+		return dto;
+	}
+
+	@Test
+	void updateRiskClass_empty_activites() {
+
+		final var facility = new FacilityDTO();
+		facility.setFacilityCollectionName("someFacilityName");
+
+		when(minutMiljoClientMock.searchFacility(any()))
+			.thenReturn(new SearchFacilityResponse()
+				.withSearchFacilityResult(new ArrayOfSearchFacilityResultSvcDto()
+					.withSearchFacilityResultSvcDto(new SearchFacilityResultSvcDto()
+						.withFacilityName("someFacilityName")
+						.withFacilityCollectionName("someFacilityName")
+						.withFacilityId("someFacilityId"))));
+
+		final var dto = getEnvironmentalCaseDTO(facility, Map.of());
+
+		ecosService.updateRiskClass(dto, "someCaseId");
+
+		verify(minutMiljoClientMock, times(1)).searchFacility(any());
+		verify(minutMiljoClientMock, times(1)).addFacilityToCase(any());
+		verify(minutMiljoClientMock, times(1)).updateRiskClass(any());
+		verifyNoMoreInteractions(minutMiljoClientMock);
 	}
 
 }
