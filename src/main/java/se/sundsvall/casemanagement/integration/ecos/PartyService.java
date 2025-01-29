@@ -172,8 +172,8 @@ public class PartyService {
 	/**
 	 * Search for party with and without hyphen in personal number
 	 *
-	 * @param personId personId for person to search for
-	 * @return ArrayOfPartySvcDto
+	 * @param  personId personId for person to search for
+	 * @return          ArrayOfPartySvcDto
 	 */
 	private ArrayOfPartySvcDto searchPartyByPersonId(final String personId) {
 
@@ -260,7 +260,8 @@ public class PartyService {
 								addressDTO.getAddressCategories().stream()
 									.map(adressType -> new AddressTypeSvcDto()
 										.withId(
-											switch (adressType) {
+											switch (adressType)
+											{
 												case INVOICE_ADDRESS -> Constants.ECOS_ADDRESS_TYPE_ID_FAKTURAADRESS;
 												case POSTAL_ADDRESS -> Constants.ECOS_ADDRESS_TYPE_ID_POSTADRESS;
 												case VISITING_ADDRESS -> Constants.ECOS_ADDRESS_TYPE_ID_BESOKSADRESS;
