@@ -781,10 +781,10 @@ components:
             - ORGANIZATION
         roles:
           type: array
-          description: An stakeholder can have one or more roles.
+          description: A stakeholder can have one or more roles.
           items:
             type: string
-            description: An stakeholder can have one or more roles.
+            description: A stakeholder can have one or more roles.
         phoneNumber:
           type: string
           description: Stakeholder phone number
@@ -799,7 +799,7 @@ components:
           example: "0701234567"
         addresses:
           type: array
-          description: An stakeholder may have one or more addresses. For example
+          description: A stakeholder may have one or more addresses. For example
             one POSTAL_ADDRESS and another INVOICE_ADDRESS.
           items:
             $ref: "#/components/schemas/AddressDTO"

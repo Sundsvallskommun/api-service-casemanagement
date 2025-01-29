@@ -42,7 +42,7 @@ public abstract class StakeholderDTO {
 	@Schema(description = "The type of stakeholder", example = "PERSON")
 	private StakeholderType type;
 
-	@Schema(description = "An stakeholder can have one or more roles.", enumAsRef = true)
+	@Schema(description = "A stakeholder can have one or more roles.", enumAsRef = true)
 	@EcosStakeholderRole(groups = EcosConstraints.class)
 	@ByggRStakeholderRole(groups = ByggRConstraints.class)
 	private List<String> roles;
@@ -60,7 +60,7 @@ public abstract class StakeholderDTO {
 	@Valid
 	@ConvertGroup(from = ByggRConstraints.class, to = DefaultConstraints.class)
 	@ConvertGroup(from = EcosConstraints.class, to = DefaultConstraints.class)
-	@Schema(description = "An stakeholder may have one or more addresses. For example one POSTAL_ADDRESS and another INVOICE_ADDRESS.")
+	@Schema(description = "A stakeholder may have one or more addresses. For example one POSTAL_ADDRESS and another INVOICE_ADDRESS.")
 	private List<AddressDTO> addresses;
 
 	@Schema(description = "The stakeholder's billing address")
