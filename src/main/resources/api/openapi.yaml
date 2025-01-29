@@ -7,7 +7,7 @@ info:
     url: https://opensource.org/licenses/MIT
   version: "8.1"
 servers:
-  - url: http://localhost:65473
+  - url: http://localhost:53599
     description: Generated server url
 tags:
   - name: Status
@@ -49,20 +49,14 @@ paths:
       responses:
         "204":
           description: No content
-        "404":
-          description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
         "502":
           description: Bad Gateway
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not found
           content:
             application/problem+json:
               schema:
@@ -75,6 +69,12 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/Problem"
                   - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
   /{municipalityId}/cases:
     post:
       tags:
@@ -103,20 +103,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CaseResourceResponseDTO"
-        "404":
-          description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
         "502":
           description: Bad Gateway
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not found
           content:
             application/problem+json:
               schema:
@@ -129,6 +123,12 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/Problem"
                   - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
   /{municipalityId}/cases/{externalCaseId}/attachments:
     post:
       tags:
@@ -161,20 +161,14 @@ paths:
       responses:
         "204":
           description: No content - Successful request
-        "404":
-          description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
         "502":
           description: Bad Gateway
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not found
           content:
             application/problem+json:
               schema:
@@ -187,6 +181,12 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/Problem"
                   - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
   /{municipalityId}/{partyId}/statuses:
     get:
       tags:
@@ -217,20 +217,14 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/CaseStatusDTO"
-        "404":
-          description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
         "502":
           description: Bad Gateway
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not found
           content:
             application/problem+json:
               schema:
@@ -243,6 +237,12 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/Problem"
                   - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
   /{municipalityId}/organization/{organizationNumber}/cases/status:
     get:
       tags:
@@ -276,20 +276,14 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/CaseStatusDTO"
-        "404":
-          description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
         "502":
           description: Bad Gateway
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not found
           content:
             application/problem+json:
               schema:
@@ -302,6 +296,12 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/Problem"
                   - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
   /{municipalityId}/cases/{externalCaseId}/status:
     get:
       tags:
@@ -330,20 +330,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CaseStatusDTO"
-        "404":
-          description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
         "502":
           description: Bad Gateway
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not found
           content:
             application/problem+json:
               schema:
@@ -356,6 +350,12 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/Problem"
                   - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
   /{municipalityId}/cases/case-mappings:
     get:
       tags:
@@ -393,12 +393,6 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
         "400":
           description: Bad request
           content:
@@ -407,6 +401,12 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/Problem"
                   - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
   /api-docs:
     get:
       tags:
@@ -781,14 +781,10 @@ components:
             - ORGANIZATION
         roles:
           type: array
-          description: An stakeholder can have one or more roles. Please note that
-            INVOICE_RECIPENT is deprecated and should not be used. Use INVOICE_RECIPIENT
-            instead.
+          description: A stakeholder can have one or more roles.
           items:
             type: string
-            description: An stakeholder can have one or more roles. Please note that
-              INVOICE_RECIPENT is deprecated and should not be used. Use INVOICE_RECIPIENT
-              instead.
+            description: A stakeholder can have one or more roles.
         phoneNumber:
           type: string
           description: Stakeholder phone number
@@ -803,8 +799,8 @@ components:
           example: "0701234567"
         addresses:
           type: array
-          description: An stakeholder may have one or more addresses. For example
-            one POSTAL_ADDRESS and another INVOICE_ADDRESS.
+          description: A stakeholder may have one or more addresses. For example one
+            POSTAL_ADDRESS and another INVOICE_ADDRESS.
           items:
             $ref: "#/components/schemas/AddressDTO"
         extraParameters:
@@ -838,11 +834,11 @@ components:
     StatusType:
       type: object
       properties:
-        reasonPhrase:
-          type: string
         statusCode:
           type: integer
           format: int32
+        reasonPhrase:
+          type: string
     ConstraintViolationProblem:
       type: object
       properties:
