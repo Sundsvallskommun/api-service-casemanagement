@@ -17,9 +17,6 @@ public enum StakeholderRole {
 
 	// Ecos2
 	INVOICE_RECIPIENT("Fakturamottagare"),
-	// "Fakturamottagare" Remove when Open-E platform is ready
-	@Deprecated(since = "2024-02-27")
-	INVOICE_RECIPENT("Fakturamottagare"),
 	OPERATOR("Verksamhetsutövare"),
 	INSTALLER("Installatör"),
 
