@@ -13,7 +13,6 @@ import se.sundsvall.casemanagement.api.validation.EcosStakeholderRole;
 public class EcosStakeholderRoleConstraintValidator implements ConstraintValidator<EcosStakeholderRole, List<String>> {
 
 	private static final Set<String> validRoles = Set.of(StakeholderRole.CONTACT_PERSON.toString(),
-		StakeholderRole.INVOICE_RECIPENT.toString(),
 		StakeholderRole.INVOICE_RECIPIENT.toString(),
 		StakeholderRole.OPERATOR.toString(),
 		StakeholderRole.APPLICANT.toString(),
