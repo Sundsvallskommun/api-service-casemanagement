@@ -167,11 +167,6 @@ class EcosServiceTest {
 		final var createFoodFacilityArgumentCaptor = ArgumentCaptor.forClass(CreateFoodFacility.class);
 		final var registerDocumentArgumentCaptor = ArgumentCaptor.forClass(RegisterDocument.class);
 
-		var searchFacilityResultSvcDto = new SearchFacilityResultSvcDto().withFacilityId("facilityId").withFacilityName(eCase.getFacilities().getFirst().getFacilityCollectionName());
-		var arrayOfSearchFacilityResultSvcDto = new ArrayOfSearchFacilityResultSvcDto().withSearchFacilityResultSvcDto(searchFacilityResultSvcDto);
-		var searchFacilityResponse = new SearchFacilityResponse().withSearchFacilityResult(arrayOfSearchFacilityResultSvcDto);
-		when(minutMiljoClientMock.searchFacility(any())).thenReturn(searchFacilityResponse);
-
 		// Act
 		final var result = ecosService.postCase(eCase, MUNICIPALITY_ID);
 
@@ -221,7 +216,7 @@ class EcosServiceTest {
 		person.setRoles(List.of(StakeholderRole.INVOICE_RECIPIENT.toString()));
 		person.setFirstName("Förnamn");
 		person.setLastName("Efternamn");
-		eCase.setStakeholders(List.of(organization, person));
+		eCase.setStakeholders(List.of(person, organization));
 
 		final var facility = new FacilityDTO();
 		facility.setFacilityCollectionName("facilityCollectionName");
@@ -233,11 +228,6 @@ class EcosServiceTest {
 
 		eCase.setCaseType(CaseType.REGISTRERING_AV_LIVSMEDEL.toString());
 		eCase.setExternalCaseId(String.valueOf(new Random().nextLong()));
-
-		var searchFacilityResultSvcDto = new SearchFacilityResultSvcDto().withFacilityId("facilityId").withFacilityName(eCase.getFacilities().getFirst().getFacilityCollectionName());
-		var arrayOfSearchFacilityResultSvcDto = new ArrayOfSearchFacilityResultSvcDto().withSearchFacilityResultSvcDto(searchFacilityResultSvcDto);
-		var searchFacilityResponse = new SearchFacilityResponse().withSearchFacilityResult(arrayOfSearchFacilityResultSvcDto);
-		when(minutMiljoClientMock.searchFacility(any())).thenReturn(searchFacilityResponse);
 
 		// Act
 		ecosService.postCase(eCase, MUNICIPALITY_ID);
