@@ -197,8 +197,8 @@ public class EcosService {
 				case REGISTRERING_AV_LIVSMEDEL -> createFoodFacility(ecosCase, propertyInfo, registerDocumentResult);
 				case ANMALAN_INSTALLATION_VARMEPUMP, ANSOKAN_TILLSTAND_VARMEPUMP -> createHeatPumpFacility(eFacility.getExtraParameters(), propertyInfo, registerDocumentResult);
 				case ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP,
-				     ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC,
-				     ANMALAN_ANDRING_AVLOPPSANLAGGNING, ANMALAN_ANDRING_AVLOPPSANORDNING -> createIndividualSewage(eFacility, propertyInfo, registerDocumentResult);
+					ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC,
+					ANMALAN_ANDRING_AVLOPPSANLAGGNING, ANMALAN_ANDRING_AVLOPPSANORDNING -> createIndividualSewage(eFacility, propertyInfo, registerDocumentResult);
 				case ANMALAN_HALSOSKYDDSVERKSAMHET -> createHealthProtectionFacility(eFacility, propertyInfo, registerDocumentResult);
 				case ANMALAN_KOMPOSTERING, ANMALAN_AVHJALPANDEATGARD_FORORENING -> "";
 				case ANDRING_AV_LIVSMEDELSVERKSAMHET, INFORMATION_OM_UPPHORANDE_AV_VERKSAMHET -> {
@@ -245,11 +245,11 @@ public class EcosService {
 		final var orgFilter = createOrgFilter(orgNr);
 
 		final var result = Optional.ofNullable(minutMiljoClient
-				.searchFacility(new SearchFacility().withSearchFacilitySvcDto(new SearchFacilitySvcDto()
-					.withFacilityFilters(new ArrayOfFacilityFilterSvcDto()
-						.withFacilityFilterSvcDto(facilityStatusFilter, facilityTypeFilter, notFacilityStatusFilters, orgFilter))))
-				.getSearchFacilityResult()
-				.getSearchFacilityResultSvcDto())
+			.searchFacility(new SearchFacility().withSearchFacilitySvcDto(new SearchFacilitySvcDto()
+				.withFacilityFilters(new ArrayOfFacilityFilterSvcDto()
+					.withFacilityFilterSvcDto(facilityStatusFilter, facilityTypeFilter, notFacilityStatusFilters, orgFilter))))
+			.getSearchFacilityResult()
+			.getSearchFacilityResultSvcDto())
 			.orElseThrow(() -> Problem.valueOf(Status.NOT_FOUND, "Could not find facility "));
 
 		return result.stream()
@@ -755,12 +755,12 @@ public class EcosService {
 	private String getDiaryPlanId(final String caseType) {
 		return switch (CaseType.valueOf(caseType)) {
 			case REGISTRERING_AV_LIVSMEDEL, UPPDATERING_RISKKLASSNING,
-			     ANDRING_AV_LIVSMEDELSVERKSAMHET, INFORMATION_OM_UPPHORANDE_AV_VERKSAMHET -> Constants.ECOS_DIARY_PLAN_LIVSMEDEL;
+				ANDRING_AV_LIVSMEDELSVERKSAMHET, INFORMATION_OM_UPPHORANDE_AV_VERKSAMHET -> Constants.ECOS_DIARY_PLAN_LIVSMEDEL;
 			case ANMALAN_ANDRING_AVLOPPSANLAGGNING, ANMALAN_ANDRING_AVLOPPSANORDNING,
-			     ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC,
-			     ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, ANMALAN_INSTALLATION_VARMEPUMP,
-			     ANSOKAN_TILLSTAND_VARMEPUMP,
-			     ANMALAN_KOMPOSTERING, ANMALAN_AVHJALPANDEATGARD_FORORENING -> Constants.ECOS_DIARY_PLAN_AVLOPP;
+				ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC,
+				ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, ANMALAN_INSTALLATION_VARMEPUMP,
+				ANSOKAN_TILLSTAND_VARMEPUMP,
+				ANMALAN_KOMPOSTERING, ANMALAN_AVHJALPANDEATGARD_FORORENING -> Constants.ECOS_DIARY_PLAN_AVLOPP;
 			case ANMALAN_HALSOSKYDDSVERKSAMHET -> Constants.ECOS_DIARY_PLAN_HALSOSKYDD;
 			default -> null;
 		};
@@ -829,7 +829,7 @@ public class EcosService {
 	}
 
 	/**
-	 * @return CaseStatus from Ecos.
+	 * @return                  CaseStatus from Ecos.
 	 * @throws ThrowableProblem NOT_FOUND if no status was found.
 	 */
 	public CaseStatusDTO getStatus(final String caseId, final String externalCaseId, final String municipalityId) {
