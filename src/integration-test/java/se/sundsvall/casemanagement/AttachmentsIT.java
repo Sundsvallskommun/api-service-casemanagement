@@ -5,7 +5,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.jdbc.Sql;
 import org.testcontainers.junit.jupiter.Testcontainers;
-
 import se.sundsvall.dept44.test.AbstractAppTest;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 
@@ -15,7 +14,8 @@ import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 	"/db/scripts/truncate.sql",
 	"/db/scripts/testdata-it.sql"
 })
-class AttachmentsIT extends AbstractAppTest {
+class
+AttachmentsIT extends AbstractAppTest {
 
 	private static final String REQUEST = "request.json";
 	private static final String RESPONSE = "response.json";

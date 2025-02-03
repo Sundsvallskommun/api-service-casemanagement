@@ -43,7 +43,13 @@ public enum StakeholderRole {
 	CHAIRMAN("Ordförande"),
 	LAND_RIGHT_OWNER("Tomträttshavare"),
 	DELEGATE("Ombud"),
-	USUFRUCTUARY("Nyttjanderättshavare");
+	USUFRUCTUARY("Nyttjanderättshavare"),
+
+	DEPARTMENT_HEAD("Avdelningschef"),
+	DEVELOPER("Exploatör"),
+	SECTION_HEAD("Sektionschef"),
+	ALTERNATE("Suppleant"),
+	SECRETARY("Sekreterare");
 
 	private final String text;
 

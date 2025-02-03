@@ -261,6 +261,11 @@ public enum AttachmentCategory {
 	PASSPORT_PHOTO("PASSPORT_PHOTO", "Passfoto"),
 	SIGNATURE("SIGNATURE", "Namnunderskrift"),
 	POWER_OF_ATTORNEY("POWER_OF_ATTORNEY", "Fullmakt"),
+	OTHER("OTHER", "Övrigt"),
+	ERRAND_SCANNED_APPLICATION("ERRAND_SCANNED_APPLICATION", "Ärende inkommet"),
+	SERVICE_RECEIPT("SERVICE_RECEIPT", "Servicekvitto"),
+	OTHER_ATTACHMENT("OTHER_ATTACHMENT", "Övrig bilaga"),
+
 	// MEX
 	LEASE_REQUEST("LEASE_REQUEST", "Förfrågan arrende"),
 	RECEIVED_MAP("RECEIVED_MAP", "Karta inkommen"),
