@@ -176,9 +176,9 @@ public class EcosService {
 		return filename;
 	}
 
-	public RegisterDocumentCaseResultSvcDto postCase(final EcosCaseDTO caseInput, final String municipalityId) {
+	public RegisterDocumentCaseResultSvcDto postCase(final EcosCaseDTO ecosCase, final String municipalityId) {
 
-		final var eFacility = caseInput.getFacilities().getFirst();
+		final var eFacility = ecosCase.getFacilities().getFirst();
 		FbPropertyInfo propertyInfo = null;
 		if ((eFacility.getAddress() != null) && (eFacility.getAddress().getPropertyDesignation() != null)) {
 			// Collects this early to avoid creating something before we discover potential errors
@@ -186,15 +186,15 @@ public class EcosService {
 		}
 
 		// -----> RegisterDocument
-		final var registerDocumentResult = registerDocument(caseInput);
+		final var registerDocumentResult = registerDocument(ecosCase);
 		// -----> Search party, Create party if not found and add to case
 		List<Map<String, ArrayOfguid>> mapped = List.of();
 		if (registerDocumentResult.getCaseId() != null) {
-			mapped = partyService.findAndAddPartyToCase(caseInput, registerDocumentResult.getCaseId());
+			mapped = partyService.findAndAddPartyToCase(ecosCase, registerDocumentResult.getCaseId());
 		}
 		if (propertyInfo != null) {
-			final String facilityGuid = switch (caseInput.getCaseType()) {
-				case REGISTRERING_AV_LIVSMEDEL -> createFoodFacility(caseInput, propertyInfo, registerDocumentResult);
+			final String facilityGuid = switch (ecosCase.getCaseType()) {
+				case REGISTRERING_AV_LIVSMEDEL -> createFoodFacility(ecosCase, propertyInfo, registerDocumentResult);
 				case ANMALAN_INSTALLATION_VARMEPUMP, ANSOKAN_TILLSTAND_VARMEPUMP -> createHeatPumpFacility(eFacility.getExtraParameters(), propertyInfo, registerDocumentResult);
 				case ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP,
 					ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC,
@@ -202,24 +202,24 @@ public class EcosService {
 				case ANMALAN_HALSOSKYDDSVERKSAMHET -> createHealthProtectionFacility(eFacility, propertyInfo, registerDocumentResult);
 				case ANMALAN_KOMPOSTERING, ANMALAN_AVHJALPANDEATGARD_FORORENING -> "";
 				case ANDRING_AV_LIVSMEDELSVERKSAMHET, INFORMATION_OM_UPPHORANDE_AV_VERKSAMHET -> {
-					var facilityId = searchFacility(extractOrgNr(caseInput), registerDocumentResult.getCaseId());
+					var facilityId = searchFacility(extractOrgNr(ecosCase), ecosCase.getFacilities().getFirst().getFacilityCollectionName());
 					addFacilityToCase(facilityId, registerDocumentResult.getCaseId());
 					yield facilityId;
 				}
-				default -> throw Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "CaseType: " + caseInput.getCaseType() + " is not valid. There is a problem in the API validation.");
+				default -> throw Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "CaseType: " + ecosCase.getCaseType() + " is not valid. There is a problem in the API validation.");
 			};
 
 			// -----> AddPartyToFacility
-			if ((facilityGuid != null) && !CaseType.WITH_NULLABLE_FACILITY_TYPE.contains(caseInput.getCaseType())) {
+			if ((facilityGuid != null) && !CaseType.WITH_NULLABLE_FACILITY_TYPE.contains(ecosCase.getCaseType())) {
 				mapped.forEach(o -> addPartyToFacility(facilityGuid, o));
 			}
 
 		} else {
-			if (CaseType.UPPDATERING_RISKKLASSNING.toString().equals(caseInput.getCaseType())) {
+			if (CaseType.UPPDATERING_RISKKLASSNING.toString().equals(ecosCase.getCaseType())) {
 				try {
-					updateRiskClass(caseInput, registerDocumentResult.getCaseId());
+					updateRiskClass(ecosCase, registerDocumentResult.getCaseId());
 				} catch (final Exception e) {
-					LOG.warn("Error when updating risk class for case with OpenE-ID: {}", caseInput.getExternalCaseId(), e);
+					LOG.warn("Error when updating risk class for case with OpenE-ID: {}", ecosCase.getExternalCaseId(), e);
 				}
 			} else {
 				createOccurrenceOnCase(registerDocumentResult.getCaseId());
@@ -227,7 +227,7 @@ public class EcosService {
 		}
 
 		// Persist the connection between OeP-case and Ecos-case
-		caseMappingService.postCaseMapping(caseInput, registerDocumentResult.getCaseId(), SystemType.ECOS, municipalityId);
+		caseMappingService.postCaseMapping(ecosCase, registerDocumentResult.getCaseId(), SystemType.ECOS, municipalityId);
 		return registerDocumentResult;
 	}
 
@@ -334,22 +334,23 @@ public class EcosService {
 		});
 	}
 
-	private String createFoodFacility(final EcosCaseDTO eCase, final FbPropertyInfo propertyInfo, final RegisterDocumentCaseResultSvcDto registerDocumentResult) {
+	private String createFoodFacility(final EcosCaseDTO ecosCase, final FbPropertyInfo propertyInfo, final RegisterDocumentCaseResultSvcDto registerDocumentResult) {
 
-		final CreateFoodFacility createFoodFacility = new CreateFoodFacility();
-		final CreateFoodFacilitySvcDto createFoodFacilitySvcDto = new CreateFoodFacilitySvcDto();
+		final var createFoodFacility = new CreateFoodFacility();
+		final var createFoodFacilitySvcDto = new CreateFoodFacilitySvcDto();
 
 		createFoodFacilitySvcDto.setAddress(getAddress(propertyInfo));
 		createFoodFacilitySvcDto.setCase(registerDocumentResult.getCaseId());
 
 		createFoodFacilitySvcDto.setEstateDesignation(new EstateSvcDto().withFnr(propertyInfo.getFnr()));
-		createFoodFacilitySvcDto.setFacilityCollectionName(eCase.getFacilities().getFirst().getFacilityCollectionName());
-		createFoodFacilitySvcDto.setNote(eCase.getFacilities().getFirst().getDescription());
+		createFoodFacilitySvcDto.setFacilityCollectionName(ecosCase.getFacilities().getFirst().getFacilityCollectionName());
+		createFoodFacilitySvcDto.setNote(ecosCase.getFacilities().getFirst().getDescription());
 
 		createFoodFacility.setCreateFoodFacilitySvcDto(createFoodFacilitySvcDto);
 
-		final String foodFacilityGuid = minutMiljoClient.createFoodFacility(createFoodFacility).getCreateFoodFacilityResult();
-		addFacilityToCase(foodFacilityGuid, registerDocumentResult.getCaseId());
+		final var foodFacilityGuid = minutMiljoClient.createFoodFacility(createFoodFacility).getCreateFoodFacilityResult();
+		final var facilityId = searchFacility(extractOrgNr(ecosCase), ecosCase.getFacilities().getFirst().getFacilityCollectionName());
+		addFacilityToCase(facilityId, registerDocumentResult.getCaseId());
 
 		if (foodFacilityGuid != null) {
 			LOG.debug("FoodFacility created: {}", foodFacilityGuid);

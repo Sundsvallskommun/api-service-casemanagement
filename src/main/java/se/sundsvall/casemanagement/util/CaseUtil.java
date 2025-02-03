@@ -25,7 +25,6 @@ public final class CaseUtil {
 	}
 
 	public static String getSokigoFormattedOrganizationNumber(final String organizationNumber) {
-
 		// Control that the organizationNumber is not null and that it is a valid length
 		if (IntStream.of(13, 12, 11, 10).anyMatch(i -> organizationNumber.length() == i)) {
 			// Remove all non-digit characters
