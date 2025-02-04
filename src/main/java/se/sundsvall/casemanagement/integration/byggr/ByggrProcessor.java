@@ -52,10 +52,33 @@ class ByggrProcessor extends Processor {
 	}
 
 	@EventListener(UpdateByggrCase.class)
-	public void handleUpdateByggrCase(final UpdateByggrCase event) {
-		var byggRCase = event.getPayload();
-		log.info("Handling update of ByggR case: {}", byggRCase.getExternalCaseId());
-		service.updateByggRCase(byggRCase);
+	public void handleUpdateByggrCase(final UpdateByggrCase event) throws IOException, SQLException {
+		final var caseEntity = caseRepository.findByIdAndMunicipalityId(event.getPayload().getExternalCaseId(), event.getMunicipalityId()).orElse(null);
+
+		if (caseEntity == null) {
+			cleanAttachmentBase64(event);
+			log.warn("Unable to process byggR errand {}", event.getPayload());
+			return;
+		}
+
+		final String json;
+		try (BufferedReader reader = new BufferedReader(caseEntity.getDto().getCharacterStream())) {
+			json = reader.lines().collect(Collectors.joining());
+		}
+
+		final var objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+		final var byggRCase = objectMapper.readValue(json, ByggRCaseDTO.class);
+
+		try {
+			Failsafe
+				.with(retryPolicy)
+				.onSuccess(successEvent -> handleSuccessfulDelivery(caseEntity.getId(), "BYGGR", successEvent.getResult().getDnr(), event.getMunicipalityId()))
+				.onFailure(failureEvent -> handleMaximumDeliveryAttemptsExceeded(failureEvent.getException(), caseEntity, "BYGGR", event.getMunicipalityId()))
+				.runAsync(() -> service.updateByggRCase(byggRCase));
+		} catch (final Exception e) {
+			cleanAttachmentBase64(event);
+			log.warn("Unable to update byggR errand {}: {}", event.getPayload(), e.getMessage());
+		}
 	}
 
 	@EventListener(IncomingByggrCase.class)
