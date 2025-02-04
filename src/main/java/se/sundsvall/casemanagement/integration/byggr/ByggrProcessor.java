@@ -1,5 +1,7 @@
 package se.sundsvall.casemanagement.integration.byggr;
 
+import static se.sundsvall.casemanagement.util.Constants.BYGGR;
+
 import arendeexport.SaveNewArendeResponse2;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -72,8 +74,8 @@ class ByggrProcessor extends Processor {
 		try {
 			Failsafe
 				.with(retryPolicy)
-				.onSuccess(successEvent -> handleSuccessfulDelivery(caseEntity.getId(), "BYGGR", successEvent.getResult().getDnr(), event.getMunicipalityId()))
-				.onFailure(failureEvent -> handleMaximumDeliveryAttemptsExceeded(failureEvent.getException(), caseEntity, "BYGGR", event.getMunicipalityId()))
+				.onSuccess(successEvent -> handleSuccessfulDelivery(caseEntity.getId(), BYGGR, successEvent.getResult().getDnr(), event.getMunicipalityId()))
+				.onFailure(failureEvent -> handleMaximumDeliveryAttemptsExceeded(failureEvent.getException(), caseEntity, BYGGR, event.getMunicipalityId()))
 				.runAsync(() -> service.updateByggRCase(byggRCase));
 		} catch (final Exception e) {
 			cleanAttachmentBase64(event);
@@ -103,8 +105,8 @@ class ByggrProcessor extends Processor {
 		try {
 			Failsafe
 				.with(retryPolicy)
-				.onSuccess(successEvent -> handleSuccessfulDelivery(caseEntity.getId(), "BYGGR", successEvent.getResult().getDnr(), event.getMunicipalityId()))
-				.onFailure(failureEvent -> handleMaximumDeliveryAttemptsExceeded(failureEvent.getException(), caseEntity, "BYGGR", event.getMunicipalityId()))
+				.onSuccess(successEvent -> handleSuccessfulDelivery(caseEntity.getId(), BYGGR, successEvent.getResult().getDnr(), event.getMunicipalityId()))
+				.onFailure(failureEvent -> handleMaximumDeliveryAttemptsExceeded(failureEvent.getException(), caseEntity, BYGGR, event.getMunicipalityId()))
 				.get(() -> service.saveNewCase(byggRCaseDTO, event.getMunicipalityId()));
 		} catch (final Exception e) {
 			cleanAttachmentBase64(event);
