@@ -47,7 +47,7 @@ public abstract class Processor {
 
 	public void handleSuccessfulDelivery(final String flowInstanceID, final String system, final String caseID, final String municipalityId) {
 
-		log.info("Successful created errand for externalCaseId {} and municipalityId: {})", flowInstanceID, municipalityId);
+		log.info("Successful processed errand for externalCaseId {} and municipalityId: {})", flowInstanceID, municipalityId);
 
 		openEIntegration.confirmDelivery(flowInstanceID, system, caseID);
 
