@@ -46,6 +46,8 @@ import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_PRO
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_REFERRAL_BUILDING_PERMIT_EARLY_DIALOUGE_PLANNING_NOTICE;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_REQUEST_FOR_PUBLIC_DOCUMENT;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_SELL_LAND_TO_THE_MUNICIPALITY;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_SELL_LAND_TO_THE_MUNICIPALITY_BUSINESS;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_SELL_LAND_TO_THE_MUNICIPALITY_PRIVATE;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_TERMINATION_OF_HUNTING_LEASE;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_TERMINATION_OF_LEASE;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_UNAUTHORIZED_RESIDENCE;
@@ -147,7 +149,9 @@ import lombok.experimental.SuperBuilder;
 		MEX_INVOICE,
 		MEX_REQUEST_FOR_PUBLIC_DOCUMENT,
 		MEX_TERMINATION_OF_LEASE,
-		MEX_TERMINATION_OF_HUNTING_LEASE
+		MEX_TERMINATION_OF_HUNTING_LEASE,
+		MEX_SELL_LAND_TO_THE_MUNICIPALITY_PRIVATE,
+		MEX_SELL_LAND_TO_THE_MUNICIPALITY_BUSINESS
 	})
 })
 @Data
