@@ -228,14 +228,6 @@ class EcosServiceTest {
 
 		eCase.setCaseType(CaseType.REGISTRERING_AV_LIVSMEDEL.toString());
 		eCase.setExternalCaseId(String.valueOf(new Random().nextLong()));
-
-		when(minutMiljoClientMock.searchFacility(any()))
-			.thenReturn(new SearchFacilityResponse()
-				.withSearchFacilityResult(new ArrayOfSearchFacilityResultSvcDto()
-					.withSearchFacilityResultSvcDto(new SearchFacilityResultSvcDto()
-						.withFacilityName(eCase.getFacilities().getFirst().getFacilityCollectionName())
-						.withFacilityId("someFacilityId"))));
-
 		// Act
 		ecosService.postCase(eCase, MUNICIPALITY_ID);
 

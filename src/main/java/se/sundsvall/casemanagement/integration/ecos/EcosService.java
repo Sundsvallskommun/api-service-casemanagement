@@ -346,7 +346,6 @@ public class EcosService {
 		final var createFoodFacility = new CreateFoodFacility().withCreateFoodFacilitySvcDto(createFoodFacilitySvcDto);
 
 		final var foodFacilityGuid = minutMiljoClient.createFoodFacility(createFoodFacility).getCreateFoodFacilityResult();
-		addFacilityToCase(foodFacilityGuid, registerDocumentResult.getCaseId());
 
 		if (foodFacilityGuid != null) {
 			LOG.debug("FoodFacility created: {}", foodFacilityGuid);
@@ -384,8 +383,6 @@ public class EcosService {
 
 		createHeatPumpFacility.setCreateIndividualSewageSvcDto(createHeatPumpFacilitySvcDto);
 		final String facilityGuid = minutMiljoClient.createHeatPumpFacility(createHeatPumpFacility).getCreateHeatPumpFacilityResult();
-		addFacilityToCase(facilityGuid, registerDocumentResult.getCaseId());
-
 		if (facilityGuid != null) {
 			LOG.debug("HeatPumpFacility created: {}", facilityGuid);
 			return facilityGuid;
@@ -526,8 +523,6 @@ public class EcosService {
 		createIndividualSewageFacility.setCreateIndividualSewageSvcDto(createIndividualSewageFacilitySvcDto);
 
 		final String facilityGuid = minutMiljoClient.createIndividualSewageFacility(createIndividualSewageFacility).getCreateIndividualSewageFacilityResult();
-		addFacilityToCase(facilityGuid, registerDocumentResult.getCaseId());
-
 		if (facilityGuid != null) {
 			LOG.debug("Individual Sewage created: {}", facilityGuid);
 			return facilityGuid;
@@ -936,8 +931,6 @@ public class EcosService {
 		createHealthProtectionFacility.setCreateHealthProtectionFacilitySvcDto(createHealthProtectionFacilitySvcDto);
 
 		final String facilityGuid = minutMiljoClient.createHealthProtectionFacility(createHealthProtectionFacility).getCreateHealthProtectionFacilityResult();
-		addFacilityToCase(facilityGuid, registerDocumentResult.getCaseId());
-
 		if (facilityGuid != null) {
 			LOG.debug("Health Protection Facility created: {}", facilityGuid);
 			return facilityGuid;
