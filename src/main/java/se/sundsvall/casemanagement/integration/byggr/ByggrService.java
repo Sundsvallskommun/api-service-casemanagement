@@ -152,7 +152,6 @@ public class ByggrService {
 				.withAnkomststamplaHandlingar(true));
 
 		arendeExportClient.saveNewHandelse(saveNewHandelse);
-		openEIntegration.confirmDelivery(byggRCase.getExternalCaseId(), BYGGR, errandNr);
 		openEIntegration.setStatus(byggRCase.getExternalCaseId(), BYGGR, errandNr, DONE);
 	}
 
@@ -178,7 +177,6 @@ public class ByggrService {
 
 		arendeExportClient.saveNewHandelse(saveNewHandelse);
 		arendeExportClient.saveNewHandelse(createAlertCaseManagerEvent(errandNr));
-		openEIntegration.confirmDelivery(byggRCase.getExternalCaseId(), BYGGR, errandNr);
 		openEIntegration.setStatus(byggRCase.getExternalCaseId(), BYGGR, errandNr, DONE);
 	}
 
@@ -204,7 +202,6 @@ public class ByggrService {
 				.withHandlingar(handelseHandling));
 
 		arendeExportClient.saveNewRemissvar(saveNewRemissvar);
-		openEIntegration.confirmDelivery(byggRCase.getExternalCaseId(), BYGGR, errandNr);
 		openEIntegration.setStatus(byggRCase.getExternalCaseId(), BYGGR, errandNr, DONE);
 	}
 

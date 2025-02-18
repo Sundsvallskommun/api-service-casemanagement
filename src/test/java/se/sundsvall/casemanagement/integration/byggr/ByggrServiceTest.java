@@ -258,7 +258,7 @@ class ByggrServiceTest {
 	}
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		lenient().when(caseTypeDataRepository.findAll()).thenReturn(setUpCaseTypes());
 		TestUtil.standardMockFb(fbServiceMock);
 		TestUtil.standardMockArendeExport(arendeExportClientMock);
@@ -1109,7 +1109,6 @@ class ByggrServiceTest {
 		byggrService.addCertifiedInspector(byggRCaseDTO);
 
 		verify(arendeExportClientMock, times(2)).saveNewHandelse(any());
-		verify(openEIntegrationMock).confirmDelivery(any(), any(), any());
 		verify(openEIntegrationMock).setStatus(any(), any(), any(), any());
 	}
 

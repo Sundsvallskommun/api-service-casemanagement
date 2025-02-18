@@ -16,6 +16,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import dev.failsafe.RetryPolicy;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Optional;
 import javax.sql.rowset.serial.SerialClob;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,6 +30,7 @@ import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.configuration.RetryProperties;
 import se.sundsvall.casemanagement.integration.db.CaseRepository;
 import se.sundsvall.casemanagement.integration.db.model.CaseEntity;
+import se.sundsvall.casemanagement.service.CaseService;
 import se.sundsvall.casemanagement.service.event.IncomingByggrCase;
 import se.sundsvall.casemanagement.service.event.UpdateByggrCase;
 
@@ -53,20 +55,39 @@ class ByggrProcessorTest {
 	private CaseRepository caseRepository;
 
 	@Test
-	void testHandleUpdateByggrCase() {
-		var byggrCase = createByggRCaseDTO(CaseType.ANDRING_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
-		var event = new UpdateByggrCase(this, byggrCase, "2281");
+	void testHandleUpdateByggRCase() throws SQLException, IOException {
+		final var event = new UpdateByggrCase(CaseService.class, createByggRCaseDTO(CaseType.ANDRING_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION), MUNICIPALITY_ID);
+
+		final var objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+		final var jsonString = objectMapper.writeValueAsString(event.getPayload());
+
+		when(caseRepository.findByIdAndMunicipalityId(any(String.class), eq(MUNICIPALITY_ID)))
+			.thenReturn(Optional.of(CaseEntity.builder().withId("id").withDto(new SerialClob(jsonString.toCharArray())).build()));
 
 		byggrProcessor.handleUpdateByggrCase(event);
 
-		verify(service).updateByggRCase(byggrCase);
-		verifyNoMoreInteractions(service);
-		verifyNoInteractions(caseRepository);
+		verify(caseRepository).findByIdAndMunicipalityId(any(String.class), eq(MUNICIPALITY_ID));
+		verifyNoMoreInteractions(caseRepository);
+		verify(service).updateByggRCase(any(ByggRCaseDTO.class));
+
+		assertThat(caseRepository.findAll()).isEmpty();
+	}
+
+	@Test
+	void testHandleUpdateByggRCase_NoErrandFound() throws SQLException, IOException {
+		final var event = new UpdateByggrCase(CaseService.class, new ByggRCaseDTO(), MUNICIPALITY_ID);
+
+		byggrProcessor.handleUpdateByggrCase(event);
+
+		verify(caseRepository).findByIdAndMunicipalityId(any(), eq(MUNICIPALITY_ID));
+		verifyNoMoreInteractions(caseRepository);
+		verifyNoInteractions(service);
+
 	}
 
 	@Test
 	void testHandleIncomingErrand() throws SQLException, IOException {
-		final var event = new IncomingByggrCase(ByggrProcessorTest.class, createByggRCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION), MUNICIPALITY_ID);
+		final var event = new IncomingByggrCase(CaseService.class, createByggRCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION), MUNICIPALITY_ID);
 
 		final var objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 		final var jsonString = objectMapper.writeValueAsString(event.getPayload());
@@ -85,7 +106,7 @@ class ByggrProcessorTest {
 
 	@Test
 	void testHandleIncomingErrand_NoErrandFound() throws SQLException, IOException {
-		final var event = new IncomingByggrCase(ByggrProcessorTest.class, new ByggRCaseDTO(), MUNICIPALITY_ID);
+		final var event = new IncomingByggrCase(CaseService.class, new ByggRCaseDTO(), MUNICIPALITY_ID);
 
 		byggrProcessor.handleIncomingErrand(event);
 
@@ -97,7 +118,7 @@ class ByggrProcessorTest {
 
 	@Test
 	void testHandleIncomingErrand_maximumFound() throws SQLException, IOException {
-		final var event = new IncomingByggrCase(ByggrProcessorTest.class, createByggRCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION), MUNICIPALITY_ID);
+		final var event = new IncomingByggrCase(CaseService.class, createByggRCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION), MUNICIPALITY_ID);
 
 		final var objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 		final String jsonString = objectMapper.writeValueAsString(event.getPayload());
