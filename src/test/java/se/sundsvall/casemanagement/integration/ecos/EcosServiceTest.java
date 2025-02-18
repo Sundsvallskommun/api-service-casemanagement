@@ -173,7 +173,7 @@ class EcosServiceTest {
 		// Assert
 		assertThat(result.getCaseNumber()).isEqualTo(ECOS_CASE_NUMBER);
 
-		verify(minutMiljoClientMock, times(1)).createFoodFacility(createFoodFacilityArgumentCaptor.capture());
+		verify(minutMiljoClientMock).createFoodFacility(createFoodFacilityArgumentCaptor.capture());
 		final CreateFoodFacilitySvcDto createFoodFacilitySvcDto = createFoodFacilityArgumentCaptor.getValue().getCreateFoodFacilitySvcDto();
 
 		assertThat(createFoodFacilitySvcDto.getAddress().getAdressPlatsId()).isEqualTo(ADRESSPLATS_ID);
@@ -182,7 +182,7 @@ class EcosServiceTest {
 		assertThat(createFoodFacilitySvcDto.getNote()).isEqualTo(eCase.getFacilities().getFirst().getDescription());
 		assertThat(createFoodFacilitySvcDto.getFacilityCollectionName()).contains(eCase.getFacilities().getFirst().getFacilityCollectionName());
 
-		verify(minutMiljoClientV2Mock, times(1)).registerDocumentV2(registerDocumentArgumentCaptor.capture());
+		verify(minutMiljoClientV2Mock).registerDocumentV2(registerDocumentArgumentCaptor.capture());
 		final RegisterDocumentCaseSvcDtoV2 registerDocumentCaseSvcDtoV2 = registerDocumentArgumentCaptor.getValue().getRegisterDocumentCaseSvcDto();
 
 		assertThat(registerDocumentCaseSvcDtoV2.getCaseSubtitleFree()).isEqualTo(eCase.getFacilities().getFirst().getFacilityCollectionName() + ", " + eCase.getFacilities().getFirst().getAddress().getPropertyDesignation().toUpperCase());
@@ -191,7 +191,7 @@ class EcosServiceTest {
 		assertThat(registerDocumentCaseSvcDtoV2.getDiaryPlanId()).isEqualTo(Constants.ECOS_DIARY_PLAN_LIVSMEDEL);
 		assertThat(registerDocumentCaseSvcDtoV2.getProcessTypeId()).isEqualTo(Constants.ECOS_PROCESS_TYPE_ID_REGISTRERING_AV_LIVSMEDEL);
 
-		verify(caseMappingServiceMock, times(1)).postCaseMapping(any(CaseDTO.class), any(String.class), any(SystemType.class), eq(MUNICIPALITY_ID));
+		verify(caseMappingServiceMock).postCaseMapping(any(CaseDTO.class), any(String.class), any(SystemType.class), eq(MUNICIPALITY_ID));
 	}
 
 	@Test
@@ -216,7 +216,7 @@ class EcosServiceTest {
 		person.setRoles(List.of(StakeholderRole.INVOICE_RECIPIENT.toString()));
 		person.setFirstName("Förnamn");
 		person.setLastName("Efternamn");
-		eCase.setStakeholders(List.of(person, organization));
+		eCase.setStakeholders(List.of(organization, person));
 
 		final var facility = new FacilityDTO();
 		facility.setFacilityCollectionName("facilityCollectionName");
@@ -228,6 +228,13 @@ class EcosServiceTest {
 
 		eCase.setCaseType(CaseType.REGISTRERING_AV_LIVSMEDEL.toString());
 		eCase.setExternalCaseId(String.valueOf(new Random().nextLong()));
+
+		when(minutMiljoClientMock.searchFacility(any()))
+			.thenReturn(new SearchFacilityResponse()
+				.withSearchFacilityResult(new ArrayOfSearchFacilityResultSvcDto()
+					.withSearchFacilityResultSvcDto(new SearchFacilityResultSvcDto()
+						.withFacilityName(eCase.getFacilities().getFirst().getFacilityCollectionName())
+						.withFacilityId("someFacilityId"))));
 
 		// Act
 		ecosService.postCase(eCase, MUNICIPALITY_ID);
