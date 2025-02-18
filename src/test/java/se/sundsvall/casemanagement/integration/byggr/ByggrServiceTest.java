@@ -258,7 +258,7 @@ class ByggrServiceTest {
 	}
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		lenient().when(caseTypeDataRepository.findAll()).thenReturn(setUpCaseTypes());
 		TestUtil.standardMockFb(fbServiceMock);
 		TestUtil.standardMockArendeExport(arendeExportClientMock);
