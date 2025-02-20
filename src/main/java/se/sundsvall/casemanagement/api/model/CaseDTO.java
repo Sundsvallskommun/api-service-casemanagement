@@ -43,7 +43,7 @@ import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_LAN
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_LEASE_REQUEST;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_OTHER;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_PROTECTIVE_HUNTING;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_REFERRAL_BUILDING_PERMIT_EARLY_DIALOUGE_PLANNING_NOTICE;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_REFERRAL_BUILDING_PERMIT_EARLY_DIALOGUE_PLANNING_NOTICE;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_REQUEST_FOR_PUBLIC_DOCUMENT;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_SELL_LAND_TO_THE_MUNICIPALITY;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_SELL_LAND_TO_THE_MUNICIPALITY_BUSINESS;
@@ -145,7 +145,7 @@ import lombok.experimental.SuperBuilder;
 		MEX_LAND_INSTRUCTION,
 		MEX_OTHER,
 		MEX_LAND_SURVEYING_OFFICE,
-		MEX_REFERRAL_BUILDING_PERMIT_EARLY_DIALOUGE_PLANNING_NOTICE,
+		MEX_REFERRAL_BUILDING_PERMIT_EARLY_DIALOGUE_PLANNING_NOTICE,
 		MEX_INVOICE,
 		MEX_REQUEST_FOR_PUBLIC_DOCUMENT,
 		MEX_TERMINATION_OF_LEASE,
