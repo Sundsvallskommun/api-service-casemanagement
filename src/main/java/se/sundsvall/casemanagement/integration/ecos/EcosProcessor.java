@@ -10,7 +10,6 @@ import java.sql.SQLException;
 import java.util.stream.Collectors;
 import minutmiljoV2.RegisterDocumentCaseResultSvcDto;
 import org.springframework.context.event.EventListener;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import se.sundsvall.casemanagement.api.model.EcosCaseDTO;
 import se.sundsvall.casemanagement.configuration.RetryProperties;
@@ -19,6 +18,7 @@ import se.sundsvall.casemanagement.integration.db.CaseRepository;
 import se.sundsvall.casemanagement.integration.messaging.MessagingIntegration;
 import se.sundsvall.casemanagement.integration.opene.OpenEIntegration;
 import se.sundsvall.casemanagement.service.event.IncomingEcosCase;
+import se.sundsvall.casemanagement.util.EnvironmentUtil;
 import se.sundsvall.casemanagement.util.Processor;
 
 @Component
@@ -35,8 +35,8 @@ class EcosProcessor extends Processor {
 		final EcosService ecosService,
 		final MessagingIntegration messagingIntegration,
 		final CaseMappingRepository caseMappingRepository,
-		final Environment environment) {
-		super(openEIntegration, caseRepository, caseMappingRepository, messagingIntegration, environment);
+		final EnvironmentUtil environmentUtil) {
+		super(openEIntegration, caseRepository, caseMappingRepository, messagingIntegration, environmentUtil);
 		this.ecosService = ecosService;
 
 		retryPolicy = RetryPolicy.<RegisterDocumentCaseResultSvcDto>builder()

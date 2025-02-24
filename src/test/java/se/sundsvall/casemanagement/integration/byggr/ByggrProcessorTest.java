@@ -40,10 +40,10 @@ class ByggrProcessorTest {
 	private static final String MUNICIPALITY_ID = "2281";
 
 	@InjectMocks
-	ByggrProcessor byggrProcessor;
+	private ByggrProcessor byggrProcessor;
 
 	@Spy
-	RetryProperties properties;
+	private RetryProperties properties;
 
 	@Mock
 	private ByggrService service;
@@ -68,7 +68,7 @@ class ByggrProcessorTest {
 
 		verify(caseRepository).findByIdAndMunicipalityId(any(String.class), eq(MUNICIPALITY_ID));
 		verifyNoMoreInteractions(caseRepository);
-		verify(service).updateByggRCase(any(ByggRCaseDTO.class));
+		verify(service).updateByggRCase(any(ByggRCaseDTO.class), eq(MUNICIPALITY_ID));
 
 		assertThat(caseRepository.findAll()).isEmpty();
 	}

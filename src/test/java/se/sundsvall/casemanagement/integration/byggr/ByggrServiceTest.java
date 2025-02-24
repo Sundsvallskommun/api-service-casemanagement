@@ -4,23 +4,30 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static se.sundsvall.casemanagement.TestUtil.FNR;
 import static se.sundsvall.casemanagement.TestUtil.createByggRCaseDTO;
 import static se.sundsvall.casemanagement.TestUtil.createStakeholderDTO;
 import static se.sundsvall.casemanagement.TestUtil.setUpCaseTypes;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.ANDRING_ANSOKAN_OM_BYGGLOV;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.BYGGR_ADDITIONAL_DOCUMENTS;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.BYGGR_ADD_CERTIFIED_INSPECTOR;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.NEIGHBORHOOD_NOTIFICATION;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.STRANDSKYDD_ANDRAD_ANVANDNING;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.STRANDSKYDD_ANLAGGANDE;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.STRANDSKYDD_ANORDNANDE;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.STRANDSKYDD_NYBYGGNAD;
 import static se.sundsvall.casemanagement.util.Constants.ATTEFALL;
 import static se.sundsvall.casemanagement.util.Constants.BYGGLOV_FOR;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR;
 import static se.sundsvall.casemanagement.util.Constants.BYGGR_ARENDEMENING_STRANDSKYDD_FOR_ANDRAD_ANVANDNING;
 import static se.sundsvall.casemanagement.util.Constants.BYGGR_ARENDEMENING_STRANDSKYDD_FOR_ANLAGGANDE;
 import static se.sundsvall.casemanagement.util.Constants.BYGGR_ARENDEMENING_STRANDSKYDD_FOR_ANORDNANDE;
@@ -29,6 +36,7 @@ import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSESLAG_KOMP
 import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSESLAG_SLUTBESKED;
 import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSETYP_BESLUT;
 import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSETYP_HANDLING;
+import static se.sundsvall.casemanagement.util.Constants.ERRAND_NR;
 import static se.sundsvall.casemanagement.util.Constants.HANDELSESLAG_ANMALAN_ATTEFALL;
 import static se.sundsvall.casemanagement.util.Constants.HANDELSESLAG_BYGGLOV;
 import static se.sundsvall.casemanagement.util.Constants.HANDELSESLAG_STRANDSKYDD;
@@ -73,6 +81,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -102,13 +111,17 @@ import se.sundsvall.casemanagement.api.model.enums.FacilityType;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderType;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
+import se.sundsvall.casemanagement.integration.db.CaseRepository;
 import se.sundsvall.casemanagement.integration.db.CaseTypeDataRepository;
+import se.sundsvall.casemanagement.integration.db.model.CaseEntity;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
+import se.sundsvall.casemanagement.integration.messaging.MessagingIntegration;
 import se.sundsvall.casemanagement.integration.opene.OpenEIntegration;
 import se.sundsvall.casemanagement.service.CaseMappingService;
 import se.sundsvall.casemanagement.service.CitizenService;
 import se.sundsvall.casemanagement.service.FbService;
 import se.sundsvall.casemanagement.util.Constants;
+import se.sundsvall.casemanagement.util.EnvironmentUtil;
 
 @ExtendWith(MockitoExtension.class)
 class ByggrServiceTest {
@@ -137,6 +150,15 @@ class ByggrServiceTest {
 
 	@Mock
 	private ArendeExportClient arendeExportClientMock;
+
+	@Mock
+	private CaseRepository caseRepositoryMock;
+
+	@Mock
+	private MessagingIntegration messagingIntegrationMock;
+
+	@Mock
+	private EnvironmentUtil environmentUtilMock;
 
 	private static void assertCaseStatus(final String caseId, final String externalCaseID, final CaseType caseType, final String serviceName, final String status, final LocalDateTime dateTime, final CaseStatusDTO getStatusResult) {
 		assertThat(getStatusResult.getCaseId()).isEqualTo(caseId);
@@ -330,6 +352,138 @@ class ByggrServiceTest {
 		assertThat(handelse.getRubrik()).isEqualTo(RUBRIK_STRANDSKYDD);
 		assertThat(handelse.getHandelsetyp()).isEqualTo(HANDELSETYP_ANSOKAN);
 		assertThat(handelse.getHandelseslag()).isEqualTo(HANDELSESLAG_STRANDSKYDD);
+	}
+
+	/**
+	 * Test scenario where a case is handled successfully.
+	 */
+	@Test
+	void updateByggRCase_NEIGHBORHOOD_NOTIFICATION_1() {
+		var byggrServiceSpy = Mockito.spy(byggrService);
+		var byggRCaseDto = createByggRCaseDTO(NEIGHBORHOOD_NOTIFICATION, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		doNothing().when(byggrServiceSpy).respondToNeighborhoodNotification(byggRCaseDto);
+		doNothing().when(openEIntegrationMock).confirmDelivery(byggRCaseDto.getExternalCaseId(), BYGGR, byggRCaseDto.getExtraParameters().get(ERRAND_NR));
+		when(caseRepositoryMock.findByIdAndMunicipalityId(byggRCaseDto.getExternalCaseId(), MUNICIPALITY_ID)).thenReturn(Optional.of(CaseEntity.builder().build()));
+
+		byggrServiceSpy.updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
+
+		verify(byggrServiceSpy).updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
+		verify(byggrServiceSpy).respondToNeighborhoodNotification(byggRCaseDto);
+		verify(openEIntegrationMock).confirmDelivery(byggRCaseDto.getExternalCaseId(), BYGGR, byggRCaseDto.getExtraParameters().get(ERRAND_NR));
+		verify(caseRepositoryMock).findByIdAndMunicipalityId(byggRCaseDto.getExternalCaseId(), MUNICIPALITY_ID);
+		verify(caseRepositoryMock).delete(any());
+		verifyNoMoreInteractions(byggrServiceSpy, openEIntegrationMock, caseRepositoryMock);
+	}
+
+	/**
+	 * Test scenario where an exception is thrown when updating a case of type NEIGHBORHOOD_NOTIFICATION.
+	 */
+	@Test
+	void updateByggRCase_NEIGHBORHOOD_NOTIFICATION_2() {
+		var byggrServiceSpy = Mockito.spy(byggrService);
+		var byggRCaseDto = createByggRCaseDTO(NEIGHBORHOOD_NOTIFICATION, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		var subject = "Incident from CaseManagement[JUnit]";
+		var message = "[%s][BYGGR] Could not update case with externalCaseId: %s. Exception: %s ".formatted(MUNICIPALITY_ID, byggRCaseDto.getExternalCaseId(), null);
+		doThrow(RuntimeException.class).when(byggrServiceSpy).respondToNeighborhoodNotification(byggRCaseDto);
+		when(environmentUtilMock.extractEnvironment()).thenReturn("JUnit");
+		doNothing().when(messagingIntegrationMock).sendSlack(subject, message);
+		doNothing().when(messagingIntegrationMock).sendMail(subject, message, MUNICIPALITY_ID);
+
+		byggrServiceSpy.updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
+
+		verify(byggrServiceSpy).updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
+		verify(byggrServiceSpy).respondToNeighborhoodNotification(byggRCaseDto);
+		verify(messagingIntegrationMock).sendSlack(subject, message);
+		verify(messagingIntegrationMock).sendMail(subject, message, MUNICIPALITY_ID);
+		verifyNoMoreInteractions(byggrServiceSpy, messagingIntegrationMock);
+	}
+
+	/**
+	 * Test scenario where a case is handled successfully.
+	 */
+	@Test
+	void updateByggRCase_BYGGR_ADD_CERTIFIED_INSPECTOR_1() {
+		var byggrServiceSpy = Mockito.spy(byggrService);
+		var byggRCaseDto = createByggRCaseDTO(BYGGR_ADD_CERTIFIED_INSPECTOR, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		doNothing().when(byggrServiceSpy).addCertifiedInspector(byggRCaseDto);
+		doNothing().when(openEIntegrationMock).confirmDelivery(byggRCaseDto.getExternalCaseId(), BYGGR, byggRCaseDto.getExtraParameters().get(ERRAND_NR));
+		when(caseRepositoryMock.findByIdAndMunicipalityId(byggRCaseDto.getExternalCaseId(), MUNICIPALITY_ID)).thenReturn(Optional.of(CaseEntity.builder().build()));
+
+		byggrServiceSpy.updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
+
+		verify(byggrServiceSpy).updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
+		verify(byggrServiceSpy).addCertifiedInspector(byggRCaseDto);
+		verify(openEIntegrationMock).confirmDelivery(byggRCaseDto.getExternalCaseId(), BYGGR, byggRCaseDto.getExtraParameters().get(ERRAND_NR));
+		verify(caseRepositoryMock).findByIdAndMunicipalityId(byggRCaseDto.getExternalCaseId(), MUNICIPALITY_ID);
+		verify(caseRepositoryMock).delete(any());
+		verifyNoMoreInteractions(byggrServiceSpy, openEIntegrationMock, caseRepositoryMock);
+	}
+
+	/**
+	 * Test scenario where an exception is thrown when updating a case of type BYGGR_ADD_CERTIFIED_INSPECTOR.
+	 */
+	@Test
+	void updateByggRCase_BYGGR_ADD_CERTIFIED_INSPECTOR_2() {
+		var byggrServiceSpy = Mockito.spy(byggrService);
+		var byggRCaseDto = createByggRCaseDTO(BYGGR_ADD_CERTIFIED_INSPECTOR, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		var subject = "Incident from CaseManagement[JUnit]";
+		var message = "[%s][BYGGR] Could not update case with externalCaseId: %s. Exception: %s ".formatted(MUNICIPALITY_ID, byggRCaseDto.getExternalCaseId(), null);
+		doThrow(RuntimeException.class).when(byggrServiceSpy).addCertifiedInspector(byggRCaseDto);
+		when(environmentUtilMock.extractEnvironment()).thenReturn("JUnit");
+		doNothing().when(messagingIntegrationMock).sendSlack(subject, message);
+		doNothing().when(messagingIntegrationMock).sendMail(subject, message, MUNICIPALITY_ID);
+
+		byggrServiceSpy.updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
+
+		verify(byggrServiceSpy).updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
+		verify(byggrServiceSpy).addCertifiedInspector(byggRCaseDto);
+		verify(messagingIntegrationMock).sendSlack(subject, message);
+		verify(messagingIntegrationMock).sendMail(subject, message, MUNICIPALITY_ID);
+		verifyNoMoreInteractions(byggrServiceSpy, messagingIntegrationMock);
+	}
+
+	/**
+	 * Test scenario where a case is handled successfully.
+	 */
+	@Test
+	void updateByggRCase_BYGGR_ADDITIONAL_DOCUMENTS_1() {
+		var byggrServiceSpy = Mockito.spy(byggrService);
+		var byggRCaseDto = createByggRCaseDTO(BYGGR_ADDITIONAL_DOCUMENTS, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		doNothing().when(byggrServiceSpy).addAdditionalDocuments(byggRCaseDto);
+		doNothing().when(openEIntegrationMock).confirmDelivery(byggRCaseDto.getExternalCaseId(), BYGGR, byggRCaseDto.getExtraParameters().get(ERRAND_NR));
+		when(caseRepositoryMock.findByIdAndMunicipalityId(byggRCaseDto.getExternalCaseId(), MUNICIPALITY_ID)).thenReturn(Optional.of(CaseEntity.builder().build()));
+
+		byggrServiceSpy.updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
+
+		verify(byggrServiceSpy).updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
+		verify(byggrServiceSpy).addAdditionalDocuments(byggRCaseDto);
+		verify(openEIntegrationMock).confirmDelivery(byggRCaseDto.getExternalCaseId(), BYGGR, byggRCaseDto.getExtraParameters().get(ERRAND_NR));
+		verify(caseRepositoryMock).findByIdAndMunicipalityId(byggRCaseDto.getExternalCaseId(), MUNICIPALITY_ID);
+		verify(caseRepositoryMock).delete(any());
+		verifyNoMoreInteractions(byggrServiceSpy, openEIntegrationMock, caseRepositoryMock);
+	}
+
+	/**
+	 * Test scenario where an exception is thrown when updating a case of type BYGGR_ADD_CERTIFIED_INSPECTOR.
+	 */
+	@Test
+	void updateByggRCase_BYGGR_ADDITIONAL_DOCUMENTS_2() {
+		var byggrServiceSpy = Mockito.spy(byggrService);
+		var byggRCaseDto = createByggRCaseDTO(BYGGR_ADDITIONAL_DOCUMENTS, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		var subject = "Incident from CaseManagement[JUnit]";
+		var message = "[%s][BYGGR] Could not update case with externalCaseId: %s. Exception: %s ".formatted(MUNICIPALITY_ID, byggRCaseDto.getExternalCaseId(), null);
+		doThrow(RuntimeException.class).when(byggrServiceSpy).addAdditionalDocuments(byggRCaseDto);
+		when(environmentUtilMock.extractEnvironment()).thenReturn("JUnit");
+		doNothing().when(messagingIntegrationMock).sendSlack(subject, message);
+		doNothing().when(messagingIntegrationMock).sendMail(subject, message, MUNICIPALITY_ID);
+
+		byggrServiceSpy.updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
+
+		verify(byggrServiceSpy).updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
+		verify(byggrServiceSpy).addAdditionalDocuments(byggRCaseDto);
+		verify(messagingIntegrationMock).sendSlack(subject, message);
+		verify(messagingIntegrationMock).sendMail(subject, message, MUNICIPALITY_ID);
+		verifyNoMoreInteractions(byggrServiceSpy, messagingIntegrationMock);
 	}
 
 	// ANSOKAN_OM_BYGGLOV
