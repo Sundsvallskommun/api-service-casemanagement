@@ -72,6 +72,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
 import se.sundsvall.casemanagement.api.model.AttachmentDTO;
@@ -82,9 +84,11 @@ import se.sundsvall.casemanagement.api.model.PersonDTO;
 import se.sundsvall.casemanagement.api.model.StakeholderDTO;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
+import se.sundsvall.casemanagement.integration.db.CaseRepository;
 import se.sundsvall.casemanagement.integration.db.CaseTypeDataRepository;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.integration.db.model.CaseTypeData;
+import se.sundsvall.casemanagement.integration.messaging.MessagingIntegration;
 import se.sundsvall.casemanagement.integration.opene.OpenEIntegration;
 import se.sundsvall.casemanagement.service.CaseMappingService;
 import se.sundsvall.casemanagement.service.CitizenService;
@@ -92,39 +96,62 @@ import se.sundsvall.casemanagement.service.FbService;
 import se.sundsvall.casemanagement.service.util.LegalIdUtility;
 import se.sundsvall.casemanagement.util.CaseUtil;
 import se.sundsvall.casemanagement.util.Constants;
+import se.sundsvall.casemanagement.util.EnvironmentUtil;
 
 @Service
 public class ByggrService {
 
+	private static final Logger LOG = LoggerFactory.getLogger(ByggrService.class);
+
 	private final FbService fbService;
 	private final CitizenService citizenService;
 	private final CaseMappingService caseMappingService;
+	private final EnvironmentUtil environmentUtil;
 
 	private final ArendeExportClient arendeExportClient;
 	private final OpenEIntegration openEIntegration;
 
 	private final CaseTypeDataRepository caseTypeDataRepository;
+	private final CaseRepository caseRepository;
+	private final MessagingIntegration messagingIntegration;
 
 	public ByggrService(final FbService fbService,
 		final CitizenService citizenService,
 		final CaseMappingService caseMappingService,
+		final EnvironmentUtil environmentUtil,
 		final ArendeExportClient arendeExportClient,
 		final OpenEIntegration openEIntegration,
-		final CaseTypeDataRepository caseTypeDataRepository) {
+		final CaseTypeDataRepository caseTypeDataRepository,
+		final CaseRepository caseRepository,
+		final MessagingIntegration messagingIntegration) {
 		this.fbService = fbService;
 		this.citizenService = citizenService;
 		this.caseMappingService = caseMappingService;
+		this.environmentUtil = environmentUtil;
 		this.arendeExportClient = arendeExportClient;
 		this.openEIntegration = openEIntegration;
 		this.caseTypeDataRepository = caseTypeDataRepository;
+		this.caseRepository = caseRepository;
+		this.messagingIntegration = messagingIntegration;
 	}
 
-	public void updateByggRCase(final ByggRCaseDTO byggRCase) {
-		switch (byggRCase.getCaseType()) {
-			case "NEIGHBORHOOD_NOTIFICATION" -> respondToNeighborhoodNotification(byggRCase);
-			case "BYGGR_ADD_CERTIFIED_INSPECTOR" -> addCertifiedInspector(byggRCase);
-			case "BYGGR_ADDITIONAL_DOCUMENTS" -> addAdditionalDocuments(byggRCase);
-			default -> throw Problem.valueOf(BAD_REQUEST, "CaseType %s not supported".formatted(byggRCase.getCaseType()));
+	public void updateByggRCase(final ByggRCaseDTO byggRCase, final String municipalityId) {
+		try {
+			switch (byggRCase.getCaseType()) {
+				case "NEIGHBORHOOD_NOTIFICATION" -> respondToNeighborhoodNotification(byggRCase);
+				case "BYGGR_ADD_CERTIFIED_INSPECTOR" -> addCertifiedInspector(byggRCase);
+				case "BYGGR_ADDITIONAL_DOCUMENTS" -> addAdditionalDocuments(byggRCase);
+				default -> throw Problem.valueOf(BAD_REQUEST, "CaseType %s not supported".formatted(byggRCase.getCaseType()));
+			}
+			LOG.info("Successfully updated case with externalCaseId: {}, and municipalityId: {}, and caseType: {}", byggRCase.getExternalCaseId(), municipalityId, byggRCase.getCaseType());
+			openEIntegration.confirmDelivery(byggRCase.getExternalCaseId(), BYGGR, byggRCase.getExtraParameters().get(ERRAND_NR));
+			caseRepository.findByIdAndMunicipalityId(byggRCase.getExternalCaseId(), municipalityId).ifPresent(caseRepository::delete);
+		} catch (Exception e) {
+			LOG.info("Failed to update case with externalCaseId: {}, and municipalityId: {}, and caseType: {}", byggRCase.getExternalCaseId(), municipalityId, byggRCase.getCaseType());
+			final var subject = "Incident from CaseManagement[%s]".formatted(environmentUtil.extractEnvironment());
+			final var message = "[%s][BYGGR] Could not update case with externalCaseId: %s. Exception: %s ".formatted(municipalityId, byggRCase.getExternalCaseId(), e.getMessage());
+			messagingIntegration.sendSlack(subject, message);
+			messagingIntegration.sendMail(subject, message, municipalityId);
 		}
 	}
 

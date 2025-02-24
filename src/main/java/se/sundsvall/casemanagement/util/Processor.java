@@ -1,13 +1,9 @@
 package se.sundsvall.casemanagement.util;
 
-import static java.lang.String.join;
-
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.env.Environment;
 import se.sundsvall.casemanagement.api.model.AttachmentDTO;
 import se.sundsvall.casemanagement.api.model.CaseDTO;
 import se.sundsvall.casemanagement.integration.db.CaseMappingRepository;
@@ -26,15 +22,15 @@ public abstract class Processor {
 	protected final CaseRepository caseRepository;
 	protected final CaseMappingRepository caseMappingRepository;
 	private final MessagingIntegration messagingIntegration;
-	private final Environment environment;
+	private final EnvironmentUtil environmentUtil;
 
 	protected Processor(final OpenEIntegration openEIntegration, final CaseRepository caseRepository,
-		final CaseMappingRepository caseMappingRepository, final MessagingIntegration messagingIntegration, final Environment environment) {
+		final CaseMappingRepository caseMappingRepository, final MessagingIntegration messagingIntegration, final EnvironmentUtil environmentUtil) {
 		this.openEIntegration = openEIntegration;
 		this.caseRepository = caseRepository;
 		this.caseMappingRepository = caseMappingRepository;
 		this.messagingIntegration = messagingIntegration;
-		this.environment = environment;
+		this.environmentUtil = environmentUtil;
 	}
 
 	public void cleanAttachmentBase64(final Event<?> event) {
@@ -60,17 +56,10 @@ public abstract class Processor {
 		log.info("Exceeded max sending attempts case with externalCaseId {}", entity.getId());
 		caseRepository.save(entity.withDeliveryStatus(DeliveryStatus.FAILED));
 
-		final var subject = "Incident from CaseManagement [%s]".formatted(extractEnvironment());
+		final var subject = "Incident from CaseManagement [%s]".formatted(environmentUtil.extractEnvironment());
 		final var message = "[" + municipalityId + "][" + system + "]" + "Exceeded max sending attempts case with externalCaseId " + entity.getId() + " Exception: " + failureEvent.getMessage();
 
 		messagingIntegration.sendSlack(message, municipalityId);
 		messagingIntegration.sendMail(subject, message, municipalityId);
-	}
-
-	private String extractEnvironment() {
-		return Arrays.stream(environment.getActiveProfiles())
-			.filter(string -> string.matches("^(?i)(test|production|it|junit)$"))
-			.findFirst()
-			.orElse(join(",", environment.getActiveProfiles()));
 	}
 }
