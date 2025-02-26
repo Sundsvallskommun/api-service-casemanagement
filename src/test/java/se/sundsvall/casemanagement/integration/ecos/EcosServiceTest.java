@@ -79,8 +79,8 @@ import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderType;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
+import se.sundsvall.casemanagement.integration.party.PartyIntegration;
 import se.sundsvall.casemanagement.service.CaseMappingService;
-import se.sundsvall.casemanagement.service.CitizenService;
 import se.sundsvall.casemanagement.service.FbService;
 import se.sundsvall.casemanagement.util.CaseUtil;
 import se.sundsvall.casemanagement.util.Constants;
@@ -98,7 +98,7 @@ class EcosServiceTest {
 	private EcosService ecosService;
 
 	@Mock
-	private CitizenService citizenServiceMock;
+	private PartyIntegration partyIntegrationMock;
 
 	@Mock
 	private CaseMappingService caseMappingServiceMock;
@@ -148,10 +148,20 @@ class EcosServiceTest {
 		return extraParameters;
 	}
 
+	private static EcosCaseDTO getEnvironmentalCaseDTO(final FacilityDTO facility, final Map<String, String> extraParam) {
+		final var dto = new EcosCaseDTO();
+		final var stakeholder = new OrganizationDTO();
+		stakeholder.setOrganizationNumber("123456-7890");
+		dto.setFacilities(List.of(facility));
+		dto.setStakeholders(List.of(stakeholder));
+		dto.setExtraParameters(extraParam);
+		return dto;
+	}
+
 	@BeforeEach
 	void beforeEach() {
 		TestUtil.standardMockFb(fbServiceMock);
-		TestUtil.standardMockCitizen(citizenServiceMock);
+		TestUtil.standardMockCitizen(partyIntegrationMock);
 		TestUtil.standardMockMinutMiljo(minutMiljoClientMock, minutMiljoClientV2Mock);
 		TestUtil.standardMockPartyService(partyServiceMock);
 	}
@@ -366,7 +376,7 @@ class EcosServiceTest {
 	}
 
 	private void verifyMinutMiljoCallsForHeatPumpCase(final ArgumentCaptor<CreateHeatPumpFacility> createHeatPumpFacilityArgumentCaptor) {
-		verify(partyServiceMock, times(1)).findAndAddPartyToCase(any(EcosCaseDTO.class), any(String.class));
+		verify(partyServiceMock, times(1)).findAndAddPartyToCase(any(EcosCaseDTO.class), any(String.class), eq(MUNICIPALITY_ID));
 		verify(minutMiljoClientMock, times(1)).createHeatPumpFacility(createHeatPumpFacilityArgumentCaptor.capture());
 		verify(minutMiljoClientMock, times(3)).addPartyToFacility(any());
 		verify(minutMiljoClientV2Mock, times(1)).registerDocumentV2(any());
@@ -382,8 +392,8 @@ class EcosServiceTest {
 		ecosService.postCase(eCase, MUNICIPALITY_ID);
 
 		// Assert
-		verify(partyServiceMock, times(1)).findAndAddPartyToCase(any(EcosCaseDTO.class), any(String.class));
-		verify(partyServiceMock, times(1)).findAndAddPartyToCase(any(EcosCaseDTO.class), any(String.class));
+		verify(partyServiceMock, times(1)).findAndAddPartyToCase(any(EcosCaseDTO.class), any(String.class), eq(MUNICIPALITY_ID));
+		verify(partyServiceMock, times(1)).findAndAddPartyToCase(any(EcosCaseDTO.class), any(String.class), eq(MUNICIPALITY_ID));
 		verify(minutMiljoClientMock, times(1)).createHealthProtectionFacility(createHealthProtectionFacilityArgumentCaptor.capture());
 		verify(minutMiljoClientMock, times(3)).addPartyToFacility(any());
 		verify(minutMiljoClientV2Mock, times(1)).registerDocumentV2(any());
@@ -657,7 +667,7 @@ class EcosServiceTest {
 	private void verifyMinutMiljoCallsForSewageCase(final ArgumentCaptor<CreateIndividualSewageFacility> argumentCaptor) {
 		verify(minutMiljoClientMock, times(1)).createIndividualSewageFacility(argumentCaptor.capture());
 		verify(minutMiljoClientMock, times(3)).addPartyToFacility(any());
-		verify(partyServiceMock, times(1)).findAndAddPartyToCase(any(EcosCaseDTO.class), any(String.class));
+		verify(partyServiceMock, times(1)).findAndAddPartyToCase(any(EcosCaseDTO.class), any(String.class), eq(MUNICIPALITY_ID));
 		verify(minutMiljoClientV2Mock, times(1)).registerDocumentV2(any());
 	}
 
@@ -689,7 +699,7 @@ class EcosServiceTest {
 		// Assert
 		final var createOccurrenceOnCaseArgumentCaptor = ArgumentCaptor.forClass(CreateOccurrenceOnCase.class);
 		verify(minutMiljoClientMock, times(1)).createOccurrenceOnCase(createOccurrenceOnCaseArgumentCaptor.capture());
-		verify(partyServiceMock, times(1)).findAndAddPartyToCase(any(EcosCaseDTO.class), any(String.class));
+		verify(partyServiceMock, times(1)).findAndAddPartyToCase(any(EcosCaseDTO.class), any(String.class), eq(MUNICIPALITY_ID));
 		assertThat(result.getCaseId()).isEqualTo(createOccurrenceOnCaseArgumentCaptor.getValue().getCreateOccurrenceOnCaseSvcDto().getCaseId());
 		assertThat(createOccurrenceOnCaseArgumentCaptor.getValue().getCreateOccurrenceOnCaseSvcDto().getOccurrenceDate()).isNotNull();
 		assertThat(createOccurrenceOnCaseArgumentCaptor.getValue().getCreateOccurrenceOnCaseSvcDto().getOccurrenceTypeId()).isEqualTo(Constants.ECOS_OCCURRENCE_TYPE_ID_INFO_FRAN_ETJANST);
@@ -910,16 +920,6 @@ class EcosServiceTest {
 		verify(minutMiljoClientMock, times(1)).addFacilityToCase(any());
 		verify(minutMiljoClientMock, times(1)).updateRiskClass(any());
 		verifyNoMoreInteractions(minutMiljoClientMock);
-	}
-
-	private static EcosCaseDTO getEnvironmentalCaseDTO(final FacilityDTO facility, final Map<String, String> extraParam) {
-		final var dto = new EcosCaseDTO();
-		final var stakeholder = new OrganizationDTO();
-		stakeholder.setOrganizationNumber("123456-7890");
-		dto.setFacilities(List.of(facility));
-		dto.setStakeholders(List.of(stakeholder));
-		dto.setExtraParameters(extraParam);
-		return dto;
 	}
 
 	@Test

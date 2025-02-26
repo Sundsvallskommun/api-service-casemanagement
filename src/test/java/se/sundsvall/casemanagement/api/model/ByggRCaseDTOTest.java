@@ -49,6 +49,7 @@ class ByggRCaseDTOTest {
 		final var externalCaseId = "SomeExternalCaseId";
 		final var diaryNumber = "SomeDiaryNumber";
 		final var extraParameters = Map.of("Key", "Value");
+		final var municipalityId = "SomeMunicipalityId";
 
 		// Act
 		final var byggRCase = new ByggRCaseDTO();
@@ -61,6 +62,7 @@ class ByggRCaseDTOTest {
 		byggRCase.setExternalCaseId(externalCaseId);
 		byggRCase.setDiaryNumber(diaryNumber);
 		byggRCase.setExtraParameters(extraParameters);
+		byggRCase.setMunicipalityId(municipalityId);
 
 		// Assert
 		assertThat(byggRCase).isNotNull().hasNoNullFieldsOrProperties();
@@ -73,6 +75,8 @@ class ByggRCaseDTOTest {
 		assertThat(byggRCase.getExternalCaseId()).isEqualTo(externalCaseId);
 		assertThat(byggRCase.getDiaryNumber()).isEqualTo(diaryNumber);
 		assertThat(byggRCase.getExtraParameters()).isEqualTo(extraParameters);
+		assertThat(byggRCase.getMunicipalityId()).isEqualTo(municipalityId);
+
 	}
 
 	@Test

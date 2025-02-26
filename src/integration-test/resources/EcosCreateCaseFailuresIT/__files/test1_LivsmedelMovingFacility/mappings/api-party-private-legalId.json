@@ -1,0 +1,19 @@
+{
+	"request": {
+		"headers": {
+			"Authorization": {
+				"equalTo": "Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"
+			}
+		},
+		"method": "GET",
+		"urlPath": "/party/2281/PRIVATE/3f601a3d-7926-4025-9ba2-1ac8782e1df6/legalId"
+	},
+	"response": {
+		"headers": {
+			"Content-Type": "text/plain"
+		},
+		"body": "202206222396",
+		"status": 200
+	},
+	"name": "api-party-private-legalId"
+}

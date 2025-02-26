@@ -1,6 +1,7 @@
 # CaseManagement
 
-_A service that acts as an integration layer between clients and multiple case management systems, providing unified access to:_
+_A service that acts as an integration layer between clients and multiple case management systems, providing unified
+access to:_
 
 - _Byggr (Building permits)_
 - _Ecos (Environmental and health protection)_
@@ -34,7 +35,8 @@ _A service that acts as an integration layer between clients and multiple case m
 
 3. **Ensure dependent services are running:**
 
-   If this microservice depends on other services, make sure they are up and accessible. See [Dependencies](#dependencies) for more details.
+   If this microservice depends on other services, make sure they are up and accessible.
+   See [Dependencies](#dependencies) for more details.
 
 4. **Build and run the application:**
 
@@ -54,17 +56,18 @@ This microservice depends on the following services:
   - **Purpose:** Manages cases primarily related to citizen-related subjects.
   - **Repository:** [Link to the repository](https://github.com/Sundsvallskommun/api-service-case-data)
   - **Setup Instructions:** Refer to its documentation for installation and configuration steps.
-- **Citizen**
-  - **Purpose:** To information about a citizen.
-  - **Repository:** Not available at this moment.
-  - **Additional Notes:** Citizen is a API serving data from [Metadatakatalogen](https://utveckling.sundsvall.se/digital-infrastruktur/metakatalogen).
 - **Lantmäteriet Registerbeteckning**
   - **Purpose:** Get register reference to a property.
   - **Repository:** Not available at this moment.
-  - **Additional Notes:** This is a API serving data from [Lantmäteriet](https://www.lantmateriet.se/sv/geodata/vara-produkter/produktlista/registerbeteckning-direkt/).
+  - **Additional Notes:** This is a API serving data
+    from [Lantmäteriet](https://www.lantmateriet.se/sv/geodata/vara-produkter/produktlista/registerbeteckning-direkt/).
 - **Messaging**
   - **Purpose:** Used to send messages if something goes wrong with cases.
   - **Repository:** [Link to the repository](https://github.com/Sundsvallskommun/api-service-messaging)
+  - **Setup Instructions:** Refer to its documentation for installation and configuration steps.
+- **Party**
+  - **Purpose:**  To translate between partyId and legalId for a stakeholder, person or organization.
+  - **Repository:** [Link to the repository](https://github.com/Sundsvallskommun/api-service-party)
   - **Setup Instructions:** Refer to its documentation for installation and configuration steps.
 - **Sokigo ByggR(Arendeexport)**
   - **Purpose:** Manages cases related to building permits
@@ -107,7 +110,8 @@ curl -X GET http://localhost:8080/api/2281/cases/case-mappings
 
 ## Configuration
 
-Configuration is crucial for the application to run successfully. Ensure all necessary settings are configured in `application.yml`.
+Configuration is crucial for the application to run successfully. Ensure all necessary settings are configured in
+`application.yml`.
 
 ### Key Configuration Parameters
 
@@ -146,11 +150,6 @@ Configuration is crucial for the application to run successfully. Ensure all nec
      oauth2ClientSecret: some_token_secret
      oauth2TokenUrl: https://your_token_url
      url: http://your_alkt_url
-   citizen:
-     oauth2ClientId: some_client_id
-     oauth2ClientSecret: some_token_secret
-     oauth2TokenUrl: https://your_token_url
-     url: http://your_citizen_url
    fb:
      database: your_db_name
      url: http://your_fb_url
@@ -170,6 +169,11 @@ Configuration is crucial for the application to run successfully. Ensure all nec
      token-uri: https://your_token_url
      url: https://your_messaging_url
      token: your_messaging_token
+   party:
+     oauth2ClientId: some_client_id
+     oauth2ClientSecret: some_token_secret
+     oauth2TokenUrl: https://your_token_url
+     url: http://your_party_url
    minutmiljo:
      url: https://your_MinutMiljoService.svc_url
      origin: http://your_MinutMiljoService_url
@@ -188,7 +192,8 @@ Configuration is crucial for the application to run successfully. Ensure all nec
 
 ### Database Initialization
 
-The project is set up with [Flyway](https://github.com/flyway/flyway) for database migrations. Flyway is disabled by default so you will have to enable it to automatically populate the database schema upon application startup.
+The project is set up with [Flyway](https://github.com/flyway/flyway) for database migrations. Flyway is disabled by
+default so you will have to enable it to automatically populate the database schema upon application startup.
 
 ```yaml
 spring:
@@ -196,7 +201,8 @@ spring:
     enabled: true
 ```
 
-- **No additional setup is required** for database initialization, as long as the database connection settings are correctly configured.
+- **No additional setup is required** for database initialization, as long as the database connection settings are
+  correctly configured.
 
 ### Additional Notes
 
@@ -210,7 +216,8 @@ spring:
 
 ## Contributing
 
-Contributions are welcome! Please see [CONTRIBUTING.md](https://github.com/Sundsvallskommun/.github/blob/main/.github/CONTRIBUTING.md) for guidelines.
+Contributions are welcome! Please
+see [CONTRIBUTING.md](https://github.com/Sundsvallskommun/.github/blob/main/.github/CONTRIBUTING.md) for guidelines.
 
 ## License
 

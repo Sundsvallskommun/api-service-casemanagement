@@ -190,7 +190,7 @@ public class EcosService {
 		// -----> Search party, Create party if not found and add to case
 		List<Map<String, ArrayOfguid>> mapped = List.of();
 		if (registerDocumentResult.getCaseId() != null) {
-			mapped = partyService.findAndAddPartyToCase(caseInput, registerDocumentResult.getCaseId());
+			mapped = partyService.findAndAddPartyToCase(caseInput, registerDocumentResult.getCaseId(), municipalityId);
 		}
 		if (propertyInfo != null) {
 			final String facilityGuid = switch (caseInput.getCaseType()) {
@@ -202,7 +202,7 @@ public class EcosService {
 				case ANMALAN_HALSOSKYDDSVERKSAMHET -> createHealthProtectionFacility(eFacility, propertyInfo, registerDocumentResult);
 				case ANMALAN_KOMPOSTERING, ANMALAN_AVHJALPANDEATGARD_FORORENING -> "";
 				case ANDRING_AV_LIVSMEDELSVERKSAMHET, INFORMATION_OM_UPPHORANDE_AV_VERKSAMHET -> {
-					var facilityId = searchFacility(extractOrgNr(caseInput), caseInput.getFacilities().getFirst().getFacilityCollectionName());
+					final var facilityId = searchFacility(extractOrgNr(caseInput), caseInput.getFacilities().getFirst().getFacilityCollectionName());
 					addFacilityToCase(facilityId, registerDocumentResult.getCaseId());
 					yield facilityId;
 				}
