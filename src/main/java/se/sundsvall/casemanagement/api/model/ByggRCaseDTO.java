@@ -3,6 +3,7 @@ package se.sundsvall.casemanagement.api.model;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Null;
 import java.io.Serializable;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -33,4 +34,7 @@ public class ByggRCaseDTO extends CaseDTO implements Serializable {
 	@Schema(description = "The facilities in the case")
 	private List<@Valid FacilityDTO> facilities;
 
+	@Null
+	@Schema(description = "The municipality ID for the case", example = "1234", accessMode = Schema.AccessMode.READ_ONLY)
+	private String municipalityId;
 }

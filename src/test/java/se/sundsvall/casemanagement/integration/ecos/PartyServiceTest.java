@@ -1,7 +1,9 @@
 package se.sundsvall.casemanagement.integration.ecos;
 
+import static generated.client.party.PartyType.PRIVATE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -9,6 +11,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static se.sundsvall.casemanagement.api.model.enums.AttachmentCategory.UNDERLAG_RISKKLASSNING;
 
+import java.util.Map;
 import java.util.UUID;
 import minutmiljo.CreateOrganizationParty;
 import minutmiljo.CreateOrganizationPartyResponse;
@@ -22,16 +25,16 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.sundsvall.casemanagement.TestUtil;
 import se.sundsvall.casemanagement.api.model.enums.CaseType;
-import se.sundsvall.casemanagement.service.CitizenService;
+import se.sundsvall.casemanagement.integration.party.PartyIntegration;
 
 @ExtendWith(MockitoExtension.class)
 class PartyServiceTest {
 
 	@Mock
-	private MinutMiljoClient minutMiljoClient;
+	private MinutMiljoClient minutMiljoClientMock;
 
 	@Mock
-	private CitizenService citizenService;
+	private PartyIntegration partyIntegrationMock;
 
 	@InjectMocks
 	private PartyService partyService;
@@ -40,36 +43,37 @@ class PartyServiceTest {
 	void findAndAddPartyToCase_withOrganizationStakeholder() {
 
 		final var createdOrganizationPartyID = UUID.randomUUID().toString();
-		when(minutMiljoClient.createOrganizationParty(any(CreateOrganizationParty.class)))
+		when(minutMiljoClientMock.createOrganizationParty(any(CreateOrganizationParty.class)))
 			.thenReturn(new CreateOrganizationPartyResponse().withCreateOrganizationPartyResult(createdOrganizationPartyID));
 
-		final var result = partyService.findAndAddPartyToCase(TestUtil.createEcosCaseDTO(CaseType.REGISTRERING_AV_LIVSMEDEL, UNDERLAG_RISKKLASSNING), "someCaseId");
+		final var result = partyService.findAndAddPartyToCase(TestUtil.createEcosCaseDTO(CaseType.REGISTRERING_AV_LIVSMEDEL, UNDERLAG_RISKKLASSNING), "someCaseId", "someMunicipalityId");
 
 		assertThat(result).isNotNull().isNotEmpty();
 		assertThat(result.getFirst().get(createdOrganizationPartyID)).isNotNull().satisfies(party -> assertThat(party.getGuid()).isNotEmpty());
 
-		verify(minutMiljoClient, times(2)).searchParty(any(SearchParty.class));
-		verify(minutMiljoClient, times(1)).createOrganizationParty(any(CreateOrganizationParty.class));
-		verify(minutMiljoClient, times(1)).addPartyToCase(any());
+		verify(minutMiljoClientMock, times(2)).searchParty(any(SearchParty.class));
+		verify(minutMiljoClientMock, times(1)).createOrganizationParty(any(CreateOrganizationParty.class));
+		verify(minutMiljoClientMock, times(1)).addPartyToCase(any());
 
-		verifyNoMoreInteractions(minutMiljoClient);
-		verifyNoInteractions(citizenService);
+		verifyNoMoreInteractions(minutMiljoClientMock);
+		verifyNoInteractions(partyIntegrationMock);
 	}
 
 	@Test
 	void findAndAddPartyToCase_withPersonStakeholder() {
 
 		final var createdPersonPartyID = UUID.randomUUID().toString();
+		final var municipalityId = "someMunicipalityId";
 
 		final var caseDTO = TestUtil.createEcosCaseDTO(CaseType.REGISTRERING_AV_LIVSMEDEL, UNDERLAG_RISKKLASSNING);
 		caseDTO.getStakeholders().removeFirst();
 
-		when(citizenService.getPersonalNumber(any(String.class))).thenReturn("19800101-1234");
+		when(partyIntegrationMock.getLegalIdByPartyId(eq(municipalityId), any(String.class))).thenReturn(Map.of(PRIVATE, "19800101-1234"));
 
-		when(minutMiljoClient.createPersonParty(any(CreatePersonParty.class)))
+		when(minutMiljoClientMock.createPersonParty(any(CreatePersonParty.class)))
 			.thenReturn(new CreatePersonPartyResponse().withCreatePersonPartyResult(createdPersonPartyID));
 
-		final var result = partyService.findAndAddPartyToCase(caseDTO, "someCaseId");
+		final var result = partyService.findAndAddPartyToCase(caseDTO, "someCaseId", municipalityId);
 
 		assertThat(result).isNotNull().isNotEmpty();
 		assertThat(result.getFirst().get(createdPersonPartyID)).isNotNull().satisfies(party -> assertThat(party.getGuid()).isNotEmpty());

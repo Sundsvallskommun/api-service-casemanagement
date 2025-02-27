@@ -1,5 +1,6 @@
 package se.sundsvall.casemanagement;
 
+import static generated.client.party.PartyType.PRIVATE;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.lenient;
@@ -72,7 +73,7 @@ import se.sundsvall.casemanagement.integration.ecos.MinutMiljoClient;
 import se.sundsvall.casemanagement.integration.ecos.MinutMiljoClientV2;
 import se.sundsvall.casemanagement.integration.ecos.PartyService;
 import se.sundsvall.casemanagement.integration.fb.model.FbPropertyInfo;
-import se.sundsvall.casemanagement.service.CitizenService;
+import se.sundsvall.casemanagement.integration.party.PartyIntegration;
 import se.sundsvall.casemanagement.service.FbService;
 import se.sundsvall.casemanagement.util.Constants;
 
@@ -244,7 +245,7 @@ public final class TestUtil {
 				"id2", new ArrayOfguid().withGuid("123as"),
 				"id3", new ArrayOfguid().withGuid("1235"))))
 			.when(mock)
-			.findAndAddPartyToCase(any(EcosCaseDTO.class), any(String.class));
+			.findAndAddPartyToCase(any(EcosCaseDTO.class), any(String.class), anyString());
 
 	}
 
@@ -300,8 +301,8 @@ public final class TestUtil {
 		lenient().doReturn(fbPropertyInfo).when(fbMock).getPropertyInfoByPropertyDesignation(anyString());
 	}
 
-	public static void standardMockCitizen(final CitizenService mock) {
-		lenient().doReturn(generateRandomPersonalNumber()).when(mock).getPersonalNumber(anyString());
+	public static void standardMockCitizen(final PartyIntegration mock) {
+		lenient().doReturn(Map.of(PRIVATE, generateRandomPersonalNumber())).when(mock).getLegalIdByPartyId(anyString(), anyString());
 	}
 
 	public static void setSewageStandardExtraParams(final Map<String, String> extraParameters, final String prefix) {
@@ -516,7 +517,7 @@ public final class TestUtil {
 	}
 
 	public static Arende createArende() {
-		var arende = new Arende();
+		final var arende = new Arende();
 		arende.setArendeId(229982);
 		arende.setDnr("BYGG-DNR-0000");
 		arende.withDiarieprefix("BYGG");
@@ -544,19 +545,19 @@ public final class TestUtil {
 	}
 
 	public static ArrayOfAbstractArendeObjekt2 createArrayOfAbstractArendeObjekt2() {
-		var arrayOfAbstractArendeObjekt2 = new ArrayOfAbstractArendeObjekt2();
+		final var arrayOfAbstractArendeObjekt2 = new ArrayOfAbstractArendeObjekt2();
 		arrayOfAbstractArendeObjekt2.getAbstractArendeObjekt().add(createArendeFastighet());
 		return arrayOfAbstractArendeObjekt2;
 	}
 
 	public static AbstractArendeObjekt createArendeFastighet() {
-		var arendeFastighet = new ArendeFastighet();
+		final var arendeFastighet = new ArendeFastighet();
 		arendeFastighet.setFastighet(createFastighet());
 		return arendeFastighet;
 	}
 
 	public static Fastighet createFastighet() {
-		var fastighet = new Fastighet();
+		final var fastighet = new Fastighet();
 		fastighet.setFnr(22045604);
 		fastighet.setTrakt("Sundsvall");
 		fastighet.setFbetNr("Sundsvall 1:1");
@@ -564,13 +565,13 @@ public final class TestUtil {
 	}
 
 	public static ArrayOfHandelse createArrayOfHandelse() {
-		var arrayOfHandelse = new ArrayOfHandelse();
+		final var arrayOfHandelse = new ArrayOfHandelse();
 		arrayOfHandelse.getHandelse().add(createHandelse());
 		return arrayOfHandelse;
 	}
 
 	public static Handelse createHandelse() {
-		var handelse = new Handelse();
+		final var handelse = new Handelse();
 		handelse.setRiktning("IN");
 		handelse.setRubrik("Bygglov");
 		handelse.setHandelseId(123456);
@@ -585,28 +586,28 @@ public final class TestUtil {
 	}
 
 	public static ArrayOfHandelseIntressent2 createArrayOfHandelseIntressent2() {
-		var arrayOfHandelseIntressent2 = new ArrayOfHandelseIntressent2();
+		final var arrayOfHandelseIntressent2 = new ArrayOfHandelseIntressent2();
 		arrayOfHandelseIntressent2.getIntressent().add(createHandelseIntressent());
 		arrayOfHandelseIntressent2.getIntressent().add(createHandelseIntressent());
 		return arrayOfHandelseIntressent2;
 	}
 
 	public static ArrayOfHandelseHandling createArrayOfHandelseHandling() {
-		var arrayOfHandelseHandling = new ArrayOfHandelseHandling();
+		final var arrayOfHandelseHandling = new ArrayOfHandelseHandling();
 		arrayOfHandelseHandling.getHandling().add(createHandling());
 		arrayOfHandelseHandling.getHandling().add(createHandling());
 		return arrayOfHandelseHandling;
 	}
 
 	public static ArrayOfHandling createArrayOfHandling() {
-		var arrayOfHandling = new ArrayOfHandling();
+		final var arrayOfHandling = new ArrayOfHandling();
 		arrayOfHandling.getHandling().add(createHandling());
 		arrayOfHandling.getHandling().add(createHandling());
 		return arrayOfHandling;
 	}
 
 	public static HandelseHandling createHandling() {
-		var handelseHandling = new HandelseHandling();
+		final var handelseHandling = new HandelseHandling();
 		handelseHandling.setHandlingId(123456);
 		handelseHandling.setTyp("ANS");
 		handelseHandling.setStatus("Inkommen");
@@ -616,14 +617,14 @@ public final class TestUtil {
 	}
 
 	public static ArrayOfArendeIntressent2 createArrayOfArendeIntressent2() {
-		var arrayOfArendeIntressent2 = new ArrayOfArendeIntressent2();
+		final var arrayOfArendeIntressent2 = new ArrayOfArendeIntressent2();
 		arrayOfArendeIntressent2.getIntressent().add(createArrendeIntressent());
 		arrayOfArendeIntressent2.getIntressent().add(createArrendeIntressent());
 		return arrayOfArendeIntressent2;
 	}
 
 	public static ArendeIntressent createArrendeIntressent() {
-		var arendeIntressent = new ArendeIntressent();
+		final var arendeIntressent = new ArendeIntressent();
 		arendeIntressent.setNamn("Test Testsson");
 		arendeIntressent.setAdress("Testgatan 1");
 		arendeIntressent.setPostNr("12345");
@@ -635,7 +636,7 @@ public final class TestUtil {
 	}
 
 	public static HandelseIntressent createHandelseIntressent() {
-		var handelseIntressent = new HandelseIntressent();
+		final var handelseIntressent = new HandelseIntressent();
 		handelseIntressent.setAdress("Testgatan 1");
 		handelseIntressent.setIntressentId(123456);
 		handelseIntressent.setFornamn("Test");

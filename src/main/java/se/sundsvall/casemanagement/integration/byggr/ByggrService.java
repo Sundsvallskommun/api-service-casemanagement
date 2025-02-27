@@ -1,5 +1,6 @@
 package se.sundsvall.casemanagement.integration.byggr;
 
+import static generated.client.party.PartyType.PRIVATE;
 import static java.util.Collections.emptyList;
 import static org.zalando.problem.Status.BAD_REQUEST;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.WITH_NULLABLE_FACILITY_TYPE;
@@ -90,8 +91,8 @@ import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.integration.db.model.CaseTypeData;
 import se.sundsvall.casemanagement.integration.messaging.MessagingIntegration;
 import se.sundsvall.casemanagement.integration.opene.OpenEIntegration;
+import se.sundsvall.casemanagement.integration.party.PartyIntegration;
 import se.sundsvall.casemanagement.service.CaseMappingService;
-import se.sundsvall.casemanagement.service.CitizenService;
 import se.sundsvall.casemanagement.service.FbService;
 import se.sundsvall.casemanagement.service.util.LegalIdUtility;
 import se.sundsvall.casemanagement.util.CaseUtil;
@@ -104,7 +105,7 @@ public class ByggrService {
 	private static final Logger LOG = LoggerFactory.getLogger(ByggrService.class);
 
 	private final FbService fbService;
-	private final CitizenService citizenService;
+	private final PartyIntegration partyIntegration;
 	private final CaseMappingService caseMappingService;
 	private final EnvironmentUtil environmentUtil;
 
@@ -116,7 +117,7 @@ public class ByggrService {
 	private final MessagingIntegration messagingIntegration;
 
 	public ByggrService(final FbService fbService,
-		final CitizenService citizenService,
+		final PartyIntegration partyIntegration,
 		final CaseMappingService caseMappingService,
 		final EnvironmentUtil environmentUtil,
 		final ArendeExportClient arendeExportClient,
@@ -125,7 +126,7 @@ public class ByggrService {
 		final CaseRepository caseRepository,
 		final MessagingIntegration messagingIntegration) {
 		this.fbService = fbService;
-		this.citizenService = citizenService;
+		this.partyIntegration = partyIntegration;
 		this.caseMappingService = caseMappingService;
 		this.environmentUtil = environmentUtil;
 		this.arendeExportClient = arendeExportClient;
@@ -137,6 +138,7 @@ public class ByggrService {
 
 	public void updateByggRCase(final ByggRCaseDTO byggRCase, final String municipalityId) {
 		try {
+			byggRCase.setMunicipalityId(municipalityId);
 			switch (byggRCase.getCaseType()) {
 				case "NEIGHBORHOOD_NOTIFICATION" -> respondToNeighborhoodNotification(byggRCase);
 				case "BYGGR_ADD_CERTIFIED_INSPECTOR" -> addCertifiedInspector(byggRCase);
@@ -146,7 +148,7 @@ public class ByggrService {
 			LOG.info("Successfully updated case with externalCaseId: {}, and municipalityId: {}, and caseType: {}", byggRCase.getExternalCaseId(), municipalityId, byggRCase.getCaseType());
 			openEIntegration.confirmDelivery(byggRCase.getExternalCaseId(), BYGGR, byggRCase.getExtraParameters().get(ERRAND_NR));
 			caseRepository.findByIdAndMunicipalityId(byggRCase.getExternalCaseId(), municipalityId).ifPresent(caseRepository::delete);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			LOG.info("Failed to update case with externalCaseId: {}, and municipalityId: {}, and caseType: {}", byggRCase.getExternalCaseId(), municipalityId, byggRCase.getCaseType());
 			final var subject = "Incident from CaseManagement[%s]".formatted(environmentUtil.extractEnvironment());
 			final var message = "[%s][BYGGR] Could not update case with externalCaseId: %s. Exception: %s ".formatted(municipalityId, byggRCase.getExternalCaseId(), e.getMessage());
@@ -156,19 +158,19 @@ public class ByggrService {
 	}
 
 	public void addAdditionalDocuments(final ByggRCaseDTO byggRCase) {
-		var stakeholder = byggRCase.getStakeholders().stream()
+		final var stakeholder = byggRCase.getStakeholders().stream()
 			.max(Comparator.comparing(StakeholderDTO::getType))
 			.orElseThrow(() -> Problem.valueOf(BAD_REQUEST, "No stakeholder found in the incoming request."));
-		var stakeholderId = extractStakeholderId(byggRCase.getStakeholders());
-		var otherInformation = byggRCase.getExtraParameters().get(OTHER_INFORMATION);
-		var errandNr = byggRCase.getExtraParameters().get(ERRAND_NR);
-		var handelseslag = byggRCase.getExtraParameters().get(EVENT_CATEGORY);
+		final var stakeholderId = extractStakeholderId(byggRCase.getStakeholders(), byggRCase.getMunicipalityId());
+		final var otherInformation = byggRCase.getExtraParameters().get(OTHER_INFORMATION);
+		final var errandNr = byggRCase.getExtraParameters().get(ERRAND_NR);
+		final var handelseslag = byggRCase.getExtraParameters().get(EVENT_CATEGORY);
 
-		var handelseIntressent = createAddAdditionalDocumentsHandelseIntressent(stakeholder, stakeholderId);
-		var newHandelse = createAddAdditionalDocumentsHandelse(otherInformation, handelseIntressent, handelseslag);
-		var arrayOfHandling = createArrayOfHandling(byggRCase);
+		final var handelseIntressent = createAddAdditionalDocumentsHandelseIntressent(stakeholder, stakeholderId);
+		final var newHandelse = createAddAdditionalDocumentsHandelse(otherInformation, handelseIntressent, handelseslag);
+		final var arrayOfHandling = createArrayOfHandling(byggRCase);
 
-		var saveNewHandelse = new SaveNewHandelse()
+		final var saveNewHandelse = new SaveNewHandelse()
 			.withMessage(new SaveNewHandelseMessage()
 				.withDnr(errandNr)
 				.withHandlaggarSign(SYSTEM)
@@ -183,16 +185,16 @@ public class ByggrService {
 	}
 
 	public void addCertifiedInspector(final ByggRCaseDTO byggRCase) {
-		var stakeholder = byggRCase.getStakeholders().getFirst();
-		var stakeholderId = extractStakeholderId(byggRCase.getStakeholders());
-		var errandNr = byggRCase.getExtraParameters().get(ERRAND_NR);
-		var otherInformation = byggRCase.getExtraParameters().get(OTHER_INFORMATION);
-		var arrayOfHandling = createArrayOfHandling(byggRCase);
+		final var stakeholder = byggRCase.getStakeholders().getFirst();
+		final var stakeholderId = extractStakeholderId(byggRCase.getStakeholders(), byggRCase.getMunicipalityId());
+		final var errandNr = byggRCase.getExtraParameters().get(ERRAND_NR);
+		final var otherInformation = byggRCase.getExtraParameters().get(OTHER_INFORMATION);
+		final var arrayOfHandling = createArrayOfHandling(byggRCase);
 
-		var handelseIntressent = createAddCertifiedInspectorHandelseIntressent(stakeholder, stakeholderId, byggRCase.getExtraParameters());
-		var newHandelse = createAddCertifiedInspectorHandelse(otherInformation, handelseIntressent);
+		final var handelseIntressent = createAddCertifiedInspectorHandelseIntressent(stakeholder, stakeholderId, byggRCase.getExtraParameters());
+		final var newHandelse = createAddCertifiedInspectorHandelse(otherInformation, handelseIntressent);
 
-		var saveNewHandelse = new SaveNewHandelse()
+		final var saveNewHandelse = new SaveNewHandelse()
 			.withMessage(new SaveNewHandelseMessage()
 				.withDnr(errandNr)
 				.withHandlaggarSign(SYSTEM)
@@ -208,19 +210,19 @@ public class ByggrService {
 	}
 
 	public void respondToNeighborhoodNotification(final ByggRCaseDTO byggRCase) {
-		var stakeholderId = extractStakeholderId(byggRCase.getStakeholders());
-		var comment = byggRCase.getExtraParameters().get(COMMENT);
-		var errandInformation = byggRCase.getExtraParameters().get(ERRAND_INFORMATION);
-		var errandNr = byggRCase.getExtraParameters().get(ERRAND_NR);
-		var handelseId = Integer.parseInt(errandNr.replaceAll("^[^\\[]*\\[([^]]+)].*", "$1"));
-		var dnr = errandNr.split("\\[")[0].trim();
-		var handelseHandling = createNeighborhoodNotificationArrayOfHandling(byggRCase);
-		var handelse = extractEvent(getByggRCase(dnr), handelseId);
-		var intressent = extractIntressentFromEvent(handelse, stakeholderId);
-		var remisser = getRemisserByPersOrgNrAndFilterByDnr(stakeholderId, dnr);
-		var remiss = filterRemisserByStakeholderIdAndIntressentRoll(remisser, stakeholderId, intressent);
+		final var stakeholderId = extractStakeholderId(byggRCase.getStakeholders(), byggRCase.getMunicipalityId());
+		final var comment = byggRCase.getExtraParameters().get(COMMENT);
+		final var errandInformation = byggRCase.getExtraParameters().get(ERRAND_INFORMATION);
+		final var errandNr = byggRCase.getExtraParameters().get(ERRAND_NR);
+		final var handelseId = Integer.parseInt(errandNr.replaceAll("^[^\\[]*\\[([^]]+)].*", "$1"));
+		final var dnr = errandNr.split("\\[")[0].trim();
+		final var handelseHandling = createNeighborhoodNotificationArrayOfHandling(byggRCase);
+		final var handelse = extractEvent(getByggRCase(dnr), handelseId);
+		final var intressent = extractIntressentFromEvent(handelse, stakeholderId);
+		final var remisser = getRemisserByPersOrgNrAndFilterByDnr(stakeholderId, dnr);
+		final var remiss = filterRemisserByStakeholderIdAndIntressentRoll(remisser, stakeholderId, intressent);
 
-		var saveNewRemissvar = new SaveNewRemissvar()
+		final var saveNewRemissvar = new SaveNewRemissvar()
 			.withMessage(new SaveNewRemissvarMessage()
 				.withHandlaggarSign(SYSTEM)
 				.withErinran(comment.equals("Jag har synpunkter"))
@@ -253,12 +255,12 @@ public class ByggrService {
 	 * The incoming request might have one or two stakeholders. If any stakeholder is of type Organization, we should use
 	 * the organization number as stakeholderId. If no organization is found, we should use the personId to fetch a personal
 	 * number from
-	 * citizenService and use this personal number as the stakeholder id.
+	 * partyIntegration and use this personal number as the stakeholder id.
 	 *
 	 * @param  stakeholders List of stakeholders
 	 * @return              String, organization number or personal number of the stakeholder.
 	 */
-	public String extractStakeholderId(final List<StakeholderDTO> stakeholders) {
+	public String extractStakeholderId(final List<StakeholderDTO> stakeholders, final String municipalityId) {
 		final var organizationId = stakeholders.stream()
 			.filter(OrganizationDTO.class::isInstance)
 			.findFirst()
@@ -275,7 +277,7 @@ public class ByggrService {
 			.filter(PersonDTO.class::isInstance)
 			.findFirst()
 			.map(stakeholder -> ((PersonDTO) stakeholder).getPersonId())
-			.map(citizenService::getPersonalNumber)
+			.map((String personId) -> partyIntegration.getLegalIdByPartyId(municipalityId, personId).get(PRIVATE))
 			.map(LegalIdUtility::addHyphen)
 			.orElseThrow(() -> Problem.valueOf(BAD_REQUEST, "No stakeholder found in the incoming request."));
 	}
@@ -291,7 +293,8 @@ public class ByggrService {
 	}
 
 	public SaveNewArendeResponse2 saveNewCase(final ByggRCaseDTO byggRCase, final String municipalityId) {
-		Map<String, CaseTypeData> caseTypeMap = new HashMap<>();
+		byggRCase.setMunicipalityId(municipalityId);
+		final Map<String, CaseTypeData> caseTypeMap = new HashMap<>();
 		caseTypeDataRepository.findAll().forEach(caseTypeData -> caseTypeMap.put(caseTypeData.getValue(), caseTypeData));
 
 		final var saveNewArende = toSaveNewArende(byggRCase, caseTypeMap.get(byggRCase.getCaseType()));
@@ -329,7 +332,7 @@ public class ByggrService {
 	}
 
 	public CaseStatusDTO toByggrStatus(final CaseMapping caseMapping) {
-		var getArendeResponse = arendeExportClient.getArende(new GetArende().withDnr(caseMapping.getCaseId()));
+		final var getArendeResponse = arendeExportClient.getArende(new GetArende().withDnr(caseMapping.getCaseId()));
 		return ByggrMapper.toByggrStatus(getArendeResponse.getGetArendeResult(), caseMapping.getExternalCaseId(), List.of(caseMapping));
 	}
 
@@ -396,7 +399,7 @@ public class ByggrService {
 			.filter(PersonDTO.class::isInstance)
 			.map(obj -> {
 				final var personOjb = (PersonDTO) obj;
-				personOjb.setPersonalNumber(getPersonalNumber(personOjb));
+				personOjb.setPersonalNumber(getPersonalNumber(personOjb, byggRCase.getMunicipalityId()));
 				return personOjb;
 			})
 			.toList();
@@ -418,8 +421,8 @@ public class ByggrService {
 		});
 	}
 
-	private String getPersonalNumber(final PersonDTO personDTOStakeholder) {
-		String pnr = citizenService.getPersonalNumber(personDTOStakeholder.getPersonId());
+	private String getPersonalNumber(final PersonDTO personDTOStakeholder, final String municipalityId) {
+		String pnr = partyIntegration.getLegalIdByPartyId(municipalityId, personDTOStakeholder.getPersonId()).get(PRIVATE);
 		if ((pnr != null) && (pnr.length() == 12)) {
 			pnr = pnr.substring(0, 8) + "-" + pnr.substring(8);
 		}
