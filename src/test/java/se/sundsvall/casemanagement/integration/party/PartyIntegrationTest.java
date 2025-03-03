@@ -34,10 +34,9 @@ class PartyIntegrationTest {
 	void getLegalIdByPartyId_privateFound() {
 		when(partyClientMock.getLegalIdByPartyId(MUNICIPALITY_ID, PRIVATE, PARTY_ID)).thenReturn(Optional.of(LEGAL_ID));
 
-		var result = partyIntegration.getLegalIdByPartyId(MUNICIPALITY_ID, PARTY_ID);
+		final var result = partyIntegration.getLegalIdByPartyId(MUNICIPALITY_ID, PARTY_ID);
 
-		assertThat(result).containsOnlyKeys(PRIVATE);
-		assertThat(result).containsEntry(PRIVATE, LEGAL_ID);
+		assertThat(result).containsOnlyKeys(PRIVATE).containsEntry(PRIVATE, LEGAL_ID);
 		verify(partyClientMock).getLegalIdByPartyId(MUNICIPALITY_ID, PRIVATE, PARTY_ID);
 		verifyNoMoreInteractions(partyClientMock);
 	}
@@ -47,10 +46,9 @@ class PartyIntegrationTest {
 		when(partyClientMock.getLegalIdByPartyId(MUNICIPALITY_ID, PRIVATE, PARTY_ID)).thenReturn(Optional.empty());
 		when(partyClientMock.getLegalIdByPartyId(MUNICIPALITY_ID, ENTERPRISE, PARTY_ID)).thenReturn(Optional.of(LEGAL_ID));
 
-		var result = partyIntegration.getLegalIdByPartyId(MUNICIPALITY_ID, PARTY_ID);
+		final var result = partyIntegration.getLegalIdByPartyId(MUNICIPALITY_ID, PARTY_ID);
 
-		assertThat(result).containsOnlyKeys(ENTERPRISE);
-		assertThat(result).containsEntry(ENTERPRISE, LEGAL_ID);
+		assertThat(result).containsOnlyKeys(ENTERPRISE).containsEntry(ENTERPRISE, LEGAL_ID);
 		verify(partyClientMock).getLegalIdByPartyId(MUNICIPALITY_ID, PRIVATE, PARTY_ID);
 		verify(partyClientMock).getLegalIdByPartyId(MUNICIPALITY_ID, ENTERPRISE, PARTY_ID);
 		verifyNoMoreInteractions(partyClientMock);
@@ -68,6 +66,13 @@ class PartyIntegrationTest {
 		verify(partyClientMock).getLegalIdByPartyId(MUNICIPALITY_ID, PRIVATE, PARTY_ID);
 		verify(partyClientMock).getLegalIdByPartyId(MUNICIPALITY_ID, ENTERPRISE, PARTY_ID);
 		verifyNoMoreInteractions(partyClientMock);
+	}
+
+	@Test
+	void getLegalIdByPartyId_nullPartyId() {
+
+		final var result = partyIntegration.getLegalIdByPartyId(MUNICIPALITY_ID, null);
+		assertThat(result).isEmpty();
 	}
 
 }
