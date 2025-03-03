@@ -33,23 +33,37 @@ import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MARKLOV
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MARKLOV_TRADFALLNING;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_APPLICATION_FOR_ROAD_ALLOWANCE;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_APPLICATION_SQUARE_PLACE;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_BUILDING_PERMIT;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_BUY_LAND_FROM_THE_MUNICIPALITY;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_BUY_SMALL_HOUSE_PLOT;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_EARLY_DIALOG_PLAN_NOTIFICATION;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_EASEMENT;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_FORWARDED_FROM_CONTACTSUNDSVALL;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_INVASIVE_SPECIES;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_INVOICE;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_LAND_INSTRUCTION;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_LAND_RIGHT;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_LAND_SURVEYING_OFFICE;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_LAND_USE_AGREEMENT_VALUATION_PROTOCOL;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_LEASE_REQUEST;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_LITTERING;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_OTHER;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_PROTECTIVE_HUNTING;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_PUBLIC_SPACE_LEASE;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_REFERRAL_BUILDING_PERMIT_EARLY_DIALOGUE_PLANNING_NOTICE;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_REFERRAL_CONSULTATION;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_REQUEST_FOR_PUBLIC_DOCUMENT;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_RETURNED_TO_CONTACT_SUNDSVALL;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_ROAD_ASSOCIATION;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_SELL_LAND_TO_THE_MUNICIPALITY;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_SELL_LAND_TO_THE_MUNICIPALITY_BUSINESS;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_SELL_LAND_TO_THE_MUNICIPALITY_PRIVATE;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_SMALL_BOAT_HARBOR_DOCK_PORT;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_SQUARE_PLACE;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_STORMWATER;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_TERMINATION_OF_HUNTING_LEASE;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_TERMINATION_OF_LEASE;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_TREES_FORESTS;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_UNAUTHORIZED_RESIDENCE;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.NEIGHBORHOOD_NOTIFICATION;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.NYBYGGNAD_ANSOKAN_OM_BYGGLOV;
@@ -150,6 +164,20 @@ import lombok.experimental.SuperBuilder;
 		MEX_REQUEST_FOR_PUBLIC_DOCUMENT,
 		MEX_TERMINATION_OF_LEASE,
 		MEX_TERMINATION_OF_HUNTING_LEASE,
+		MEX_SQUARE_PLACE,
+		MEX_FORWARDED_FROM_CONTACTSUNDSVALL,
+		MEX_BUILDING_PERMIT,
+		MEX_STORMWATER,
+		MEX_INVASIVE_SPECIES,
+		MEX_LAND_USE_AGREEMENT_VALUATION_PROTOCOL,
+		MEX_LITTERING,
+		MEX_REFERRAL_CONSULTATION,
+		MEX_PUBLIC_SPACE_LEASE,
+		MEX_EASEMENT,
+		MEX_TREES_FORESTS,
+		MEX_ROAD_ASSOCIATION,
+		MEX_RETURNED_TO_CONTACT_SUNDSVALL,
+		MEX_SMALL_BOAT_HARBOR_DOCK_PORT,
 		MEX_SELL_LAND_TO_THE_MUNICIPALITY_PRIVATE,
 		MEX_SELL_LAND_TO_THE_MUNICIPALITY_BUSINESS
 	})
