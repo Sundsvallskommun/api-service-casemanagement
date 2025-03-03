@@ -32,13 +32,13 @@ import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MARKLOV
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MARKLOV_SCHAKTNING;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MARKLOV_TRADFALLNING;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_APPLICATION_FOR_ROAD_ALLOWANCE;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_APPLICATION_SQUARE_PLACE;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_BUILDING_PERMIT;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_BUY_LAND_FROM_THE_MUNICIPALITY;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_BUY_SMALL_HOUSE_PLOT;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_EARLY_DIALOG_PLAN_NOTIFICATION;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_EASEMENT;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_FORWARDED_FROM_CONTACTSUNDSVALL;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_HUNTING_LEASE;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_INVASIVE_SPECIES;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_INVOICE;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_LAND_INSTRUCTION;
@@ -61,7 +61,6 @@ import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_SEL
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_SMALL_BOAT_HARBOR_DOCK_PORT;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_SQUARE_PLACE;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_STORMWATER;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_TERMINATION_OF_HUNTING_LEASE;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_TERMINATION_OF_LEASE;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_TREES_FORESTS;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_UNAUTHORIZED_RESIDENCE;
@@ -149,7 +148,6 @@ import lombok.experimental.SuperBuilder;
 		MEX_LEASE_REQUEST,
 		MEX_BUY_LAND_FROM_THE_MUNICIPALITY,
 		MEX_SELL_LAND_TO_THE_MUNICIPALITY,
-		MEX_APPLICATION_SQUARE_PLACE,
 		MEX_BUY_SMALL_HOUSE_PLOT,
 		MEX_APPLICATION_FOR_ROAD_ALLOWANCE,
 		MEX_UNAUTHORIZED_RESIDENCE,
@@ -163,7 +161,7 @@ import lombok.experimental.SuperBuilder;
 		MEX_INVOICE,
 		MEX_REQUEST_FOR_PUBLIC_DOCUMENT,
 		MEX_TERMINATION_OF_LEASE,
-		MEX_TERMINATION_OF_HUNTING_LEASE,
+		MEX_HUNTING_LEASE,
 		MEX_SQUARE_PLACE,
 		MEX_FORWARDED_FROM_CONTACTSUNDSVALL,
 		MEX_BUILDING_PERMIT,
