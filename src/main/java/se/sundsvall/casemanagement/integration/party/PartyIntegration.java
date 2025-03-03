@@ -14,10 +14,8 @@ import org.zalando.problem.Problem;
 @Component
 public class PartyIntegration {
 
-	private static final Logger LOG = LoggerFactory.getLogger(PartyIntegration.class);
-
 	static final String INVALID_PARTY_ID = "Invalid partyId: %s";
-
+	private static final Logger LOG = LoggerFactory.getLogger(PartyIntegration.class);
 	private final PartyClient client;
 
 	public PartyIntegration(final PartyClient client) {
@@ -25,13 +23,16 @@ public class PartyIntegration {
 	}
 
 	public Map<PartyType, String> getLegalIdByPartyId(final String municipalityId, final String partyId) {
-		var personalNumber = client.getLegalIdByPartyId(municipalityId, PRIVATE, partyId);
+		if (partyId == null) {
+			return Map.of();
+		}
+		final var personalNumber = client.getLegalIdByPartyId(municipalityId, PRIVATE, partyId);
 		if (personalNumber.isPresent()) {
 			LOG.debug("Found personal number for partyId: {}", partyId);
 			return Map.of(PRIVATE, personalNumber.get());
 		}
 
-		var organizationNumber = client.getLegalIdByPartyId(municipalityId, ENTERPRISE, partyId);
+		final var organizationNumber = client.getLegalIdByPartyId(municipalityId, ENTERPRISE, partyId);
 		if (organizationNumber.isPresent()) {
 			LOG.debug("Found organization number for partyId: {}", partyId);
 			return Map.of(ENTERPRISE, organizationNumber.get());
