@@ -281,7 +281,7 @@ public enum AttachmentCategory {
 	CONTRACT_DRAFT("CONTRACT_DRAFT", "Avtalsutkast"),
 	OEP_APPLICATION("OEP_APPLICATION", "Ansökan"),
 	ROAD_ALLOWANCE_APPROVAL("ROAD_ALLOWANCE_APPROVAL", "Godkännande för vägbidrag"),
-	MEX_PROTOCOL("PROTOCOL", "Protokoll"),
+	MEX_PROTOCOL("MEX_PROTOCOL", "Protokoll"),
 	PREVIOUS_AGREEMENT("PREVIOUS_AGREEMENT", "Tidigare avtal"),
 
 	SITUATION_PLAN("SITUATION_PLAN", "Situationsplan"),
