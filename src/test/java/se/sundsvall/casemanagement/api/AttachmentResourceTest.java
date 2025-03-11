@@ -48,7 +48,7 @@ class AttachmentResourceTest {
 	private WebTestClient webTestClient;
 
 	@Test
-	void postAttachmentsToCase_Ecos() {
+	void postAttachmentsToCaseWithSystemEcos() {
 		final var attachments = List.of(createAttachment(AttachmentCategory.BUILDING_PERMIT_APPLICATION));
 		final var caseMapping = createCaseMapping(c -> c.setSystem(SystemType.ECOS));
 
@@ -65,7 +65,7 @@ class AttachmentResourceTest {
 	}
 
 	@Test
-	void postAttachmentsToCase_ByggR() {
+	void postAttachmentsToCaseWithSystemByggR() {
 		final var attachments = List.of(createAttachment(AttachmentCategory.BUILDING_PERMIT_APPLICATION));
 		final var caseMapping = createCaseMapping(c -> c.setSystem(SystemType.BYGGR));
 
@@ -82,7 +82,7 @@ class AttachmentResourceTest {
 	}
 
 	@Test
-	void postAttachmentsToCase_CaseData() {
+	void postAttachmentsToCaseWithSystemCaseData() {
 		final var attachments = List.of(createAttachment(AttachmentCategory.BUILDING_PERMIT_APPLICATION));
 		final var caseMapping = createCaseMapping(c -> c.setSystem(SystemType.CASE_DATA));
 
@@ -97,5 +97,4 @@ class AttachmentResourceTest {
 		verify(caseDataService).patchErrandWithAttachment(caseMapping, attachments, MUNICIPALITY_ID);
 		verifyNoInteractions(byggrService, ecosService);
 	}
-
 }

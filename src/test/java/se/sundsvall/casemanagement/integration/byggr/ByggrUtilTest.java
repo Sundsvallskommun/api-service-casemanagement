@@ -31,7 +31,7 @@ class ByggrUtilTest {
 	}
 
 	@Test
-	void containsControlOfficial_NotContainingRole() {
+	void containsControlOfficialNotContainingRole() {
 
 		// Arrange
 		final List<StakeholderDTO> stakholderList = List.of(PersonDTO.builder().withRoles(List.of("OtherRole")).build());
@@ -56,7 +56,7 @@ class ByggrUtilTest {
 	}
 
 	@Test
-	void containsPersonDuplicates_NoDuplicate() {
+	void containsPersonDuplicatesNoDuplicate() {
 		// Arrange
 		final List<StakeholderDTO> stakholderList = List.of(
 			PersonDTO.builder().withPersonId("somePersonId").build(),
@@ -82,7 +82,7 @@ class ByggrUtilTest {
 	}
 
 	@Test
-	void containsPropertyOwner_NotContainingOffensiveRoleName() {
+	void containsPropertyOwnerNotContainingOffensiveRoleName() {
 
 		// Arrange
 		final List<ArendeIntressent> stakholderList = List.of(new ArendeIntressent().withRollLista(new ArrayOfString2().withRoll("NonOffensiveRoleName")));
@@ -105,7 +105,7 @@ class ByggrUtilTest {
 	}
 
 	@Test
-	void getPropertyDesignation_ExpectNull() {
+	void getPropertyDesignationExpectNull() {
 		// Act
 		final var result = ByggrUtil.getPropertyDesignation(List.of());
 		// Assert
@@ -125,7 +125,7 @@ class ByggrUtilTest {
 	}
 
 	@Test
-	void isWithinPlan_IsNotTrue() {
+	void isWithinPlanIsNotTrue() {
 		// Arrange
 		final var facility = new FacilityDTO();
 		facility.setAddress(AddressDTO.builder().withIsZoningPlanArea(false).build());
@@ -149,7 +149,7 @@ class ByggrUtilTest {
 	}
 
 	@Test
-	void parsePropertyDesignation_NotStartingWithSundsvall() {
+	void parsePropertyDesignationNotStartingWithSundsvall() {
 		// Arrange
 		final var facility = new FacilityDTO();
 		facility.setAddress(AddressDTO.builder().withPropertyDesignation("Some-Property-Designation").build());
@@ -161,7 +161,7 @@ class ByggrUtilTest {
 	}
 
 	@Test
-	void parsePropertyDesignation_ExpectNull() {
+	void parsePropertyDesignationExpectNull() {
 		// Act
 		final var result = ByggrUtil.parsePropertyDesignation(List.of());
 		// Assert
@@ -182,7 +182,7 @@ class ByggrUtilTest {
 	}
 
 	@Test
-	void getMainOrTheOnlyFacility_ExpectNull() {
+	void getMainOrTheOnlyFacilityExpectNull() {
 		// Act
 		final var result = ByggrUtil.getMainOrTheOnlyFacility(List.of());
 		// Assert
@@ -190,7 +190,7 @@ class ByggrUtilTest {
 	}
 
 	@Test
-	void getMainOrTheOnlyFacility_TwoFacilities() {
+	void getMainOrTheOnlyFacilityTwoFacilities() {
 		// Arrange
 		final var facility = new FacilityDTO();
 		final var facility2 = new FacilityDTO();
@@ -213,7 +213,7 @@ class ByggrUtilTest {
 	}
 
 	@Test
-	void writeEventNote_ExpectNoChange() {
+	void writeEventNoteExpectNoChange() {
 		// Arrange
 		final var sb = new StringBuilder("SomeNote");
 		// Act
@@ -234,7 +234,7 @@ class ByggrUtilTest {
 	}
 
 	@Test
-	void isCaseClosed_ExpectTrue() {
+	void isCaseClosedExpectTrue() {
 		// Arrange
 		final var arende = new Arende();
 		arende.setStatus(BYGGR_STATUS_AVSLUTAT);
@@ -256,7 +256,7 @@ class ByggrUtilTest {
 	}
 
 	@Test
-	void hasHandelseList_withHandeList() {
+	void hasHandelseListWithHandeList() {
 		// Arrange
 		final var arende = new Arende();
 		// Act
@@ -264,5 +264,4 @@ class ByggrUtilTest {
 		// Assert
 		assertThat(result).isFalse();
 	}
-
 }

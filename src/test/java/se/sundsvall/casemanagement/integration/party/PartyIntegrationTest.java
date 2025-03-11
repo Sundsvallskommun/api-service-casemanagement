@@ -31,7 +31,7 @@ class PartyIntegrationTest {
 	private PartyIntegration partyIntegration;
 
 	@Test
-	void getLegalIdByPartyId_privateFound() {
+	void getLegalIdByPartyIdPrivateFound() {
 		when(partyClientMock.getLegalIdByPartyId(MUNICIPALITY_ID, PRIVATE, PARTY_ID)).thenReturn(Optional.of(LEGAL_ID));
 
 		final var result = partyIntegration.getLegalIdByPartyId(MUNICIPALITY_ID, PARTY_ID);
@@ -42,7 +42,7 @@ class PartyIntegrationTest {
 	}
 
 	@Test
-	void getLegalIdByPartyId_enterpriseFound() {
+	void getLegalIdByPartyIdEnterpriseFound() {
 		when(partyClientMock.getLegalIdByPartyId(MUNICIPALITY_ID, PRIVATE, PARTY_ID)).thenReturn(Optional.empty());
 		when(partyClientMock.getLegalIdByPartyId(MUNICIPALITY_ID, ENTERPRISE, PARTY_ID)).thenReturn(Optional.of(LEGAL_ID));
 
@@ -55,7 +55,7 @@ class PartyIntegrationTest {
 	}
 
 	@Test
-	void getLegalIdByPartyId_badRequest() {
+	void getLegalIdByPartyIdBadRequest() {
 		when(partyClientMock.getLegalIdByPartyId(MUNICIPALITY_ID, PRIVATE, PARTY_ID)).thenReturn(Optional.empty());
 		when(partyClientMock.getLegalIdByPartyId(MUNICIPALITY_ID, ENTERPRISE, PARTY_ID)).thenReturn(Optional.empty());
 
@@ -69,10 +69,9 @@ class PartyIntegrationTest {
 	}
 
 	@Test
-	void getLegalIdByPartyId_nullPartyId() {
+	void getLegalIdByPartyIdNullPartyId() {
 
 		final var result = partyIntegration.getLegalIdByPartyId(MUNICIPALITY_ID, null);
 		assertThat(result).isEmpty();
 	}
-
 }

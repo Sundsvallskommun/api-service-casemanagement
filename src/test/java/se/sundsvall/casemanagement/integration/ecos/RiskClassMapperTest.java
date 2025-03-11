@@ -18,7 +18,7 @@ class RiskClassMapperTest {
 	}
 
 	@Test
-	void mapActivities_Null() {
+	void mapActivitiesNull() {
 		// Act
 		final var result = RiskClassMapper.mapActivities(null);
 		// Assert
@@ -38,7 +38,7 @@ class RiskClassMapperTest {
 	}
 
 	@Test
-	void mapProductGroups_Null() {
+	void mapProductGroupsNull() {
 		// Act
 		final var result = RiskClassMapper.mapProductGroups(null);
 		// Assert
@@ -58,7 +58,7 @@ class RiskClassMapperTest {
 	}
 
 	@Test
-	void mapThirdPartyCertifications_Null() {
+	void mapThirdPartyCertificationsNull() {
 		// Act
 		final var result = RiskClassMapper.mapThirdPartyCertifications(null);
 		// Assert

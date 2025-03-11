@@ -81,7 +81,7 @@ import se.sundsvall.casemanagement.integration.db.model.CaseTypeData;
 class ByggrMapperTest {
 
 	@Test
-	void setStakeholderFields_Org() {
+	void setStakeholderFieldsOrg() {
 		// Arrange
 		final var org = new OrganizationDTO("someOrgName", "someOrgNr", "someSignature");
 		final var intressent = new ArendeIntressent();
@@ -94,7 +94,7 @@ class ByggrMapperTest {
 	}
 
 	@Test
-	void setStakeholderFields_Person() {
+	void setStakeholderFieldsPerson() {
 
 		// Arrange
 		final var org = new PersonDTO("someFirstname", "someLastName", "somePersonId", "somePersonalNumber");
@@ -149,7 +149,7 @@ class ByggrMapperTest {
 	}
 
 	@Test
-	void toHandelse_FireplaceFacility() {
+	void toHandelseFireplaceFacility() {
 		// Arrange
 		final var dto = new ByggRCaseDTO();
 		final var facility = new FacilityDTO();
@@ -173,7 +173,7 @@ class ByggrMapperTest {
 	}
 
 	@Test
-	void toHandelse_SmokeChannelFacility() {
+	void toHandelseSmokeChannelFacility() {
 		// Arrange
 		final var dto = new ByggRCaseDTO();
 		final var facility = new FacilityDTO();
@@ -322,7 +322,7 @@ class ByggrMapperTest {
 	}
 
 	@Test
-	void getInvoiceMarking_BlankInvoiceMarking() {
+	void getInvoiceMarkingBlankInvoiceMarking() {
 
 		// Arrange
 		final var personDto = new PersonDTO("someFirstname", "someLastName", "somePersonId", "somePersonalNumber");
@@ -339,7 +339,7 @@ class ByggrMapperTest {
 	}
 
 	@Test
-	void getInvoiceMarking_nullInvoiceMarking() {
+	void getInvoiceMarkingNullInvoiceMarking() {
 
 		// Arrange
 		final var personDto = new PersonDTO("someFirstname", "someLastName", "somePersonId", "somePersonalNumber");
@@ -356,7 +356,7 @@ class ByggrMapperTest {
 	}
 
 	@Test
-	void getInvoiceMarking_noAdress() {
+	void getInvoiceMarkingNoAdress() {
 
 		// Arrange
 		final var personDto = new PersonDTO("someFirstname", "someLastName", "somePersonId", "somePersonalNumber");
@@ -369,7 +369,7 @@ class ByggrMapperTest {
 	}
 
 	@Test
-	void getInvoiceMarking_noValidAdressCategory() {
+	void getInvoiceMarkingNoValidAdressCategory() {
 
 		// Arrange
 		final var personDto = new PersonDTO("someFirstname", "someLastName", "somePersonId", "somePersonalNumber");
@@ -433,7 +433,7 @@ class ByggrMapperTest {
 	}
 
 	@Test
-	void setPostalAddressFields_withoutHouseNumber() {
+	void setPostalAddressFieldsWithoutHouseNumber() {
 		// Arrange
 		final var addressDTO = new AddressDTO();
 		addressDTO.setStreet("someStreet");
@@ -642,7 +642,7 @@ class ByggrMapperTest {
 	}
 
 	@Test
-	void getArendeBeskrivning_NoDescription() {
+	void getArendeBeskrivningNoDescription() {
 
 		// Arrange
 		final var dto = new ByggRCaseDTO();
@@ -669,7 +669,7 @@ class ByggrMapperTest {
 	}
 
 	@Test
-	void toAdressCategory_Postal() {
+	void toAdressCategoryPostal() {
 		// Arrange
 		final var organizationDTO = new OrganizationDTO();
 		final var addressDTO = new AddressDTO();
@@ -684,7 +684,7 @@ class ByggrMapperTest {
 	}
 
 	@Test
-	void toAdressCategory_Invoice() {
+	void toAdressCategoryInvoice() {
 		// Arrange
 		final var organizationDTO = new OrganizationDTO();
 		final var addressDTO = new AddressDTO();
@@ -696,7 +696,7 @@ class ByggrMapperTest {
 	}
 
 	@Test
-	void toAdressCategory_Invoice_asPerson() {
+	void toAdressCategoryInvoiceAsPerson() {
 		// Arrange
 		final var personDTO = new PersonDTO();
 		final var addressDTO = new AddressDTO();
@@ -767,7 +767,7 @@ class ByggrMapperTest {
 	}
 
 	@Test
-	void toByggrStatus_NoHandelseList() {
+	void toByggrStatusNoHandelseList() {
 
 		// Arrange
 		final var arende = new Arende();
@@ -787,7 +787,7 @@ class ByggrMapperTest {
 	}
 
 	@Test
-	void toByggrStatus_caseClosed() {
+	void toByggrStatusCaseClosed() {
 
 		// Arrange
 		final var arende = new Arende();
@@ -841,7 +841,7 @@ class ByggrMapperTest {
 	}
 
 	@Test
-	void testGetHandelseStatus_Inskickat() {
+	void testGetHandelseStatusInskickat() {
 		// Arrange
 		final String handelseTyp = HANDELSETYP_ANMALAN;
 
@@ -853,7 +853,7 @@ class ByggrMapperTest {
 	}
 
 	@Test
-	void testGetHandelseStatus_UnderBehandling() {
+	void testGetHandelseStatusUnderBehandling() {
 		// Arrange
 		final String handelseslag = BYGGR_HANDELSESLAG_SLUTBESKED;
 		// Act
@@ -864,7 +864,7 @@ class ByggrMapperTest {
 	}
 
 	@Test
-	void testGetHandelseStatus_Utskick() {
+	void testGetHandelseStatusUtskick() {
 		// Arrange
 		final String handelseslag = BYGGR_HANDELSESLAG_UTSKICK_AV_REMISS;
 
@@ -876,7 +876,7 @@ class ByggrMapperTest {
 	}
 
 	@Test
-	void testGetHandelseStatus_Kompletterad() {
+	void testGetHandelseStatusKompletterad() {
 		// Arrange
 		final String handelseUtfall = BYGGR_HANDELSEUTFALL_ATOM_KVITTENS_HL_BYTE;
 
@@ -888,7 +888,7 @@ class ByggrMapperTest {
 	}
 
 	@Test
-	void testGetHandelseStatus_Null() {
+	void testGetHandelseStatusNull() {
 		// Arrange
 		final String handelseTyp = "unknown";
 		final String handelseSlag = "unknown";
@@ -1009,7 +1009,7 @@ class ByggrMapperTest {
 	}
 
 	@Test
-	void createAddCertifiedInspectorHandelseIntressent_1() {
+	void createAddCertifiedInspectorHandelseIntressent1() {
 		var stakeholder = createStakeholderDTO(StakeholderType.PERSON, List.of(StakeholderRole.APPLICANT.name()));
 		var extraParameters = Map.of("certificateAuthType", "certificateAuthType", "certificateNumber", "certificateNumber",
 			"certificateIssuer", "certificateIssuer", "certificateValidDate", "2020-01-01");
@@ -1030,7 +1030,7 @@ class ByggrMapperTest {
 	}
 
 	@Test
-	void createAddCertifiedInspectorHandelseIntressent_2() {
+	void createAddCertifiedInspectorHandelseIntressent2() {
 		var stakeholder = createStakeholderDTO(StakeholderType.ORGANIZATION, List.of(StakeholderRole.APPLICANT.name()));
 		var extraParameters = Map.of("certificateAuthType", "certificateAuthType", "certificateNumber", "certificateNumber",
 			"certificateIssuer", "certificateIssuer", "certificateValidDate", "2020-01-01");
@@ -1092,5 +1092,4 @@ class ByggrMapperTest {
 			});
 		});
 	}
-
 }

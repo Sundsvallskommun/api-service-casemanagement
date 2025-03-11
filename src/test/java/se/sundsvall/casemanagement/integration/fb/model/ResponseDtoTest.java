@@ -5,15 +5,18 @@ import static com.google.code.beanmatchers.BeanMatchers.hasValidBeanEquals;
 import static com.google.code.beanmatchers.BeanMatchers.hasValidBeanHashCode;
 import static com.google.code.beanmatchers.BeanMatchers.hasValidBeanToString;
 import static com.google.code.beanmatchers.BeanMatchers.hasValidGettersAndSetters;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.allOf;
 
 import java.util.List;
 import java.util.Random;
-import org.assertj.core.api.Assertions;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
 
 class ResponseDtoTest {
+
+	private static final Random RANDOM = new Random();
+
 	@Test
 	void testBean() {
 		MatcherAssert.assertThat(ResponseDto.class, allOf(
@@ -29,10 +32,9 @@ class ResponseDtoTest {
 		ResponseDto object = new ResponseDto();
 		object.setData(List.of(new DataItem()));
 		object.setFel(List.of("Fel"));
-		object.setStatusKod(new Random().nextInt());
+		object.setStatusKod(RANDOM.nextInt());
 		object.setStatusMeddelande("StatusMeddelande");
 
-		Assertions.assertThat(object).isNotNull().hasNoNullFieldsOrProperties();
+		assertThat(object).isNotNull().hasNoNullFieldsOrProperties();
 	}
-
 }

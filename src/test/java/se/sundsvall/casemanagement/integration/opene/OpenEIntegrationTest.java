@@ -21,7 +21,7 @@ class OpenEIntegrationTest {
 	private OpenEIntegration openEIntegration;
 
 	@Test
-	void confirmDelivery_throws() {
+	void confirmDeliveryThrowsException() {
 		doThrow(new RuntimeException()).when(openeClient).confirmDelivery(any());
 
 		openEIntegration.confirmDelivery("1", "2", "3");
@@ -31,7 +31,7 @@ class OpenEIntegrationTest {
 	}
 
 	@Test
-	void setStatus_throws() {
+	void setStatusThrowsException() {
 		doThrow(new RuntimeException()).when(openeClient).setStatus(any());
 
 		openEIntegration.setStatus("1", "2", "3", "4");
@@ -39,5 +39,4 @@ class OpenEIntegrationTest {
 		verify(openeClient).setStatus(any());
 		verifyNoMoreInteractions(openeClient);
 	}
-
 }

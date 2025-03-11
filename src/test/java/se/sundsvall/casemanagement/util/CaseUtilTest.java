@@ -14,7 +14,7 @@ import se.sundsvall.casemanagement.TestUtil;
 class CaseUtilTest {
 
 	@Test
-	void testGetFormattedLegalId_Private() {
+	void testGetFormattedLegalIdPrivate() {
 		final var legalId = TestUtil.generateRandomPersonalNumber();
 		final var partyType = PartyType.PRIVATE;
 
@@ -26,7 +26,7 @@ class CaseUtilTest {
 	}
 
 	@Test
-	void testGetFormattedLegalId_Enterprise() {
+	void testGetFormattedLegalIdEnterprise() {
 		final var legalId = TestUtil.generateRandomOrganizationNumber();
 		final var partyType = PartyType.ENTERPRISE;
 

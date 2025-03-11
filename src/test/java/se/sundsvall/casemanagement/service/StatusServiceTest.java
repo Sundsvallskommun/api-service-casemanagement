@@ -73,7 +73,7 @@ class StatusServiceTest {
 	}
 
 	@Test
-	void getStatusByExternalCaseId_ByggR() {
+	void getStatusByExternalCaseIdByggR() {
 		var caseMapping = createCaseMapping(mapping -> mapping.setSystem(SystemType.BYGGR));
 		var caseStatusDTO = createCaseStatusDTO();
 
@@ -90,7 +90,7 @@ class StatusServiceTest {
 	}
 
 	@Test
-	void getStatusByExternalCaseId_Ecos() {
+	void getStatusByExternalCaseIdEcos() {
 		var caseMapping = createCaseMapping(mapping -> mapping.setSystem(SystemType.ECOS));
 		var caseStatusDTO = createCaseStatusDTO();
 
@@ -107,7 +107,7 @@ class StatusServiceTest {
 	}
 
 	@Test
-	void getStatusByExternalCaseId_CaseData() {
+	void getStatusByExternalCaseIdCaseData() {
 		var caseMapping = createCaseMapping(mapping -> mapping.setSystem(SystemType.CASE_DATA));
 		var caseStatusDTO = createCaseStatusDTO();
 
@@ -124,7 +124,7 @@ class StatusServiceTest {
 	}
 
 	@Test
-	void getStatusesByPartyId_Enterprise() {
+	void getStatusesByPartyIdEnterprise() {
 		Map<PartyType, String> partyTypeStringMap = Map.of(ENTERPRISE, ORGANIZATION_NUMBER);
 		var caseStatusDTO = createCaseStatusDTO();
 
@@ -146,7 +146,7 @@ class StatusServiceTest {
 	}
 
 	@Test
-	void getStatusesByPartyId_Private() {
+	void getStatusesByPartyIdPrivate() {
 		Map<PartyType, String> partyTypeStringMap = Map.of(PRIVATE, PERSONAL_NUMBER);
 		var caseStatusDTO = createCaseStatusDTO();
 
@@ -168,7 +168,7 @@ class StatusServiceTest {
 	}
 
 	@Test
-	void getStatusesByPartyId_NoMatch() {
+	void getStatusesByPartyIdNoMatch() {
 		Map<PartyType, String> partyTypeStringMap = Map.of();
 		when(partyIntegrationMock.getLegalIdByPartyId(MUNICIPALITY_ID, PARTY_ID)).thenReturn(partyTypeStringMap);
 
@@ -196,5 +196,4 @@ class StatusServiceTest {
 		verifyNoMoreInteractions(byggrServiceMock, ecosServiceMock);
 		verifyNoInteractions(caseDataServiceMock, caseMappingServiceMock, partyIntegrationMock);
 	}
-
 }

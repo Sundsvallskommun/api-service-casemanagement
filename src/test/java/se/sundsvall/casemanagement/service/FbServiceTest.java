@@ -59,7 +59,7 @@ class FbServiceTest {
 	}
 
 	@Test
-	void getPropertyInfoByPropertyDesignation_NotFound() {
+	void getPropertyInfoByPropertyDesignationNotFound() {
 		// Arrange
 		final var propertyDesignation = "TEST 1:1";
 		// Act & Assert
@@ -70,7 +70,7 @@ class FbServiceTest {
 	}
 
 	@Test
-	void getPropertyInfoByPropertyDesignation_noFnr() {
+	void getPropertyInfoByPropertyDesignationNoFnr() {
 		// Arrange
 		final var propertyDesignation = "TEST 1:1";
 		final var getPropertyInfoByUuidMockResponse = new ResponseDto();
@@ -133,7 +133,7 @@ class FbServiceTest {
 	}
 
 	@Test
-	void getPropertyOwnerByPropertyDesignation_NoValidOrganisationName() {
+	void getPropertyOwnerByPropertyDesignationNoValidOrganisationName() {
 
 		// Arrange
 		final var organizationDTOMock = (OrganizationDTO) TestUtil.createStakeholderDTO(StakeholderType.ORGANIZATION, emptyList());
@@ -156,7 +156,7 @@ class FbServiceTest {
 	}
 
 	@Test
-	void getPropertyOwnerByPropertyDesignation_NoAdress() {
+	void getPropertyOwnerByPropertyDesignationNoAdress() {
 		// Arrange
 		final var personDTOMock = (PersonDTO) TestUtil.createStakeholderDTO(StakeholderType.PERSON, emptyList());
 		final var propertyDesignation = "TEST 1:1";

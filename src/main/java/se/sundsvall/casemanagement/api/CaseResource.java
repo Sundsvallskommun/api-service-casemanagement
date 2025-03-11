@@ -4,6 +4,8 @@ import static org.springframework.http.MediaType.ALL_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
 import static org.springframework.http.ResponseEntity.noContent;
+import static org.springframework.http.ResponseEntity.ok;
+import static org.zalando.problem.Status.BAD_REQUEST;
 import static se.sundsvall.casemanagement.util.Constants.POST_CASES_REQUEST_BODY_EXAMPLE;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.zalando.problem.Problem;
-import org.zalando.problem.Status;
 import org.zalando.problem.violations.ConstraintViolationProblem;
 import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
 import se.sundsvall.casemanagement.api.model.CaseDTO;
@@ -58,10 +59,9 @@ class CaseResource {
 	}
 
 	@PostMapping(path = "cases", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-	@Operation(description = "Creates a case in ByggR or Ecos2 based on caseType. Also persists a connection between externalCaseId and the created case.",
-		responses = {
-			@ApiResponse(responseCode = "200", description = "OK", useReturnTypeSchema = true)
-		})
+	@Operation(
+		description = "Creates a case in ByggR or Ecos2 based on caseType. Also persists a connection between externalCaseId and the created case.",
+		responses = @ApiResponse(responseCode = "200", description = "OK", useReturnTypeSchema = true))
 	ResponseEntity<CaseResourceResponseDTO> postCases(
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable(name = "municipalityId") final String municipalityId,
 		@Schema(oneOf = {
@@ -72,26 +72,25 @@ class CaseResource {
 		caseMappingService.validateUniqueCase(caseDTOInput, municipalityId);
 		caseService.handleCase(caseDTOInput, municipalityId);
 
-		return ResponseEntity.ok(new CaseResourceResponseDTO("Inskickat"));
+		return ok(new CaseResourceResponseDTO("Inskickat"));
 	}
 
 	@PutMapping(path = "cases/{externalCaseId}", consumes = APPLICATION_JSON_VALUE, produces = ALL_VALUE)
-	@Operation(description = "Update a case.",
-		responses = {
-			@ApiResponse(responseCode = "204", description = "No content", useReturnTypeSchema = true)
-		})
+	@Operation(
+		description = "Update a case.",
+		responses = @ApiResponse(responseCode = "204", description = "No content", useReturnTypeSchema = true))
 	ResponseEntity<Void> putCase(
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable(name = "municipalityId") final String municipalityId,
 		@Parameter(name = "externalCaseId", description = "External case id", example = "1234") @PathVariable(name = "externalCaseId") final String externalCaseId,
 		@Schema(oneOf = {
 			ByggRCaseDTO.class, EcosCaseDTO.class, OtherCaseDTO.class
 		}, example = POST_CASES_REQUEST_BODY_EXAMPLE) @RequestBody @Valid final CaseDTO caseDTOInput) {
+
 		if (caseDTOInput instanceof final OtherCaseDTO otherCaseDTO) {
 			caseDataService.putErrand(Long.valueOf(caseMappingService.getCaseMapping(externalCaseId, municipalityId).getCaseId()), otherCaseDTO, municipalityId);
 			return noContent().build();
-		} else {
-			throw Problem.valueOf(Status.BAD_REQUEST, "No support for updating cases of the given type.");
 		}
-	}
 
+		throw Problem.valueOf(BAD_REQUEST, "No support for updating cases of the given type.");
+	}
 }

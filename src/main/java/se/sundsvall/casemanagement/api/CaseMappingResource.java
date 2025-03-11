@@ -2,6 +2,7 @@ package se.sundsvall.casemanagement.api;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
+import static org.springframework.http.ResponseEntity.ok;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -27,6 +28,7 @@ import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
 @Validated
 @RequestMapping(value = "/{municipalityId}/cases/case-mappings")
 @Tag(name = "CaseMappings", description = "CaseMapping operations")
+@ApiResponse(responseCode = "200", description = "OK - Successful operation", useReturnTypeSchema = true)
 @ApiResponse(responseCode = "400", description = "Bad request", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(oneOf = {
 	Problem.class, ConstraintViolationProblem.class
 })))
@@ -40,18 +42,16 @@ class CaseMappingResource {
 		this.caseMappingService = caseMappingService;
 	}
 
-	@GetMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-	@Operation(description = "Returns the connection between externalCaseId and the case in the underlying system.", responses = {
-		@ApiResponse(responseCode = "200", description = "OK - Successful operation", useReturnTypeSchema = true)
-	})
+	@GetMapping(produces = APPLICATION_JSON_VALUE)
+	@Operation(description = "Returns the connection between externalCaseId and the case in the underlying system.")
 	ResponseEntity<List<CaseMapping>> getCaseMapping(
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
 		@Parameter(name = "external-case-id", description = "External case id", example = "2281") @RequestParam(name = "external-case-id", required = false) final String externalCaseId) {
-		if (externalCaseId != null) {
-			return ResponseEntity.ok(List.of(caseMappingService.getCaseMapping(externalCaseId, municipalityId)));
-		} else {
-			return ResponseEntity.ok(caseMappingService.getAllCaseMappings());
-		}
-	}
 
+		if (externalCaseId != null) {
+			return ok(List.of(caseMappingService.getCaseMapping(externalCaseId, municipalityId)));
+		}
+
+		return ok(caseMappingService.getAllCaseMappings());
+	}
 }

@@ -359,7 +359,7 @@ class ByggrServiceTest {
 	 * Test scenario where a case is handled successfully.
 	 */
 	@Test
-	void updateByggRCase_NEIGHBORHOOD_NOTIFICATION_1() {
+	void updateByggRCaseNeighborHoodNotification1() {
 		final var byggrServiceSpy = Mockito.spy(byggrService);
 		final var byggRCaseDto = createByggRCaseDTO(NEIGHBORHOOD_NOTIFICATION, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		doNothing().when(byggrServiceSpy).respondToNeighborhoodNotification(byggRCaseDto);
@@ -380,7 +380,7 @@ class ByggrServiceTest {
 	 * Test scenario where an exception is thrown when updating a case of type NEIGHBORHOOD_NOTIFICATION.
 	 */
 	@Test
-	void updateByggRCase_NEIGHBORHOOD_NOTIFICATION_2() {
+	void updateByggRCaseNeighborHoodNotification2() {
 		final var byggrServiceSpy = Mockito.spy(byggrService);
 		final var byggRCaseDto = createByggRCaseDTO(NEIGHBORHOOD_NOTIFICATION, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		final var subject = "Incident from CaseManagement[JUnit]";
@@ -403,7 +403,7 @@ class ByggrServiceTest {
 	 * Test scenario where a case is handled successfully.
 	 */
 	@Test
-	void updateByggRCase_BYGGR_ADD_CERTIFIED_INSPECTOR_1() {
+	void updateByggRCaseByggrAddCertifiedInspector1() {
 		final var byggrServiceSpy = Mockito.spy(byggrService);
 		final var byggRCaseDto = createByggRCaseDTO(BYGGR_ADD_CERTIFIED_INSPECTOR, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		doNothing().when(byggrServiceSpy).addCertifiedInspector(byggRCaseDto);
@@ -424,7 +424,7 @@ class ByggrServiceTest {
 	 * Test scenario where an exception is thrown when updating a case of type BYGGR_ADD_CERTIFIED_INSPECTOR.
 	 */
 	@Test
-	void updateByggRCase_BYGGR_ADD_CERTIFIED_INSPECTOR_2() {
+	void updateByggRCaseByggrAddCertifiedInspector2() {
 		final var byggrServiceSpy = Mockito.spy(byggrService);
 		final var byggRCaseDto = createByggRCaseDTO(BYGGR_ADD_CERTIFIED_INSPECTOR, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		final var subject = "Incident from CaseManagement[JUnit]";
@@ -447,7 +447,7 @@ class ByggrServiceTest {
 	 * Test scenario where a case is handled successfully.
 	 */
 	@Test
-	void updateByggRCase_BYGGR_ADDITIONAL_DOCUMENTS_1() {
+	void updateByggRCaseByggrAdditionalDocuments1() {
 		final var byggrServiceSpy = Mockito.spy(byggrService);
 		final var byggRCaseDto = createByggRCaseDTO(BYGGR_ADDITIONAL_DOCUMENTS, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		doNothing().when(byggrServiceSpy).addAdditionalDocuments(byggRCaseDto);
@@ -468,7 +468,7 @@ class ByggrServiceTest {
 	 * Test scenario where an exception is thrown when updating a case of type BYGGR_ADD_CERTIFIED_INSPECTOR.
 	 */
 	@Test
-	void updateByggRCase_BYGGR_ADDITIONAL_DOCUMENTS_2() {
+	void updateByggRCaseByggrAdditionalDocuments2() {
 		final var byggrServiceSpy = Mockito.spy(byggrService);
 		final var byggRCaseDto = createByggRCaseDTO(BYGGR_ADDITIONAL_DOCUMENTS, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		final var subject = "Incident from CaseManagement[JUnit]";

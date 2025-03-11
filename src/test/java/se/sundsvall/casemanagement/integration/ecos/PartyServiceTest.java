@@ -40,7 +40,7 @@ class PartyServiceTest {
 	private PartyService partyService;
 
 	@Test
-	void findAndAddPartyToCase_withOrganizationStakeholder() {
+	void findAndAddPartyToCaseWithOrganizationStakeholder() {
 
 		final var createdOrganizationPartyID = UUID.randomUUID().toString();
 		when(minutMiljoClientMock.createOrganizationParty(any(CreateOrganizationParty.class)))
@@ -60,7 +60,7 @@ class PartyServiceTest {
 	}
 
 	@Test
-	void findAndAddPartyToCase_withPersonStakeholder() {
+	void findAndAddPartyToCaseWithPersonStakeholder() {
 
 		final var createdPersonPartyID = UUID.randomUUID().toString();
 		final var municipalityId = "someMunicipalityId";
@@ -79,5 +79,4 @@ class PartyServiceTest {
 		assertThat(result.getFirst().get(createdPersonPartyID)).isNotNull().satisfies(party -> assertThat(party.getGuid()).isNotEmpty());
 
 	}
-
 }

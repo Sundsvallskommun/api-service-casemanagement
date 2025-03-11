@@ -13,6 +13,9 @@ import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
 
 class FbPropertyInfoTest {
+
+	private static final Random RANDOM = new Random();
+
 	@Test
 	void testBean() {
 		MatcherAssert.assertThat(FbPropertyInfo.class, allOf(
@@ -26,8 +29,8 @@ class FbPropertyInfoTest {
 	@Test
 	void testFields() {
 		FbPropertyInfo object = new FbPropertyInfo();
-		object.setAdressplatsId(new Random().nextInt());
-		object.setFnr(new Random().nextInt());
+		object.setAdressplatsId(RANDOM.nextInt());
+		object.setFnr(RANDOM.nextInt());
 
 		Assertions.assertThat(object).isNotNull().hasNoNullFieldsOrProperties();
 	}

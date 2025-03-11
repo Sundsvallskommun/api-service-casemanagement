@@ -1,5 +1,7 @@
 package se.sundsvall.casemanagement.integration.alkt;
 
+import static java.lang.Boolean.TRUE;
+
 import generated.client.alkt.ModelCase;
 import generated.client.alkt.Owner;
 import java.util.List;
@@ -49,7 +51,7 @@ public class AlkTService {
 			.withSystem(SystemType.ALKT)
 			.withCaseType(CASE_TYPE)
 			.withCaseId(modelCase.getRegistrationNumber())
-			.withStatus(modelCase.getOpen() ? ONGOING : FINISHED)
+			.withStatus(TRUE.equals(modelCase.getOpen()) ? ONGOING : FINISHED)
 			.withServiceName(modelCase.getDescription())
 			.withTimestamp(modelCase.getChanged().toLocalDateTime())
 			.build();

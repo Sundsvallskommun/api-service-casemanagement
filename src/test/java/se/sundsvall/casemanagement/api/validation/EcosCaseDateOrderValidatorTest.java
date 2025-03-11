@@ -22,7 +22,7 @@ class EcosCaseDateOrderValidatorTest {
 	private ConstraintValidatorContext context;
 
 	@Test
-	void isValid_StartDateBeforeEndDate() {
+	void isValidStartDateBeforeEndDate() {
 		final var ecosCaseDTO = new EcosCaseDTO();
 		ecosCaseDTO.setStartDate(LocalDate.of(2021, 1, 1));
 		ecosCaseDTO.setEndDate(LocalDate.of(2021, 1, 2));
@@ -31,7 +31,7 @@ class EcosCaseDateOrderValidatorTest {
 	}
 
 	@Test
-	void isValid_EndDateBeforeStartDate() {
+	void isValidEndDateBeforeStartDate() {
 		final var ecosCaseDTO = new EcosCaseDTO();
 		ecosCaseDTO.setStartDate(LocalDate.of(2021, 1, 2));
 		ecosCaseDTO.setEndDate(LocalDate.of(2021, 1, 1));
@@ -40,7 +40,7 @@ class EcosCaseDateOrderValidatorTest {
 	}
 
 	@Test
-	void isValid_StartDateNull() {
+	void isValidStartDateNull() {
 		final var ecosCaseDTO = new EcosCaseDTO();
 		ecosCaseDTO.setEndDate(LocalDate.of(2021, 1, 1));
 
@@ -48,7 +48,7 @@ class EcosCaseDateOrderValidatorTest {
 	}
 
 	@Test
-	void isValid_EndDateNull() {
+	void isValidEndDateNull() {
 		final var ecosCaseDTO = new EcosCaseDTO();
 		ecosCaseDTO.setStartDate(LocalDate.of(2021, 1, 1));
 

@@ -2,6 +2,8 @@ package se.sundsvall.casemanagement.api;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
+import static org.springframework.http.ResponseEntity.notFound;
+import static org.springframework.http.ResponseEntity.ok;
 import static se.sundsvall.casemanagement.util.Constants.ORGNR_PATTERN_MESSAGE;
 import static se.sundsvall.casemanagement.util.Constants.ORGNR_PATTERN_REGEX;
 
@@ -30,6 +32,7 @@ import se.sundsvall.dept44.common.validators.annotation.ValidUuid;
 @Validated
 @RequestMapping(value = "/{municipalityId}")
 @Tag(name = "Status", description = "Status operations")
+@ApiResponse(responseCode = "200", description = "OK - Successful operation", useReturnTypeSchema = true)
 @ApiResponse(responseCode = "400", description = "Bad request", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(oneOf = {
 	Problem.class, ConstraintViolationProblem.class
 })))
@@ -45,36 +48,31 @@ class CaseStatusResource {
 	}
 
 	@GetMapping(path = "/organization/{organizationNumber}/cases/status", produces = APPLICATION_JSON_VALUE)
-	@Operation(description = "Returns the latest status for each of the cases where the specified organization has the role \"applicant\".", responses = {
-		@ApiResponse(responseCode = "200", description = "OK - Successful operation", useReturnTypeSchema = true)
-	})
+	@Operation(description = "Returns the latest status for each of the cases where the specified organization has the role \"applicant\".")
 	ResponseEntity<List<CaseStatusDTO>> getStatusByOrgNr(
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable(name = "municipalityId") final String municipalityId,
 		@Pattern(regexp = ORGNR_PATTERN_REGEX, message = ORGNR_PATTERN_MESSAGE) @Schema(description = "Organization number with 10 or 12 digits.", example = "20220622-2396") @Parameter(name = "organizationNumber",
 			description = "OrganizationNumber") @PathVariable(name = "organizationNumber") final String organizationNumber) {
 		final var caseStatuses = statusService.getStatusByOrgNr(municipalityId, organizationNumber);
 
-		return caseStatuses.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(caseStatuses);
+		return caseStatuses.isEmpty() ? notFound().build() : ok(caseStatuses);
 	}
 
 	@GetMapping(path = "/cases/{externalCaseId}/status", produces = APPLICATION_JSON_VALUE)
-	@Operation(description = "Returns the latest status for the case in the underlying system connected to the specified externalCaseId.", responses = {
-		@ApiResponse(responseCode = "200", description = "OK - Successful operation", useReturnTypeSchema = true)
-	})
+	@Operation(description = "Returns the latest status for the case in the underlying system connected to the specified externalCaseId.")
 	ResponseEntity<CaseStatusDTO> getStatusByExternalCaseId(
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable(name = "municipalityId") final String municipalityId,
 		@Parameter(name = "externalCaseId", description = "External case id") @PathVariable(name = "externalCaseId") final String externalCaseId) {
-		return ResponseEntity.ok(statusService.getStatusByExternalCaseId(municipalityId, externalCaseId));
+
+		return ok(statusService.getStatusByExternalCaseId(municipalityId, externalCaseId));
 	}
 
 	@GetMapping(path = "/{partyId}/statuses", produces = APPLICATION_JSON_VALUE)
-	@Operation(description = "Returns the case status for all cases where the specified party is involved.", responses = {
-		@ApiResponse(responseCode = "200", description = "OK - Successful operation", useReturnTypeSchema = true)
-	})
+	@Operation(description = "Returns the case status for all cases where the specified party is involved.")
 	ResponseEntity<List<CaseStatusDTO>> getStatusesByPartyId(
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable(name = "municipalityId") final String municipalityId,
 		@Parameter(name = "partyId", description = "Party id") @ValidUuid @PathVariable(name = "partyId") final String partyId) {
-		return ResponseEntity.ok(statusService.getStatusesByPartyId(municipalityId, partyId));
-	}
 
+		return ok(statusService.getStatusesByPartyId(municipalityId, partyId));
+	}
 }
