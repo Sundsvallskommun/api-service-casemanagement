@@ -22,19 +22,19 @@ class OnlyOneMainFacilityConstraintValidatorTest {
 	private ConstraintValidatorContext context;
 
 	@Test
-	void isValid_WithOneMainFacility() {
+	void isValidWithOneMainFacility() {
 		final var facilities = List.of(createFacilityDTO(true), createFacilityDTO(false));
 		assertThat(validator.isValid(facilities, context)).isTrue();
 	}
 
 	@Test
-	void isValid_WithNoMainFacility() {
+	void isValidWithNoMainFacility() {
 		final var facilities = List.of(createFacilityDTO(false), createFacilityDTO(false));
 		assertThat(validator.isValid(facilities, context)).isTrue();
 	}
 
 	@Test
-	void isValid_withTwoMainFacilities() {
+	void isValidWithTwoMainFacilities() {
 		final var facilities = List.of(createFacilityDTO(true), createFacilityDTO(true));
 		assertThat(validator.isValid(facilities, context)).isFalse();
 	}

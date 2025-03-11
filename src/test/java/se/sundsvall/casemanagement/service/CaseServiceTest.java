@@ -119,7 +119,7 @@ class CaseServiceTest {
 			"NYBYGGNAD_ANSOKAN_OM_BYGGLOV",
 			"TILLBYGGNAD_ANSOKAN_OM_BYGGLOV", "STRANDSKYDD_ANDRAD_ANVANDNING"
 		})
-	void testHandleByggRCaseNoFacilityType_notAllowed(final CaseType caseType) {
+	void testHandleByggRCaseNoFacilityTypeNotAllowed(final CaseType caseType) {
 		// Arrange
 		final var address = AddressDTO.builder()
 			.withPropertyDesignation("propertyDesignation")

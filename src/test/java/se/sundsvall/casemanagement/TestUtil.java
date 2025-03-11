@@ -79,8 +79,9 @@ import se.sundsvall.casemanagement.util.Constants;
 
 public final class TestUtil {
 
-	public static final Integer FNR = 22045604;
+	private static final Random RANDOM = new Random();
 
+	public static final Integer FNR = 22045604;
 	public static final Integer ADRESSPLATS_ID = 90022392;
 
 	public static EcosCaseDTO createEcosCaseDTO(final CaseType caseType, final AttachmentCategory attachmentCategory) {
@@ -98,7 +99,7 @@ public final class TestUtil {
 			.withEndDate(LocalDate.now().plusDays(365))
 			.withCaseTitleAddition(RandomStringUtils.secure().next(10, true, false))
 			.withDescription(RandomStringUtils.secure().next(10, true, false))
-			.withExternalCaseId(String.valueOf(new Random().nextInt()))
+			.withExternalCaseId(String.valueOf(RANDOM.nextInt()))
 			.withExtraParameters(createExtraParameters())
 			.build();
 
@@ -144,7 +145,7 @@ public final class TestUtil {
 			.withCaseType(caseType.toString())
 			.withCaseTitleAddition(RandomStringUtils.secure().next(10, true, false))
 			.withDescription(RandomStringUtils.secure().next(10, true, false))
-			.withExternalCaseId(String.valueOf(new Random().nextLong()))
+			.withExternalCaseId(String.valueOf(RANDOM.nextLong()))
 			.withExtraParameters(createExtraParameters())
 			.withAttachments(List.of(createAttachmentDTO(attachmentCategory)))
 			.build();
@@ -225,17 +226,17 @@ public final class TestUtil {
 
 	public static CoordinatesDTO createCoordinatesDTO() {
 		return CoordinatesDTO.builder()
-			.withLatitude(new Random().nextDouble(100.0))
-			.withLongitude(new Random().nextDouble(100.0))
+			.withLatitude(RANDOM.nextDouble(100.0))
+			.withLongitude(RANDOM.nextDouble(100.0))
 			.build();
 	}
 
 	public static String generateRandomOrganizationNumber() {
-		return (new Random().nextInt(999999 - 111111) + 111111) + "-" + (new Random().nextInt(9999 - 1111) + 1111);
+		return (RANDOM.nextInt(999999 - 111111) + 111111) + "-" + (RANDOM.nextInt(9999 - 1111) + 1111);
 	}
 
 	public static String generateRandomPersonalNumber() {
-		return "199901" + new Random().nextInt(3) + (new Random().nextInt(9) + 1) + (new Random().nextInt(9999 - 1111) + 1111);
+		return "199901" + RANDOM.nextInt(3) + (RANDOM.nextInt(9) + 1) + (RANDOM.nextInt(9999 - 1111) + 1111);
 	}
 
 	public static void standardMockPartyService(final PartyService mock) {
@@ -306,16 +307,16 @@ public final class TestUtil {
 	}
 
 	public static void setSewageStandardExtraParams(final Map<String, String> extraParameters, final String prefix) {
-		extraParameters.put("OnGrantLand", String.valueOf(new Random().nextBoolean()));
+		extraParameters.put("OnGrantLand", String.valueOf(RANDOM.nextBoolean()));
 		extraParameters.put("ProtectionLevelApprovedEnvironmentId", UUID.randomUUID().toString());
 		extraParameters.put("ProtectionLevelApprovedHealthId", UUID.randomUUID().toString());
 		extraParameters.put("WastewaterApprovedForId", UUID.randomUUID().toString());
 		extraParameters.put("WasteWaterInboundId", UUID.randomUUID().toString());
-		extraParameters.put(prefix + "StepNumber", String.valueOf(new Random().nextInt()));
-		extraParameters.put(prefix + "HasOverflowAlarm", String.valueOf(new Random().nextBoolean()));
-		extraParameters.put(prefix + "LifeTime", String.valueOf(new Random().nextInt()));
+		extraParameters.put(prefix + "StepNumber", String.valueOf(RANDOM.nextInt()));
+		extraParameters.put(prefix + "HasOverflowAlarm", String.valueOf(RANDOM.nextBoolean()));
+		extraParameters.put(prefix + "LifeTime", String.valueOf(RANDOM.nextInt()));
 		extraParameters.put(prefix + "InstallationDate", LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
-		extraParameters.put(prefix + "PersonCapacity", String.valueOf(new Random().nextInt()));
+		extraParameters.put(prefix + "PersonCapacity", String.valueOf(RANDOM.nextInt()));
 	}
 
 	public static Map<String, String> getHeatPumpExtraParams() {
@@ -325,9 +326,9 @@ public final class TestUtil {
 
 		extraParameters.put(prefix + "Manufacturer", RandomStringUtils.secure().next(10, true, false));
 		extraParameters.put(prefix + "Model", RandomStringUtils.secure().next(10, true, false));
-		extraParameters.put(prefix + "PowerConsumption", String.valueOf(new Random().nextDouble()));
-		extraParameters.put(prefix + "PowerOutput", String.valueOf(new Random().nextDouble()));
-		extraParameters.put(prefix + "Capacity", String.valueOf(new Random().nextDouble()));
+		extraParameters.put(prefix + "PowerConsumption", String.valueOf(RANDOM.nextDouble()));
+		extraParameters.put(prefix + "PowerOutput", String.valueOf(RANDOM.nextDouble()));
+		extraParameters.put(prefix + "Capacity", String.valueOf(RANDOM.nextDouble()));
 		extraParameters.put(prefix + "HeatTransferFluidId", UUID.randomUUID().toString());
 
 		return extraParameters;
@@ -398,7 +399,7 @@ public final class TestUtil {
 	}
 
 	public static <E extends Enum<E>> Enum<?> getRandomOfEnum(final Class<E> enumClass) {
-		return Arrays.stream(enumClass.getEnumConstants()).toList().get(new Random().nextInt(enumClass.getEnumConstants().length));
+		return Arrays.stream(enumClass.getEnumConstants()).toList().get(RANDOM.nextInt(enumClass.getEnumConstants().length));
 	}
 
 	public static List<CaseTypeData> setUpCaseTypes() {

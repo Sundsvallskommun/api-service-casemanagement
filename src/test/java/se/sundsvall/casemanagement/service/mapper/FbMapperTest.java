@@ -24,6 +24,8 @@ import se.sundsvall.casemanagement.integration.fb.model.ResponseDto;
 
 class FbMapperTest {
 
+	private static final Random RANDOM = new Random();
+
 	@Test
 	void toFnrFromNullOrEmpty() {
 		assertThat(FbMapper.toFnr(null)).isNull();
@@ -62,16 +64,14 @@ class FbMapperTest {
 	@MethodSource("toAdressplatsIdArguments")
 	void toAdressplatsId(List<List<Integer>> adressplatsIds, Integer expected) {
 		final var response = new ResponseDto();
-		Optional.ofNullable(adressplatsIds).ifPresent(items -> {
-			items.forEach(item -> {
-				final var dataItem = new DataItem();
-				dataItem.setGrupp(item.stream().map(FbMapperTest::createGruppItem).toList());
+		Optional.ofNullable(adressplatsIds).ifPresent(items -> items.forEach(item -> {
+			final var dataItem = new DataItem();
+			dataItem.setGrupp(item.stream().map(FbMapperTest::createGruppItem).toList());
 
-				final var dataList = Optional.ofNullable(response.getData()).orElse(new ArrayList<>());
-				dataList.add(dataItem);
-				response.setData(dataList);
-			});
-		});
+			final var dataList = Optional.ofNullable(response.getData()).orElse(new ArrayList<>());
+			dataList.add(dataItem);
+			response.setData(dataList);
+		}));
 
 		assertThat(FbMapper.toAdressplatsId(response)).isEqualTo(expected);
 	}
@@ -86,8 +86,8 @@ class FbMapperTest {
 
 	@Test
 	void toFbPropertyInfo() {
-		final var fnr = new Random().nextInt();
-		final var adressplatsId = new Random().nextInt();
+		final var fnr = RANDOM.nextInt();
+		final var adressplatsId = RANDOM.nextInt();
 
 		final var bean = FbMapper.toFbPropertyInfo(fnr, adressplatsId);
 
@@ -117,16 +117,14 @@ class FbMapperTest {
 	@MethodSource("toPropertyUuidsArguments")
 	void toPropertyUuids(List<List<String>> uuids, List<String> expected) {
 		final var response = new ResponseDto();
-		Optional.ofNullable(uuids).ifPresent(items -> {
-			items.forEach(item -> {
-				final var dataItem = new DataItem();
-				dataItem.setGrupp(item.stream().map(FbMapperTest::createGruppItem).toList());
+		Optional.ofNullable(uuids).ifPresent(items -> items.forEach(item -> {
+			final var dataItem = new DataItem();
+			dataItem.setGrupp(item.stream().map(FbMapperTest::createGruppItem).toList());
 
-				final var dataList = Optional.ofNullable(response.getData()).orElse(new ArrayList<>());
-				dataList.add(dataItem);
-				response.setData(dataList);
-			});
-		});
+			final var dataList = Optional.ofNullable(response.getData()).orElse(new ArrayList<>());
+			dataList.add(dataItem);
+			response.setData(dataList);
+		}));
 
 		assertThat(FbMapper.toPropertyUuids(response)).isEqualTo(expected);
 	}
@@ -266,11 +264,9 @@ class FbMapperTest {
 
 	private static ResponseDto createResponse(List<Integer> fnrs) {
 		final var response = new ResponseDto();
-		Optional.ofNullable(fnrs).ifPresent(items -> {
-			response.setData(items.stream()
-				.map(FbMapperTest::createItem)
-				.toList());
-		});
+		Optional.ofNullable(fnrs).ifPresent(items -> response.setData(items.stream()
+			.map(FbMapperTest::createItem)
+			.toList()));
 		return response;
 	}
 

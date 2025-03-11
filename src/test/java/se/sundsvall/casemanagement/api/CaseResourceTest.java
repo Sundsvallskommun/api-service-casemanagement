@@ -60,7 +60,7 @@ class CaseResourceTest {
 	private WebTestClient webTestClient;
 
 	@Test
-	void postCase_Ecos(@Load("/case-resource/ecos-case.json") final String body) {
+	void postCaseEcos(@Load("/case-resource/ecos-case.json") final String body) {
 		final var result = webTestClient.post()
 			.uri(uriBuilder -> uriBuilder.path(PATH).build())
 			.contentType(APPLICATION_JSON)
@@ -87,7 +87,7 @@ class CaseResourceTest {
 	}
 
 	@Test
-	void postCase_ByggR(@Load("/case-resource/byggr-case.json") final String body) {
+	void postCaseByggR(@Load("/case-resource/byggr-case.json") final String body) {
 		final var result = webTestClient.post()
 			.uri(uriBuilder -> uriBuilder.path(PATH).build())
 			.contentType(APPLICATION_JSON)
@@ -114,7 +114,7 @@ class CaseResourceTest {
 	}
 
 	@Test
-	void postCase_Other(@Load("/case-resource/other-case.json") final String body) {
+	void postCaseOther(@Load("/case-resource/other-case.json") final String body) {
 		final var result = webTestClient.post()
 			.uri(uriBuilder -> uriBuilder.path(PATH).build())
 			.contentType(APPLICATION_JSON)
@@ -141,7 +141,7 @@ class CaseResourceTest {
 	}
 
 	@Test
-	void putCase_ByggRCase(@Load("/case-resource/byggr-neighborhood-notification-case.json") final String body) {
+	void putCaseByggRCase(@Load("/case-resource/byggr-neighborhood-notification-case.json") final String body) {
 		webTestClient.post()
 			.uri(PATH)
 			.contentType(APPLICATION_JSON)
@@ -156,7 +156,7 @@ class CaseResourceTest {
 	}
 
 	@Test
-	void putCase_OtherCase(@Load("/case-resource/put-other-case.json") final String body) {
+	void putCaseOtherCase(@Load("/case-resource/put-other-case.json") final String body) {
 		when(caseMappingService.getCaseMapping("externalCaseId", MUNICIPALITY_ID)).thenReturn(CaseMapping.builder()
 			.withCaseId("12345")
 			.build());
@@ -175,7 +175,7 @@ class CaseResourceTest {
 	}
 
 	@Test
-	void putCase_WrongCaseType(@Load("/case-resource/put-wrong-case.json") final String body) {
+	void putCaseWrongCaseType(@Load("/case-resource/put-wrong-case.json") final String body) {
 		final var result = webTestClient.put()
 			.uri(uriBuilder -> uriBuilder.path(PATH + "/{externalCaseId}").build("externalCaseId"))
 			.contentType(APPLICATION_JSON)
@@ -194,7 +194,7 @@ class CaseResourceTest {
 	}
 
 	@Test
-	void postCase_addAdditionalDocuments(@Load("/case-resource/byggr-add-additional-documents.json") final String body) {
+	void postCaseAddAdditionalDocuments(@Load("/case-resource/byggr-add-additional-documents.json") final String body) {
 		webTestClient.post()
 			.uri(uriBuilder -> uriBuilder.path(PATH).build())
 			.contentType(APPLICATION_JSON)

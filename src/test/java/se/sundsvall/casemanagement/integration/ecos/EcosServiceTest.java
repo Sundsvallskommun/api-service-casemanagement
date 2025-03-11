@@ -89,10 +89,9 @@ import se.sundsvall.casemanagement.util.Constants;
 class EcosServiceTest {
 
 	private static final String ECOS_CASE_NUMBER = "Inskickat";
-
 	private static final String CYTONOL = "e19981ad-34b2-4e14-88f5-133f61ca85aa";
-
 	private static final String MUNICIPALITY_ID = "2281";
+	private static final Random RANDOM = new Random();
 
 	@InjectMocks
 	private EcosService ecosService;
@@ -237,7 +236,7 @@ class EcosServiceTest {
 		eCase.setFacilities(List.of(facility));
 
 		eCase.setCaseType(CaseType.REGISTRERING_AV_LIVSMEDEL.toString());
-		eCase.setExternalCaseId(String.valueOf(new Random().nextLong()));
+		eCase.setExternalCaseId(String.valueOf(RANDOM.nextLong()));
 		// Act
 		ecosService.postCase(eCase, MUNICIPALITY_ID);
 
@@ -413,10 +412,10 @@ class EcosServiceTest {
 		final var extraParameters = new HashMap<String, String>();
 		final var prefix = "SepticTankSvcDto_";
 		TestUtil.setSewageStandardExtraParams(extraParameters, prefix);
-		extraParameters.put(prefix + "EmptyingInterval", String.valueOf(new Random().nextInt()));
-		extraParameters.put(prefix + "HasCeMarking", String.valueOf(new Random().nextBoolean()));
-		extraParameters.put(prefix + "HasTPipe", String.valueOf(new Random().nextBoolean()));
-		extraParameters.put(prefix + "Volume", String.valueOf(new Random().nextDouble()));
+		extraParameters.put(prefix + "EmptyingInterval", String.valueOf(RANDOM.nextInt()));
+		extraParameters.put(prefix + "HasCeMarking", String.valueOf(RANDOM.nextBoolean()));
+		extraParameters.put(prefix + "HasTPipe", String.valueOf(RANDOM.nextBoolean()));
+		extraParameters.put(prefix + "Volume", String.valueOf(RANDOM.nextDouble()));
 		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
 
 		// Act
@@ -443,11 +442,11 @@ class EcosServiceTest {
 		final var prefix = "InfiltrationPlantSvcDto_";
 		TestUtil.setSewageStandardExtraParams(extraParameters, prefix);
 
-		extraParameters.put(prefix + "Elevated", String.valueOf(new Random().nextBoolean()));
-		extraParameters.put(prefix + "Reinforced", String.valueOf(new Random().nextBoolean()));
-		extraParameters.put(prefix + "IsModuleSystem", String.valueOf(new Random().nextBoolean()));
-		extraParameters.put(prefix + "SpreadLinesCount", String.valueOf(new Random().nextInt()));
-		extraParameters.put(prefix + "SpreadLinesLength", String.valueOf(new Random().nextInt()));
+		extraParameters.put(prefix + "Elevated", String.valueOf(RANDOM.nextBoolean()));
+		extraParameters.put(prefix + "Reinforced", String.valueOf(RANDOM.nextBoolean()));
+		extraParameters.put(prefix + "IsModuleSystem", String.valueOf(RANDOM.nextBoolean()));
+		extraParameters.put(prefix + "SpreadLinesCount", String.valueOf(RANDOM.nextInt()));
+		extraParameters.put(prefix + "SpreadLinesLength", String.valueOf(RANDOM.nextInt()));
 		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
 
 		// Act
@@ -475,9 +474,9 @@ class EcosServiceTest {
 		final var prefix = "ClosedTankSvcDto_";
 		TestUtil.setSewageStandardExtraParams(extraParameters, prefix);
 
-		extraParameters.put(prefix + "EmptyingInterval", String.valueOf(new Random().nextInt()));
-		extraParameters.put(prefix + "HasCeMarking", String.valueOf(new Random().nextBoolean()));
-		extraParameters.put(prefix + "Volume", String.valueOf(new Random().nextDouble()));
+		extraParameters.put(prefix + "EmptyingInterval", String.valueOf(RANDOM.nextInt()));
+		extraParameters.put(prefix + "HasCeMarking", String.valueOf(RANDOM.nextBoolean()));
+		extraParameters.put(prefix + "Volume", String.valueOf(RANDOM.nextDouble()));
 		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
 
 		// Act
@@ -509,7 +508,7 @@ class EcosServiceTest {
 		extraParameters.put(prefix + "NoContOrCompt", UUID.randomUUID().toString());
 		extraParameters.put(prefix + "NoLPerContOrCompt", UUID.randomUUID().toString());
 		extraParameters.put(prefix + "ToiletProductName", UUID.randomUUID().toString());
-		extraParameters.put(prefix + "Volume", String.valueOf(new Random().nextDouble()));
+		extraParameters.put(prefix + "Volume", String.valueOf(RANDOM.nextDouble()));
 		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
 
 		// Act
@@ -540,7 +539,7 @@ class EcosServiceTest {
 		final var prefix = "MiniSewageSvcDto_";
 		TestUtil.setSewageStandardExtraParams(extraParameters, prefix);
 
-		extraParameters.put(prefix + "CeMarking", String.valueOf(new Random().nextBoolean()));
+		extraParameters.put(prefix + "CeMarking", String.valueOf(RANDOM.nextBoolean()));
 		extraParameters.put(prefix + "Manufacturer", UUID.randomUUID().toString());
 		extraParameters.put(prefix + "Model", UUID.randomUUID().toString());
 		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
@@ -568,7 +567,7 @@ class EcosServiceTest {
 		final var prefix = "FilterBedSvcDto_";
 		TestUtil.setSewageStandardExtraParams(extraParameters, prefix);
 
-		extraParameters.put(prefix + "Volume", String.valueOf(new Random().nextDouble()));
+		extraParameters.put(prefix + "Volume", String.valueOf(RANDOM.nextDouble()));
 		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
 
 		// Act
@@ -590,9 +589,9 @@ class EcosServiceTest {
 		final var extraParameters = new HashMap<String, String>();
 		final var prefix = "SandFilterSvcDto_";
 		TestUtil.setSewageStandardExtraParams(extraParameters, prefix);
-		extraParameters.put(prefix + "Area", String.valueOf(new Random().nextInt()));
-		extraParameters.put(prefix + "Elevated", String.valueOf(new Random().nextBoolean()));
-		extraParameters.put(prefix + "WaterTight", String.valueOf(new Random().nextBoolean()));
+		extraParameters.put(prefix + "Area", String.valueOf(RANDOM.nextInt()));
+		extraParameters.put(prefix + "Elevated", String.valueOf(RANDOM.nextBoolean()));
+		extraParameters.put(prefix + "WaterTight", String.valueOf(RANDOM.nextBoolean()));
 		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
 
 		// Act
@@ -617,7 +616,7 @@ class EcosServiceTest {
 		final var prefix = "BiologicalStepSvcDto_";
 		TestUtil.setSewageStandardExtraParams(extraParameters, prefix);
 
-		extraParameters.put(prefix + "Area", String.valueOf(new Random().nextInt()));
+		extraParameters.put(prefix + "Area", String.valueOf(RANDOM.nextInt()));
 		extraParameters.put(prefix + "BiologicalStepTypeId", UUID.randomUUID().toString());
 		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
 
@@ -717,7 +716,7 @@ class EcosServiceTest {
 	@Test
 	void testGetStatus() {
 		// Arrange
-		final var caseId = MessageFormat.format("MK-2022-{0}", new Random().nextInt(100000));
+		final var caseId = MessageFormat.format("MK-2022-{0}", RANDOM.nextInt(100000));
 		final var externalCaseID = UUID.randomUUID().toString();
 
 		final var caseMapping = CaseMapping.builder()

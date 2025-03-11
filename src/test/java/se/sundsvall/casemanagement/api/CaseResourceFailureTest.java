@@ -98,7 +98,7 @@ class CaseResourceFailureTest {
 
 	@ParameterizedTest
 	@MethodSource("emptyStakeholders")
-	void postCase_EmptyStakeholders(final String path) throws IOException {
+	void postCaseEmptyStakeholders(final String path) throws IOException {
 		final var body = resourceLoader.getResource("classpath:" + path)
 			.getContentAsString(Charset.defaultCharset());
 
@@ -124,7 +124,7 @@ class CaseResourceFailureTest {
 
 	@ParameterizedTest
 	@MethodSource("emptyAttachments")
-	void postCase_EmptyAttachments(final String path) throws IOException {
+	void postCaseEmptyAttachments(final String path) throws IOException {
 		final var body = resourceLoader.getResource("classpath:" + path)
 			.getContentAsString(Charset.defaultCharset());
 
@@ -150,7 +150,7 @@ class CaseResourceFailureTest {
 
 	@ParameterizedTest
 	@MethodSource("noExternalCaseId")
-	void postCase_NoExternalCaseId(final String path) throws IOException {
+	void postCaseNoExternalCaseId(final String path) throws IOException {
 		final var body = resourceLoader.getResource("classpath:" + path)
 			.getContentAsString(Charset.defaultCharset());
 
@@ -175,7 +175,7 @@ class CaseResourceFailureTest {
 	}
 
 	@Test
-	void postCase_EcosNoFacility(@Load("/case-resource-failure/ecos/no-facility.json") final String body) {
+	void postCaseEcosNoFacility(@Load("/case-resource-failure/ecos/no-facility.json") final String body) {
 		final var result = webTestClient.post()
 			.uri(uriBuilder -> uriBuilder.path(PATH).build())
 			.contentType(APPLICATION_JSON)
@@ -197,7 +197,7 @@ class CaseResourceFailureTest {
 	}
 
 	@Test
-	void postCase_ByggRNoFacility(@Load("/case-resource-failure/byggr/no-facility.json") final String body) {
+	void postCaseByggRNoFacility(@Load("/case-resource-failure/byggr/no-facility.json") final String body) {
 		final ConstraintViolation<ByggRCaseDTO> constraintViolationMock = mock();
 		final Path pathMock = mock(Path.class);
 		when(pathMock.toString()).thenReturn("facilities");
@@ -229,7 +229,7 @@ class CaseResourceFailureTest {
 	// This case does not throw a bad request, this is by design to ensure that the different
 	// sub-classes of caseDTO are handled individually.
 	@Test
-	void postCase_OtherNoFacility(@Load("/case-resource-failure/other/no-facility.json") final String body) {
+	void postCaseOtherNoFacility(@Load("/case-resource-failure/other/no-facility.json") final String body) {
 		final var result = webTestClient
 			.post().uri(uriBuilder -> uriBuilder.path(PATH).build())
 			.contentType(APPLICATION_JSON)

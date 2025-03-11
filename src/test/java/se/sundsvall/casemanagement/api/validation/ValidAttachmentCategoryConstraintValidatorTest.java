@@ -27,13 +27,13 @@ class ValidAttachmentCategoryConstraintValidatorTest {
 
 	@ParameterizedTest
 	@EnumSource(AttachmentCategory.class)
-	void isValid_withValidCategory(final AttachmentCategory category) {
+	void isValidWithValidCategory(final AttachmentCategory category) {
 		final var validCategory = category.toString();
 		assertThat(validator.isValid(validCategory, context)).isTrue();
 	}
 
 	@Test
-	void isValid_withInvalidCategory() {
+	void isValidWithInvalidCategory() {
 		final var builder = mock(ConstraintValidatorContext.ConstraintViolationBuilder.class);
 		when(context.buildConstraintViolationWithTemplate(anyString())).thenReturn(builder);
 
@@ -42,7 +42,7 @@ class ValidAttachmentCategoryConstraintValidatorTest {
 	}
 
 	@Test
-	void isValid_withNullCategory() {
+	void isValidWithNullCategory() {
 		final var builder = mock(ConstraintValidatorContext.ConstraintViolationBuilder.class);
 		when(context.buildConstraintViolationWithTemplate(anyString())).thenReturn(builder);
 
@@ -50,7 +50,7 @@ class ValidAttachmentCategoryConstraintValidatorTest {
 	}
 
 	@Test
-	void isValid_withEmptyCategory() {
+	void isValidWithEmptyCategory() {
 		final var builder = mock(ConstraintValidatorContext.ConstraintViolationBuilder.class);
 		when(context.buildConstraintViolationWithTemplate(anyString())).thenReturn(builder);
 

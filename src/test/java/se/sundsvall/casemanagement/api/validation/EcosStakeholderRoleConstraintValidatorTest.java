@@ -21,24 +21,24 @@ class EcosStakeholderRoleConstraintValidatorTest {
 	private ConstraintValidatorContext context;
 
 	@Test
-	void isValid_ValidValues() {
+	void isValidValidValues() {
 		final var values = List.of("CONTACT_PERSON", "INVOICE_RECIPIENT", "OPERATOR", "APPLICANT", "INSTALLER");
 		assertThat(validator.isValid(values, context)).isTrue();
 	}
 
 	@Test
-	void isValid_OneInvalidRole() {
+	void isValidOneInvalidRole() {
 		final var values = List.of("CONTACT_PERSON", "INVOICE_RECIPIENT", "OPERATOR", "APPLICANT", "INSTALLER", "INVALID");
 		assertThat(validator.isValid(values, context)).isFalse();
 	}
 
 	@Test
-	void isValid_BlankRole() {
+	void isValidBlankRole() {
 		assertThat(validator.isValid(List.of(""), context)).isFalse();
 	}
 
 	@Test
-	void isValid_NullRole() {
+	void isValidNullRole() {
 		assertThat(validator.isValid(null, context)).isTrue();
 	}
 }

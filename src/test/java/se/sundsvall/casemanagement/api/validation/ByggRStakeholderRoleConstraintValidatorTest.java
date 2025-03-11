@@ -21,24 +21,24 @@ class ByggRStakeholderRoleConstraintValidatorTest {
 	private ConstraintValidatorContext context;
 
 	@Test
-	void isValid_ValidValues() {
+	void isValidValidValues() {
 		final var values = List.of("PROPERTY_OWNER", "PAYMENT_PERSON", "PROPERTY_OWNER", "APPLICANT", "CONTROL_OFFICIAL");
 		assertThat(validator.isValid(values, context)).isTrue();
 	}
 
 	@Test
-	void isValid_OneInvalidRole() {
+	void isValidOneInvalidRole() {
 		final var values = List.of("PROPERTY_OWNER", "PAYMENT_PERSON", "PROPERTY_OWNER", "APPLICANT", "CONTROL_OFFICIAL", "INVALID");
 		assertThat(validator.isValid(values, context)).isFalse();
 	}
 
 	@Test
-	void isValid_BlankRole() {
+	void isValidBlankRole() {
 		assertThat(validator.isValid(List.of(""), context)).isFalse();
 	}
 
 	@Test
-	void isValid_NullRole() {
+	void isValidNullRole() {
 		assertThat(validator.isValid(null, context)).isTrue();
 	}
 }

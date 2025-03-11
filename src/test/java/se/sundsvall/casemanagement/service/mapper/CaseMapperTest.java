@@ -8,6 +8,7 @@ import static se.sundsvall.casemanagement.api.model.enums.AttachmentCategory.UND
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.Reader;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
@@ -61,7 +62,7 @@ class CaseMapperTest {
 		assertThat(entity.getDto()).isNull();
 	}
 
-	private String toString(final Reader reader) throws Exception {
+	private String toString(final Reader reader) throws IOException {
 		final var bf = new BufferedReader(reader);
 		String line = null;
 		final var builder = new StringBuilder();
@@ -70,5 +71,4 @@ class CaseMapperTest {
 		}
 		return builder.toString();
 	}
-
 }

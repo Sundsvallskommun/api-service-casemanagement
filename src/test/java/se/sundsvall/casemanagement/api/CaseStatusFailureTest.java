@@ -46,7 +46,7 @@ class CaseStatusFailureTest {
 	}
 
 	@Test
-	void getStatusByOrgNr_invalidMunicipalityId() {
+	void getStatusByOrgNrInvalidMunicipalityId() {
 		var municipalityId = "invalidMunicipalityId";
 		var organizationNumber = "20220622-2396";
 		var response = webTestClient.get()
@@ -66,7 +66,7 @@ class CaseStatusFailureTest {
 	}
 
 	@Test
-	void getStatusByOrgNr_invalidOrganizationNumber() {
+	void getStatusByOrgNrInvalidOrganizationNumber() {
 		var municipalityId = "2281";
 		var organizationNumber = "invalid organization number";
 		var response = webTestClient.get()
@@ -86,7 +86,7 @@ class CaseStatusFailureTest {
 	}
 
 	@Test
-	void getStatusByExternalCaseId_invalidMunicipalityId() {
+	void getStatusByExternalCaseIdInvalidMunicipalityId() {
 		var municipalityId = "invalidMunicipalityId";
 		var externalCaseId = "not-validated";
 		var response = webTestClient.get()
@@ -106,7 +106,7 @@ class CaseStatusFailureTest {
 	}
 
 	@Test
-	void getStatusesByPartyId_invalidMunicipalityId() {
+	void getStatusesByPartyIdInvalidMunicipalityId() {
 		var municipalityId = "invalidMunicipalityId";
 		var partyId = UUID.randomUUID().toString();
 		var response = webTestClient.get()
@@ -126,7 +126,7 @@ class CaseStatusFailureTest {
 	}
 
 	@Test
-	void getStatusesByPartyId_invalidPartyId() {
+	void getStatusesByPartyIdInvalidPartyId() {
 		var municipalityId = "2281";
 		var partyId = "Not a valid UUID";
 		var response = webTestClient.get()
@@ -144,5 +144,4 @@ class CaseStatusFailureTest {
 				tuple("getStatusesByPartyId.partyId", "not a valid UUID"));
 		});
 	}
-
 }

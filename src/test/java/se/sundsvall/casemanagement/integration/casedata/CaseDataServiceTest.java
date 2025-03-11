@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.zalando.problem.Status.NOT_FOUND;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.LOST_PARKING_PERMIT;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARKING_PERMIT;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARKING_PERMIT_RENEWAL;
@@ -63,6 +64,7 @@ import se.sundsvall.casemanagement.util.Constants;
 class CaseDataServiceTest {
 
 	private static final String MUNICIPALITY_ID = "2281";
+	private static final Random RANDOM = new Random();
 
 	@InjectMocks
 	private CaseDataService caseDataService;
@@ -94,7 +96,7 @@ class CaseDataServiceTest {
 	})
 	void testPostCases(final CaseType caseType) throws URISyntaxException {
 		// Arrange
-		final var errandId = new Random().nextLong();
+		final var errandId = RANDOM.nextLong();
 		final var uri = new URI("https://sundsvall-test.se/errands/" + errandId);
 		final var getErrand = new Errand();
 		getErrand.setErrandNumber("Inskickat");
@@ -152,7 +154,7 @@ class CaseDataServiceTest {
 	@Test
 	void testPutErrand() {
 		// Arrange
-		final var errandId = new Random().nextLong();
+		final var errandId = RANDOM.nextLong();
 		final var inputCase = createCase(CaseType.PARKING_PERMIT);
 		final var namespace = Namespace.SBK_PARKING_PERMIT.name();
 
@@ -200,7 +202,7 @@ class CaseDataServiceTest {
 	@Test
 	void testGetStatus() {
 		// Arrange
-		final var caseId = new Random().nextLong();
+		final var caseId = RANDOM.nextLong();
 		final var errandMock = new Errand();
 		final var namespace = Namespace.SBK_PARKING_PERMIT.name();
 		errandMock.setId(caseId);
@@ -247,11 +249,11 @@ class CaseDataServiceTest {
 		final var caseMapping = CaseMapping.builder().withCaseId("1").build();
 		final var namespace = "OTHER";
 		// Mock
-		when(caseDataClientMock.getErrand(eq(MUNICIPALITY_ID), eq(namespace), any())).thenThrow(Problem.valueOf(Status.NOT_FOUND));
+		when(caseDataClientMock.getErrand(eq(MUNICIPALITY_ID), eq(namespace), any())).thenThrow(Problem.valueOf(NOT_FOUND));
 		// Act
 		assertThatThrownBy(() -> caseDataService.getStatus(caseMapping, MUNICIPALITY_ID))
 			.isInstanceOf(ThrowableProblem.class)
-			.hasFieldOrPropertyWithValue("status", Status.NOT_FOUND)
+			.hasFieldOrPropertyWithValue("status", NOT_FOUND)
 			.hasMessage("Not Found: No case was found in CaseData with caseId: 1");
 	}
 
@@ -262,14 +264,14 @@ class CaseDataServiceTest {
 		// Act and assert
 		assertThatThrownBy(() -> caseDataService.getStatus(caseMapping, MUNICIPALITY_ID))
 			.isInstanceOf(ThrowableProblem.class)
-			.hasFieldOrPropertyWithValue("status", Status.NOT_FOUND)
+			.hasFieldOrPropertyWithValue("status", NOT_FOUND)
 			.hasFieldOrPropertyWithValue("detail", Constants.ERR_MSG_STATUS_NOT_FOUND);
 	}
 
 	@Test
 	void patchErrandWithAttachmentNotFound() {
 		final var errandNumber = UUID.randomUUID().toString();
-		final var errandId = new Random().nextLong();
+		final var errandId = RANDOM.nextLong();
 		final var attachment = new se.sundsvall.casemanagement.api.model.AttachmentDTO();
 		final var attachments = List.of(attachment);
 		final var namespace = "OTHER";

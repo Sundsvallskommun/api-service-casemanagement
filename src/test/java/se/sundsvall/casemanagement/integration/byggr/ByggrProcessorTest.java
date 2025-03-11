@@ -74,7 +74,7 @@ class ByggrProcessorTest {
 	}
 
 	@Test
-	void testHandleUpdateByggRCase_NoErrandFound() throws SQLException, IOException {
+	void testHandleUpdateByggRCaseNoErrandFound() throws SQLException, IOException {
 		final var event = new UpdateByggrCase(CaseService.class, new ByggRCaseDTO(), MUNICIPALITY_ID);
 
 		byggrProcessor.handleUpdateByggrCase(event);
@@ -105,7 +105,7 @@ class ByggrProcessorTest {
 	}
 
 	@Test
-	void testHandleIncomingErrand_NoErrandFound() throws SQLException, IOException {
+	void testHandleIncomingErrandNoErrandFound() throws SQLException, IOException {
 		final var event = new IncomingByggrCase(CaseService.class, new ByggRCaseDTO(), MUNICIPALITY_ID);
 
 		byggrProcessor.handleIncomingErrand(event);
@@ -117,7 +117,7 @@ class ByggrProcessorTest {
 	}
 
 	@Test
-	void testHandleIncomingErrand_maximumFound() throws SQLException, IOException {
+	void testHandleIncomingErrandMaximumFound() throws SQLException, IOException {
 		final var event = new IncomingByggrCase(CaseService.class, createByggRCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION), MUNICIPALITY_ID);
 
 		final var objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());

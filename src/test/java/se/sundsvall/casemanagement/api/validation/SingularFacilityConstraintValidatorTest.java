@@ -25,21 +25,21 @@ class SingularFacilityConstraintValidatorTest {
 	private ConstraintValidatorContext context;
 
 	@Test
-	void isValid_OneFacility() {
+	void isValidOneFacility() {
 		final var ecosCase = createEcosCaseDTO(CaseType.REGISTRERING_AV_LIVSMEDEL, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		ecosCase.setFacilities(List.of(createFacilityDTO(false)));
 		assertThat(validator.isValid(ecosCase, context)).isTrue();
 	}
 
 	@Test
-	void isValid_NoFacility() {
+	void isValidNoFacility() {
 		final var ecosCase = createEcosCaseDTO(CaseType.REGISTRERING_AV_LIVSMEDEL, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		ecosCase.setFacilities(List.of());
 		assertThat(validator.isValid(ecosCase, context)).isFalse();
 	}
 
 	@Test
-	void isValid_TwoFacilities() {
+	void isValidTwoFacilities() {
 		final var ecosCase = createEcosCaseDTO(CaseType.REGISTRERING_AV_LIVSMEDEL, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		ecosCase.setFacilities(List.of(createFacilityDTO(false), createFacilityDTO(true)));
 		assertThat(validator.isValid(ecosCase, context)).isFalse();

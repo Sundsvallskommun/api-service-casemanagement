@@ -72,7 +72,7 @@ class CaseStatusResourceTest {
 	}
 
 	@Test
-	void getStatusByOrgNr_NoMatch() {
+	void getStatusByOrgNrNoMatch() {
 		final var organizationNumber = "20220622-2396";
 		when(byggrService.getByggrStatusByLegalId(organizationNumber, PartyType.ENTERPRISE, MUNICIPALITY_ID)).thenReturn(List.of());
 		when(ecosService.getEcosStatusByLegalId(organizationNumber, PartyType.ENTERPRISE, MUNICIPALITY_ID)).thenReturn(List.of());
@@ -93,7 +93,7 @@ class CaseStatusResourceTest {
 	}
 
 	@Test
-	void getStatusByExternalCaseId_Ecos() {
+	void getStatusByExternalCaseIdEcos() {
 		final var caseMapping = createCaseMapping(caseMappingConsumer -> caseMappingConsumer.setSystem(SystemType.ECOS));
 		final var caseStatusDTO = createCaseStatusDTO(caseStatusConsumer -> caseStatusConsumer.setSystem(SystemType.ECOS));
 		when(caseMappingService.getCaseMapping("externalCaseId", MUNICIPALITY_ID)).thenReturn(caseMapping);
@@ -119,7 +119,7 @@ class CaseStatusResourceTest {
 	}
 
 	@Test
-	void getStatusByExternalCaseId_ByggR() {
+	void getStatusByExternalCaseIdByggR() {
 		final var caseMapping = createCaseMapping(caseMappingConsumer -> caseMappingConsumer.setSystem(SystemType.BYGGR));
 		final var caseStatusDTO = createCaseStatusDTO(caseStatusConsumer -> caseStatusConsumer.setSystem(SystemType.BYGGR));
 		when(caseMappingService.getCaseMapping("externalCaseId", MUNICIPALITY_ID)).thenReturn(caseMapping);
@@ -145,7 +145,7 @@ class CaseStatusResourceTest {
 	}
 
 	@Test
-	void getStatusByExternalCaseId_CaseData() {
+	void getStatusByExternalCaseIdCaseData() {
 		final var caseMapping = createCaseMapping(caseMappingConsumer -> caseMappingConsumer.setSystem(SystemType.CASE_DATA));
 		final var caseStatusDTO = createCaseStatusDTO(caseStatusConsumer -> caseStatusConsumer.setSystem(SystemType.CASE_DATA));
 		when(caseMappingService.getCaseMapping("externalCaseId", MUNICIPALITY_ID)).thenReturn(caseMapping);
@@ -169,5 +169,4 @@ class CaseStatusResourceTest {
 		verifyNoMoreInteractions(caseMappingService, caseDataService);
 		verifyNoInteractions(byggrService, ecosService);
 	}
-
 }

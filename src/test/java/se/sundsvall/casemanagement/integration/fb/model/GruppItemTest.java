@@ -15,6 +15,8 @@ import org.junit.jupiter.api.Test;
 
 class GruppItemTest {
 
+	private static final Random RANDOM = new Random();
+
 	@Test
 	void testBean() {
 		MatcherAssert.assertThat(GruppItem.class, allOf(
@@ -28,11 +30,10 @@ class GruppItemTest {
 	@Test
 	void testFields() {
 		GruppItem object = new GruppItem();
-		object.setAdressplatsId(new Random().nextInt());
+		object.setAdressplatsId(RANDOM.nextInt());
 		object.setUuid(UUID.randomUUID().toString());
-		object.setIdentitetsnummer(String.valueOf(new Random().nextInt()));
+		object.setIdentitetsnummer(String.valueOf(RANDOM.nextInt()));
 
 		Assertions.assertThat(object).isNotNull().hasNoNullFieldsOrProperties();
 	}
-
 }
