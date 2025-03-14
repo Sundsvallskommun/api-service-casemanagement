@@ -82,6 +82,7 @@ public enum AttachmentCategory {
 	START_DECISION("DELSTA", "Delstartsbesked"),
 	JUDGMENT("DOM", "Dom"),
 	ENERGY_BALANCE_CALCULATION("ENER", "Energibalansberäkning"),
+	ENERGY_CALCULATION_VERIFICATION("ENERVER", "Energiberäkning verifiering"),
 	ENERGY_DECLARATION("ENEDEK", "Energideklaration"),
 	APPROVED_CONTROL_PLAN("FAST", "Fastställd kontrollplan"),
 	COVER_LETTER_REVISED_DRAWING("FÖLJREVRIT", "Följebrev reviderad ritning"),
