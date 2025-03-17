@@ -1,5 +1,6 @@
 package se.sundsvall.casemanagement.integration.casedata;
 
+import static java.time.OffsetDateTime.now;
 import static java.util.Collections.emptyList;
 import static org.zalando.problem.Status.NOT_FOUND;
 import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toAttachment;
@@ -11,7 +12,6 @@ import static se.sundsvall.casemanagement.util.Constants.SERVICE_NAME;
 import generated.client.casedata.Errand;
 import generated.client.casedata.ExtraParameter;
 import generated.client.casedata.Status;
-import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -66,7 +66,7 @@ public class CaseDataService {
 		errandDTO.setPhase(AKTUALISERING_PHASE);
 		final var statusDTO = new Status();
 		statusDTO.setStatusType(ARENDE_INKOMMIT_STATUS);
-		statusDTO.setDateTime(OffsetDateTime.now());
+		statusDTO.setCreated(now());
 		errandDTO.setStatuses(List.of(statusDTO));
 
 		// To keep collection instantiated and not suddenly
@@ -130,7 +130,7 @@ public class CaseDataService {
 			.getStatuses())
 			.orElse(List.of())
 			.stream()
-			.max(Comparator.comparing(Status::getDateTime))
+			.max(Comparator.comparing(Status::getCreated))
 			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, Constants.ERR_MSG_STATUS_NOT_FOUND));
 
 		return CaseStatusDTO.builder()
@@ -140,7 +140,7 @@ public class CaseDataService {
 			.withExternalCaseId(caseMapping.getExternalCaseId())
 			.withStatus(latestStatus.getStatusType())
 			.withServiceName(caseMapping.getServiceName())
-			.withTimestamp(latestStatus.getDateTime().atZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime())
+			.withTimestamp(latestStatus.getCreated().atZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime())
 			.build();
 	}
 
@@ -163,7 +163,7 @@ public class CaseDataService {
 
 		final var statusDTO = new Status();
 		statusDTO.setStatusType(KOMPLETTERING_INKOMMEN_STATUS);
-		statusDTO.setDateTime(OffsetDateTime.now());
+		statusDTO.setCreated(now());
 		caseDataClient.putStatusOnErrand(municipalityId, namespace, caseId, List.of(statusDTO));
 		caseDataClient.putStakeholdersOnErrand(municipalityId, namespace, caseId, toStakeholders(otherCaseDTO.getStakeholders()));
 
@@ -205,7 +205,7 @@ public class CaseDataService {
 
 	CaseStatusDTO toCaseStatusDTO(final Errand errand) {
 		final var latestStatus = errand.getStatuses().stream()
-			.max(Comparator.comparing(Status::getDateTime))
+			.max(Comparator.comparing(Status::getCreated))
 			.orElse(null);
 
 		return CaseStatusDTO.builder()
@@ -217,7 +217,7 @@ public class CaseDataService {
 				.map(Status::getStatusType)
 				.orElse(null))
 			.withTimestamp(Optional.ofNullable(latestStatus)
-				.map(Status::getDateTime)
+				.map(Status::getCreated)
 				.map(dateTime -> dateTime.atZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime())
 				.orElse(null))
 			.withServiceName(errand.getExtraParameters().stream()
@@ -228,5 +228,4 @@ public class CaseDataService {
 				.orElse(null))
 			.build();
 	}
-
 }

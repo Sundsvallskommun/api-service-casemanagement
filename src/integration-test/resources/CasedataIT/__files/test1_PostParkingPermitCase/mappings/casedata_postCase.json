@@ -173,10 +173,10 @@
 							],
 							"roles": [
 								"PAYMENT_PERSON",
-								"INVOICE_RECIPENT"
+								"INVOICE_RECIPIENT"
 							],
 							"extraParameters": {
-								"roles": "INVOICE_RECIPENT",
+								"roles": "INVOICE_RECIPIENT",
 								"mYNojuJNeF": "CTmHuqJDJseFisBRxgvH",
 								"lUVcbOtnMF": "uMnxaIhjxVeFICUupckY"
 							},
@@ -191,12 +191,14 @@
 					"caseTitleAddition": "Some case title addition",
 					"statuses": [
 						{
-							"dateTime": "${json-unit.ignore}",
+							"created": "${json-unit.ignore}",
 							"statusType": "Ärende inkommit"
 						}
 					],
-					"decisions": []
-				}
+					"decisions": [],
+					"notifications": []
+				},
+				"ignoreArrayOrder": true
 			}
 		],
 		"urlPathPattern": "/case-data/2281/(.+)/errands"

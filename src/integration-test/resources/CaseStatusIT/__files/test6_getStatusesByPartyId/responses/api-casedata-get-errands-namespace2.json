@@ -197,7 +197,7 @@
 			"namespace": "SBK_PARKING_PERMIT",
 			"statuses": [
 				{
-					"dateTime": "2023-12-14T09:43:52.538759+01:00",
+					"created": "2023-12-14T09:43:52.538759+01:00",
 					"statusType": "Klart",
 					"description": "Ärendet saknar nödvändig information för att beslut ska kunna tas. Uppgift om maximal gångsträcka för den sökande saknas eller innehåller ogiltig data."
 				}

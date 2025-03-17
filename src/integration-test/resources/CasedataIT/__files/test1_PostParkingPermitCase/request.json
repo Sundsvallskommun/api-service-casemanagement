@@ -121,7 +121,7 @@
 				"PAYMENT_PERSON"
 			],
 			"extraParameters": {
-				"roles": "INVOICE_RECIPENT",
+				"roles": "INVOICE_RECIPIENT",
 				"mYNojuJNeF": "CTmHuqJDJseFisBRxgvH",
 				"lUVcbOtnMF": "uMnxaIhjxVeFICUupckY"
 			},

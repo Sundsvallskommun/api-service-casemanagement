@@ -1,5 +1,6 @@
 package se.sundsvall.casemanagement.integration.casedata;
 
+import static java.time.OffsetDateTime.now;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.within;
@@ -23,7 +24,6 @@ import generated.client.casedata.PatchErrand;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -134,7 +134,7 @@ class CaseDataServiceTest {
 		assertThat(errand.getPriority()).isEqualTo(Errand.PriorityEnum.HIGH);
 		assertThat(errand.getStakeholders()).hasSameSizeAs(inputCase.getStakeholders());
 		assertThat(errand.getStatuses().getFirst().getStatusType()).isEqualTo("Ärende inkommit");
-		assertThat(errand.getStatuses().getFirst().getDateTime()).isNotNull();
+		assertThat(errand.getStatuses().getFirst().getCreated()).isNotNull();
 
 		attachmentArgumentCaptor = ArgumentCaptor.forClass(generated.client.casedata.Attachment.class);
 		verify(caseDataClientMock, times(3)).postAttachment(eq(MUNICIPALITY_ID), eq(namespace), eq(errandId), attachmentArgumentCaptor.capture());
@@ -193,7 +193,7 @@ class CaseDataServiceTest {
 		final var status = statusListArgumentCaptor.getValue();
 		assertThat(status).hasSize(1);
 		assertThat(status.getFirst().getStatusType()).isEqualTo("Komplettering inkommen");
-		assertThat(status.getFirst().getDateTime()).isNotNull();
+		assertThat(status.getFirst().getCreated()).isNotNull();
 
 		assertThat(stakeholderListArgumentCaptor.getValue()).hasSameSizeAs(inputCase.getStakeholders());
 		assertThat(attachmentArgumentCaptor.getValue().getCategory()).isEqualTo(AttachmentCategory.ANMALAN_VARMEPUMP.toString());
@@ -208,15 +208,15 @@ class CaseDataServiceTest {
 		errandMock.setId(caseId);
 		final var statusMock1 = new generated.client.casedata.Status()
 			.statusType(RandomStringUtils.random(10, true, false))
-			.dateTime(OffsetDateTime.now().minusDays(10))
+			.created(now().minusDays(10))
 			.description(RandomStringUtils.random(10, true, false));
 		final var statusMock2 = new generated.client.casedata.Status()
 			.statusType(RandomStringUtils.random(10, true, false))
-			.dateTime(OffsetDateTime.now().minusDays(5))
+			.created(now().minusDays(5))
 			.description(RandomStringUtils.random(10, true, false));
 		final var statusMock3 = new generated.client.casedata.Status()
 			.statusType(RandomStringUtils.random(10, true, false))
-			.dateTime(OffsetDateTime.now().minusDays(20))
+			.created(now().minusDays(20))
 			.description(RandomStringUtils.random(10, true, false));
 		errandMock.setStatuses(List.of(statusMock1, statusMock2, statusMock3));
 
@@ -240,7 +240,7 @@ class CaseDataServiceTest {
 		assertThat(result.getSystem()).isEqualTo(caseMapping.getSystem());
 		assertThat(result.getServiceName()).isEqualTo(caseMapping.getServiceName());
 		assertThat(result.getStatus()).isEqualTo(statusMock2.getStatusType());
-		assertThat(result.getTimestamp()).isEqualTo(statusMock2.getDateTime().atZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime());
+		assertThat(result.getTimestamp()).isEqualTo(statusMock2.getCreated().atZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime());
 	}
 
 	@Test
@@ -358,7 +358,7 @@ class CaseDataServiceTest {
 	private generated.client.casedata.Status createStatus() {
 		final var status = new generated.client.casedata.Status();
 		status.setStatusType("STATUS_TYPE");
-		status.setDateTime(OffsetDateTime.now());
+		status.setCreated(now());
 		status.setDescription("DESCRIPTION");
 		return status;
 	}
