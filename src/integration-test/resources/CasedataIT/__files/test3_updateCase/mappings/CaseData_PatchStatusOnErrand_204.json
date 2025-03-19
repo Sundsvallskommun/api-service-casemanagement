@@ -1,7 +1,7 @@
 {
 	"request": {
-		"method": "PUT",
-		"urlPathPattern": "/case-data/2281/(.+)/errands/(.+)/statuses"
+		"method": "PATCH",
+		"urlPathPattern": "/case-data/2281/(.+)/errands/(.+)/status"
 	},
 	"response": {
 		"headers": {

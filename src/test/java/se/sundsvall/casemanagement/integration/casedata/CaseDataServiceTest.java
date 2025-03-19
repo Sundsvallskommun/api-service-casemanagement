@@ -82,7 +82,7 @@ class CaseDataServiceTest {
 	private ArgumentCaptor<PatchErrand> patchErrandArgumentCaptor;
 
 	@Captor
-	private ArgumentCaptor<List<generated.client.casedata.Status>> statusListArgumentCaptor;
+	private ArgumentCaptor<generated.client.casedata.Status> statusArgumentCaptor;
 
 	@Captor
 	private ArgumentCaptor<List<generated.client.casedata.Stakeholder>> stakeholderListArgumentCaptor;
@@ -160,7 +160,7 @@ class CaseDataServiceTest {
 
 		// Mock
 		when(caseDataClientMock.patchErrand(eq(MUNICIPALITY_ID), eq(namespace), any(), any())).thenReturn(null);
-		when(caseDataClientMock.putStatusOnErrand(eq(MUNICIPALITY_ID), eq(namespace), any(), any())).thenReturn(null);
+		when(caseDataClientMock.patchStatusOnErrand(eq(MUNICIPALITY_ID), eq(namespace), any(), any())).thenReturn(null);
 		when(caseDataClientMock.putStakeholdersOnErrand(eq(MUNICIPALITY_ID), eq(namespace), any(), any())).thenReturn(null);
 		when(caseDataClientMock.postAttachment(eq(MUNICIPALITY_ID), eq(namespace), eq(errandId), any())).thenReturn(null);
 
@@ -171,7 +171,7 @@ class CaseDataServiceTest {
 		verify(caseDataClientMock, times(1)).patchErrand(eq(MUNICIPALITY_ID), eq(namespace), eq(errandId), patchErrandArgumentCaptor.capture());
 		verify(caseDataClientMock, times(1)).putStakeholdersOnErrand(eq(MUNICIPALITY_ID), eq(namespace), eq(errandId), stakeholderListArgumentCaptor.capture());
 		verify(caseDataClientMock, times(3)).postAttachment(eq(MUNICIPALITY_ID), eq(namespace), eq(errandId), attachmentArgumentCaptor.capture());
-		verify(caseDataClientMock, times(1)).putStatusOnErrand(eq(MUNICIPALITY_ID), eq(namespace), eq(errandId), statusListArgumentCaptor.capture());
+		verify(caseDataClientMock, times(1)).patchStatusOnErrand(eq(MUNICIPALITY_ID), eq(namespace), eq(errandId), statusArgumentCaptor.capture());
 
 		final var patchErrand = patchErrandArgumentCaptor.getValue();
 		assertThat(patchErrand.getCaseType()).isEqualTo(PatchErrand.CaseTypeEnum.fromValue(inputCase.getCaseType()));
@@ -190,10 +190,9 @@ class CaseDataServiceTest {
 		assertThat(patchErrand.getEndDate()).isNull();
 		assertThat(patchErrand.getApplicationReceived()).isNull();
 
-		final var status = statusListArgumentCaptor.getValue();
-		assertThat(status).hasSize(1);
-		assertThat(status.getFirst().getStatusType()).isEqualTo("Komplettering inkommen");
-		assertThat(status.getFirst().getCreated()).isNotNull();
+		final var status = statusArgumentCaptor.getValue();
+		assertThat(status.getStatusType()).isEqualTo("Komplettering inkommen");
+		assertThat(status.getCreated()).isNotNull();
 
 		assertThat(stakeholderListArgumentCaptor.getValue()).hasSameSizeAs(inputCase.getStakeholders());
 		assertThat(attachmentArgumentCaptor.getValue().getCategory()).isEqualTo(AttachmentCategory.ANMALAN_VARMEPUMP.toString());
