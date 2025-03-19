@@ -164,7 +164,7 @@ public class CaseDataService {
 		final var statusDTO = new Status();
 		statusDTO.setStatusType(KOMPLETTERING_INKOMMEN_STATUS);
 		statusDTO.setCreated(now());
-		caseDataClient.putStatusOnErrand(municipalityId, namespace, caseId, List.of(statusDTO));
+		caseDataClient.patchStatusOnErrand(municipalityId, namespace, caseId, statusDTO);
 		caseDataClient.putStakeholdersOnErrand(municipalityId, namespace, caseId, toStakeholders(otherCaseDTO.getStakeholders()));
 
 		final var result = caseDataClient.getAttachmentsByErrandNumber(municipalityId, namespace, otherCaseDTO.getExternalCaseId());

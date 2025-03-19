@@ -83,13 +83,13 @@ public interface CaseDataClient {
 		@RequestBody @Valid PatchErrand patchErrand);
 
 	@Operation(description = "Add/replace status on errand.")
-	@PutMapping(path = "/{municipalityId}/{namespace}/errands/{id}/statuses")
+	@PatchMapping(path = "/{municipalityId}/{namespace}/errands/{id}/status")
 	@ApiResponse(responseCode = "204", description = "No content - Successful operation")
-	ResponseEntity<Void> putStatusOnErrand(
+	ResponseEntity<Void> patchStatusOnErrand(
 		@PathVariable(name = "municipalityId") final String municipalityId,
 		@PathVariable(name = "namespace") final String namespace,
 		@PathVariable(name = "id") final Long id,
-		@RequestBody @Valid List<Status> statusList);
+		@RequestBody @Valid Status status);
 
 	@Operation(description = "Replace stakeholders on errand.")
 	@PutMapping(path = "/{municipalityId}/{namespace}/errands/{id}/stakeholders")
