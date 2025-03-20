@@ -67,7 +67,7 @@ public class CaseDataService {
 		final var statusDTO = new Status();
 		statusDTO.setStatusType(ARENDE_INKOMMIT_STATUS);
 		statusDTO.setCreated(now());
-		errandDTO.setStatuses(List.of(statusDTO));
+		errandDTO.setStatus(statusDTO);
 
 		// To keep collection instantiated and not suddenly
 		// changed to null if openAPI decides to change the implementation. (again)

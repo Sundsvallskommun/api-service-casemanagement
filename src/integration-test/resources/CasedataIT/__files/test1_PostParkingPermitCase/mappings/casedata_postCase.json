@@ -5,6 +5,11 @@
 			{
 				"equalToJson": {
 					"phase": "Aktualisering",
+					"status": {
+						"created": "${json-unit.ignore}",
+						"statusType": "Ärende inkommit"
+					},
+					"statuses": [],
 					"externalCaseId": "40621444",
 					"notes": [],
 					"channel": "ESERVICE",
@@ -189,12 +194,6 @@
 					"labels": [],
 					"relatesTo": [],
 					"caseTitleAddition": "Some case title addition",
-					"statuses": [
-						{
-							"created": "${json-unit.ignore}",
-							"statusType": "Ärende inkommit"
-						}
-					],
 					"decisions": [],
 					"notifications": []
 				},
