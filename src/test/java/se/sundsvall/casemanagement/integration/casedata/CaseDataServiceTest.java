@@ -133,8 +133,8 @@ class CaseDataServiceTest {
 		assertThat(errand.getPhase()).isEqualTo("Aktualisering");
 		assertThat(errand.getPriority()).isEqualTo(Errand.PriorityEnum.HIGH);
 		assertThat(errand.getStakeholders()).hasSameSizeAs(inputCase.getStakeholders());
-		assertThat(errand.getStatuses().getFirst().getStatusType()).isEqualTo("Ärende inkommit");
-		assertThat(errand.getStatuses().getFirst().getCreated()).isNotNull();
+		assertThat(errand.getStatus().getStatusType()).isEqualTo("Ärende inkommit");
+		assertThat(errand.getStatus().getCreated()).isNotNull();
 
 		attachmentArgumentCaptor = ArgumentCaptor.forClass(generated.client.casedata.Attachment.class);
 		verify(caseDataClientMock, times(3)).postAttachment(eq(MUNICIPALITY_ID), eq(namespace), eq(errandId), attachmentArgumentCaptor.capture());
