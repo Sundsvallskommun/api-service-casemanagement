@@ -1,6 +1,11 @@
 package se.sundsvall.casemanagement;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpStatus.OK;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
+import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.jdbc.Sql;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -9,12 +14,6 @@ import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
 import se.sundsvall.dept44.test.AbstractAppTest;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
-
-import java.util.Arrays;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.http.HttpStatus.OK;
 
 @Testcontainers
 @WireMockAppTestSuite(files = "classpath:/CaseStatusIT/", classes = Application.class)
@@ -33,7 +32,8 @@ class CaseStatusIT extends AbstractAppTest {
 
 	@Test
 	void test1_GetEcosStatusByExternalCaseId() throws JsonProcessingException, ClassNotFoundException {
-		final var ECOS_NUMBER = "MK-2021-837";
+		final var caseId = "e19981ad-34b2-4e14-88f5-133f61ca85aa";
+		final var errandNumber = "MK-2021-837";
 		final var externalCaseId = "2223";
 
 		final var result = setupCall()
@@ -46,7 +46,8 @@ class CaseStatusIT extends AbstractAppTest {
 		assertThat(result.getSystem()).isEqualTo(SystemType.ECOS);
 		assertThat(result.getCaseType()).isEqualTo(CaseType.REGISTRERING_AV_LIVSMEDEL.toString());
 		assertThat(result.getExternalCaseId()).isEqualTo("2223");
-		assertThat(result.getCaseId()).isEqualTo(ECOS_NUMBER);
+		assertThat(result.getCaseId()).isEqualTo(caseId);
+		assertThat(result.getErrandNumber()).isEqualTo(errandNumber);
 		assertThat(result.getStatus()).isEqualTo("Begäran om anstånd");
 		assertThat(result.getServiceName()).isEqualTo("Registrering av livsmedelsanläggning");
 
@@ -54,7 +55,8 @@ class CaseStatusIT extends AbstractAppTest {
 
 	@Test
 	void test2_GetByggrStatusByExternalCaseId() throws JsonProcessingException, ClassNotFoundException {
-		final var BYGGR_NUMBER = "BYGG 2021-000200";
+		final var caseId = "55189";
+		final var errandNumber = "BYGG 2021-000200";
 		final var externalCaseId = "3522";
 
 		final var result = setupCall()
@@ -67,7 +69,8 @@ class CaseStatusIT extends AbstractAppTest {
 		assertThat(result.getSystem()).isEqualTo(SystemType.BYGGR);
 		assertThat(result.getCaseType()).isEqualTo(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV.toString());
 		assertThat(result.getExternalCaseId()).isEqualTo(externalCaseId);
-		assertThat(result.getCaseId()).isEqualTo(BYGGR_NUMBER);
+		assertThat(result.getCaseId()).isEqualTo(caseId);
+		assertThat(result.getErrandNumber()).isEqualTo(errandNumber);
 		assertThat(result.getStatus()).isEqualTo("ANSÖKAN");
 		assertThat(result.getServiceName()).isEqualTo("Ansökan - strandskyddsdispens");
 	}

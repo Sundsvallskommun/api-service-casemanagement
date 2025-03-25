@@ -1,15 +1,17 @@
 package se.sundsvall.casemanagement.integration.alkt;
 
 import static java.lang.Boolean.TRUE;
+import static se.sundsvall.casemanagement.api.model.enums.SystemType.ALKT;
 
 import generated.client.alkt.ModelCase;
 import generated.client.alkt.Owner;
+import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import se.sundsvall.casemanagement.api.model.CaseStatusDTO;
-import se.sundsvall.casemanagement.api.model.enums.SystemType;
 
 @Service
 public class AlkTService {
@@ -48,12 +50,14 @@ public class AlkTService {
 
 	CaseStatusDTO mapToCaseStatus(final ModelCase modelCase) {
 		return CaseStatusDTO.builder()
-			.withSystem(SystemType.ALKT)
+			.withSystem(ALKT)
 			.withCaseType(CASE_TYPE)
-			.withCaseId(modelCase.getRegistrationNumber())
+			.withCaseId(Optional.ofNullable(modelCase.getId()).map(Object::toString).orElse(null))
 			.withStatus(TRUE.equals(modelCase.getOpen()) ? ONGOING : FINISHED)
 			.withServiceName(modelCase.getDescription())
-			.withTimestamp(modelCase.getChanged().toLocalDateTime())
+			.withTimestamp(Optional.ofNullable(modelCase.getChanged()).map(OffsetDateTime::toLocalDateTime).orElse(null))
+			.withErrandNumber(modelCase.getRegistrationNumber())
+			.withNamespace(null)
 			.build();
 	}
 }

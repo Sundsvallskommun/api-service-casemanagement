@@ -1,11 +1,13 @@
 [
 	{
-		"externalCaseId": "123345",
-		"system": "CASE_DATA",
 		"caseId": "1601233",
-		"serviceName": "Företagsärende servicenamn",
 		"caseType": "CASE_TYPE",
+		"errandNumber": "PRH-2022-000016",
+		"externalCaseId": "123345",
+		"namespace": "SBK_PARKING_PERMIT",
+		"serviceName": "Företagsärende servicenamn",
 		"status": "Klart",
+		"system": "CASE_DATA",
 		"timestamp": "2023-12-14T09:43:52.538759"
 	}
 ]

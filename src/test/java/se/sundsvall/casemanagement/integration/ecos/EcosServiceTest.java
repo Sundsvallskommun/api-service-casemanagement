@@ -746,6 +746,7 @@ class EcosServiceTest {
 		final var caseSvcDto = new CaseSvcDto()
 			.withCaseNumber(caseId)
 			.withCaseId(UUID.randomUUID().toString())
+			.withCaseId("e19981ad-34b2-4e14-88f5-133f61ca85aa")
 			.withOccurrences(arrayOfOccurrenceListItemSvcDto);
 
 		final var getCaseResponse = new GetCaseResponse().withGetCaseResult(caseSvcDto);
@@ -757,16 +758,18 @@ class EcosServiceTest {
 		final var result = ecosService.getStatus(caseId, externalCaseID, MUNICIPALITY_ID);
 
 		// Assert
-		assertThat(result.getCaseId()).isEqualTo(caseId);
 		assertThat(result.getExternalCaseId()).isEqualTo(externalCaseID);
 		assertThat(result.getCaseType()).isEqualTo(caseMapping.getCaseType());
 		assertThat(result.getSystem()).isEqualTo(caseMapping.getSystem());
 		assertThat(result.getServiceName()).isEqualTo(caseMapping.getServiceName());
 		assertThat(result.getStatus()).isEqualTo(occurrenceListItemSvcDto2.getOccurrenceDescription());
 		assertThat(result.getTimestamp()).isEqualTo(occurrenceListItemSvcDto2.getOccurrenceDate());
+		assertThat(result.getErrandNumber()).isEqualTo(caseSvcDto.getCaseNumber());
+		assertThat(result.getCaseId()).isEqualTo(caseSvcDto.getCaseId());
+		assertThat(result.getNamespace()).isNull();
 
 		final var getCaseArgumentCaptor = ArgumentCaptor.forClass(GetCase.class);
-		verify(minutMiljoClientMock, times(1)).getCase(getCaseArgumentCaptor.capture());
+		verify(minutMiljoClientMock).getCase(getCaseArgumentCaptor.capture());
 		assertThat(getCaseArgumentCaptor.getValue().getCaseId()).isEqualTo(caseId);
 	}
 
@@ -838,7 +841,8 @@ class EcosServiceTest {
 		// Assert
 		assertThat(result).hasSize(2);
 		result.forEach(status -> {
-			assertThat(status.getCaseId()).isEqualTo(caseNumber);
+			assertThat(status.getCaseId()).isEqualTo(caseId);
+			assertThat(status.getErrandNumber()).isEqualTo(caseNumber);
 			assertThat(status.getExternalCaseId()).isEqualTo(externalCaseID);
 			assertThat(status.getCaseType()).isEqualTo(caseMapping.getCaseType());
 			assertThat(status.getSystem()).isEqualTo(caseMapping.getSystem());

@@ -41,6 +41,8 @@ class CaseStatusDTOTest {
 		final String caseId = "SomeCaseId";
 		final String externalCaseId = "SomeExternalCaseId";
 		final String serviceName = "SomeServiceName";
+		final String errandNumber = "SomeErrandNumber";
+		final String namespace = "SomeNamespace";
 		final String caseType = CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV.toString();
 		final SystemType system = SystemType.BYGGR;
 		final LocalDateTime timestamp = LocalDateTime.now();
@@ -54,6 +56,8 @@ class CaseStatusDTOTest {
 			.withCaseType(caseType)
 			.withSystem(system)
 			.withTimestamp(timestamp)
+			.withErrandNumber(errandNumber)
+			.withNamespace(namespace)
 			.build();
 
 		// Assert

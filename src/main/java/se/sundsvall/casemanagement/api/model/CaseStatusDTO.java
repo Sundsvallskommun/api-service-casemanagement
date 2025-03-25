@@ -23,10 +23,10 @@ public class CaseStatusDTO {
 	@Schema(description = "The case type", example = "BYGGLOV")
 	private String caseType;
 
-	@Schema(description = "The external case id", example = "caa230c6-abb4-4592-ad9a-34e263c2787d")
+	@Schema(description = "The external case id", example = "123456")
 	private String externalCaseId;
 
-	@Schema(description = "The case id", example = "BYGG 2022-000100")
+	@Schema(description = "The case id", example = "caa230c6-abb4-4592-ad9a-34e263c2787d")
 	private String caseId;
 
 	@Schema(description = "Case status", example = "Pågående")
@@ -37,5 +37,11 @@ public class CaseStatusDTO {
 
 	@Schema(description = "The timestamp", example = "2022-01-01T12:00:00")
 	private LocalDateTime timestamp;
+
+	@Schema(description = "The namespace", example = "NAMESPACE")
+	private String namespace;
+
+	@Schema(description = "The errand number", example = "BYGG 2022-000003")
+	private String errandNumber;
 
 }

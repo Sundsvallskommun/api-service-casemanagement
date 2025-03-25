@@ -341,6 +341,8 @@ class CaseDataServiceTest {
 		assertThat(result.getStatus()).isEqualTo("STATUS_TYPE");
 		assertThat(result.getTimestamp()).isCloseTo(LocalDateTime.now(), within(5, ChronoUnit.SECONDS));
 		assertThat(result.getServiceName()).isEqualTo("VALUE1");
+		assertThat(result.getErrandNumber()).isEqualTo(errand.getErrandNumber());
+		assertThat(result.getNamespace()).isEqualTo(errand.getNamespace());
 		verifyNoInteractions(caseMappingServiceMock, caseDataPropertiesMock, caseDataClientMock);
 	}
 
@@ -351,6 +353,8 @@ class CaseDataServiceTest {
 		errand.setCaseType("CASE_TYPE");
 		errand.setStatuses(List.of(createStatus()));
 		errand.setExtraParameters(List.of(createExtraParameter()));
+		errand.setErrandNumber("CaseData 2024-0000001");
+		errand.setNamespace("namespace1");
 		return errand;
 	}
 

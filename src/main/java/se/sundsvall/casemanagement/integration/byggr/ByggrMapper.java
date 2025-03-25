@@ -3,12 +3,15 @@ package se.sundsvall.casemanagement.integration.byggr;
 import static java.util.function.Predicate.not;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.zalando.problem.Status.BAD_REQUEST;
+import static org.zalando.problem.Status.NOT_FOUND;
+import static se.sundsvall.casemanagement.api.model.enums.SystemType.BYGGR;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrUtil.hasHandelseList;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrUtil.isCaseClosed;
 import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDLING_STATUS_INKOMMEN;
 import static se.sundsvall.casemanagement.util.Constants.BYGGR_KOMTYP_EPOST;
 import static se.sundsvall.casemanagement.util.Constants.BYGGR_KOMTYP_HEMTELEFON;
 import static se.sundsvall.casemanagement.util.Constants.BYGGR_KOMTYP_MOBIL;
+import static se.sundsvall.casemanagement.util.Constants.ERR_MSG_STATUS_NOT_FOUND;
 import static se.sundsvall.casemanagement.util.Constants.HANDELSETYP_ANMALAN;
 import static se.sundsvall.casemanagement.util.Constants.HANDELSETYP_ANSOKAN;
 
@@ -62,7 +65,6 @@ import se.sundsvall.casemanagement.api.model.StakeholderDTO;
 import se.sundsvall.casemanagement.api.model.enums.AddressCategory;
 import se.sundsvall.casemanagement.api.model.enums.FacilityType;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
-import se.sundsvall.casemanagement.api.model.enums.SystemType;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.integration.db.model.CaseTypeData;
 import se.sundsvall.casemanagement.util.Constants;
@@ -338,8 +340,8 @@ public final class ByggrMapper {
 	}
 
 	/**
-	 * "Ärendemening" - Is automatically set in ByggR based on "typ", "slag" and "klass",
-	 * but when its multiple facilities, it must be set to contain all facilities.
+	 * "Ärendemening" - Is automatically set in ByggR based on "typ", "slag" and "klass", but when its multiple facilities,
+	 * it must be set to contain all facilities.
 	 *
 	 * @param  pCase PlanningPermissionCase
 	 * @return       ärendemening or null
@@ -425,16 +427,18 @@ public final class ByggrMapper {
 				}
 			}
 		}
-		throw Problem.valueOf(Status.NOT_FOUND, Constants.ERR_MSG_STATUS_NOT_FOUND);
+		throw Problem.valueOf(NOT_FOUND, ERR_MSG_STATUS_NOT_FOUND);
 	}
 
 	static CaseStatusDTO buildCaseStatusDTO(final Arende arende, final String externalCaseId, final List<CaseMapping> caseMappingList) {
 		return CaseStatusDTO.builder()
-			.withSystem(SystemType.BYGGR)
+			.withSystem(BYGGR)
 			.withExternalCaseId(externalCaseId)
-			.withCaseId(arende.getDnr())
+			.withCaseId(arende.getArendeId().toString())
 			.withCaseType(caseMappingList.isEmpty() ? null : caseMappingList.getFirst().getCaseType())
 			.withServiceName(caseMappingList.isEmpty() ? null : caseMappingList.getFirst().getServiceName())
+			.withErrandNumber(arende.getDnr())
+			.withNamespace(null)
 			.build();
 	}
 
