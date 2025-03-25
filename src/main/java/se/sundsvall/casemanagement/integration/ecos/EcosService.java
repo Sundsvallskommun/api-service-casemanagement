@@ -12,6 +12,7 @@ import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANSOKAN
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANSOKAN_TILLSTAND_VARMEPUMP;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.INFORMATION_OM_UPPHORANDE_AV_VERKSAMHET;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.REGISTRERING_AV_LIVSMEDEL;
+import static se.sundsvall.casemanagement.api.model.enums.SystemType.ECOS;
 import static se.sundsvall.casemanagement.integration.ecos.RiskClassMapper.mapActivities;
 import static se.sundsvall.casemanagement.integration.ecos.RiskClassMapper.mapProductGroups;
 import static se.sundsvall.casemanagement.integration.ecos.RiskClassMapper.mapThirdPartyCertifications;
@@ -130,7 +131,6 @@ import se.sundsvall.casemanagement.api.model.FacilityDTO;
 import se.sundsvall.casemanagement.api.model.OrganizationDTO;
 import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
 import se.sundsvall.casemanagement.api.model.enums.CaseType;
-import se.sundsvall.casemanagement.api.model.enums.SystemType;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.integration.fb.model.FbPropertyInfo;
 import se.sundsvall.casemanagement.service.CaseMappingService;
@@ -227,7 +227,7 @@ public class EcosService {
 		}
 
 		// Persist the connection between OeP-case and Ecos-case
-		caseMappingService.postCaseMapping(caseInput, registerDocumentResult.getCaseId(), SystemType.ECOS, municipalityId);
+		caseMappingService.postCaseMapping(caseInput, registerDocumentResult.getCaseId(), ECOS, municipalityId);
 		return registerDocumentResult;
 	}
 
@@ -850,13 +850,16 @@ public class EcosService {
 				}
 
 				return CaseStatusDTO.builder()
-					.withSystem(SystemType.ECOS)
+					.withSystem(ECOS)
 					.withExternalCaseId(externalCaseId)
-					.withCaseId(ecosCase.getCaseNumber())
+					.withCaseId(ecosCase.getCaseId())
+					.withErrandNumber(ecosCase.getCaseNumber())
+					.withNamespace(null)
 					.withCaseType(caseMapping.getCaseType())
 					.withServiceName(caseMapping.getServiceName())
 					.withStatus(latestOccurrence.getOccurrenceDescription())
-					.withTimestamp(latestOccurrence.getOccurrenceDate()).build();
+					.withTimestamp(latestOccurrence.getOccurrenceDate())
+					.build();
 			}
 		}
 		throw Problem.valueOf(Status.NOT_FOUND, Constants.ERR_MSG_STATUS_NOT_FOUND);

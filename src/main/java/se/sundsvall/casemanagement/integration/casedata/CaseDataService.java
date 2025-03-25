@@ -3,6 +3,7 @@ package se.sundsvall.casemanagement.integration.casedata;
 import static java.time.OffsetDateTime.now;
 import static java.util.Collections.emptyList;
 import static org.zalando.problem.Status.NOT_FOUND;
+import static se.sundsvall.casemanagement.api.model.enums.SystemType.CASE_DATA;
 import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toAttachment;
 import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toErrand;
 import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toPatchErrand;
@@ -27,7 +28,6 @@ import se.sundsvall.casemanagement.api.model.CaseStatusDTO;
 import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
 import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.api.model.enums.Namespace;
-import se.sundsvall.casemanagement.api.model.enums.SystemType;
 import se.sundsvall.casemanagement.integration.casedata.configuration.CaseDataProperties;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.service.CaseMappingService;
@@ -88,7 +88,7 @@ public class CaseDataService {
 				attachment -> toAttachment(attachment, id))
 				.forEach(attachmentDTO -> caseDataClient.postAttachment(municipalityId, namespace, id, attachmentDTO));
 		}
-		caseMappingService.postCaseMapping(otherCase, String.valueOf(id), SystemType.CASE_DATA, municipalityId);
+		caseMappingService.postCaseMapping(otherCase, String.valueOf(id), CASE_DATA, municipalityId);
 
 		return errandNumber;
 	}
@@ -209,7 +209,7 @@ public class CaseDataService {
 			.orElse(null);
 
 		return CaseStatusDTO.builder()
-			.withSystem(SystemType.CASE_DATA)
+			.withSystem(CASE_DATA)
 			.withExternalCaseId(errand.getExternalCaseId())
 			.withCaseId(String.valueOf(errand.getId()))
 			.withCaseType(errand.getCaseType())
@@ -226,6 +226,8 @@ public class CaseDataService {
 				.map(ExtraParameter::getValues)
 				.map(List::getFirst)
 				.orElse(null))
+			.withErrandNumber(errand.getErrandNumber())
+			.withNamespace(errand.getNamespace())
 			.build();
 	}
 }

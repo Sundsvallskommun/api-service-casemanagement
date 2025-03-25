@@ -1,11 +1,12 @@
 [
 	{
-		"externalCaseId": "2222",
-		"system": "ECOS",
-		"caseId": "MK-2021-837",
-		"serviceName": "Registrering av livsmedelsanläggning",
+		"caseId": "e19981ad-34b2-4e14-88f5-133f61ca85aa",
 		"caseType": "REGISTRERING_AV_LIVSMEDEL",
+		"errandNumber": "MK-2021-837",
+		"externalCaseId": "2222",
+		"serviceName": "Registrering av livsmedelsanläggning",
 		"status": "Begäran om anstånd",
+		"system": "ECOS",
 		"timestamp": "2021-09-08T13:21:49.7366667"
 	}
 ]

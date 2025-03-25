@@ -1,10 +1,11 @@
 [
 	{
-		"system": "ALKT",
-		"caseId": "case-registration-number",
-		"serviceName": "case-description",
+		"caseId": "123",
 		"caseType": "ALKOHOLTOBAK",
+		"errandNumber": "case-registration-number",
+		"serviceName": "case-description",
 		"status": "Under granskning",
+		"system": "ALKT",
 		"timestamp": "2019-01-01T00:00:00"
 	}
 ]

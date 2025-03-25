@@ -33,6 +33,7 @@ class AlkTServiceTest {
 	private static final String MUNICIPALITY_ID = "2281";
 	private static final String DESCRIPTION = "description";
 	private static final String REGISTRATION_NUMBER = "123";
+	private static final Integer ID = 123456;
 
 	@Mock
 	private AlkTClient alkTClientMock;
@@ -52,7 +53,8 @@ class AlkTServiceTest {
 			.allSatisfy(caseStatus -> {
 				assertThat(caseStatus.getSystem()).isEqualTo(ALKT);
 				assertThat(caseStatus.getCaseType()).isEqualTo(CASE_TYPE);
-				assertThat(caseStatus.getCaseId()).isEqualTo(REGISTRATION_NUMBER);
+				assertThat(caseStatus.getCaseId()).isEqualTo(String.valueOf(ID));
+				assertThat(caseStatus.getErrandNumber()).isEqualTo(REGISTRATION_NUMBER);
 				assertThat(caseStatus.getStatus()).isIn(ONGOING, FINISHED);
 				assertThat(caseStatus.getServiceName()).isEqualTo(DESCRIPTION);
 				assertThat(caseStatus.getTimestamp()).isCloseTo(LocalDateTime.now(), within(3, SECONDS));
@@ -85,7 +87,8 @@ class AlkTServiceTest {
 			.allSatisfy(caseStatus -> {
 				assertThat(caseStatus.getSystem()).isEqualTo(ALKT);
 				assertThat(caseStatus.getCaseType()).isEqualTo(CASE_TYPE);
-				assertThat(caseStatus.getCaseId()).isEqualTo(REGISTRATION_NUMBER);
+				assertThat(caseStatus.getCaseId()).isEqualTo(String.valueOf(ID));
+				assertThat(caseStatus.getErrandNumber()).isEqualTo(REGISTRATION_NUMBER);
 				assertThat(caseStatus.getStatus()).isEqualTo(ONGOING);
 				assertThat(caseStatus.getServiceName()).isEqualTo(DESCRIPTION);
 				assertThat(caseStatus.getTimestamp()).isCloseTo(LocalDateTime.now(), within(3, SECONDS));
@@ -103,7 +106,8 @@ class AlkTServiceTest {
 
 		assertThat(caseStatus.getSystem()).isEqualTo(ALKT);
 		assertThat(caseStatus.getCaseType()).isEqualTo(CASE_TYPE);
-		assertThat(caseStatus.getCaseId()).isEqualTo(modelCase.getRegistrationNumber());
+		assertThat(caseStatus.getCaseId()).isEqualTo(String.valueOf(modelCase.getId()));
+		assertThat(caseStatus.getErrandNumber()).isEqualTo(REGISTRATION_NUMBER);
 		assertThat(caseStatus.getStatus()).isEqualTo(open ? ONGOING : FINISHED);
 		assertThat(caseStatus.getServiceName()).isEqualTo(modelCase.getDescription());
 		assertThat(caseStatus.getTimestamp()).isEqualTo(modelCase.getChanged().toLocalDateTime());
@@ -125,6 +129,7 @@ class AlkTServiceTest {
 
 	private ModelCase createModelCase(final Consumer<ModelCase> modifier) {
 		final var modelCase = new ModelCase()
+			.id(ID)
 			.registrationNumber(REGISTRATION_NUMBER)
 			.open(true)
 			.description(DESCRIPTION)

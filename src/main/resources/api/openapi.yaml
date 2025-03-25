@@ -5,9 +5,9 @@ info:
   license:
     name: MIT License
     url: https://opensource.org/licenses/MIT
-  version: "8.1"
+  version: "8.2"
 servers:
-  - url: http://localhost:51495
+  - url: http://localhost:54434
     description: Generated server url
 tags:
   - name: Status
@@ -49,12 +49,6 @@ paths:
       responses:
         "204":
           description: No content
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
         "400":
           description: Bad request
           content:
@@ -63,14 +57,20 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/Problem"
                   - $ref: "#/components/schemas/ConstraintViolationProblem"
-        "502":
-          description: Bad Gateway
+        "404":
+          description: Not found
           content:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-        "404":
-          description: Not found
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "502":
+          description: Bad Gateway
           content:
             application/problem+json:
               schema:
@@ -103,12 +103,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CaseResourceResponseDTO"
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
         "400":
           description: Bad request
           content:
@@ -117,14 +111,20 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/Problem"
                   - $ref: "#/components/schemas/ConstraintViolationProblem"
-        "502":
-          description: Bad Gateway
+        "404":
+          description: Not found
           content:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-        "404":
-          description: Not found
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "502":
+          description: Bad Gateway
           content:
             application/problem+json:
               schema:
@@ -161,12 +161,6 @@ paths:
       responses:
         "204":
           description: No content - Successful request
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
         "400":
           description: Bad request
           content:
@@ -175,14 +169,20 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/Problem"
                   - $ref: "#/components/schemas/ConstraintViolationProblem"
-        "502":
-          description: Bad Gateway
+        "404":
+          description: Not found
           content:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-        "404":
-          description: Not found
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "502":
+          description: Bad Gateway
           content:
             application/problem+json:
               schema:
@@ -217,12 +217,6 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/CaseStatusDTO"
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
         "400":
           description: Bad request
           content:
@@ -231,14 +225,20 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/Problem"
                   - $ref: "#/components/schemas/ConstraintViolationProblem"
-        "502":
-          description: Bad Gateway
+        "404":
+          description: Not found
           content:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-        "404":
-          description: Not found
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "502":
+          description: Bad Gateway
           content:
             application/problem+json:
               schema:
@@ -276,12 +276,6 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/CaseStatusDTO"
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
         "400":
           description: Bad request
           content:
@@ -290,14 +284,20 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/Problem"
                   - $ref: "#/components/schemas/ConstraintViolationProblem"
-        "502":
-          description: Bad Gateway
+        "404":
+          description: Not found
           content:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-        "404":
-          description: Not found
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "502":
+          description: Bad Gateway
           content:
             application/problem+json:
               schema:
@@ -330,12 +330,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CaseStatusDTO"
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
         "400":
           description: Bad request
           content:
@@ -344,14 +338,20 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/Problem"
                   - $ref: "#/components/schemas/ConstraintViolationProblem"
-        "502":
-          description: Bad Gateway
+        "404":
+          description: Not found
           content:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-        "404":
-          description: Not found
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "502":
+          description: Bad Gateway
           content:
             application/problem+json:
               schema:
@@ -387,12 +387,6 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/CaseMapping"
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
         "400":
           description: Bad request
           content:
@@ -403,6 +397,12 @@ paths:
                   - $ref: "#/components/schemas/ConstraintViolationProblem"
         "404":
           description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "500":
+          description: Internal Server error
           content:
             application/problem+json:
               schema:
@@ -839,11 +839,11 @@ components:
     StatusType:
       type: object
       properties:
-        reasonPhrase:
-          type: string
         statusCode:
           type: integer
           format: int32
+        reasonPhrase:
+          type: string
     ConstraintViolationProblem:
       type: object
       properties:
@@ -1038,11 +1038,11 @@ components:
         externalCaseId:
           type: string
           description: The external case id
-          example: caa230c6-abb4-4592-ad9a-34e263c2787d
+          example: "123456"
         caseId:
           type: string
           description: The case id
-          example: BYGG 2022-000100
+          example: caa230c6-abb4-4592-ad9a-34e263c2787d
         status:
           type: string
           description: Case status
@@ -1055,6 +1055,14 @@ components:
           type: string
           description: The timestamp
           format: date-time
+        namespace:
+          type: string
+          description: The namespace
+          example: NAMESPACE
+        errandNumber:
+          type: string
+          description: The errand number
+          example: BYGG 2022-000003
       description: Case status model
     CaseMapping:
       required:

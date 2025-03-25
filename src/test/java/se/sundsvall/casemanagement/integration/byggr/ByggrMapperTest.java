@@ -747,6 +747,7 @@ class ByggrMapperTest {
 		// Arrange
 		final var arende = new Arende();
 		arende.setDnr("someDnr");
+		arende.setArendeId(123456);
 		arende.setHandelseLista(new ArrayOfHandelse().withHandelse(new Handelse()
 			.withHandelseslag(BYGGR_HANDELSESLAG_KOMPLETTERANDE_BYGGLOVHANDLINGAR)
 			.withHandelsetyp(BYGGR_HANDELSETYP_BESLUT)
@@ -762,7 +763,7 @@ class ByggrMapperTest {
 		// Act
 		final var result = ByggrMapper.toByggrStatus(arende, "someCaseId", caseMappings);
 		// Assert
-		assertThat(result).isNotNull().hasNoNullFieldsOrPropertiesExcept("timestamp");
+		assertThat(result).isNotNull().hasNoNullFieldsOrPropertiesExcept("timestamp", "namespace");
 		assertThat(result.getStatus()).isEqualTo("KOMPBYGG");
 	}
 
@@ -772,6 +773,7 @@ class ByggrMapperTest {
 		// Arrange
 		final var arende = new Arende();
 		arende.setDnr("someDnr");
+		arende.setArendeId(123456);
 		final var caseMappings = List.of(
 			CaseMapping.builder()
 				.withCaseId("someCaseId")
@@ -792,6 +794,7 @@ class ByggrMapperTest {
 		// Arrange
 		final var arende = new Arende();
 		arende.setDnr("someDnr");
+		arende.setArendeId(123456);
 		arende.setStatus(BYGGR_STATUS_AVSLUTAT);
 		arende.setHandelseLista(new ArrayOfHandelse().withHandelse(new Handelse()
 			.withHandelseslag(BYGGR_HANDELSESLAG_KOMPLETTERANDE_BYGGLOVHANDLINGAR)
@@ -808,7 +811,7 @@ class ByggrMapperTest {
 		// Act
 		final var result = ByggrMapper.toByggrStatus(arende, "someCaseId", caseMappings);
 		// Assert
-		assertThat(result).isNotNull().hasNoNullFieldsOrPropertiesExcept("timestamp");
+		assertThat(result).isNotNull().hasNoNullFieldsOrPropertiesExcept("timestamp", "namespace");
 		assertThat(result.getStatus()).isEqualTo("Avslutat");
 	}
 
@@ -818,6 +821,7 @@ class ByggrMapperTest {
 		// Arrange
 		final var arende = new Arende();
 		arende.setDnr("someDnr");
+		arende.setArendeId(12345);
 		arende.setHandelseLista(new ArrayOfHandelse().withHandelse(new Handelse()
 			.withHandelseslag(BYGGR_HANDELSESLAG_KOMPLETTERANDE_BYGGLOVHANDLINGAR)
 			.withHandelsetyp(BYGGR_HANDELSETYP_BESLUT)
@@ -832,8 +836,10 @@ class ByggrMapperTest {
 		// Act
 		final var result = ByggrMapper.buildCaseStatusDTO(arende, "someExternalCaseId", caseMappings);
 		// Assert
-		assertThat(result).isNotNull().hasNoNullFieldsOrPropertiesExcept("timestamp", "status");
-		assertThat(result.getCaseId()).isEqualTo("someDnr");
+		assertThat(result).isNotNull().hasNoNullFieldsOrPropertiesExcept("timestamp", "status", "namespace");
+		assertThat(result.getCaseId()).isEqualTo(arende.getArendeId().toString());
+		assertThat(result.getErrandNumber()).isEqualTo(arende.getDnr());
+		assertThat(result.getNamespace()).isNull();
 		assertThat(result.getCaseType()).isEqualTo("someCaseType");
 		assertThat(result.getServiceName()).isEqualTo("someServiceName");
 		assertThat(result.getExternalCaseId()).isEqualTo("someExternalCaseId");

@@ -161,8 +161,9 @@ class ByggrServiceTest {
 	@Mock
 	private EnvironmentUtil environmentUtilMock;
 
-	private static void assertCaseStatus(final String caseId, final String externalCaseID, final CaseType caseType, final String serviceName, final String status, final LocalDateTime dateTime, final CaseStatusDTO getStatusResult) {
-		assertThat(getStatusResult.getCaseId()).isEqualTo(caseId);
+	private static void assertCaseStatus(final Integer arendeId, final String caseId, final String externalCaseID, final CaseType caseType, final String serviceName, final String status, final LocalDateTime dateTime, final CaseStatusDTO getStatusResult) {
+		assertThat(getStatusResult.getCaseId()).isEqualTo(arendeId.toString());
+		assertThat(getStatusResult.getErrandNumber()).isEqualTo(caseId);
 		assertThat(getStatusResult.getExternalCaseId()).isEqualTo(externalCaseID);
 		assertThat(getStatusResult.getSystem()).isEqualTo(SystemType.BYGGR);
 		assertThat(getStatusResult.getCaseType()).isEqualTo(caseType.toString());
@@ -1043,6 +1044,7 @@ class ByggrServiceTest {
 	void testGetByggRStatus() {
 		final String caseId = MessageFormat.format("BYGG-2022-{0}", new Random().nextInt(100000));
 		final String externalCaseID = UUID.randomUUID().toString();
+		final Integer arendeId = 123456;
 
 		// Mock caseMappingServiceMock
 		final List<CaseMapping> caseMappingList = new ArrayList<>();
@@ -1059,6 +1061,7 @@ class ByggrServiceTest {
 		final GetArendeResponse getArendeResponse = new GetArendeResponse();
 		final Arende arende = new Arende();
 		arende.setDnr(caseId);
+		arende.setArendeId(arendeId);
 		arende.setStatus("Pågående");
 		final ArrayOfHandelse arrayOfHandelse = new ArrayOfHandelse();
 		final Handelse handelse1 = new Handelse();
@@ -1086,7 +1089,7 @@ class ByggrServiceTest {
 		// Act
 		final var getStatusResult = byggrService.toByggrStatus(caseMappingList.getFirst());
 
-		assertCaseStatus(caseId, externalCaseID, CaseType.valueOf(caseMappingList.getFirst().getCaseType()), caseMappingList.getFirst().getServiceName(), handelse2.getHandelseslag(), handelse2.getStartDatum(), getStatusResult);
+		assertCaseStatus(arendeId, caseId, externalCaseID, CaseType.valueOf(caseMappingList.getFirst().getCaseType()), caseMappingList.getFirst().getServiceName(), handelse2.getHandelseslag(), handelse2.getStartDatum(), getStatusResult);
 
 		final ArgumentCaptor<GetArende> getArendeRequestCaptor = ArgumentCaptor.forClass(GetArende.class);
 		verify(arendeExportClientMock, times(1)).getArende(getArendeRequestCaptor.capture());
@@ -1099,6 +1102,8 @@ class ByggrServiceTest {
 
 		final String caseId1 = MessageFormat.format("BYGG-2021-{0}", new Random().nextInt(100000));
 		final String caseId2 = MessageFormat.format("BYGG-2022-{0}", new Random().nextInt(100000));
+		final Integer arendeId1 = 123456;
+		final Integer arendeId2 = 654321;
 		final String externalCaseID1 = UUID.randomUUID().toString();
 		final String externalCaseID2 = UUID.randomUUID().toString();
 
@@ -1133,6 +1138,7 @@ class ByggrServiceTest {
 		final ArrayOfArende1 arrayOfArende = new ArrayOfArende1();
 		final Arende arende1 = new Arende();
 		arende1.setDnr(caseId1);
+		arende1.setArendeId(arendeId1);
 		arende1.setStatus("Pågående");
 		final ArrayOfHandelse arrayOfHandelse1 = new ArrayOfHandelse();
 		final Handelse handelse1 = new Handelse();
@@ -1150,6 +1156,7 @@ class ByggrServiceTest {
 
 		final Arende arende2 = new Arende();
 		arende2.setDnr(caseId2);
+		arende2.setArendeId(arendeId2);
 		arende2.setStatus("Pågående");
 		final ArrayOfHandelse arrayOfHandelse2 = new ArrayOfHandelse();
 		final Handelse handelse21 = new Handelse();
@@ -1171,8 +1178,8 @@ class ByggrServiceTest {
 		final var getStatusResult = byggrService.getByggrStatusByLegalId(orgnr, PartyType.ENTERPRISE, MUNICIPALITY_ID);
 
 		assertThat(getStatusResult).hasSize(2);
-		assertCaseStatus(caseId1, externalCaseID1, CaseType.valueOf(caseMappingList1.getFirst().getCaseType()), caseMappingList1.getFirst().getServiceName(), handelse2.getHandelseslag(), handelse2.getStartDatum(), getStatusResult.getFirst());
-		assertCaseStatus(caseId2, externalCaseID2, CaseType.valueOf(caseMappingList2.getFirst().getCaseType()), caseMappingList2.getFirst().getServiceName(), handelse21.getHandelseslag(), handelse21.getStartDatum(), getStatusResult.get(1));
+		assertCaseStatus(arendeId1, caseId1, externalCaseID1, CaseType.valueOf(caseMappingList1.getFirst().getCaseType()), caseMappingList1.getFirst().getServiceName(), handelse2.getHandelseslag(), handelse2.getStartDatum(), getStatusResult.getFirst());
+		assertCaseStatus(arendeId2, caseId2, externalCaseID2, CaseType.valueOf(caseMappingList2.getFirst().getCaseType()), caseMappingList2.getFirst().getServiceName(), handelse21.getHandelseslag(), handelse21.getStartDatum(), getStatusResult.get(1));
 
 		final ArgumentCaptor<GetRelateradeArendenByPersOrgNrAndRole> getRelateradeArendenByPersOrgNrAndRoleRequestCaptor = ArgumentCaptor.forClass(GetRelateradeArendenByPersOrgNrAndRole.class);
 		verify(arendeExportClientMock).getRelateradeArendenByPersOrgNrAndRole(getRelateradeArendenByPersOrgNrAndRoleRequestCaptor.capture());
