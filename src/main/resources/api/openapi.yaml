@@ -7,7 +7,7 @@ info:
     url: https://opensource.org/licenses/MIT
   version: "8.2"
 servers:
-  - url: http://localhost:54434
+  - url: http://localhost:53843
     description: Generated server url
 tags:
   - name: Status
@@ -581,9 +581,7 @@ components:
           type: array
           description: The stakeholders in the case
           items:
-            oneOf:
-              - $ref: "#/components/schemas/OrganizationDTO"
-              - $ref: "#/components/schemas/PersonDTO"
+            $ref: "#/components/schemas/StakeholderDTO"
         attachments:
           type: array
           description: The attachments in the case
@@ -731,6 +729,7 @@ components:
         - attachments
         - caseType
         - externalCaseId
+        - facilities
         - stakeholders
       type: object
       description: Other case model
@@ -817,6 +816,9 @@ components:
       description: Stakeholder model
       discriminator:
         propertyName: type
+      oneOf:
+        - $ref: "#/components/schemas/PersonDTO"
+        - $ref: "#/components/schemas/OrganizationDTO"
     Problem:
       type: object
       properties:
@@ -830,12 +832,12 @@ components:
           type: object
           additionalProperties:
             type: object
+        status:
+          $ref: "#/components/schemas/StatusType"
         title:
           type: string
         detail:
           type: string
-        status:
-          $ref: "#/components/schemas/StatusType"
     StatusType:
       type: object
       properties:
@@ -965,12 +967,12 @@ components:
           type: object
           additionalProperties:
             type: object
+        status:
+          $ref: "#/components/schemas/StatusType"
         title:
           type: string
         detail:
           type: string
-        status:
-          $ref: "#/components/schemas/StatusType"
         suppressed:
           type: array
           items:

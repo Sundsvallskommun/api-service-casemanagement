@@ -33,6 +33,7 @@ class OpenApiSpecificationIT {
 
 	@Value("${openapi.name}")
 	private String openApiName;
+
 	@Value("${openapi.version}")
 	private String openApiVersion;
 

@@ -5,11 +5,6 @@
 			{
 				"equalToJson": {
 					"phase": "Aktualisering",
-					"status": {
-						"created": "${json-unit.ignore}",
-						"statusType": "Ärende inkommit"
-					},
-					"statuses": [],
 					"externalCaseId": "40621444",
 					"notes": [],
 					"channel": "ESERVICE",
@@ -192,10 +187,16 @@
 					"priority": "MEDIUM",
 					"caseType": "PARKING_PERMIT",
 					"labels": [],
-					"relatesTo": [],
 					"caseTitleAddition": "Some case title addition",
+					"statuses": [],
 					"decisions": [],
-					"notifications": []
+					"relatesTo": [],
+					"notifications": [],
+					"facilities": [],
+					"status": {
+						"statusType": "Ärende inkommit",
+						"created": "${json-unit.ignore}"
+					}
 				},
 				"ignoreArrayOrder": true
 			}

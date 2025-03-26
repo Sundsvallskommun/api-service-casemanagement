@@ -202,7 +202,9 @@ public abstract class CaseDTO {
 
 	@NotEmpty
 	@Valid
-	@Schema(description = "The stakeholders in the case")
+	@Schema(description = "The stakeholders in the case", oneOf = {
+		PersonDTO.class, OrganizationDTO.class
+	})
 	private List<StakeholderDTO> stakeholders;
 
 	@NotEmpty

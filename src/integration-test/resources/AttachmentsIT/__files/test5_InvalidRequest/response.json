@@ -1,6 +1,4 @@
 {
-	"type": "https://zalando.github.io/problem/constraint-violation",
-	"status": 400,
 	"violations": [
 		{
 			"field": "postAttachmentsToCase.attachmentDTOList[0].category",
@@ -23,5 +21,7 @@
 			"message": "must not be blank"
 		}
 	],
-	"title": "Constraint Violation"
+	"type": "https://zalando.github.io/problem/constraint-violation",
+	"title": "Constraint Violation",
+	"status": 400
 }

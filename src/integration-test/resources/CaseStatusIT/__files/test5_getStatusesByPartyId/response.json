@@ -1,13 +1,13 @@
 [
 	{
-		"caseId": "16",
-		"caseType": "PARKING_PERMIT",
-		"errandNumber": "PRH-2022-000016",
 		"externalCaseId": "123",
+		"system": "CASE_DATA",
+		"errandNumber": "PRH-2022-000016",
+		"caseId": "16",
 		"namespace": "SBK_PARKING_PERMIT",
 		"serviceName": "Test service!",
+		"caseType": "PARKING_PERMIT",
 		"status": "Väntar på komplettering",
-		"system": "CASE_DATA",
 		"timestamp": "2022-12-14T09:43:52.538759"
 	}
 ]
