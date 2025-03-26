@@ -47,7 +47,7 @@ class OtherCaseDTOTest {
 		final var description = "Some description";
 		final var externalCaseId = "Some external case id";
 		final var extraParameters = Map.of("Key", "Value");
-		final var facilites = List.of(new FacilityDTO());
+		final var facilities = List.of(new FacilityDTO());
 
 		// Act
 		final var oCase = new OtherCaseDTO();
@@ -58,7 +58,7 @@ class OtherCaseDTOTest {
 		oCase.setDescription(description);
 		oCase.setExternalCaseId(externalCaseId);
 		oCase.setExtraParameters(extraParameters);
-		oCase.setFacilities(facilites);
+		oCase.setFacilities(facilities);
 
 		// Assert
 		assertThat(oCase).isNotNull().hasNoNullFieldsOrProperties();
@@ -69,11 +69,12 @@ class OtherCaseDTOTest {
 		assertThat(oCase.getDescription()).isEqualTo(description);
 		assertThat(oCase.getExternalCaseId()).isEqualTo(externalCaseId);
 		assertThat(oCase.getExtraParameters()).isEqualTo(extraParameters);
+		assertThat(oCase.getFacilities()).isEqualTo(facilities);
 	}
 
 	@Test
 	void testNoDirtOnCreatedBean() {
-		assertThat(new OtherCaseDTO()).hasAllNullFieldsOrProperties();
+		assertThat(new OtherCaseDTO()).hasAllNullFieldsOrPropertiesExcept("facilities");
 	}
 
 }
