@@ -388,14 +388,14 @@ class ByggrServiceTest {
 		final var message = "[%s][BYGGR] Could not update case with externalCaseId: %s. Exception: %s ".formatted(MUNICIPALITY_ID, byggRCaseDto.getExternalCaseId(), null);
 		doThrow(RuntimeException.class).when(byggrServiceSpy).respondToNeighborhoodNotification(byggRCaseDto);
 		when(environmentUtilMock.extractEnvironment()).thenReturn("JUnit");
-		doNothing().when(messagingIntegrationMock).sendSlack(subject, message);
+		doNothing().when(messagingIntegrationMock).sendSlack(message, MUNICIPALITY_ID);
 		doNothing().when(messagingIntegrationMock).sendMail(subject, message, MUNICIPALITY_ID);
 
 		byggrServiceSpy.updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
 
 		verify(byggrServiceSpy).updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
 		verify(byggrServiceSpy).respondToNeighborhoodNotification(byggRCaseDto);
-		verify(messagingIntegrationMock).sendSlack(subject, message);
+		verify(messagingIntegrationMock).sendSlack(message, MUNICIPALITY_ID);
 		verify(messagingIntegrationMock).sendMail(subject, message, MUNICIPALITY_ID);
 		verifyNoMoreInteractions(byggrServiceSpy, messagingIntegrationMock);
 	}
@@ -432,14 +432,14 @@ class ByggrServiceTest {
 		final var message = "[%s][BYGGR] Could not update case with externalCaseId: %s. Exception: %s ".formatted(MUNICIPALITY_ID, byggRCaseDto.getExternalCaseId(), null);
 		doThrow(RuntimeException.class).when(byggrServiceSpy).addCertifiedInspector(byggRCaseDto);
 		when(environmentUtilMock.extractEnvironment()).thenReturn("JUnit");
-		doNothing().when(messagingIntegrationMock).sendSlack(subject, message);
+		doNothing().when(messagingIntegrationMock).sendSlack(message, MUNICIPALITY_ID);
 		doNothing().when(messagingIntegrationMock).sendMail(subject, message, MUNICIPALITY_ID);
 
 		byggrServiceSpy.updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
 
 		verify(byggrServiceSpy).updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
 		verify(byggrServiceSpy).addCertifiedInspector(byggRCaseDto);
-		verify(messagingIntegrationMock).sendSlack(subject, message);
+		verify(messagingIntegrationMock).sendSlack(message, MUNICIPALITY_ID);
 		verify(messagingIntegrationMock).sendMail(subject, message, MUNICIPALITY_ID);
 		verifyNoMoreInteractions(byggrServiceSpy, messagingIntegrationMock);
 	}
@@ -476,14 +476,14 @@ class ByggrServiceTest {
 		final var message = "[%s][BYGGR] Could not update case with externalCaseId: %s. Exception: %s ".formatted(MUNICIPALITY_ID, byggRCaseDto.getExternalCaseId(), null);
 		doThrow(RuntimeException.class).when(byggrServiceSpy).addAdditionalDocuments(byggRCaseDto);
 		when(environmentUtilMock.extractEnvironment()).thenReturn("JUnit");
-		doNothing().when(messagingIntegrationMock).sendSlack(subject, message);
+		doNothing().when(messagingIntegrationMock).sendSlack(message, MUNICIPALITY_ID);
 		doNothing().when(messagingIntegrationMock).sendMail(subject, message, MUNICIPALITY_ID);
 
 		byggrServiceSpy.updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
 
 		verify(byggrServiceSpy).updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
 		verify(byggrServiceSpy).addAdditionalDocuments(byggRCaseDto);
-		verify(messagingIntegrationMock).sendSlack(subject, message);
+		verify(messagingIntegrationMock).sendSlack(message, MUNICIPALITY_ID);
 		verify(messagingIntegrationMock).sendMail(subject, message, MUNICIPALITY_ID);
 		verifyNoMoreInteractions(byggrServiceSpy, messagingIntegrationMock);
 	}

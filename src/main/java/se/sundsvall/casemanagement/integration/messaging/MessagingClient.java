@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface MessagingClient {
 
 	@PostMapping("/{municipalityId}/slack")
-	ResponseEntity<Void> sendSlack(@PathVariable("municipalityId") final String municipalityId, SlackRequest request);
+	ResponseEntity<Void> sendSlack(@PathVariable("municipalityId") final String municipalityId, final SlackRequest request);
 
 	@PostMapping(path = "/{municipalityId}/email")
-	ResponseEntity<Void> sendEmail(@PathVariable("municipalityId") final String municipalityId, @RequestBody EmailRequest emailRequest);
+	ResponseEntity<Void> sendEmail(@PathVariable("municipalityId") final String municipalityId, @RequestBody final EmailRequest emailRequest);
 
 }

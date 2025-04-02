@@ -152,7 +152,7 @@ public class ByggrService {
 			LOG.info("Failed to update case with externalCaseId: {}, and municipalityId: {}, and caseType: {}", byggRCase.getExternalCaseId(), municipalityId, byggRCase.getCaseType());
 			final var subject = "Incident from CaseManagement[%s]".formatted(environmentUtil.extractEnvironment());
 			final var message = "[%s][BYGGR] Could not update case with externalCaseId: %s. Exception: %s ".formatted(municipalityId, byggRCase.getExternalCaseId(), e.getMessage());
-			messagingIntegration.sendSlack(subject, message);
+			messagingIntegration.sendSlack(message, municipalityId);
 			messagingIntegration.sendMail(subject, message, municipalityId);
 		}
 	}
