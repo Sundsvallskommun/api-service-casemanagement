@@ -49,6 +49,7 @@ public enum StakeholderRole {
 	DEVELOPER("Exploatör"),
 	SECTION_HEAD("Sektionschef"),
 	ALTERNATE("Suppleant"),
+	REPORTER("Anmälare"),
 	SECRETARY("Sekreterare");
 
 	private final String text;
