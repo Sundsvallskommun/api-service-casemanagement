@@ -287,7 +287,8 @@ public enum AttachmentCategory {
 
 	SITUATION_PLAN("SITUATION_PLAN", "Situationsplan"),
 	LETTER("LETTER", "Brev"),
-	EMAIL("EMAIL", "E-post");
+	EMAIL("EMAIL", "E-post"),
+	MEDICAL_OPINION("MEDICAL_OPINION", "Medicinskt utlåtande");
 
 	private final String description;
 
