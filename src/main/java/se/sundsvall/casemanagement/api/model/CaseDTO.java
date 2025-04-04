@@ -67,6 +67,20 @@ import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_UNA
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.NEIGHBORHOOD_NOTIFICATION;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.NYBYGGNAD_ANSOKAN_OM_BYGGLOV;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.NYBYGGNAD_FORHANDSBESKED;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARATRANSIT;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARATRANSIT_BUS_CARD;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARATRANSIT_CHANGE;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARATRANSIT_NATIONAL;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARATRANSIT_NATIONAL_RENEWAL;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARATRANSIT_NOTIFICATION;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARATRANSIT_NOTIFICATION_BUS_CARD;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARATRANSIT_NOTIFICATION_CHANGE;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARATRANSIT_NOTIFICATION_NATIONAL;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARATRANSIT_NOTIFICATION_NATIONAL_RENEWAL;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARATRANSIT_NOTIFICATION_RENEWAL;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARATRANSIT_NOTIFICATION_RIAK;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARATRANSIT_RENEWAL;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARATRANSIT_RIAK;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARKING_PERMIT;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARKING_PERMIT_RENEWAL;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.REGISTRERING_AV_LIVSMEDEL;
@@ -145,6 +159,20 @@ import lombok.experimental.SuperBuilder;
 		PARKING_PERMIT,
 		LOST_PARKING_PERMIT,
 		PARKING_PERMIT_RENEWAL,
+		PARATRANSIT,
+		PARATRANSIT_RENEWAL,
+		PARATRANSIT_CHANGE,
+		PARATRANSIT_NATIONAL,
+		PARATRANSIT_NATIONAL_RENEWAL,
+		PARATRANSIT_RIAK,
+		PARATRANSIT_BUS_CARD,
+		PARATRANSIT_NOTIFICATION,
+		PARATRANSIT_NOTIFICATION_CHANGE,
+		PARATRANSIT_NOTIFICATION_RENEWAL,
+		PARATRANSIT_NOTIFICATION_NATIONAL,
+		PARATRANSIT_NOTIFICATION_NATIONAL_RENEWAL,
+		PARATRANSIT_NOTIFICATION_RIAK,
+		PARATRANSIT_NOTIFICATION_BUS_CARD,
 		MEX_LEASE_REQUEST,
 		MEX_BUY_LAND_FROM_THE_MUNICIPALITY,
 		MEX_SELL_LAND_TO_THE_MUNICIPALITY,
