@@ -11,9 +11,10 @@
 	],
 	"extraParameters": {
 		"oepAction": "PUT",
-		"errandNr": "BYGG 2024-000019 [12345]",
+		"errandNr": "BYGG 2024-000019",
 		"comment": "Jag har inga synpunkter",
-		"serviceName": "Lämna svar på grannehörande - TEST"
+		"serviceName": "Lämna svar på grannehörande - TEST",
+		"property": "Property designation 1:1 [12345]"
 	},
 	"stakeholders": [
 		{

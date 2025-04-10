@@ -5,9 +5,7 @@ import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.within;
-import static se.sundsvall.casemanagement.TestUtil.createArende;
 import static se.sundsvall.casemanagement.TestUtil.createByggRCaseDTO;
-import static se.sundsvall.casemanagement.TestUtil.createHandelse;
 import static se.sundsvall.casemanagement.TestUtil.createHandelseIntressent;
 import static se.sundsvall.casemanagement.TestUtil.createStakeholderDTO;
 import static se.sundsvall.casemanagement.api.model.enums.AddressCategory.INVOICE_ADDRESS;
@@ -61,7 +59,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.zalando.problem.AbstractThrowableProblem;
-import se.sundsvall.casemanagement.TestUtil;
 import se.sundsvall.casemanagement.api.model.AddressDTO;
 import se.sundsvall.casemanagement.api.model.AttachmentDTO;
 import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
@@ -907,21 +904,6 @@ class ByggrMapperTest {
 		assertThat(result).isNull();
 	}
 
-	@Test
-	void createSaveNewHandelse() {
-		var dnr = "dnr";
-		var handelse = createHandelse();
-		var handelseId = 123456;
-		var arrayOfHandling = TestUtil.createArrayOfHandling();
-
-		var result = ByggrMapper.createSaveNewHandelse(dnr, handelse, arrayOfHandling, handelseId);
-
-		assertThat(result.getMessage().getDnr()).isEqualTo(dnr);
-		assertThat(result.getMessage().getHandelse()).isEqualTo(handelse);
-		assertThat(result.getMessage().getBesvaradHandelseId()).isEqualTo(handelseId);
-		assertThat(result.getMessage().getHandlingar().getHandling()).isEqualTo(arrayOfHandling.getHandling());
-	}
-
 	@ParameterizedTest
 	@ValueSource(strings = {
 		"GRASV", "UNDERE", "BIL"
@@ -941,51 +923,10 @@ class ByggrMapperTest {
 		assertThat(result.getHandling().getFirst().getDokument().getFil().getFilBuffer()).isEqualTo(Base64.getDecoder().decode(attachment.getFile().getBytes()));
 	}
 
-	@ParameterizedTest
-	@MethodSource("createNewEventArguments")
-	void createNewEvent(String comment, String titlePrefix) {
-		var errandInformation = "Jag gillar inte röda hus!";
-		var intressent = createHandelseIntressent();
-		var stakeholderName = "Test Testsson";
-		var propertyDesignation = "SUNDSVALL 5534";
-
-		var result = ByggrMapper.createNewEvent(comment, errandInformation, intressent, stakeholderName, propertyDesignation);
-
-		assertThat(result.getRubrik()).isEqualTo(titlePrefix + ", " + propertyDesignation + ", " + intressent.getNamn());
-		assertThat(result.getAnteckning()).isEqualTo(errandInformation);
-		assertThat(result.getHandelsetyp()).isEqualTo("GRANHO");
-		assertThat(result.getHandelseslag()).isEqualTo("GRASVA");
-		assertThat(result.getIntressentLista().getIntressent()).isEqualTo(List.of(intressent));
-	}
-
 	private static Stream<Arguments> createNewEventArguments() {
 		return Stream.of(
 			Arguments.of("Jag har synpunkter", "Grannehörande Svar med erinran"),
 			Arguments.of("Jag har inga synpunkter", "Grannehörande Svar utan erinran"));
-	}
-
-	@Test
-	void extractIntressentFromEvent() {
-		final var handelse = createHandelse();
-		final var stakeholderId = "20000101-1234";
-
-		final var result = ByggrMapper.extractIntressentFromEvent(handelse, stakeholderId);
-
-		assertThat(result.getIntressentId()).isEqualTo(handelse.getIntressentLista().getIntressent().getFirst().getIntressentId());
-		assertThat(result.getIntressentVersionId()).isEqualTo(handelse.getIntressentLista().getIntressent().getFirst().getIntressentVersionId());
-		assertThat(result.getRollLista()).isEqualTo(handelse.getIntressentLista().getIntressent().getFirst().getRollLista());
-		assertThat(result.getIntressentKommunikationLista()).isNotEqualTo(handelse.getIntressentLista().getIntressent().getFirst().getIntressentKommunikationLista());
-	}
-
-	@Test
-	void extractEvent() {
-		final var arende = createArende();
-		final var handelseId = 123456;
-
-		final var result = ByggrMapper.extractEvent(arende, handelseId);
-
-		assertThat(result).isNotNull();
-		assertThat(result.getHandelseId()).isEqualTo(handelseId);
 	}
 
 	@ParameterizedTest
