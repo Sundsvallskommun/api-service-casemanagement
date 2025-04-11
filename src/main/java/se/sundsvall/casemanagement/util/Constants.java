@@ -12,8 +12,12 @@ public final class Constants {
 	public static final String ERRAND_INFORMATION = "errandInformation";
 	public static final String COMMENT = "comment";
 	public static final String HANDELSETYP_ANSOKAN = "ANSÖKAN";
+	public static final String PROPERTY = "property";
 
 	// ByggR
+	public static final String NEIGHBORHOOD_NOTIFICATION = "NEIGHBORHOOD_NOTIFICATION";
+	public static final String BYGGR_ADD_CERTIFIED_INSPECTOR = "BYGGR_ADD_CERTIFIED_INSPECTOR";
+	public static final String BYGGR_ADDITIONAL_DOCUMENTS = "BYGGR_ADDITIONAL_DOCUMENTS";
 	public static final String HANDELSETYP_ANMALAN = "ANM";
 	public static final String RUBRIK_STRANDSKYDD = "Strandskyddsdispens";
 	public static final String RUBRIK_BYGGLOV = "Bygglov";

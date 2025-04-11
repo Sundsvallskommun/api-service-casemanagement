@@ -55,19 +55,13 @@ import arendeexport.ArendeFastighet;
 import arendeexport.ArendeIntressent;
 import arendeexport.ArrayOfArende1;
 import arendeexport.ArrayOfHandelse;
-import arendeexport.ArrayOfHandelseIntressent2;
 import arendeexport.ArrayOfHandling;
-import arendeexport.ArrayOfRemiss;
-import arendeexport.ArrayOfString2;
 import arendeexport.GetArende;
 import arendeexport.GetArendeResponse;
 import arendeexport.GetRelateradeArendenByPersOrgNrAndRole;
 import arendeexport.GetRelateradeArendenByPersOrgNrAndRoleResponse;
-import arendeexport.GetRemisserByPersOrgNrResponse;
 import arendeexport.Handelse;
 import arendeexport.HandelseHandling;
-import arendeexport.HandelseIntressent;
-import arendeexport.Remiss;
 import arendeexport.SaveNewArende;
 import arendeexport.SaveNewArendeMessage;
 import arendeexport.SaveNewArendeResponse2;
@@ -1190,64 +1184,24 @@ class ByggrServiceTest {
 
 	@Test
 	void respondToNeighborhoodNotification() {
-		final var stakeholders = List.of(createStakeholderDTO(StakeholderType.ORGANIZATION, List.of("role")));
-		final var stakeholderId = "20000101-1234";
-		final var errandNr = "some-dnr [123]";
-		final var dnr = "some-dnr";
+		final var errandNr = "some-dnr";
+		final var property = "Property Designation 1:1 [123456]";
 		final var comment = "comment";
 		final var errandInformation = "errandInformation";
-		final var rollLista = List.of("Kung", "Drottning", "Prins");
 
-		final var spy = Mockito.spy(byggrService);
 		final var byggRCaseDTO = mock(ByggRCaseDTO.class);
 
 		final HashMap<String, String> extraParameterMap = mock();
 
-		// ByggR Mocks
-		final var remiss = mock(Remiss.class);
-		final var getRemisserByPersOrgNrResponse = mock(GetRemisserByPersOrgNrResponse.class);
-		final var arrayOfRemiss = mock(ArrayOfRemiss.class);
-		final var arrayOfString2 = mock(ArrayOfString2.class);
-		final var arende = mock(Arende.class);
-		final var arrayOfHandelse = mock(ArrayOfHandelse.class);
-		final var handelse = mock(Handelse.class);
-		final var arrayOfHandelseIntressent2 = mock(ArrayOfHandelseIntressent2.class);
-		final var handelseIntressent = mock(HandelseIntressent.class);
-		final var getArendeResponse = mock(GetArendeResponse.class);
-
-		when(byggRCaseDTO.getStakeholders()).thenReturn(stakeholders);
 		when(byggRCaseDTO.getExtraParameters()).thenReturn(extraParameterMap);
 		when(extraParameterMap.get("errandNr")).thenReturn(errandNr);
 		when(extraParameterMap.get(comment)).thenReturn(comment);
 		when(extraParameterMap.get(errandInformation)).thenReturn(errandInformation);
-		when(byggRCaseDTO.getMunicipalityId()).thenReturn(MUNICIPALITY_ID);
+		when(extraParameterMap.get("property")).thenReturn(property);
 
-		// ByggR Stubs
-		when(arendeExportClientMock.getRemisserByPersOrgNr(any())).thenReturn(getRemisserByPersOrgNrResponse);
-		when(getRemisserByPersOrgNrResponse.getGetRemisserByPersOrgNrResult()).thenReturn(arrayOfRemiss);
-		when(arrayOfRemiss.getRemiss()).thenReturn(List.of(remiss));
-		when(remiss.getDnr()).thenReturn(dnr);
-		when(remiss.getMottagare()).thenReturn(handelseIntressent);
-		when(handelseIntressent.getRollLista()).thenReturn(arrayOfString2);
-		when(arrayOfString2.getRoll()).thenReturn(rollLista);
+		byggrService.respondToNeighborhoodNotification(byggRCaseDTO);
 
-		when(arendeExportClientMock.getArende(any())).thenReturn(getArendeResponse);
-		when(getArendeResponse.getGetArendeResult()).thenReturn(arende);
-		when(arende.getHandelseLista()).thenReturn(arrayOfHandelse);
-		when(arrayOfHandelse.getHandelse()).thenReturn(List.of(handelse));
-		when(handelse.getIntressentLista()).thenReturn(arrayOfHandelseIntressent2);
-		when(handelse.getHandelseId()).thenReturn(123);
-		when(arrayOfHandelseIntressent2.getIntressent()).thenReturn(List.of(handelseIntressent));
-		when(handelseIntressent.getPersOrgNr()).thenReturn(stakeholderId);
-
-		when(spy.extractStakeholderId(stakeholders, MUNICIPALITY_ID)).thenReturn(stakeholderId);
-		when(spy.getByggRCase(dnr)).thenReturn(arende);
-		spy.respondToNeighborhoodNotification(byggRCaseDTO);
-
-		verify(spy).extractStakeholderId(stakeholders, MUNICIPALITY_ID);
-		verify(spy).getByggRCase(dnr);
 		verify(openEIntegrationMock).setStatus(any(), any(), any(), any());
-
 		verify(arendeExportClientMock).saveNewRemissvar(any());
 	}
 
