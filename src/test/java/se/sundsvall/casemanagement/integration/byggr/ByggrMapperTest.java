@@ -923,12 +923,6 @@ class ByggrMapperTest {
 		assertThat(result.getHandling().getFirst().getDokument().getFil().getFilBuffer()).isEqualTo(Base64.getDecoder().decode(attachment.getFile().getBytes()));
 	}
 
-	private static Stream<Arguments> createNewEventArguments() {
-		return Stream.of(
-			Arguments.of("Jag har synpunkter", "Grannehörande Svar med erinran"),
-			Arguments.of("Jag har inga synpunkter", "Grannehörande Svar utan erinran"));
-	}
-
 	@ParameterizedTest
 	@MethodSource("addAdditionalDocumentsHandelseArgumentProvider")
 	void createAddAdditionalDocumentsHandelse(String handelseslag, String rubrik) {
