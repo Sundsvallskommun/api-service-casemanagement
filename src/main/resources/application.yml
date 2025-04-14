@@ -49,9 +49,11 @@ integration:
     username: override
   minutmiljoV2:
     url: override
-  opene:
-    password: password
-    username: username
+  oep-integrator:
+    oauth2ClientId: override
+    oauth2ClientSecret: override
+    oauth2TokenUrl: override
+    url: override
 logbook:
   body-filters:
     json-path:

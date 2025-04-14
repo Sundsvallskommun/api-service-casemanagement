@@ -52,10 +52,11 @@ integration:
     username: test_user
   minutmiljoV2:
     url: http://localhost:${wiremock.server.port:}/Ecos2PublicServices/MinutMiljoServiceV2.svc
-  opene:
-    password: password
-    url: http://localhost:${wiremock.server.port:}/opene/1.0
-    username: username
+  oep-integrator:
+    oauth2ClientId: ${SUNDSVALLS_KOMMUN_CONSUMER_KEY}
+    oauth2ClientSecret: ${SUNDSVALLS_KOMMUN_CONSUMER_SECRET}
+    oauth2TokenUrl: http://localhost:${wiremock.server.port:}/token
+    url: http://localhost:${wiremock.server.port:}/oep-integrator
 retry:
   initial-delay: 1
   max-delay: 2

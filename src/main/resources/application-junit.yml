@@ -79,7 +79,8 @@ integration:
     username: test_user
   minutmiljoV2:
     url: minutmiljoV2.url
-  opene:
-    password: password
+  oep-integrator:
     url: opene.url
-    username: username
+    oauth2ClientId: clientId
+    oauth2ClientSecret: clientSecret
+    oauth2TokenUrl: token.url
