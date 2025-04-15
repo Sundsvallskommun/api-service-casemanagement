@@ -214,7 +214,7 @@ public class ByggrService {
 	}
 
 	public void respondToNeighborhoodNotification(final ByggRCaseDTO byggRCase) {
-		final var errandNr = byggRCase.getExtraParameters().get(ERRAND_NR);
+
 		final var comment = byggRCase.getExtraParameters().get(COMMENT);
 		final var property = byggRCase.getExtraParameters().get(PROPERTY);
 		final var errandInformation = byggRCase.getExtraParameters().get(ERRAND_INFORMATION);

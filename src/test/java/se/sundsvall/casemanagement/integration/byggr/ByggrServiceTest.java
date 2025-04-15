@@ -1198,7 +1198,6 @@ class ByggrServiceTest {
 		final HashMap<String, String> extraParameterMap = mock();
 
 		when(byggRCaseDTO.getExtraParameters()).thenReturn(extraParameterMap);
-		when(extraParameterMap.get("errandNr")).thenReturn(errandNr);
 		when(extraParameterMap.get(comment)).thenReturn(comment);
 		when(extraParameterMap.get(errandInformation)).thenReturn(errandInformation);
 		when(extraParameterMap.get("property")).thenReturn(property);
