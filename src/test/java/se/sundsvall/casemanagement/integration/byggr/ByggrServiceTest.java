@@ -1188,7 +1188,6 @@ class ByggrServiceTest {
 
 	@Test
 	void respondToNeighborhoodNotification() {
-		final var errandNr = "some-dnr";
 		final var property = "Property Designation 1:1 [123456]";
 		final var comment = "comment";
 		final var errandInformation = "errandInformation";
