@@ -2,7 +2,6 @@ package se.sundsvall.casemanagement.integration.byggr;
 
 import static java.util.function.Predicate.not;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.zalando.problem.Status.BAD_REQUEST;
 import static org.zalando.problem.Status.NOT_FOUND;
 import static se.sundsvall.casemanagement.api.model.enums.SystemType.BYGGR;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrUtil.hasHandelseList;
@@ -668,76 +667,6 @@ public final class ByggrMapper {
 				.withHandelse(alertCaseManagerEvent)
 				.withAnkomststamplaHandlingar(false)
 				.withAutoGenereraBeslutNr(false));
-	}
-
-	/**
-	 * Extracts a stakeholder from a specific byggR event based on the stakeholder id.
-	 *
-	 * @param  handelse      the event
-	 * @param  stakeholderId the stakeholder id
-	 * @return               HandelseIntressent, the stakeholder of a specific event
-	 */
-	static HandelseIntressent extractIntressentFromEvent(final Handelse handelse, final String stakeholderId) {
-		final var intressent = handelse.getIntressentLista().getIntressent().stream()
-			.filter(intressent1 -> (intressent1.getPersOrgNr().equals(stakeholderId) || intressent1.getPersOrgNr().equals(stakeholderId.substring(2))))
-			.findFirst().orElseThrow(() -> Problem.valueOf(BAD_REQUEST, "Stakeholder with id %s not found in ByggRCase".formatted(stakeholderId)));
-
-		return new HandelseIntressent()
-			.withIntressentId(intressent.getIntressentId())
-			.withIntressentVersionId(intressent.getIntressentVersionId())
-			.withRollLista(intressent.getRollLista());
-	}
-
-	static Handelse extractEvent(final Arende arende, final Integer handelseId) {
-		return arende.getHandelseLista().getHandelse().stream()
-			.filter(handelse -> handelse.getHandelseId() == handelseId)
-			.findFirst().orElseThrow(() -> Problem.valueOf(BAD_REQUEST, "No handelse with id %s found in ByggRCase".formatted(handelseId)));
-	}
-
-	/**
-	 * Creates a SaveNewHandelse object with the given parameters, used for NEIGHBORHOOD_NOTIFICATION cases.
-	 *
-	 * @param  dnr             The case number
-	 * @param  handelse        The ByggR event
-	 * @param  arrayOfHandling The attachments that the stakeholder sends with the response
-	 * @return                 SaveNewHandelse, a request model that is sent to ByggR
-	 */
-	static SaveNewHandelse createSaveNewHandelse(final String dnr, final Handelse handelse, final ArrayOfHandling arrayOfHandling, final Integer besvaradHandelseId) {
-		return new SaveNewHandelse()
-
-			.withMessage(new SaveNewHandelseMessage()
-				.withDnr(dnr)
-				.withBesvaradHandelseId(besvaradHandelseId)
-				.withHandlaggarSign("SYSTEM")
-				.withHandelse(handelse)
-				.withHandlingar(arrayOfHandling));
-	}
-
-	/**
-	 * Creates a new Handelse object with the given parameters.
-	 *
-	 * @param  comment             String that determines if the stakeholder has any issues with the building permit
-	 * @param  errandInformation   String that contains the stakeholders comment. (Bad name given by OpenE)
-	 * @param  intressent          HandelseIntressent
-	 * @param  stakeholderName     The stakeholder name
-	 * @param  propertyDesignation The property designation
-	 * @return                     Handelse, a new event in a ByggR Case
-	 */
-	static Handelse createNewEvent(final String comment, final String errandInformation, final HandelseIntressent intressent, final String stakeholderName, final String propertyDesignation) {
-		var isOpposed = comment.equals("Jag har synpunkter");
-		var opinion = isOpposed ? "Grannehörande Svar med erinran" : "Grannehörande Svar utan erinran";
-
-		var title = opinion + ", " + propertyDesignation + ", " + stakeholderName;
-
-		return new Handelse()
-			.withRiktning("In")
-			.withHandelseslag("GRASVA")
-			.withHandelsetyp("GRANHO")
-			.withRubrik(title)
-			.withAnteckning(errandInformation)
-			.withSekretess(false)
-			.withMakulerad(false)
-			.withIntressentLista(new ArrayOfHandelseIntressent2().withIntressent(intressent));
 	}
 
 }

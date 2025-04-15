@@ -11,8 +11,6 @@ import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.createAd
 import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.createAlertCaseManagerEvent;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.createArrayOfHandling;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.createNeighborhoodNotificationArrayOfHandling;
-import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.extractEvent;
-import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.extractIntressentFromEvent;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.filterPersonId;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.getArendeBeskrivning;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.getArendeKlass;
@@ -34,12 +32,16 @@ import static se.sundsvall.casemanagement.integration.byggr.ByggrUtil.isWithinPl
 import static se.sundsvall.casemanagement.integration.byggr.ByggrUtil.parsePropertyDesignation;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrUtil.writeEventNote;
 import static se.sundsvall.casemanagement.util.Constants.BYGGR;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR_ADDITIONAL_DOCUMENTS;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR_ADD_CERTIFIED_INSPECTOR;
 import static se.sundsvall.casemanagement.util.Constants.COMMENT;
 import static se.sundsvall.casemanagement.util.Constants.DONE;
 import static se.sundsvall.casemanagement.util.Constants.ERRAND_INFORMATION;
 import static se.sundsvall.casemanagement.util.Constants.ERRAND_NR;
 import static se.sundsvall.casemanagement.util.Constants.EVENT_CATEGORY;
+import static se.sundsvall.casemanagement.util.Constants.NEIGHBORHOOD_NOTIFICATION;
 import static se.sundsvall.casemanagement.util.Constants.OTHER_INFORMATION;
+import static se.sundsvall.casemanagement.util.Constants.PROPERTY;
 import static se.sundsvall.casemanagement.util.Constants.SYSTEM;
 
 import arendeexport.Arende;
@@ -52,11 +54,7 @@ import arendeexport.ArrayOfString;
 import arendeexport.Fastighet;
 import arendeexport.GetArende;
 import arendeexport.GetRelateradeArendenByPersOrgNrAndRole;
-import arendeexport.GetRemisserByPersOrgNr;
-import arendeexport.HandelseIntressent;
 import arendeexport.HandlaggareBas;
-import arendeexport.Remiss;
-import arendeexport.RemissStatusFilter;
 import arendeexport.SaveNewArende;
 import arendeexport.SaveNewArendeResponse2;
 import arendeexport.SaveNewHandelse;
@@ -68,7 +66,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -140,9 +137,9 @@ public class ByggrService {
 		try {
 			byggRCase.setMunicipalityId(municipalityId);
 			switch (byggRCase.getCaseType()) {
-				case "NEIGHBORHOOD_NOTIFICATION" -> respondToNeighborhoodNotification(byggRCase);
-				case "BYGGR_ADD_CERTIFIED_INSPECTOR" -> addCertifiedInspector(byggRCase);
-				case "BYGGR_ADDITIONAL_DOCUMENTS" -> addAdditionalDocuments(byggRCase);
+				case NEIGHBORHOOD_NOTIFICATION -> respondToNeighborhoodNotification(byggRCase);
+				case BYGGR_ADD_CERTIFIED_INSPECTOR -> addCertifiedInspector(byggRCase);
+				case BYGGR_ADDITIONAL_DOCUMENTS -> addAdditionalDocuments(byggRCase);
 				default -> throw Problem.valueOf(BAD_REQUEST, "CaseType %s not supported".formatted(byggRCase.getCaseType()));
 			}
 			LOG.info("Successfully updated case with externalCaseId: {}, and municipalityId: {}, and caseType: {}", byggRCase.getExternalCaseId(), municipalityId, byggRCase.getCaseType());
@@ -210,45 +207,23 @@ public class ByggrService {
 	}
 
 	public void respondToNeighborhoodNotification(final ByggRCaseDTO byggRCase) {
-		final var stakeholderId = extractStakeholderId(byggRCase.getStakeholders(), byggRCase.getMunicipalityId());
-		final var comment = byggRCase.getExtraParameters().get(COMMENT);
-		final var errandInformation = byggRCase.getExtraParameters().get(ERRAND_INFORMATION);
 		final var errandNr = byggRCase.getExtraParameters().get(ERRAND_NR);
-		final var handelseId = Integer.parseInt(errandNr.replaceAll("^[^\\[]*\\[([^]]+)].*", "$1"));
-		final var dnr = errandNr.split("\\[")[0].trim();
-		final var handelseHandling = createNeighborhoodNotificationArrayOfHandling(byggRCase);
-		final var handelse = extractEvent(getByggRCase(dnr), handelseId);
-		final var intressent = extractIntressentFromEvent(handelse, stakeholderId);
-		final var remisser = getRemisserByPersOrgNrAndFilterByDnr(stakeholderId, dnr);
-		final var remiss = filterRemisserByStakeholderIdAndIntressentRoll(remisser, stakeholderId, intressent);
+		final var comment = byggRCase.getExtraParameters().get(COMMENT);
+		final var property = byggRCase.getExtraParameters().get(PROPERTY);
+		final var errandInformation = byggRCase.getExtraParameters().get(ERRAND_INFORMATION);
+		// Extracts the remiss id that is placed within [] in the property string
+		final var remissId = Integer.parseInt(property.replaceAll("^[^\\[]*\\[([^]]+)].*", "$1"));
 
 		final var saveNewRemissvar = new SaveNewRemissvar()
 			.withMessage(new SaveNewRemissvarMessage()
 				.withHandlaggarSign(SYSTEM)
 				.withErinran(comment.equals("Jag har synpunkter"))
 				.withMeddelande(errandInformation)
-				.withRemissId(remiss.getRemissId())
-				.withHandlingar(handelseHandling));
+				.withRemissId(remissId)
+				.withHandlingar(createNeighborhoodNotificationArrayOfHandling(byggRCase)));
 
 		arendeExportClient.saveNewRemissvar(saveNewRemissvar);
 		openEIntegration.setStatus(byggRCase.getExternalCaseId(), BYGGR, errandNr, DONE);
-	}
-
-	private Remiss filterRemisserByStakeholderIdAndIntressentRoll(final List<Remiss> remisser, final String stakeholderId, final HandelseIntressent intressent) {
-		return remisser.stream()
-			.filter(remiss -> stakeholderId.equals(remiss.getMottagare().getPersOrgNr()))
-			.filter(remiss -> // Kontrollerar att alla roller i intressenten finns i remissen och vice versa
-			new HashSet<>(intressent.getRollLista().getRoll()).containsAll(remiss.getMottagare().getRollLista().getRoll()) &&
-				new HashSet<>(remiss.getMottagare().getRollLista().getRoll()).containsAll(intressent.getRollLista().getRoll()))
-			.findFirst().orElseThrow(() -> Problem.valueOf(BAD_REQUEST, "No remiss with equal rollLista found for stakeholderId %s".formatted(stakeholderId)));
-	}
-
-	private List<Remiss> getRemisserByPersOrgNrAndFilterByDnr(final String persOrgNr, final String dnr) {
-		return arendeExportClient.getRemisserByPersOrgNr(new GetRemisserByPersOrgNr()
-			.withPersOrgNr(persOrgNr)
-			.withStatusFilter(RemissStatusFilter.NONE)).getGetRemisserByPersOrgNrResult().getRemiss().stream()
-			.filter(remiss -> remiss.getDnr().equals(dnr))
-			.toList();
 	}
 
 	/**
