@@ -1,5 +1,7 @@
 package se.sundsvall.casemanagement.util;
 
+import generated.client.oep_integrator.ConfirmDeliveryRequest;
+import generated.client.oep_integrator.InstanceType;
 import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
@@ -11,22 +13,22 @@ import se.sundsvall.casemanagement.integration.db.CaseRepository;
 import se.sundsvall.casemanagement.integration.db.model.CaseEntity;
 import se.sundsvall.casemanagement.integration.db.model.DeliveryStatus;
 import se.sundsvall.casemanagement.integration.messaging.MessagingIntegration;
-import se.sundsvall.casemanagement.integration.opene.OpenEIntegration;
+import se.sundsvall.casemanagement.integration.oepintegrator.OepIntegratorClient;
 import se.sundsvall.casemanagement.service.event.Event;
 
 public abstract class Processor {
 
 	protected final Logger log = LoggerFactory.getLogger(getClass());
 
-	protected final OpenEIntegration openEIntegration;
+	protected final OepIntegratorClient oepIntegratorClient;
 	protected final CaseRepository caseRepository;
 	protected final CaseMappingRepository caseMappingRepository;
 	private final MessagingIntegration messagingIntegration;
 	private final EnvironmentUtil environmentUtil;
 
-	protected Processor(final OpenEIntegration openEIntegration, final CaseRepository caseRepository,
+	protected Processor(final OepIntegratorClient oepIntegratorClient, final CaseRepository caseRepository,
 		final CaseMappingRepository caseMappingRepository, final MessagingIntegration messagingIntegration, final EnvironmentUtil environmentUtil) {
-		this.openEIntegration = openEIntegration;
+		this.oepIntegratorClient = oepIntegratorClient;
 		this.caseRepository = caseRepository;
 		this.caseMappingRepository = caseMappingRepository;
 		this.messagingIntegration = messagingIntegration;
@@ -45,7 +47,8 @@ public abstract class Processor {
 
 		log.info("Successful processed errand for externalCaseId {} and municipalityId: {})", flowInstanceID, municipalityId);
 
-		openEIntegration.confirmDelivery(flowInstanceID, system, caseID);
+		final var confirmDeliveryRequest = new ConfirmDeliveryRequest().caseId(caseID).system(system);
+		oepIntegratorClient.confirmDelivery(municipalityId, InstanceType.EXTERNAL, flowInstanceID, confirmDeliveryRequest);
 
 		caseRepository.findByIdAndMunicipalityId(flowInstanceID, municipalityId)
 			.ifPresent(caseRepository::delete);

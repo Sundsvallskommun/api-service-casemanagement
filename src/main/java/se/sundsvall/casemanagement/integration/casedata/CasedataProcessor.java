@@ -15,7 +15,7 @@ import se.sundsvall.casemanagement.configuration.RetryProperties;
 import se.sundsvall.casemanagement.integration.db.CaseMappingRepository;
 import se.sundsvall.casemanagement.integration.db.CaseRepository;
 import se.sundsvall.casemanagement.integration.messaging.MessagingIntegration;
-import se.sundsvall.casemanagement.integration.opene.OpenEIntegration;
+import se.sundsvall.casemanagement.integration.oepintegrator.OepIntegratorClient;
 import se.sundsvall.casemanagement.service.event.IncomingOtherCase;
 import se.sundsvall.casemanagement.util.EnvironmentUtil;
 import se.sundsvall.casemanagement.util.Processor;
@@ -27,14 +27,14 @@ class CasedataProcessor extends Processor {
 
 	private final RetryPolicy<String> retryPolicy;
 
-	CasedataProcessor(final OpenEIntegration openEIntegration,
+	CasedataProcessor(final OepIntegratorClient oepIntegratorClient,
 		final CaseRepository caseRepository,
 		final CaseDataService service,
 		final RetryProperties retryProperties,
 		final CaseMappingRepository caseMappingRepository,
 		final MessagingIntegration messagingIntegration,
 		final EnvironmentUtil environmentUtil) {
-		super(openEIntegration, caseRepository, caseMappingRepository, messagingIntegration, environmentUtil);
+		super(oepIntegratorClient, caseRepository, caseMappingRepository, messagingIntegration, environmentUtil);
 		this.service = service;
 		this.retryPolicy = RetryPolicy.<String>builder()
 			.withMaxAttempts(retryProperties.maxAttempts())
@@ -58,7 +58,7 @@ class CasedataProcessor extends Processor {
 		}
 
 		final String json;
-		try (BufferedReader reader = new BufferedReader(caseEntity.getDto().getCharacterStream())) {
+		try (final BufferedReader reader = new BufferedReader(caseEntity.getDto().getCharacterStream())) {
 			json = reader.lines().collect(Collectors.joining());
 		}
 

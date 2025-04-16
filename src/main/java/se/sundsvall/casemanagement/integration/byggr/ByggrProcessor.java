@@ -18,7 +18,7 @@ import se.sundsvall.casemanagement.configuration.RetryProperties;
 import se.sundsvall.casemanagement.integration.db.CaseMappingRepository;
 import se.sundsvall.casemanagement.integration.db.CaseRepository;
 import se.sundsvall.casemanagement.integration.messaging.MessagingIntegration;
-import se.sundsvall.casemanagement.integration.opene.OpenEIntegration;
+import se.sundsvall.casemanagement.integration.oepintegrator.OepIntegratorClient;
 import se.sundsvall.casemanagement.service.event.IncomingByggrCase;
 import se.sundsvall.casemanagement.service.event.UpdateByggrCase;
 import se.sundsvall.casemanagement.util.EnvironmentUtil;
@@ -33,7 +33,7 @@ class ByggrProcessor extends Processor {
 	private final ByggrService byggrService;
 
 	ByggrProcessor(
-		final OpenEIntegration openEIntegration,
+		final OepIntegratorClient oepIntegratorClient,
 		final CaseRepository caseRepository,
 		final RetryProperties retryProperties,
 		final ByggrService service,
@@ -42,7 +42,7 @@ class ByggrProcessor extends Processor {
 		final ByggrService byggrService,
 		final EnvironmentUtil environmentUtil) {
 
-		super(openEIntegration, caseRepository, caseMappingRepository, messagingIntegration, environmentUtil);
+		super(oepIntegratorClient, caseRepository, caseMappingRepository, messagingIntegration, environmentUtil);
 		this.service = service;
 
 		retryPolicy = RetryPolicy.<SaveNewArendeResponse2>builder()
@@ -67,7 +67,7 @@ class ByggrProcessor extends Processor {
 		}
 
 		final String json;
-		try (BufferedReader reader = new BufferedReader(caseEntity.getDto().getCharacterStream())) {
+		try (final BufferedReader reader = new BufferedReader(caseEntity.getDto().getCharacterStream())) {
 			json = reader.lines().collect(Collectors.joining());
 		}
 
@@ -89,7 +89,7 @@ class ByggrProcessor extends Processor {
 		}
 
 		final String json;
-		try (BufferedReader reader = new BufferedReader(caseEntity.getDto().getCharacterStream())) {
+		try (final BufferedReader reader = new BufferedReader(caseEntity.getDto().getCharacterStream())) {
 			json = reader.lines().collect(Collectors.joining());
 		}
 

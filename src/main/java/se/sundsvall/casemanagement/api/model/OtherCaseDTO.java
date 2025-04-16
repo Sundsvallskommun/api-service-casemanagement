@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.List;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -26,5 +27,6 @@ public class OtherCaseDTO extends CaseDTO implements Serializable {
 
 	@Schema(description = "The facilities in the case")
 	@NotNull
+	@Builder.Default
 	private List<FacilityDTO> facilities = emptyList();
 }

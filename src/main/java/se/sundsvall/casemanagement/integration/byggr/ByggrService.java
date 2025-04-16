@@ -61,6 +61,9 @@ import arendeexport.SaveNewHandelse;
 import arendeexport.SaveNewHandelseMessage;
 import arendeexport.SaveNewRemissvar;
 import arendeexport.SaveNewRemissvarMessage;
+import generated.client.oep_integrator.CaseStatusChangeRequest;
+import generated.client.oep_integrator.ConfirmDeliveryRequest;
+import generated.client.oep_integrator.InstanceType;
 import generated.client.party.PartyType;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -87,7 +90,7 @@ import se.sundsvall.casemanagement.integration.db.CaseTypeDataRepository;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.integration.db.model.CaseTypeData;
 import se.sundsvall.casemanagement.integration.messaging.MessagingIntegration;
-import se.sundsvall.casemanagement.integration.opene.OpenEIntegration;
+import se.sundsvall.casemanagement.integration.oepintegrator.OepIntegratorClient;
 import se.sundsvall.casemanagement.integration.party.PartyIntegration;
 import se.sundsvall.casemanagement.service.CaseMappingService;
 import se.sundsvall.casemanagement.service.FbService;
@@ -107,7 +110,7 @@ public class ByggrService {
 	private final EnvironmentUtil environmentUtil;
 
 	private final ArendeExportClient arendeExportClient;
-	private final OpenEIntegration openEIntegration;
+	private final OepIntegratorClient oepIntegratorClient;
 
 	private final CaseTypeDataRepository caseTypeDataRepository;
 	private final CaseRepository caseRepository;
@@ -118,7 +121,7 @@ public class ByggrService {
 		final CaseMappingService caseMappingService,
 		final EnvironmentUtil environmentUtil,
 		final ArendeExportClient arendeExportClient,
-		final OpenEIntegration openEIntegration,
+		final OepIntegratorClient oepIntegratorClient,
 		final CaseTypeDataRepository caseTypeDataRepository,
 		final CaseRepository caseRepository,
 		final MessagingIntegration messagingIntegration) {
@@ -127,7 +130,7 @@ public class ByggrService {
 		this.caseMappingService = caseMappingService;
 		this.environmentUtil = environmentUtil;
 		this.arendeExportClient = arendeExportClient;
-		this.openEIntegration = openEIntegration;
+		this.oepIntegratorClient = oepIntegratorClient;
 		this.caseTypeDataRepository = caseTypeDataRepository;
 		this.caseRepository = caseRepository;
 		this.messagingIntegration = messagingIntegration;
@@ -143,7 +146,10 @@ public class ByggrService {
 				default -> throw Problem.valueOf(BAD_REQUEST, "CaseType %s not supported".formatted(byggRCase.getCaseType()));
 			}
 			LOG.info("Successfully updated case with externalCaseId: {}, and municipalityId: {}, and caseType: {}", byggRCase.getExternalCaseId(), municipalityId, byggRCase.getCaseType());
-			openEIntegration.confirmDelivery(byggRCase.getExternalCaseId(), BYGGR, byggRCase.getExtraParameters().get(ERRAND_NR));
+
+			final var confirmDeliveryRequest = new ConfirmDeliveryRequest().caseId(byggRCase.getExtraParameters().get(ERRAND_NR)).system(BYGGR);
+			oepIntegratorClient.confirmDelivery(municipalityId, InstanceType.EXTERNAL, byggRCase.getExternalCaseId(), confirmDeliveryRequest);
+
 			caseRepository.findByIdAndMunicipalityId(byggRCase.getExternalCaseId(), municipalityId).ifPresent(caseRepository::delete);
 		} catch (final Exception e) {
 			LOG.info("Failed to update case with externalCaseId: {}, and municipalityId: {}, and caseType: {}", byggRCase.getExternalCaseId(), municipalityId, byggRCase.getCaseType());
@@ -178,7 +184,8 @@ public class ByggrService {
 				.withAnkomststamplaHandlingar(true));
 
 		arendeExportClient.saveNewHandelse(saveNewHandelse);
-		openEIntegration.setStatus(byggRCase.getExternalCaseId(), BYGGR, errandNr, DONE);
+
+		oepIntegratorClient.setStatus(byggRCase.getMunicipalityId(), InstanceType.EXTERNAL, byggRCase.getExternalCaseId(), new CaseStatusChangeRequest().name(DONE));
 	}
 
 	public void addCertifiedInspector(final ByggRCaseDTO byggRCase) {
@@ -203,11 +210,11 @@ public class ByggrService {
 
 		arendeExportClient.saveNewHandelse(saveNewHandelse);
 		arendeExportClient.saveNewHandelse(createAlertCaseManagerEvent(errandNr));
-		openEIntegration.setStatus(byggRCase.getExternalCaseId(), BYGGR, errandNr, DONE);
+		oepIntegratorClient.setStatus(byggRCase.getMunicipalityId(), InstanceType.EXTERNAL, byggRCase.getExternalCaseId(), new CaseStatusChangeRequest().name(DONE));
 	}
 
 	public void respondToNeighborhoodNotification(final ByggRCaseDTO byggRCase) {
-		final var errandNr = byggRCase.getExtraParameters().get(ERRAND_NR);
+
 		final var comment = byggRCase.getExtraParameters().get(COMMENT);
 		final var property = byggRCase.getExtraParameters().get(PROPERTY);
 		final var errandInformation = byggRCase.getExtraParameters().get(ERRAND_INFORMATION);
@@ -223,7 +230,7 @@ public class ByggrService {
 				.withHandlingar(createNeighborhoodNotificationArrayOfHandling(byggRCase)));
 
 		arendeExportClient.saveNewRemissvar(saveNewRemissvar);
-		openEIntegration.setStatus(byggRCase.getExternalCaseId(), BYGGR, errandNr, DONE);
+		oepIntegratorClient.setStatus(byggRCase.getMunicipalityId(), InstanceType.EXTERNAL, byggRCase.getExternalCaseId(), new CaseStatusChangeRequest().name(DONE));
 	}
 
 	/**

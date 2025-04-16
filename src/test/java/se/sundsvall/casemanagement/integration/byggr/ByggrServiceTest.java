@@ -67,6 +67,8 @@ import arendeexport.SaveNewArendeMessage;
 import arendeexport.SaveNewArendeResponse2;
 import arendeexport.SaveNewHandelse;
 import arendeexport.SaveNewHandelseMessage;
+import generated.client.oep_integrator.ConfirmDeliveryRequest;
+import generated.client.oep_integrator.InstanceType;
 import generated.client.party.PartyType;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
@@ -111,7 +113,7 @@ import se.sundsvall.casemanagement.integration.db.CaseTypeDataRepository;
 import se.sundsvall.casemanagement.integration.db.model.CaseEntity;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.integration.messaging.MessagingIntegration;
-import se.sundsvall.casemanagement.integration.opene.OpenEIntegration;
+import se.sundsvall.casemanagement.integration.oepintegrator.OepIntegratorClient;
 import se.sundsvall.casemanagement.integration.party.PartyIntegration;
 import se.sundsvall.casemanagement.service.CaseMappingService;
 import se.sundsvall.casemanagement.service.FbService;
@@ -141,7 +143,7 @@ class ByggrServiceTest {
 	private CaseMappingService caseMappingServiceMock;
 
 	@Mock
-	private OpenEIntegration openEIntegrationMock;
+	private OepIntegratorClient oepIntegratorClientMock;
 
 	@Mock
 	private ArendeExportClient arendeExportClientMock;
@@ -357,18 +359,18 @@ class ByggrServiceTest {
 	void updateByggRCaseNeighborHoodNotification1() {
 		final var byggrServiceSpy = Mockito.spy(byggrService);
 		final var byggRCaseDto = createByggRCaseDTO(NEIGHBORHOOD_NOTIFICATION, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		final var confirmDeliveryRequest = new ConfirmDeliveryRequest().caseId(byggRCaseDto.getExtraParameters().get(ERRAND_NR)).system(BYGGR);
 		doNothing().when(byggrServiceSpy).respondToNeighborhoodNotification(byggRCaseDto);
-		doNothing().when(openEIntegrationMock).confirmDelivery(byggRCaseDto.getExternalCaseId(), BYGGR, byggRCaseDto.getExtraParameters().get(ERRAND_NR));
 		when(caseRepositoryMock.findByIdAndMunicipalityId(byggRCaseDto.getExternalCaseId(), MUNICIPALITY_ID)).thenReturn(Optional.of(CaseEntity.builder().build()));
 
 		byggrServiceSpy.updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
 
 		verify(byggrServiceSpy).updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
 		verify(byggrServiceSpy).respondToNeighborhoodNotification(byggRCaseDto);
-		verify(openEIntegrationMock).confirmDelivery(byggRCaseDto.getExternalCaseId(), BYGGR, byggRCaseDto.getExtraParameters().get(ERRAND_NR));
+		verify(oepIntegratorClientMock).confirmDelivery(MUNICIPALITY_ID, InstanceType.EXTERNAL, byggRCaseDto.getExternalCaseId(), confirmDeliveryRequest);
 		verify(caseRepositoryMock).findByIdAndMunicipalityId(byggRCaseDto.getExternalCaseId(), MUNICIPALITY_ID);
 		verify(caseRepositoryMock).delete(any());
-		verifyNoMoreInteractions(byggrServiceSpy, openEIntegrationMock, caseRepositoryMock);
+		verifyNoMoreInteractions(byggrServiceSpy, oepIntegratorClientMock, caseRepositoryMock);
 	}
 
 	/**
@@ -401,18 +403,20 @@ class ByggrServiceTest {
 	void updateByggRCaseByggrAddCertifiedInspector1() {
 		final var byggrServiceSpy = Mockito.spy(byggrService);
 		final var byggRCaseDto = createByggRCaseDTO(BYGGR_ADD_CERTIFIED_INSPECTOR, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		final var confirmDeliveryRequest = new ConfirmDeliveryRequest().caseId(byggRCaseDto.getExtraParameters().get(ERRAND_NR)).system(BYGGR);
 		doNothing().when(byggrServiceSpy).addCertifiedInspector(byggRCaseDto);
-		doNothing().when(openEIntegrationMock).confirmDelivery(byggRCaseDto.getExternalCaseId(), BYGGR, byggRCaseDto.getExtraParameters().get(ERRAND_NR));
 		when(caseRepositoryMock.findByIdAndMunicipalityId(byggRCaseDto.getExternalCaseId(), MUNICIPALITY_ID)).thenReturn(Optional.of(CaseEntity.builder().build()));
 
 		byggrServiceSpy.updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
 
 		verify(byggrServiceSpy).updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
 		verify(byggrServiceSpy).addCertifiedInspector(byggRCaseDto);
-		verify(openEIntegrationMock).confirmDelivery(byggRCaseDto.getExternalCaseId(), BYGGR, byggRCaseDto.getExtraParameters().get(ERRAND_NR));
+
+		verify(oepIntegratorClientMock).confirmDelivery(MUNICIPALITY_ID, InstanceType.EXTERNAL, byggRCaseDto.getExternalCaseId(), confirmDeliveryRequest);
+
 		verify(caseRepositoryMock).findByIdAndMunicipalityId(byggRCaseDto.getExternalCaseId(), MUNICIPALITY_ID);
 		verify(caseRepositoryMock).delete(any());
-		verifyNoMoreInteractions(byggrServiceSpy, openEIntegrationMock, caseRepositoryMock);
+		verifyNoMoreInteractions(byggrServiceSpy, oepIntegratorClientMock, caseRepositoryMock);
 	}
 
 	/**
@@ -445,18 +449,18 @@ class ByggrServiceTest {
 	void updateByggRCaseByggrAdditionalDocuments1() {
 		final var byggrServiceSpy = Mockito.spy(byggrService);
 		final var byggRCaseDto = createByggRCaseDTO(BYGGR_ADDITIONAL_DOCUMENTS, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		final var confirmDeliveryRequest = new ConfirmDeliveryRequest().caseId(byggRCaseDto.getExtraParameters().get(ERRAND_NR)).system(BYGGR);
 		doNothing().when(byggrServiceSpy).addAdditionalDocuments(byggRCaseDto);
-		doNothing().when(openEIntegrationMock).confirmDelivery(byggRCaseDto.getExternalCaseId(), BYGGR, byggRCaseDto.getExtraParameters().get(ERRAND_NR));
 		when(caseRepositoryMock.findByIdAndMunicipalityId(byggRCaseDto.getExternalCaseId(), MUNICIPALITY_ID)).thenReturn(Optional.of(CaseEntity.builder().build()));
 
 		byggrServiceSpy.updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
 
 		verify(byggrServiceSpy).updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
 		verify(byggrServiceSpy).addAdditionalDocuments(byggRCaseDto);
-		verify(openEIntegrationMock).confirmDelivery(byggRCaseDto.getExternalCaseId(), BYGGR, byggRCaseDto.getExtraParameters().get(ERRAND_NR));
+		verify(oepIntegratorClientMock).confirmDelivery(MUNICIPALITY_ID, InstanceType.EXTERNAL, byggRCaseDto.getExternalCaseId(), confirmDeliveryRequest);
 		verify(caseRepositoryMock).findByIdAndMunicipalityId(byggRCaseDto.getExternalCaseId(), MUNICIPALITY_ID);
 		verify(caseRepositoryMock).delete(any());
-		verifyNoMoreInteractions(byggrServiceSpy, openEIntegrationMock, caseRepositoryMock);
+		verifyNoMoreInteractions(byggrServiceSpy, oepIntegratorClientMock, caseRepositoryMock);
 	}
 
 	/**
@@ -1184,7 +1188,6 @@ class ByggrServiceTest {
 
 	@Test
 	void respondToNeighborhoodNotification() {
-		final var errandNr = "some-dnr";
 		final var property = "Property Designation 1:1 [123456]";
 		final var comment = "comment";
 		final var errandInformation = "errandInformation";
@@ -1194,14 +1197,13 @@ class ByggrServiceTest {
 		final HashMap<String, String> extraParameterMap = mock();
 
 		when(byggRCaseDTO.getExtraParameters()).thenReturn(extraParameterMap);
-		when(extraParameterMap.get("errandNr")).thenReturn(errandNr);
 		when(extraParameterMap.get(comment)).thenReturn(comment);
 		when(extraParameterMap.get(errandInformation)).thenReturn(errandInformation);
 		when(extraParameterMap.get("property")).thenReturn(property);
 
 		byggrService.respondToNeighborhoodNotification(byggRCaseDTO);
 
-		verify(openEIntegrationMock).setStatus(any(), any(), any(), any());
+		verify(oepIntegratorClientMock).setStatus(any(), any(), any(), any());
 		verify(arendeExportClientMock).saveNewRemissvar(any());
 	}
 
@@ -1226,7 +1228,7 @@ class ByggrServiceTest {
 		byggrService.addCertifiedInspector(byggRCaseDTO);
 
 		verify(arendeExportClientMock, times(2)).saveNewHandelse(any());
-		verify(openEIntegrationMock).setStatus(any(), any(), any(), any());
+		verify(oepIntegratorClientMock).setStatus(any(), any(), any(), any());
 	}
 
 	/**
