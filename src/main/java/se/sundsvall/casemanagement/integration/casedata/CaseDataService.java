@@ -1,8 +1,17 @@
 package se.sundsvall.casemanagement.integration.casedata;
 
+import static generated.client.casedata.Errand.ChannelEnum.ESERVICE;
 import static java.time.OffsetDateTime.now;
 import static java.util.Collections.emptyList;
 import static org.zalando.problem.Status.NOT_FOUND;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.LOST_PARKING_PERMIT;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.MEX_CASE_TYPES;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.PARKING_PERMIT;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.PARKING_PERMIT_RENEWAL;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.PRH_CASE_TYPES;
+import static se.sundsvall.casemanagement.api.model.enums.Namespace.ANGE_PARKING_PERMIT;
+import static se.sundsvall.casemanagement.api.model.enums.Namespace.SBK_MEX;
+import static se.sundsvall.casemanagement.api.model.enums.Namespace.SBK_PARKING_PERMIT;
 import static se.sundsvall.casemanagement.api.model.enums.SystemType.CASE_DATA;
 import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toAttachment;
 import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toErrand;
@@ -27,7 +36,6 @@ import se.sundsvall.casemanagement.api.model.AttachmentDTO;
 import se.sundsvall.casemanagement.api.model.CaseStatusDTO;
 import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
 import se.sundsvall.casemanagement.api.model.enums.CaseType;
-import se.sundsvall.casemanagement.api.model.enums.Namespace;
 import se.sundsvall.casemanagement.integration.casedata.configuration.CaseDataProperties;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.service.CaseMappingService;
@@ -43,6 +51,12 @@ public class CaseDataService {
 	private static final String KOMPLETTERING_INKOMMEN_STATUS = "Komplettering inkommen";
 
 	private static final String AKTUALISERING_PHASE = "Aktualisering";
+
+	private static final String KEY_PHASE_ACTION = "process.phaseAction";
+
+	private static final String PHASE_ACTION_AUTOMATIC = "AUTOMATIC";
+
+	private static final String MUNICIPALITY_ID_ANGE = "2260";
 
 	private final CaseMappingService caseMappingService;
 	private final CaseDataProperties caseDataProperties;
@@ -69,13 +83,17 @@ public class CaseDataService {
 		statusDTO.setCreated(now());
 		errandDTO.setStatus(statusDTO);
 
+		final var namespace = mapNamespace(otherCase.getCaseType(), municipalityId);
+
+		if (isAutomatic(errandDTO, municipalityId, namespace)) {
+			errandDTO.setExtraParameters(addPhaseAction(errandDTO.getExtraParameters()));
+		}
+
 		// To keep collection instantiated and not suddenly
 		// changed to null if openAPI decides to change the implementation. (again)
 		errandDTO.setMessageIds(emptyList());
 		errandDTO.setDecisions(emptyList());
 		errandDTO.setNotes(emptyList());
-
-		final var namespace = mapNamespace(otherCase.getCaseType());
 
 		final var result = caseDataClient.postErrands(municipalityId, namespace, errandDTO);
 		final var location = String.valueOf(result.getHeaders().getFirst(HttpHeaders.LOCATION));
@@ -96,7 +114,7 @@ public class CaseDataService {
 	public void patchErrandWithAttachment(final CaseMapping caseMapping, final List<AttachmentDTO> attachmentDTOS, final String municipalityId) {
 
 		final var errandId = Long.valueOf(caseMapping.getCaseId());
-		final var namespace = mapNamespace(caseMapping.getCaseType());
+		final var namespace = mapNamespace(caseMapping.getCaseType(), municipalityId);
 		try {
 			attachmentDTOS.forEach(attachment -> caseDataClient.postAttachment(municipalityId, namespace, errandId, toAttachment(attachment, errandId)));
 		} catch (final ThrowableProblem e) {
@@ -121,7 +139,7 @@ public class CaseDataService {
 	}
 
 	public CaseStatusDTO getStatus(final CaseMapping caseMapping, final String municipalityId) {
-		final var namespace = mapNamespace(caseMapping.getCaseType());
+		final var namespace = mapNamespace(caseMapping.getCaseType(), municipalityId);
 
 		final var errandDTO = getErrand(Long.valueOf(caseMapping.getCaseId()), municipalityId, namespace);
 
@@ -157,7 +175,7 @@ public class CaseDataService {
 	 * @param otherCaseDTO The updated case from OpenE.
 	 */
 	public void putErrand(final Long caseId, final OtherCaseDTO otherCaseDTO, final String municipalityId) {
-		final var namespace = mapNamespace(otherCaseDTO.getCaseType());
+		final var namespace = mapNamespace(otherCaseDTO.getCaseType(), municipalityId);
 
 		caseDataClient.patchErrand(municipalityId, namespace, caseId, toPatchErrand(otherCaseDTO));
 
@@ -175,17 +193,24 @@ public class CaseDataService {
 			.forEach(attachmentDTO -> caseDataClient.postAttachment(municipalityId, namespace, caseId, attachmentDTO));
 	}
 
-	public String mapNamespace(final String caseType) {
+	public String mapNamespace(final String caseType, final String municipalityId) {
 		if (caseType == null) {
 			return "OTHER";
 		}
 		final var enumValue = CaseType.valueOf(caseType);
-		if (CaseType.MEX_CASE_TYPES.contains(enumValue)) {
-			return Namespace.SBK_MEX.name();
+		if (MEX_CASE_TYPES.contains(enumValue)) {
+			return SBK_MEX.name();
 		}
-		if (CaseType.PRH_CASE_TYPES.contains(enumValue)) {
-			return Namespace.SBK_PARKING_PERMIT.name();
+		if (PRH_CASE_TYPES.contains(enumValue) && !MUNICIPALITY_ID_ANGE.equals(municipalityId)) {
+			return SBK_PARKING_PERMIT.name();
 		}
+
+		if ((PARKING_PERMIT.equals(enumValue) ||
+			PARKING_PERMIT_RENEWAL.equals(enumValue) ||
+			LOST_PARKING_PERMIT.equals(enumValue)) && MUNICIPALITY_ID_ANGE.equals(municipalityId)) {
+			return ANGE_PARKING_PERMIT.name();
+		}
+
 		return "OTHER";
 	}
 
@@ -229,5 +254,22 @@ public class CaseDataService {
 			.withErrandNumber(errand.getErrandNumber())
 			.withNamespace(errand.getNamespace())
 			.build();
+	}
+
+	private boolean isAutomatic(final Errand errand, final String municipalityId, final String namespace) {
+		final var caseType = CaseType.valueOf(errand.getCaseType());
+		return (PARKING_PERMIT.equals(caseType) ||
+			PARKING_PERMIT_RENEWAL.equals(caseType) ||
+			LOST_PARKING_PERMIT.equals(caseType)) &&
+			ANGE_PARKING_PERMIT.name().equals(namespace) &&
+			MUNICIPALITY_ID_ANGE.equals(municipalityId) &&
+			ESERVICE.equals(errand.getChannel());
+	}
+
+	private List<ExtraParameter> addPhaseAction(final List<ExtraParameter> extraParameters) {
+		final var newList = new ArrayList<>(extraParameters);
+		newList.removeIf(extraParameter -> KEY_PHASE_ACTION.equals(extraParameter.getKey()));
+		newList.add(new ExtraParameter(KEY_PHASE_ACTION).values(List.of(PHASE_ACTION_AUTOMATIC)));
+		return newList;
 	}
 }
