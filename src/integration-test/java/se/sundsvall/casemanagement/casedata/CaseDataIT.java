@@ -33,7 +33,9 @@ class CaseDataIT extends AbstractAppTest {
 	private static final String RESPONSE = "response.json";
 	private static final String CASE_DATA_ID = "24";
 	private static final String MUNICIPALITY_ID = "2281";
+	private static final String MUNICIPALITY_ID_ANGE = "2260";
 	private static final String PATH = "/" + MUNICIPALITY_ID + "/cases";
+	private static final String PATH_ANGE = "/" + MUNICIPALITY_ID_ANGE + "/cases";
 
 	@Autowired
 	private CaseMappingRepository caseMappingRepository;
@@ -103,4 +105,33 @@ class CaseDataIT extends AbstractAppTest {
 			.sendRequestAndVerifyResponse();
 	}
 
+	@Test
+	void test4_PostParkingPermitCaseAndAnge() throws JsonProcessingException, ClassNotFoundException {
+		final var EXTERNAL_CASE_ID = "40621446";
+
+		final var result = setupCall()
+			.withHttpMethod(POST)
+			.withServicePath(PATH_ANGE)
+			.withRequest(REQUEST)
+			.withExpectedResponseStatus(HttpStatus.OK)
+			.withExpectedResponse(RESPONSE)
+			.sendRequestAndVerifyResponse()
+			.andReturnBody(CaseResourceResponseDTO.class);
+
+		assertThat(result).isNotNull();
+		assertThat(result.getCaseId()).isEqualTo("Inskickat");
+
+		// Make sure that there doesn't exist a case entity
+		assertThat(caseRepository.findByIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID_ANGE)).isEmpty();
+		// Make sure that there exists a case mapping
+		assertThat(caseMappingRepository.findAllByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID_ANGE))
+			.isNotNull()
+			.hasSize(1)
+			.allSatisfy(caseMapping -> {
+				assertThat(caseMapping.getExternalCaseId()).isEqualTo(EXTERNAL_CASE_ID);
+				assertThat(caseMapping.getCaseId()).isEqualTo(CASE_DATA_ID);
+				assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.PARKING_PERMIT.toString());
+				assertThat(caseMapping.getSystem()).isEqualTo(SystemType.CASE_DATA);
+			});
+	}
 }
