@@ -13,8 +13,12 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.zalando.problem.Status.NOT_FOUND;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.LOST_PARKING_PERMIT;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_BUILDING_PERMIT;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARKING_PERMIT;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARKING_PERMIT_RENEWAL;
+import static se.sundsvall.casemanagement.api.model.enums.Namespace.ANGE_PARKING_PERMIT;
+import static se.sundsvall.casemanagement.api.model.enums.Namespace.SBK_MEX;
+import static se.sundsvall.casemanagement.api.model.enums.Namespace.SBK_PARKING_PERMIT;
 import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toAttachment;
 import static se.sundsvall.casemanagement.util.Constants.SERVICE_NAME;
 
@@ -30,10 +34,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
@@ -64,6 +70,7 @@ import se.sundsvall.casemanagement.util.Constants;
 class CaseDataServiceTest {
 
 	private static final String MUNICIPALITY_ID = "2281";
+	private static final String MUNICIPALITY_ID_ANGE = "2260";
 	private static final Random RANDOM = new Random();
 
 	@InjectMocks
@@ -91,22 +98,19 @@ class CaseDataServiceTest {
 	private ArgumentCaptor<generated.client.casedata.Attachment> attachmentArgumentCaptor;
 
 	@ParameterizedTest
-	@EnumSource(value = CaseType.class, names = {
-		PARKING_PERMIT, LOST_PARKING_PERMIT, PARKING_PERMIT_RENEWAL
-	})
-	void testPostCases(final CaseType caseType) throws URISyntaxException {
+	@MethodSource("argumentsProvider")
+	void postCases(final CaseType caseType, final String municipalityId, final Namespace namespace, final String externalCaseId, final boolean isAutomatic) throws URISyntaxException {
 		// Arrange
 		final var errandId = RANDOM.nextLong();
 		final var uri = new URI("https://sundsvall-test.se/errands/" + errandId);
 		final var getErrand = new Errand();
 		getErrand.setErrandNumber("Inskickat");
 		final var inputCase = createCase(caseType);
-		final var municipalityId = "2281";
-		final var namespace = Namespace.SBK_PARKING_PERMIT.name();
+		inputCase.setExternalCaseId(externalCaseId);
 
 		// Mock
-		when(caseDataClientMock.postErrands(eq(MUNICIPALITY_ID), eq(namespace), any())).thenReturn(ResponseEntity.created(uri).build());
-		when(caseDataClientMock.getErrand(MUNICIPALITY_ID, namespace, errandId)).thenReturn(getErrand);
+		when(caseDataClientMock.postErrands(eq(municipalityId), eq(namespace.name()), any())).thenReturn(ResponseEntity.created(uri).build());
+		when(caseDataClientMock.getErrand(municipalityId, namespace.name(), errandId)).thenReturn(getErrand);
 
 		// Act
 		final var response = caseDataService.postErrand(inputCase, municipalityId);
@@ -115,15 +119,29 @@ class CaseDataServiceTest {
 		assertThat(response).isEqualTo("Inskickat");
 
 		final var errandArgumentCaptor = ArgumentCaptor.forClass(Errand.class);
-		verify(caseDataClientMock).postErrands(eq(MUNICIPALITY_ID), eq(namespace), errandArgumentCaptor.capture());
+		verify(caseDataClientMock).postErrands(eq(municipalityId), eq(namespace.name()), errandArgumentCaptor.capture());
 		final var errand = errandArgumentCaptor.getValue();
 
 		assertThat(errand.getCaseTitleAddition()).isEqualTo(inputCase.getCaseTitleAddition());
 		assertThat(errand.getCaseType()).isEqualTo(inputCase.getCaseType());
-		assertThat(errand.getChannel()).isEqualTo(ChannelEnum.ESERVICE);
+
+		if (externalCaseId != null) {
+			assertThat(errand.getChannel()).isEqualTo(ChannelEnum.ESERVICE);
+		} else {
+			assertThat(errand.getChannel()).isNull();
+		}
 		assertThat(errand.getDescription()).isEqualTo(inputCase.getDescription());
 
-		assertThat(errand.getExtraParameters()).hasSize(4);
+		final var expectedSize = isAutomatic ? 5 : 4;
+		assertThat(errand.getExtraParameters()).hasSize(expectedSize);
+
+		if (isAutomatic) {
+			assertThat(errand.getExtraParameters().stream().filter(param -> param.getKey().equals("process.phaseAction"))
+				.findFirst()
+				.orElseThrow()
+				.getValues().getFirst()).isEqualTo("AUTOMATIC");
+		}
+
 		assertThat(errand.getExtraParameters().stream().filter(param -> param.getKey().equals("application.priority"))
 			.findFirst()
 			.orElseThrow()
@@ -137,13 +155,13 @@ class CaseDataServiceTest {
 		assertThat(errand.getStatus().getCreated()).isNotNull();
 
 		attachmentArgumentCaptor = ArgumentCaptor.forClass(generated.client.casedata.Attachment.class);
-		verify(caseDataClientMock, times(3)).postAttachment(eq(MUNICIPALITY_ID), eq(namespace), eq(errandId), attachmentArgumentCaptor.capture());
+		verify(caseDataClientMock, times(3)).postAttachment(eq(municipalityId), eq(namespace.name()), eq(errandId), attachmentArgumentCaptor.capture());
 		final var attachment = attachmentArgumentCaptor.getValue();
 		assertThat(attachment).isNotNull();
 		assertThat(attachment.getCategory()).isEqualTo(AttachmentCategory.ANMALAN_VARMEPUMP.toString());
 
 		final var caseArgumentCaptor = ArgumentCaptor.forClass(CaseDTO.class);
-		verify(caseMappingServiceMock).postCaseMapping(caseArgumentCaptor.capture(), any(String.class), any(SystemType.class), eq(MUNICIPALITY_ID));
+		verify(caseMappingServiceMock).postCaseMapping(caseArgumentCaptor.capture(), any(String.class), any(SystemType.class), eq(municipalityId));
 		final var caseMapping = caseArgumentCaptor.getValue();
 		assertThat(caseMapping.getExternalCaseId()).isEqualTo(inputCase.getExternalCaseId());
 		assertThat(caseMapping.getCaseType()).isEqualTo(inputCase.getCaseType());
@@ -152,11 +170,11 @@ class CaseDataServiceTest {
 
 	// Test putErrand
 	@Test
-	void testPutErrand() {
+	void putErrand() {
 		// Arrange
 		final var errandId = RANDOM.nextLong();
 		final var inputCase = createCase(CaseType.PARKING_PERMIT);
-		final var namespace = Namespace.SBK_PARKING_PERMIT.name();
+		final var namespace = SBK_PARKING_PERMIT.name();
 
 		// Mock
 		when(caseDataClientMock.patchErrand(eq(MUNICIPALITY_ID), eq(namespace), any(), any())).thenReturn(null);
@@ -199,11 +217,11 @@ class CaseDataServiceTest {
 	}
 
 	@Test
-	void testGetStatus() {
+	void getStatus() {
 		// Arrange
 		final var caseId = RANDOM.nextLong();
 		final var errandMock = new Errand();
-		final var namespace = Namespace.SBK_PARKING_PERMIT.name();
+		final var namespace = SBK_PARKING_PERMIT.name();
 		errandMock.setId(caseId);
 		final var statusMock1 = new generated.client.casedata.Status()
 			.statusType(RandomStringUtils.random(10, true, false))
@@ -243,7 +261,7 @@ class CaseDataServiceTest {
 	}
 
 	@Test
-	void testGetStatusErrandNotFound() {
+	void getStatusErrandNotFound() {
 		// Arrange
 		final var caseMapping = CaseMapping.builder().withCaseId("1").build();
 		final var namespace = "OTHER";
@@ -257,7 +275,7 @@ class CaseDataServiceTest {
 	}
 
 	@Test
-	void testGetStatusNotFound() {
+	void getStatusNotFound() {
 		// Arrange
 		final var caseMapping = CaseMapping.builder().withCaseId("1").build();
 		// Act and assert
@@ -392,6 +410,20 @@ class CaseDataServiceTest {
 		otherCase.setExtraParameters(TestUtil.createExtraParameters());
 		otherCase.getExtraParameters().put("application.priority", "HIGH");
 		return otherCase;
+	}
+
+	private static Stream<Arguments> argumentsProvider() {
+		return Stream.of(
+			Arguments.of(PARKING_PERMIT, MUNICIPALITY_ID, SBK_PARKING_PERMIT, "externalCaseId", false),
+			Arguments.of(LOST_PARKING_PERMIT, MUNICIPALITY_ID, SBK_PARKING_PERMIT, "externalCaseId", false),
+			Arguments.of(PARKING_PERMIT_RENEWAL, MUNICIPALITY_ID, SBK_PARKING_PERMIT, "externalCaseId", false),
+			Arguments.of(PARKING_PERMIT, MUNICIPALITY_ID_ANGE, ANGE_PARKING_PERMIT, "externalCaseId", true),
+			Arguments.of(LOST_PARKING_PERMIT, MUNICIPALITY_ID_ANGE, ANGE_PARKING_PERMIT, "externalCaseId", true),
+			Arguments.of(PARKING_PERMIT_RENEWAL, MUNICIPALITY_ID_ANGE, ANGE_PARKING_PERMIT, "externalCaseId", true),
+			Arguments.of(PARKING_PERMIT_RENEWAL, MUNICIPALITY_ID_ANGE, ANGE_PARKING_PERMIT, "externalCaseId", true),
+			Arguments.of(PARKING_PERMIT_RENEWAL, MUNICIPALITY_ID_ANGE, ANGE_PARKING_PERMIT, null, false),
+			Arguments.of(MEX_BUILDING_PERMIT, MUNICIPALITY_ID, SBK_MEX, "externalCaseId", false),
+			Arguments.of(MEX_BUILDING_PERMIT, MUNICIPALITY_ID_ANGE, SBK_MEX, "externalCaseId", false));
 	}
 
 }
