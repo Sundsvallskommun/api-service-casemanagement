@@ -1,12 +1,12 @@
 {
 	"request": {
 		"method": "POST",
-		"urlPathPattern": "/case-data/2260/ANGE_PARKING_PERMIT/errands/(.+)/attachments",
+		"urlPathPattern": "/case-data/2281/SBK_PARKING_PERMIT/errands/24/attachments",
 		"bodyPatterns": [
 			{
 				"equalToJson": {
 					"errandId": 24,
-					"category": "MEDICAL_CONFIRMATION",
+					"category": "ANS",
 					"name": "Some attachment name.pdf",
 					"note": "Some attachment note",
 					"extension": ".pdf",

@@ -1,21 +1,21 @@
 {
 	"request": {
 		"method": "POST",
-		"urlPathPattern": "/case-data/2260/ANGE_PARKING_PERMIT/errands/(.+)/attachments",
+		"urlPathPattern": "/case-data/2281/SBK_PARKING_PERMIT/errands/24/attachments",
 		"bodyPatterns": [
 			{
 				"equalToJson": {
 					"errandId": 24,
-					"category": "MEDICAL_CONFIRMATION",
+					"category": "ANMALAN_VARMEPUMP",
 					"name": "Some attachment name.pdf",
 					"note": "Some attachment note",
 					"extension": ".pdf",
 					"mimeType": "application/pdf",
 					"file": "dGVzdA==",
 					"extraParameters": {
-						"kreEGkanzo": "BPQjVCepCGxynIqskCeZ",
-						"mNXkbBCjmF": "xVtjXtNrXLddWKNbbMbR",
-						"xeeNxLQwNL": "gMyDQhBjUqzGSIdVpdmg"
+						"ZbUfWoXOCa": "EkQrjyEVrJWZgmyawnDt",
+						"eRfJRSgKtS": "BqDzJDqKtbOnPgqEjkdz",
+						"rOBXLHekXx": "VxiWTEwnlGpSgMCYAAxR"
 					}
 				},
 				"ignoreArrayOrder": true

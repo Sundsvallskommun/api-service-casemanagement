@@ -207,7 +207,7 @@
 				"ignoreArrayOrder": true
 			}
 		],
-		"urlPathPattern": "/case-data/2260/(.+)/errands"
+		"urlPathPattern": "/case-data/2260/ANGE_PARKING_PERMIT/errands"
 	},
 	"response": {
 		"headers": {

@@ -12,20 +12,7 @@
 				"xeeNxLQwNL": "gMyDQhBjUqzGSIdVpdmg"
 			},
 			"mimeType": "application/pdf",
-			"category": "ANS"
-		},
-		{
-			"note": "Some attachment note",
-			"extension": ".pdf",
-			"file": "dGVzdA==",
-			"name": "Some attachment name.pdf",
-			"extraParameters": {
-				"ZbUfWoXOCa": "EkQrjyEVrJWZgmyawnDt",
-				"eRfJRSgKtS": "BqDzJDqKtbOnPgqEjkdz",
-				"rOBXLHekXx": "VxiWTEwnlGpSgMCYAAxR"
-			},
-			"mimeType": "application/pdf",
-			"category": "ANMALAN_VARMEPUMP"
+			"category": "MEDICAL_CONFIRMATION"
 		}
 	],
 	"caseTitleAddition": "Some case title addition",
