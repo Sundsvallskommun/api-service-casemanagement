@@ -1,0 +1,48 @@
+{
+	"request": {
+		"method": "POST",
+		"urlPathPattern": "/case-data/2281/SBK_PARKING_PERMIT/errands/24/attachments",
+		"bodyPatterns": [
+			{
+				"equalToJson": {
+					"errandId": 24,
+					"category": "ANMALAN_VARMEPUMP",
+					"name": "Some attachment name.pdf",
+					"note": "Some attachment note",
+					"extension": ".pdf",
+					"mimeType": "application/pdf",
+					"file": "dGVzdA==",
+					"extraParameters": {
+						"ZbUfWoXOCa": "EkQrjyEVrJWZgmyawnDt",
+						"eRfJRSgKtS": "BqDzJDqKtbOnPgqEjkdz",
+						"rOBXLHekXx": "VxiWTEwnlGpSgMCYAAxR"
+					}
+				},
+				"ignoreArrayOrder": true
+			}
+		]
+	},
+	"response": {
+		"headers": {
+			"Access-Control-Expose-Headers": [
+				""
+			],
+			"Access-Control-Allow-Origin": [
+				"*"
+			],
+			"X-Request-ID": [
+				"e19981ad-34b2-4e14-88f5-133f61ca85aa"
+			],
+			"Access-Control-Allow-Methods": [
+				"*"
+			],
+			"Access-Control-Allow-Headers": [
+				"*"
+			],
+			"Date": [
+				"Thu, 01 Sep 2022 13:00:24 GMT"
+			]
+		},
+		"status": 201
+	}
+}
