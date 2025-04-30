@@ -1,12 +1,12 @@
 [
 	{
-		"externalCaseId": "231156",
-		"system": "BYGGR",
-		"errandNumber": "BYGG 2022-000003",
-		"caseId": "231156",
-		"serviceName": "Ansökan - nybyggnad",
+		"caseId": "BYGG 2022-000003",
 		"caseType": "NYBYGGNAD_ANSOKAN_OM_BYGGLOV",
+		"errandNumber": "BYGG 2022-000003",
+		"externalCaseId": "231156",
+		"serviceName": "Ansökan - nybyggnad",
 		"status": "ANSÖKAN",
+		"system": "BYGGR",
 		"timestamp": "2022-03-21T11:10:00"
 	}
 ]
