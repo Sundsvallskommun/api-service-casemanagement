@@ -834,7 +834,7 @@ class ByggrMapperTest {
 		final var result = ByggrMapper.buildCaseStatusDTO(arende, "someExternalCaseId", caseMappings);
 		// Assert
 		assertThat(result).isNotNull().hasNoNullFieldsOrPropertiesExcept("timestamp", "status", "namespace");
-		assertThat(result.getCaseId()).isEqualTo(arende.getArendeId().toString());
+		assertThat(result.getCaseId()).isEqualTo("someDnr");
 		assertThat(result.getErrandNumber()).isEqualTo(arende.getDnr());
 		assertThat(result.getNamespace()).isNull();
 		assertThat(result.getCaseType()).isEqualTo("someCaseType");

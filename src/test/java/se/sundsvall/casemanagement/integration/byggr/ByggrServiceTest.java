@@ -157,8 +157,8 @@ class ByggrServiceTest {
 	@Mock
 	private EnvironmentUtil environmentUtilMock;
 
-	private static void assertCaseStatus(final Integer arendeId, final String caseId, final String externalCaseID, final CaseType caseType, final String serviceName, final String status, final LocalDateTime dateTime, final CaseStatusDTO getStatusResult) {
-		assertThat(getStatusResult.getCaseId()).isEqualTo(arendeId.toString());
+	private static void assertCaseStatus(final String dnr, final String caseId, final String externalCaseID, final CaseType caseType, final String serviceName, final String status, final LocalDateTime dateTime, final CaseStatusDTO getStatusResult) {
+		assertThat(getStatusResult.getCaseId()).isEqualTo(dnr);
 		assertThat(getStatusResult.getErrandNumber()).isEqualTo(caseId);
 		assertThat(getStatusResult.getExternalCaseId()).isEqualTo(externalCaseID);
 		assertThat(getStatusResult.getSystem()).isEqualTo(SystemType.BYGGR);
@@ -1087,7 +1087,7 @@ class ByggrServiceTest {
 		// Act
 		final var getStatusResult = byggrService.toByggrStatus(caseMappingList.getFirst());
 
-		assertCaseStatus(arendeId, caseId, externalCaseID, CaseType.valueOf(caseMappingList.getFirst().getCaseType()), caseMappingList.getFirst().getServiceName(), handelse2.getHandelseslag(), handelse2.getStartDatum(), getStatusResult);
+		assertCaseStatus(caseId, caseId, externalCaseID, CaseType.valueOf(caseMappingList.getFirst().getCaseType()), caseMappingList.getFirst().getServiceName(), handelse2.getHandelseslag(), handelse2.getStartDatum(), getStatusResult);
 
 		final ArgumentCaptor<GetArende> getArendeRequestCaptor = ArgumentCaptor.forClass(GetArende.class);
 		verify(arendeExportClientMock, times(1)).getArende(getArendeRequestCaptor.capture());
@@ -1176,8 +1176,8 @@ class ByggrServiceTest {
 		final var getStatusResult = byggrService.getByggrStatusByLegalId(orgnr, PartyType.ENTERPRISE, MUNICIPALITY_ID);
 
 		assertThat(getStatusResult).hasSize(2);
-		assertCaseStatus(arendeId1, caseId1, externalCaseID1, CaseType.valueOf(caseMappingList1.getFirst().getCaseType()), caseMappingList1.getFirst().getServiceName(), handelse2.getHandelseslag(), handelse2.getStartDatum(), getStatusResult.getFirst());
-		assertCaseStatus(arendeId2, caseId2, externalCaseID2, CaseType.valueOf(caseMappingList2.getFirst().getCaseType()), caseMappingList2.getFirst().getServiceName(), handelse21.getHandelseslag(), handelse21.getStartDatum(), getStatusResult.get(1));
+		assertCaseStatus(caseId1, caseId1, externalCaseID1, CaseType.valueOf(caseMappingList1.getFirst().getCaseType()), caseMappingList1.getFirst().getServiceName(), handelse2.getHandelseslag(), handelse2.getStartDatum(), getStatusResult.getFirst());
+		assertCaseStatus(caseId2, caseId2, externalCaseID2, CaseType.valueOf(caseMappingList2.getFirst().getCaseType()), caseMappingList2.getFirst().getServiceName(), handelse21.getHandelseslag(), handelse21.getStartDatum(), getStatusResult.get(1));
 
 		final ArgumentCaptor<GetRelateradeArendenByPersOrgNrAndRole> getRelateradeArendenByPersOrgNrAndRoleRequestCaptor = ArgumentCaptor.forClass(GetRelateradeArendenByPersOrgNrAndRole.class);
 		verify(arendeExportClientMock).getRelateradeArendenByPersOrgNrAndRole(getRelateradeArendenByPersOrgNrAndRoleRequestCaptor.capture());

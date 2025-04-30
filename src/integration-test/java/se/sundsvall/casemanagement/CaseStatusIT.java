@@ -55,9 +55,9 @@ class CaseStatusIT extends AbstractAppTest {
 
 	@Test
 	void test2_GetByggrStatusByExternalCaseId() throws JsonProcessingException, ClassNotFoundException {
-		final var caseId = "55189";
 		final var errandNumber = "BYGG 2021-000200";
 		final var externalCaseId = "3522";
+		final var dnr = "BYGG 2021-000200";
 
 		final var result = setupCall()
 			.withHttpMethod(GET)
@@ -69,7 +69,7 @@ class CaseStatusIT extends AbstractAppTest {
 		assertThat(result.getSystem()).isEqualTo(SystemType.BYGGR);
 		assertThat(result.getCaseType()).isEqualTo(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV.toString());
 		assertThat(result.getExternalCaseId()).isEqualTo(externalCaseId);
-		assertThat(result.getCaseId()).isEqualTo(caseId);
+		assertThat(result.getCaseId()).isEqualTo(dnr);
 		assertThat(result.getErrandNumber()).isEqualTo(errandNumber);
 		assertThat(result.getStatus()).isEqualTo("ANSÖKAN");
 		assertThat(result.getServiceName()).isEqualTo("Ansökan - strandskyddsdispens");

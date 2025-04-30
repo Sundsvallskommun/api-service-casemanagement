@@ -433,7 +433,7 @@ public final class ByggrMapper {
 		return CaseStatusDTO.builder()
 			.withSystem(BYGGR)
 			.withExternalCaseId(externalCaseId)
-			.withCaseId(arende.getArendeId().toString())
+			.withCaseId(arende.getDnr())
 			.withCaseType(caseMappingList.isEmpty() ? null : caseMappingList.getFirst().getCaseType())
 			.withServiceName(caseMappingList.isEmpty() ? null : caseMappingList.getFirst().getServiceName())
 			.withErrandNumber(arende.getDnr())
