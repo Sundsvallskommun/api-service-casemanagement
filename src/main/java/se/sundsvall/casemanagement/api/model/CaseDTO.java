@@ -42,6 +42,7 @@ import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_HUN
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_INVASIVE_SPECIES;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_INVOICE;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_LAND_INSTRUCTION;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_LAND_RESERVATION;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_LAND_RIGHT;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_LAND_SURVEYING_OFFICE;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_LAND_USE_AGREEMENT_VALUATION_PROTOCOL;
@@ -62,6 +63,7 @@ import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_SMA
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_SQUARE_PLACE;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_STORMWATER;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_TERMINATION_OF_LEASE;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_TRAINING_SEMINAR;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_TREES_FORESTS;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_UNAUTHORIZED_RESIDENCE;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.NEIGHBORHOOD_NOTIFICATION;
@@ -205,7 +207,9 @@ import lombok.experimental.SuperBuilder;
 		MEX_RETURNED_TO_CONTACT_SUNDSVALL,
 		MEX_SMALL_BOAT_HARBOR_DOCK_PORT,
 		MEX_SELL_LAND_TO_THE_MUNICIPALITY_PRIVATE,
-		MEX_SELL_LAND_TO_THE_MUNICIPALITY_BUSINESS
+		MEX_SELL_LAND_TO_THE_MUNICIPALITY_BUSINESS,
+		MEX_TRAINING_SEMINAR,
+		MEX_LAND_RESERVATION
 	})
 })
 @Data
