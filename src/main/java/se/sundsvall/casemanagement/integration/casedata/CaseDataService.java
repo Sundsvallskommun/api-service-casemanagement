@@ -1,6 +1,7 @@
 package se.sundsvall.casemanagement.integration.casedata;
 
 import static generated.client.casedata.Errand.ChannelEnum.ESERVICE;
+import static generated.client.casedata.Stakeholder.TypeEnum.PERSON;
 import static java.time.OffsetDateTime.now;
 import static java.util.Collections.emptyList;
 import static org.zalando.problem.Status.NOT_FOUND;
@@ -21,6 +22,7 @@ import static se.sundsvall.casemanagement.util.Constants.SERVICE_NAME;
 
 import generated.client.casedata.Errand;
 import generated.client.casedata.ExtraParameter;
+import generated.client.casedata.Stakeholder;
 import generated.client.casedata.Status;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -58,6 +60,12 @@ public class CaseDataService {
 
 	private static final String MUNICIPALITY_ID_ANGE = "2260";
 
+	private static final String PROCESS_ENGINE_FIRST_NAME = "Process";
+
+	private static final String PROCESS_ENGINE_LAST_NAME = "Engine";
+
+	private static final String ROLE_ADMINISTRATOR = "ADMINISTRATOR";
+
 	private final CaseMappingService caseMappingService;
 	private final CaseDataProperties caseDataProperties;
 	private final CaseDataClient caseDataClient;
@@ -86,7 +94,8 @@ public class CaseDataService {
 		final var namespace = mapNamespace(otherCase.getCaseType(), municipalityId);
 
 		if (isAutomatic(errandDTO, municipalityId, namespace)) {
-			errandDTO.setExtraParameters(addPhaseAction(errandDTO.getExtraParameters()));
+			errandDTO.setExtraParameters(addPhaseAction(Optional.ofNullable(errandDTO.getExtraParameters()).orElse(emptyList())));
+			errandDTO.setStakeholders(addAdministratorStakeholder(Optional.ofNullable(errandDTO.getStakeholders()).orElse(emptyList()), municipalityId, namespace));
 		}
 
 		// To keep collection instantiated and not suddenly
@@ -270,6 +279,18 @@ public class CaseDataService {
 		final var newList = new ArrayList<>(extraParameters);
 		newList.removeIf(extraParameter -> KEY_PHASE_ACTION.equals(extraParameter.getKey()));
 		newList.add(new ExtraParameter(KEY_PHASE_ACTION).values(List.of(PHASE_ACTION_AUTOMATIC)));
+		return newList;
+	}
+
+	private List<Stakeholder> addAdministratorStakeholder(final List<Stakeholder> stakeholders, final String municipalityId, final String namespace) {
+		final var newList = new ArrayList<>(stakeholders);
+		newList.add(new Stakeholder()
+			.municipalityId(municipalityId)
+			.namespace(namespace)
+			.type(PERSON)
+			.firstName(PROCESS_ENGINE_FIRST_NAME)
+			.lastName(PROCESS_ENGINE_LAST_NAME)
+			.roles(List.of(ROLE_ADMINISTRATOR)));
 		return newList;
 	}
 }
