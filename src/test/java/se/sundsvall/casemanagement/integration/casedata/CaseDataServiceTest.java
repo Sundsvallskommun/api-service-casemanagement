@@ -1,5 +1,6 @@
 package se.sundsvall.casemanagement.integration.casedata;
 
+import static generated.client.casedata.Stakeholder.TypeEnum.PERSON;
 import static java.time.OffsetDateTime.now;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -25,6 +26,7 @@ import static se.sundsvall.casemanagement.util.Constants.SERVICE_NAME;
 import generated.client.casedata.Errand;
 import generated.client.casedata.Errand.ChannelEnum;
 import generated.client.casedata.PatchErrand;
+import generated.client.casedata.Stakeholder;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.LocalDateTime;
@@ -108,6 +110,14 @@ class CaseDataServiceTest {
 		final var inputCase = createCase(caseType);
 		inputCase.setExternalCaseId(externalCaseId);
 
+		final var expectedAdministrator = new Stakeholder()
+			.type(PERSON)
+			.firstName("Process")
+			.lastName("Engine")
+			.municipalityId(municipalityId)
+			.namespace(namespace.name())
+			.roles(List.of("ADMINISTRATOR"));
+
 		// Mock
 		when(caseDataClientMock.postErrands(eq(municipalityId), eq(namespace.name()), any())).thenReturn(ResponseEntity.created(uri).build());
 		when(caseDataClientMock.getErrand(municipalityId, namespace.name(), errandId)).thenReturn(getErrand);
@@ -132,14 +142,23 @@ class CaseDataServiceTest {
 		}
 		assertThat(errand.getDescription()).isEqualTo(inputCase.getDescription());
 
-		final var expectedSize = isAutomatic ? 5 : 4;
-		assertThat(errand.getExtraParameters()).hasSize(expectedSize);
+		final var expectedSizeParameters = isAutomatic ? 5 : 4;
+		assertThat(errand.getExtraParameters()).hasSize(expectedSizeParameters);
+
+		final var expectedSizeStakeholders = isAutomatic ? inputCase.getStakeholders().size() + 1 : inputCase.getStakeholders().size();
+		assertThat(errand.getStakeholders()).hasSize(expectedSizeStakeholders);
 
 		if (isAutomatic) {
 			assertThat(errand.getExtraParameters().stream().filter(param -> param.getKey().equals("process.phaseAction"))
 				.findFirst()
 				.orElseThrow()
 				.getValues().getFirst()).isEqualTo("AUTOMATIC");
+			final var administrator = errand.getStakeholders().stream()
+				.filter(stakeholder -> PERSON.equals(stakeholder.getType()) && stakeholder.getRoles().contains("ADMINISTRATOR"))
+				.findFirst()
+				.orElse(null);
+
+			assertThat(administrator).isEqualTo(expectedAdministrator);
 		}
 
 		assertThat(errand.getExtraParameters().stream().filter(param -> param.getKey().equals("application.priority"))
@@ -150,7 +169,6 @@ class CaseDataServiceTest {
 		assertThat(errand.getExternalCaseId()).isEqualTo(inputCase.getExternalCaseId());
 		assertThat(errand.getPhase()).isEqualTo("Aktualisering");
 		assertThat(errand.getPriority()).isEqualTo(Errand.PriorityEnum.HIGH);
-		assertThat(errand.getStakeholders()).hasSameSizeAs(inputCase.getStakeholders());
 		assertThat(errand.getStatus().getStatusType()).isEqualTo("Ärende inkommit");
 		assertThat(errand.getStatus().getCreated()).isNotNull();
 

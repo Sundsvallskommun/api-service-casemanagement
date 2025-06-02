@@ -188,6 +188,19 @@
 							},
 							"personId": "c9faf8e0-e7c1-4d94-b7fa-ce37b260f281",
 							"type": "PERSON"
+						},
+						{
+							"municipalityId": "2260",
+							"namespace": "ANGE_PARKING_PERMIT",
+							"type": "PERSON",
+							"firstName": "Process",
+							"lastName": "Engine",
+							"roles": [
+								"ADMINISTRATOR"
+							],
+							"addresses": [],
+							"contactInformation": [],
+							"extraParameters": {}
 						}
 					],
 					"priority": "MEDIUM",
