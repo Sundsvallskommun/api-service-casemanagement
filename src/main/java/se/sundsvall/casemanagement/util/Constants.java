@@ -61,6 +61,7 @@ public final class Constants {
 	public static final String BYGGR_HANDELSESLAG_KOMPLETTERING_TILL_ADMIN = "KOMPADM";
 	public static final String BYGGR_HANDELSEUTFALL_ATOM_KVITTENS_HL_BYTE = "Kv2";
 	public static final String BYGGR_STATUS_AVSLUTAT = "Avslutat";
+	public static final String BYGGR_STATUS_OKANT = "Okänt";
 	public static final String BYGGR_HANDLING_STATUS_INKOMMEN = "Inkommen";
 	public static final String BYGGR_SYSTEM_HANDLAGGARE_SIGN = "SYSTEM";
 	public static final String BYGGR_NAMNDKOD_STADSBYGGNADSNAMNDEN = "SBN";

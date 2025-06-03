@@ -768,7 +768,7 @@ class ByggrMapperTest {
 	}
 
 	@Test
-	void toByggrStatusNoHandelseList() {
+	void toByggrStatusCaseClosedAndNoHandelseList() {
 
 		// Arrange
 		final var arende = new Arende();
@@ -782,10 +782,9 @@ class ByggrMapperTest {
 				.build());
 
 		// Act && Assert
-		assertThatThrownBy(() -> ByggrMapper.toByggrStatus(arende, "someCaseId", caseMappings))
-			.isInstanceOf(AbstractThrowableProblem.class)
-			.hasMessageContaining("Not Found: Status not found");
-
+		var caseStatusDTO = ByggrMapper.toByggrStatus(arende, "someCaseId", caseMappings);
+		assertThat(caseStatusDTO).isNotNull().hasNoNullFieldsOrPropertiesExcept("timestamp", "namespace");
+		assertThat(caseStatusDTO.getStatus()).isEqualTo("Okänt");
 	}
 
 	@Test
@@ -843,6 +842,7 @@ class ByggrMapperTest {
 		assertThat(result.getCaseType()).isEqualTo("someCaseType");
 		assertThat(result.getServiceName()).isEqualTo("someServiceName");
 		assertThat(result.getExternalCaseId()).isEqualTo("someExternalCaseId");
+		assertThat(result.getStatus()).isEqualTo("Okänt");
 
 	}
 
