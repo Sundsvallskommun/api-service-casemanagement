@@ -2,7 +2,6 @@ package se.sundsvall.casemanagement.integration.byggr;
 
 import static java.util.function.Predicate.not;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.zalando.problem.Status.NOT_FOUND;
 import static se.sundsvall.casemanagement.api.model.enums.SystemType.BYGGR;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrUtil.hasHandelseList;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrUtil.isCaseClosed;
@@ -10,7 +9,7 @@ import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDLING_STATUS_I
 import static se.sundsvall.casemanagement.util.Constants.BYGGR_KOMTYP_EPOST;
 import static se.sundsvall.casemanagement.util.Constants.BYGGR_KOMTYP_HEMTELEFON;
 import static se.sundsvall.casemanagement.util.Constants.BYGGR_KOMTYP_MOBIL;
-import static se.sundsvall.casemanagement.util.Constants.ERR_MSG_STATUS_NOT_FOUND;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR_STATUS_OKANT;
 import static se.sundsvall.casemanagement.util.Constants.HANDELSETYP_ANMALAN;
 import static se.sundsvall.casemanagement.util.Constants.HANDELSETYP_ANSOKAN;
 
@@ -426,11 +425,13 @@ public final class ByggrMapper {
 				}
 			}
 		}
-		throw Problem.valueOf(NOT_FOUND, ERR_MSG_STATUS_NOT_FOUND);
+		return caseStatusDTO;
 	}
 
 	static CaseStatusDTO buildCaseStatusDTO(final Arende arende, final String externalCaseId, final List<CaseMapping> caseMappingList) {
 		return CaseStatusDTO.builder()
+			// Set unknown status as default as we don't want to throw a not found, which will prevent fetching statuses.
+			.withStatus(BYGGR_STATUS_OKANT)
 			.withSystem(BYGGR)
 			.withExternalCaseId(externalCaseId)
 			.withCaseId(arende.getDnr())
