@@ -2,11 +2,16 @@ package se.sundsvall.casemanagement.configuration;
 
 import java.time.Duration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 
 @ConfigurationProperties(prefix = "retry")
-public record RetryProperties(int maxAttempts, Duration initialDelay, Duration maxDelay) {
+public record RetryProperties(
+	@DefaultValue("1") int maxAttempts,
+	@DefaultValue("PT0.1S") Duration initialDelay,
+	@DefaultValue("PT1S") Duration maxDelay) {
 
-	RetryProperties() {
-		this(3, Duration.ofMillis(100), Duration.ofMillis(1000));
+	// This is required for ByggrProcessor tests.
+	public RetryProperties() {
+		this(1, Duration.parse("PT0.1S"), Duration.parse("PT1S"));
 	}
 }

@@ -149,19 +149,15 @@ public class EcosService {
 	private final FbService fbService;
 
 	private final MinutMiljoClient minutMiljoClient;
-	private final MinutMiljoClientV2 minutMiljoClientV2;
 
 	public EcosService(
 		final CaseMappingService caseMappingService,
 		final PartyService partyService,
 		final MinutMiljoClient minutMiljoClient,
-		final MinutMiljoClientV2 minutMiljoClientV2,
 		final FbService fbService) {
-
 		this.caseMappingService = caseMappingService;
 		this.partyService = partyService;
 		this.minutMiljoClient = minutMiljoClient;
-		this.minutMiljoClientV2 = minutMiljoClientV2;
 		this.fbService = fbService;
 	}
 
@@ -734,7 +730,7 @@ public class EcosService {
 			registerDocumentCaseSvcDtoV2.setCaseSubtitleFree(freeSubtitle);
 		}
 		registerDocument.setRegisterDocumentCaseSvcDto(registerDocumentCaseSvcDtoV2);
-		final var registerDocumentResult = minutMiljoClientV2.registerDocumentV2(registerDocument).getRegisterDocumentResult();
+		final var registerDocumentResult = minutMiljoClient.registerDocumentV2(registerDocument).getRegisterDocumentResult();
 
 		if (registerDocumentResult == null) {
 			throw Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "Case could not be created.");

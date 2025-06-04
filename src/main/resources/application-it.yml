@@ -48,10 +48,8 @@ integration:
     url: http://localhost:${wiremock.server.port:}/messaging/3.1
   minutmiljo:
     password: test_pass
-    url: http://localhost:${wiremock.server.port:}/Ecos2PublicServices/MinutMiljoService.svc
+    url: http://localhost:${wiremock.server.port:}/Ecos2PublicServices
     username: test_user
-  minutmiljoV2:
-    url: http://localhost:${wiremock.server.port:}/Ecos2PublicServices/MinutMiljoServiceV2.svc
   oep-integrator:
     oauth2ClientId: ${SUNDSVALLS_KOMMUN_CONSUMER_KEY}
     oauth2ClientSecret: ${SUNDSVALLS_KOMMUN_CONSUMER_SECRET}

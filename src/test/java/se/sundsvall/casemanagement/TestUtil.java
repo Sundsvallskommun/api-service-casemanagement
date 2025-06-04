@@ -70,7 +70,6 @@ import se.sundsvall.casemanagement.integration.byggr.ArendeExportClient;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.integration.db.model.CaseTypeData;
 import se.sundsvall.casemanagement.integration.ecos.MinutMiljoClient;
-import se.sundsvall.casemanagement.integration.ecos.MinutMiljoClientV2;
 import se.sundsvall.casemanagement.integration.ecos.PartyService;
 import se.sundsvall.casemanagement.integration.fb.model.FbPropertyInfo;
 import se.sundsvall.casemanagement.integration.party.PartyIntegration;
@@ -250,7 +249,7 @@ public final class TestUtil {
 
 	}
 
-	public static void standardMockMinutMiljo(final MinutMiljoClient mock, final MinutMiljoClientV2 mockV2) {
+	public static void standardMockMinutMiljo(final MinutMiljoClient mock) {
 		lenient().doReturn(new SearchPartyResponse()).when(mock).searchParty(any());
 
 		final CreatePersonPartyResponse createPersonPartyResponse = new CreatePersonPartyResponse();
@@ -266,7 +265,7 @@ public final class TestUtil {
 		registerDocumentCaseResultSvcDto.setCaseId("e19981ad-34b2-4e14-88f5-133f61ca85aa");
 		registerDocumentCaseResultSvcDto.setCaseNumber("Inskickat");
 		registerDocumentResponse.setRegisterDocumentResult(registerDocumentCaseResultSvcDto);
-		lenient().doReturn(registerDocumentResponse).when(mockV2).registerDocumentV2(any());
+		lenient().doReturn(registerDocumentResponse).when(mock).registerDocumentV2(any());
 
 		final CreateFoodFacilityResponse createFoodFacilityResponse = new CreateFoodFacilityResponse();
 		createFoodFacilityResponse.setCreateFoodFacilityResult(UUID.randomUUID().toString());
