@@ -1,7 +1,5 @@
 package se.sundsvall.casemanagement.integration.byggr;
 
-import static se.sundsvall.casemanagement.integration.ecos.MinutMiljoClientV2.TEXT_XML_UTF8;
-
 import arendeexport.GetArende;
 import arendeexport.GetArendeResponse;
 import arendeexport.GetDocument;
@@ -25,6 +23,8 @@ import se.sundsvall.casemanagement.integration.byggr.configuration.ArendeExportC
 @FeignClient(name = "arendeexport", url = "${integration.arendeexport.url}", configuration = ArendeExportConfiguration.class)
 @CircuitBreaker(name = "arendeexport")
 public interface ArendeExportClient {
+
+	String TEXT_XML_UTF8 = "text/xml;charset=UTF-8";
 
 	@PostMapping(consumes = TEXT_XML_UTF8, headers = {
 		"SOAPAction=www.tekis.se/ServiceContract/V4/IExportArenden/GetUpdatedArenden"

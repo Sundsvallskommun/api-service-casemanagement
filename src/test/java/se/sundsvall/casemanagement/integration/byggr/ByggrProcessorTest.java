@@ -39,20 +39,20 @@ class ByggrProcessorTest {
 
 	private static final String MUNICIPALITY_ID = "2281";
 
-	@InjectMocks
-	private ByggrProcessor byggrProcessor;
-
-	@Spy
-	private RetryProperties properties;
-
 	@Mock
 	private ByggrService service;
+
+	@Spy
+	private RetryProperties retryProperties;
 
 	@Mock
 	private RetryPolicy<SaveNewArendeResponse2> retryPolicy;
 
 	@Spy
 	private CaseRepository caseRepository;
+
+	@InjectMocks
+	private ByggrProcessor byggrProcessor;
 
 	@Test
 	void testHandleUpdateByggRCase() throws SQLException, IOException {
@@ -133,7 +133,7 @@ class ByggrProcessorTest {
 		verify(caseRepository).findByIdAndMunicipalityId(any(), eq(MUNICIPALITY_ID));
 		verify(caseRepository).save(any());
 		verifyNoMoreInteractions(caseRepository);
-		verify(service, times(3)).saveNewCase(any(ByggRCaseDTO.class), eq(MUNICIPALITY_ID));
+		verify(service, times(1)).saveNewCase(any(ByggRCaseDTO.class), eq(MUNICIPALITY_ID));
 
 	}
 

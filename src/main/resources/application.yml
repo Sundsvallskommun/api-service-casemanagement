@@ -47,8 +47,6 @@ integration:
     readTimeout: 60
     url: override
     username: override
-  minutmiljoV2:
-    url: override
   opene:
     password: password
     username: username

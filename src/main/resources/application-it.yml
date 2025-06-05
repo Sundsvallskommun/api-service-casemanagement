@@ -48,10 +48,8 @@ integration:
     url: http://localhost:${wiremock.server.port:}/messaging/3.1
   minutmiljo:
     password: test_pass
-    url: http://localhost:${wiremock.server.port:}/Ecos2PublicServices/MinutMiljoService.svc
+    url: http://localhost:${wiremock.server.port:}/Ecos2PublicServices
     username: test_user
-  minutmiljoV2:
-    url: http://localhost:${wiremock.server.port:}/Ecos2PublicServices/MinutMiljoServiceV2.svc
   opene:
     password: password
     url: http://localhost:${wiremock.server.port:}/opene/1.0
