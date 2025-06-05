@@ -47,8 +47,6 @@ integration:
     readTimeout: 60
     url: override
     username: override
-  minutmiljoV2:
-    url: override
   oep-integrator:
     oauth2ClientId: override
     oauth2ClientSecret: override
@@ -92,8 +90,6 @@ resilience4j:
       lantmateriet:
         ignoreExceptions: se.sundsvall.dept44.exception.ClientProblem
       minutmiljo:
-        ignoreExceptions: se.sundsvall.dept44.exception.ClientProblem
-      minutmiljoV2:
         ignoreExceptions: se.sundsvall.dept44.exception.ClientProblem
 spring:
   application:

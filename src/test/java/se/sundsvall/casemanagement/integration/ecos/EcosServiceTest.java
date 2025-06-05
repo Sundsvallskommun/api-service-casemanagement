@@ -106,9 +106,6 @@ class EcosServiceTest {
 	private MinutMiljoClient minutMiljoClientMock;
 
 	@Mock
-	private MinutMiljoClientV2 minutMiljoClientV2Mock;
-
-	@Mock
 	private FbService fbServiceMock;
 
 	@Mock
@@ -161,7 +158,7 @@ class EcosServiceTest {
 	void beforeEach() {
 		TestUtil.standardMockFb(fbServiceMock);
 		TestUtil.standardMockCitizen(partyIntegrationMock);
-		TestUtil.standardMockMinutMiljo(minutMiljoClientMock, minutMiljoClientV2Mock);
+		TestUtil.standardMockMinutMiljo(minutMiljoClientMock);
 		TestUtil.standardMockPartyService(partyServiceMock);
 	}
 
@@ -191,7 +188,7 @@ class EcosServiceTest {
 		assertThat(createFoodFacilitySvcDto.getNote()).isEqualTo(eCase.getFacilities().getFirst().getDescription());
 		assertThat(createFoodFacilitySvcDto.getFacilityCollectionName()).contains(eCase.getFacilities().getFirst().getFacilityCollectionName());
 
-		verify(minutMiljoClientV2Mock).registerDocumentV2(registerDocumentArgumentCaptor.capture());
+		verify(minutMiljoClientMock).registerDocumentV2(registerDocumentArgumentCaptor.capture());
 		final RegisterDocumentCaseSvcDtoV2 registerDocumentCaseSvcDtoV2 = registerDocumentArgumentCaptor.getValue().getRegisterDocumentCaseSvcDto();
 
 		assertThat(registerDocumentCaseSvcDtoV2.getCaseSubtitleFree()).isEqualTo(eCase.getFacilities().getFirst().getFacilityCollectionName() + ", " + eCase.getFacilities().getFirst().getAddress().getPropertyDesignation().toUpperCase());
@@ -242,7 +239,7 @@ class EcosServiceTest {
 
 		// Assert
 		verify(minutMiljoClientMock, times(1)).createFoodFacility(any());
-		verify(minutMiljoClientV2Mock, times(1)).registerDocumentV2(any());
+		verify(minutMiljoClientMock, times(1)).registerDocumentV2(any());
 		verify(caseMappingServiceMock, times(1)).postCaseMapping(any(CaseDTO.class), any(String.class), any(SystemType.class), eq(MUNICIPALITY_ID));
 	}
 
@@ -332,7 +329,7 @@ class EcosServiceTest {
 		ecosService.postCase(eCase, MUNICIPALITY_ID);
 
 		verify(minutMiljoClientMock, times(0)).createHeatPumpFacility(any());
-		verify(minutMiljoClientV2Mock, times(1)).registerDocumentV2(any());
+		verify(minutMiljoClientMock, times(1)).registerDocumentV2(any());
 	}
 
 	@Test
@@ -344,7 +341,7 @@ class EcosServiceTest {
 		ecosService.postCase(eCase, MUNICIPALITY_ID);
 
 		verify(minutMiljoClientMock, times(0)).createHeatPumpFacility(any());
-		verify(minutMiljoClientV2Mock, times(1)).registerDocumentV2(any());
+		verify(minutMiljoClientMock, times(1)).registerDocumentV2(any());
 	}
 
 	@Test
@@ -378,7 +375,7 @@ class EcosServiceTest {
 		verify(partyServiceMock, times(1)).findAndAddPartyToCase(any(EcosCaseDTO.class), any(String.class), eq(MUNICIPALITY_ID));
 		verify(minutMiljoClientMock, times(1)).createHeatPumpFacility(createHeatPumpFacilityArgumentCaptor.capture());
 		verify(minutMiljoClientMock, times(3)).addPartyToFacility(any());
-		verify(minutMiljoClientV2Mock, times(1)).registerDocumentV2(any());
+		verify(minutMiljoClientMock, times(1)).registerDocumentV2(any());
 	}
 
 	@Test
@@ -395,7 +392,7 @@ class EcosServiceTest {
 		verify(partyServiceMock, times(1)).findAndAddPartyToCase(any(EcosCaseDTO.class), any(String.class), eq(MUNICIPALITY_ID));
 		verify(minutMiljoClientMock, times(1)).createHealthProtectionFacility(createHealthProtectionFacilityArgumentCaptor.capture());
 		verify(minutMiljoClientMock, times(3)).addPartyToFacility(any());
-		verify(minutMiljoClientV2Mock, times(1)).registerDocumentV2(any());
+		verify(minutMiljoClientMock, times(1)).registerDocumentV2(any());
 
 		final var svcDto = createHealthProtectionFacilityArgumentCaptor.getValue().getCreateHealthProtectionFacilitySvcDto();
 		assertThat(svcDto.getAddress().getAdressPlatsId()).isEqualTo(ADRESSPLATS_ID);
@@ -667,7 +664,7 @@ class EcosServiceTest {
 		verify(minutMiljoClientMock, times(1)).createIndividualSewageFacility(argumentCaptor.capture());
 		verify(minutMiljoClientMock, times(3)).addPartyToFacility(any());
 		verify(partyServiceMock, times(1)).findAndAddPartyToCase(any(EcosCaseDTO.class), any(String.class), eq(MUNICIPALITY_ID));
-		verify(minutMiljoClientV2Mock, times(1)).registerDocumentV2(any());
+		verify(minutMiljoClientMock, times(1)).registerDocumentV2(any());
 	}
 
 	private void verifyStandardParams(final Map<String, String> extraParameters, final CreateIndividualSewageFacilitySvcDto svcDto, final String prefix) {
