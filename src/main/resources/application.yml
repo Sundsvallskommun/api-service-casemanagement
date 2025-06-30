@@ -64,12 +64,6 @@ logger:
   max:
     payload:
       length: 10000
-logging:
-  level:
-    se:
-      sundsvall:
-        dept44:
-          payload: 'OFF'
 openapi:
   name: ${spring.application.name}
   title: ${spring.application.name}
