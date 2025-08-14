@@ -14,7 +14,7 @@ public class MessagingProperties {
 	private String mailRecipient;
 	private String token;
 
-	/// BASE PROPERTIES
+	// BASE PROPERTIES
 	private String baseUrl;
 	private Duration readTimeout = Duration.ofSeconds(15);
 	private Duration connectTimeout = Duration.ofSeconds(5);

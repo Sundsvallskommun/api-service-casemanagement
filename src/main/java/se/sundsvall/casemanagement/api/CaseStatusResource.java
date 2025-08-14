@@ -50,9 +50,9 @@ class CaseStatusResource {
 	@GetMapping(path = "/organization/{organizationNumber}/cases/status", produces = APPLICATION_JSON_VALUE)
 	@Operation(description = "Returns the latest status for each of the cases where the specified organization has the role \"applicant\".")
 	ResponseEntity<List<CaseStatusDTO>> getStatusByOrgNr(
-		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable(name = "municipalityId") final String municipalityId,
+		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
 		@Pattern(regexp = ORGNR_PATTERN_REGEX, message = ORGNR_PATTERN_MESSAGE) @Schema(description = "Organization number with 10 or 12 digits.", example = "20220622-2396") @Parameter(name = "organizationNumber",
-			description = "OrganizationNumber") @PathVariable(name = "organizationNumber") final String organizationNumber) {
+			description = "OrganizationNumber") @PathVariable final String organizationNumber) {
 		final var caseStatuses = statusService.getStatusByOrgNr(municipalityId, organizationNumber);
 
 		return caseStatuses.isEmpty() ? notFound().build() : ok(caseStatuses);
@@ -61,8 +61,8 @@ class CaseStatusResource {
 	@GetMapping(path = "/cases/{externalCaseId}/status", produces = APPLICATION_JSON_VALUE)
 	@Operation(description = "Returns the latest status for the case in the underlying system connected to the specified externalCaseId.")
 	ResponseEntity<CaseStatusDTO> getStatusByExternalCaseId(
-		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable(name = "municipalityId") final String municipalityId,
-		@Parameter(name = "externalCaseId", description = "External case id") @PathVariable(name = "externalCaseId") final String externalCaseId) {
+		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
+		@Parameter(name = "externalCaseId", description = "External case id") @PathVariable final String externalCaseId) {
 
 		return ok(statusService.getStatusByExternalCaseId(municipalityId, externalCaseId));
 	}
@@ -70,8 +70,8 @@ class CaseStatusResource {
 	@GetMapping(path = "/{partyId}/statuses", produces = APPLICATION_JSON_VALUE)
 	@Operation(description = "Returns the case status for all cases where the specified party is involved.")
 	ResponseEntity<List<CaseStatusDTO>> getStatusesByPartyId(
-		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable(name = "municipalityId") final String municipalityId,
-		@Parameter(name = "partyId", description = "Party id") @ValidUuid @PathVariable(name = "partyId") final String partyId) {
+		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
+		@Parameter(name = "partyId", description = "Party id") @ValidUuid @PathVariable final String partyId) {
 
 		return ok(statusService.getStatusesByPartyId(municipalityId, partyId));
 	}

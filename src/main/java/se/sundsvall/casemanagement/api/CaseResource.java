@@ -63,7 +63,7 @@ class CaseResource {
 		description = "Creates a case in ByggR or Ecos2 based on caseType. Also persists a connection between externalCaseId and the created case.",
 		responses = @ApiResponse(responseCode = "200", description = "OK", useReturnTypeSchema = true))
 	ResponseEntity<CaseResourceResponseDTO> postCases(
-		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable(name = "municipalityId") final String municipalityId,
+		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
 		@Schema(oneOf = {
 			ByggRCaseDTO.class, EcosCaseDTO.class, OtherCaseDTO.class
 		}, example = POST_CASES_REQUEST_BODY_EXAMPLE) @RequestBody @Valid final CaseDTO caseDTOInput) {
@@ -80,8 +80,8 @@ class CaseResource {
 		description = "Update a case.",
 		responses = @ApiResponse(responseCode = "204", description = "No content", useReturnTypeSchema = true))
 	ResponseEntity<Void> putCase(
-		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable(name = "municipalityId") final String municipalityId,
-		@Parameter(name = "externalCaseId", description = "External case id", example = "1234") @PathVariable(name = "externalCaseId") final String externalCaseId,
+		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
+		@Parameter(name = "externalCaseId", description = "External case id", example = "1234") @PathVariable final String externalCaseId,
 		@Schema(oneOf = {
 			ByggRCaseDTO.class, EcosCaseDTO.class, OtherCaseDTO.class
 		}, example = POST_CASES_REQUEST_BODY_EXAMPLE) @RequestBody @Valid final CaseDTO caseDTOInput) {

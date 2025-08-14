@@ -1,3 +1,21 @@
+spring:
+  application:
+    name: ms-casemanagementservice
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    password: override
+    url: override
+    username: override
+    hikari:
+      maximum-pool-size: 20
+  flyway:
+    enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: validate
+      naming:
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
 integration:
   arendeexport:
     connectTimeout: 5
@@ -85,22 +103,4 @@ resilience4j:
         ignoreExceptions: se.sundsvall.dept44.exception.ClientProblem
       minutmiljo:
         ignoreExceptions: se.sundsvall.dept44.exception.ClientProblem
-spring:
-  application:
-    name: ms-casemanagementservice
-  datasource:
-    driver-class-name: org.mariadb.jdbc.Driver
-    password: override
-    url: override
-    username: override
-    hikari:
-      maximum-pool-size: 20
-  flyway:
-    baseline-on-migrate: true
-    enabled: true
-  jpa:
-    hibernate:
-      ddl-auto: validate
-      naming:
-        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+

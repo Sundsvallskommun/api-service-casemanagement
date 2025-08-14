@@ -22,15 +22,15 @@ public interface OepIntegratorClient {
 
 	@PostMapping(value = "{municipalityId}/{instanceType}/cases/{flowInstanceId}/delivery", consumes = APPLICATION_JSON_VALUE, produces = ALL_VALUE)
 	ResponseEntity<Void> confirmDelivery(
-		@PathVariable("municipalityId") final String municipalityId,
-		@PathVariable("instanceType") final InstanceType instanceType,
-		@PathVariable("flowInstanceId") final String flowInstanceId,
+		@PathVariable final String municipalityId,
+		@PathVariable final InstanceType instanceType,
+		@PathVariable final String flowInstanceId,
 		@RequestBody final ConfirmDeliveryRequest confirmDeliveryRequest);
 
 	@PutMapping(value = "{municipalityId}/{instanceType}/cases/{flowInstanceId}/status", consumes = APPLICATION_JSON_VALUE, produces = ALL_VALUE)
 	ResponseEntity<Void> setStatus(
-		@PathVariable("municipalityId") final String municipalityId,
-		@PathVariable("instanceType") final InstanceType instanceType,
-		@PathVariable("flowInstanceId") final String flowInstanceId,
+		@PathVariable final String municipalityId,
+		@PathVariable final InstanceType instanceType,
+		@PathVariable final String flowInstanceId,
 		@RequestBody final CaseStatusChangeRequest setStatusRequest);
 }

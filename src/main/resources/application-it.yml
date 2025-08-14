@@ -1,3 +1,22 @@
+retry:
+  initial-delay: 1
+  max-delay: 2
+  maxAttempts: 1
+spring:
+  cache:
+    type: none
+  datasource:
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+    url: jdbc:tc:mariadb:10.6:///
+  flyway:
+    enabled: true
+  jpa:
+    properties:
+      jakarta:
+        persistence:
+          schema-generation:
+            database:
+              action: validate
 integration:
   arendeexport:
     url: http://localhost:${wiremock.server.port:}/TekisArende/ArendeExportWS.svc
@@ -55,22 +74,3 @@ integration:
     oauth2ClientSecret: ${SUNDSVALLS_KOMMUN_CONSUMER_SECRET}
     oauth2TokenUrl: http://localhost:${wiremock.server.port:}/token
     url: http://localhost:${wiremock.server.port:}/oep-integrator
-retry:
-  initial-delay: 1
-  max-delay: 2
-  maxAttempts: 1
-spring:
-  cache:
-    type: none
-  datasource:
-    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
-    url: jdbc:tc:mariadb:10.6.14:///
-  flyway:
-    enabled: true
-  jpa:
-    properties:
-      jakarta:
-        persistence:
-          schema-generation:
-            database:
-              action: validate
