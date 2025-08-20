@@ -74,7 +74,7 @@ public final class ByggrUtil {
 
 	static void writeEventNote(final String note, final StringBuilder byggrAdminMessageSb) {
 		if (!byggrAdminMessageSb.toString().contains(note)) {
-			byggrAdminMessageSb.append(byggrAdminMessageSb.toString().isEmpty() ? "" : "\n\n").append(note);
+			byggrAdminMessageSb.append(byggrAdminMessageSb.isEmpty() ? "" : "\n\n").append(note);
 		}
 	}
 
