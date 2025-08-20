@@ -16,6 +16,6 @@ public interface AlkTClient {
 
 	@GetMapping(path = "/{municipalityId}/owners/{partyId}")
 	List<Owner> getOwners(
-		@PathVariable(name = "municipalityId") final String municipalityId,
-		@PathVariable(name = "partyId") final String partyId);
+		@PathVariable final String municipalityId,
+		@PathVariable final String partyId);
 }

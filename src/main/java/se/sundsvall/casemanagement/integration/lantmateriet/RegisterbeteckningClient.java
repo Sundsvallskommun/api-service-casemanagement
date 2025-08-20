@@ -15,7 +15,9 @@ import se.sundsvall.casemanagement.integration.lantmateriet.model.Registerbeteck
 public interface RegisterbeteckningClient {
 
 	@GetMapping(path = "/referens/fritext")
-	List<Registerbeteckningsreferens> getRegisterbeteckningsreferenser(@RequestParam(name = "beteckning") String beteckning,
-		@RequestParam(name = "status") String status, @RequestParam(name = "maxHits") int maxHits);
+	List<Registerbeteckningsreferens> getRegisterbeteckningsreferenser(
+		@RequestParam String beteckning,
+		@RequestParam String status,
+		@RequestParam int maxHits);
 
 }

@@ -61,8 +61,8 @@ class AttachmentResource {
 	@Operation(description = "Post attachments to a case")
 	@PostMapping(path = "cases/{externalCaseId}/attachments", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
 	ResponseEntity<Void> postAttachmentsToCase(
-		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable(name = "municipalityId") final String municipalityId,
-		@Parameter(name = "externalCaseId", description = "External case id", example = "1234") @PathVariable(name = "externalCaseId") final String externalCaseId,
+		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
+		@Parameter(name = "externalCaseId", description = "External case id", example = "1234") @PathVariable final String externalCaseId,
 		@NotNull(message = REQUEST_BODY_MUST_NOT_BE_NULL) @RequestBody @Valid final List<AttachmentDTO> attachmentDTOList) {
 
 		final CaseMapping caseMapping = caseMappingService.getCaseMapping(externalCaseId, municipalityId);
