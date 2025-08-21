@@ -11,6 +11,7 @@ import static se.sundsvall.casemanagement.TestUtil.createCaseMapping;
 import static se.sundsvall.casemanagement.TestUtil.createCaseStatusDTO;
 import static se.sundsvall.casemanagement.service.StatusService.CASE_DATA_ORGANIZATION_FILTER;
 import static se.sundsvall.casemanagement.service.StatusService.CASE_DATA_PERSON_FILTER;
+import static se.sundsvall.casemanagement.util.Constants.CASE_DATA_STATUS_ROLE_SEARCH;
 
 import generated.client.party.PartyType;
 import java.util.List;
@@ -154,7 +155,7 @@ class StatusServiceTest {
 
 		when(partyIntegrationMock.getLegalIdByPartyId(MUNICIPALITY_ID, PARTY_ID)).thenReturn(partyTypeStringMap);
 		when(alkTServiceMock.getStatusesByPartyId(PARTY_ID, MUNICIPALITY_ID)).thenReturn(List.of(caseStatusDTO));
-		when(caseDataServiceMock.getStatusesByFilter(CASE_DATA_PERSON_FILTER.formatted(PARTY_ID), MUNICIPALITY_ID)).thenReturn(List.of(caseStatusDTO));
+		when(caseDataServiceMock.getStatusesByFilter(CASE_DATA_PERSON_FILTER.formatted(PARTY_ID, CASE_DATA_STATUS_ROLE_SEARCH), MUNICIPALITY_ID)).thenReturn(List.of(caseStatusDTO));
 		when(byggrServiceMock.getByggrStatusByLegalId(PERSONAL_NUMBER, PRIVATE, MUNICIPALITY_ID)).thenReturn(List.of(caseStatusDTO));
 		when(ecosServiceMock.getEcosStatusByLegalId(PERSONAL_NUMBER, PRIVATE, MUNICIPALITY_ID)).thenReturn(List.of(caseStatusDTO));
 
@@ -162,7 +163,7 @@ class StatusServiceTest {
 
 		assertThat(result).hasSize(4);
 		verify(partyIntegrationMock).getLegalIdByPartyId(MUNICIPALITY_ID, PARTY_ID);
-		verify(caseDataServiceMock).getStatusesByFilter(CASE_DATA_PERSON_FILTER.formatted(PARTY_ID), MUNICIPALITY_ID);
+		verify(caseDataServiceMock).getStatusesByFilter(CASE_DATA_PERSON_FILTER.formatted(PARTY_ID, CASE_DATA_STATUS_ROLE_SEARCH), MUNICIPALITY_ID);
 		verify(byggrServiceMock).getByggrStatusByLegalId(PERSONAL_NUMBER, PRIVATE, MUNICIPALITY_ID);
 		verify(ecosServiceMock).getEcosStatusByLegalId(PERSONAL_NUMBER, PRIVATE, MUNICIPALITY_ID);
 		verifyNoMoreInteractions(partyIntegrationMock, caseDataServiceMock, byggrServiceMock, ecosServiceMock);

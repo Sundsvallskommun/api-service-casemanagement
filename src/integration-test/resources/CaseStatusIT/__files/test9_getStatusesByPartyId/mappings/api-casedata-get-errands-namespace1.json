@@ -8,7 +8,7 @@
 		"method": "GET",
 		"queryParameters": {
 			"filter": {
-				"equalTo": "stakeholders.personId:'f2af73ba-fa39-474b-b2ff-cc420158266d'"
+				"equalTo": "stakeholders.personId:'f2af73ba-fa39-474b-b2ff-cc420158266d' and exists(stakeholders.roles:'APPLICANT')"
 			},
 			"size": {
 				"equalTo": "1000"

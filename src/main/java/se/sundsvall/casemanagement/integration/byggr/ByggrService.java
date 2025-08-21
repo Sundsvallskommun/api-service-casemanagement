@@ -147,7 +147,7 @@ public class ByggrService {
 			}
 			LOG.info("Successfully updated case with externalCaseId: {}, and municipalityId: {}, and caseType: {}", byggRCase.getExternalCaseId(), municipalityId, byggRCase.getCaseType());
 
-			final var confirmDeliveryRequest = new ConfirmDeliveryRequest().caseId(byggRCase.getExtraParameters().get(ERRAND_NR)).system(BYGGR);
+			final var confirmDeliveryRequest = new ConfirmDeliveryRequest().caseId(byggRCase.getExtraParameters().get(ERRAND_NR)).delivered(true).system(BYGGR);
 			oepIntegratorClient.confirmDelivery(municipalityId, InstanceType.EXTERNAL, byggRCase.getExternalCaseId(), confirmDeliveryRequest);
 
 			caseRepository.findByIdAndMunicipalityId(byggRCase.getExternalCaseId(), municipalityId).ifPresent(caseRepository::delete);
