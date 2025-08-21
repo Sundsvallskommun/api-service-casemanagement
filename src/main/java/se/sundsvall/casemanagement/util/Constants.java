@@ -237,5 +237,7 @@ public final class Constants {
 	public static final String CREATE_SOIL_HEATING_FACILITY_SVC_DTO_PREFIX = "CreateSoilHeatingFacilitySvcDto_";
 	public static final String CREATE_MARINE_HEATING_FACILITY_SVC_DTO_PREFIX = "CreateMarineHeatingFacilitySvcDto_";
 
+	public static final String CASE_DATA_STATUS_ROLE_SEARCH = "APPLICANT";
+
 	private Constants() {}
 }
