@@ -27,7 +27,7 @@
 			"Content-Type": "text/xml; charset=utf-8",
 			"X-Powered-By": "ASP.NET"
 		},
-		"bodyFileName": "test4_GetStatusByOrgNr/response/EcosSearchPartyOneFound.xml",
+		"bodyFileName": "test4_GetStatusByOrgNr/responses/EcosSearchPartyOneFound.xml",
 		"status": 200
 	}
 }

@@ -34,6 +34,7 @@ class CaseStatusResourceTest {
 	private static final String ORG_PATH = "/" + MUNICIPALITY_ID + "/organization/{organizationNumber}/cases/status";
 
 	private static final String PATH = "/" + MUNICIPALITY_ID + "/cases/{externalCaseId}/status";
+	private static final String CASE_DATA_ORGANIZATION_FILTER = "stakeholders.organizationNumber:'%s'";
 
 	@MockitoBean
 	private ByggrService byggrService;
@@ -67,8 +68,10 @@ class CaseStatusResourceTest {
 
 		verify(byggrService).getByggrStatusByLegalId(organizationNumber, PartyType.ENTERPRISE, MUNICIPALITY_ID);
 		verify(ecosService).getEcosStatusByLegalId(organizationNumber, PartyType.ENTERPRISE, MUNICIPALITY_ID);
-		verifyNoMoreInteractions(byggrService, ecosService);
-		verifyNoInteractions(caseMappingService, caseDataService);
+		verify(caseDataService).getStatusesByFilter(CASE_DATA_ORGANIZATION_FILTER.formatted(organizationNumber), MUNICIPALITY_ID);
+
+		verifyNoMoreInteractions(byggrService, ecosService, caseDataService);
+		verifyNoInteractions(caseMappingService);
 	}
 
 	@Test
@@ -76,6 +79,7 @@ class CaseStatusResourceTest {
 		final var organizationNumber = "20220622-2396";
 		when(byggrService.getByggrStatusByLegalId(organizationNumber, PartyType.ENTERPRISE, MUNICIPALITY_ID)).thenReturn(List.of());
 		when(ecosService.getEcosStatusByLegalId(organizationNumber, PartyType.ENTERPRISE, MUNICIPALITY_ID)).thenReturn(List.of());
+		when(caseDataService.getStatusesByFilter(MUNICIPALITY_ID, organizationNumber)).thenReturn(List.of());
 
 		final var response = webTestClient.get()
 			.uri(uriBuilder -> uriBuilder.path(ORG_PATH).build(organizationNumber))
@@ -88,8 +92,9 @@ class CaseStatusResourceTest {
 
 		verify(byggrService).getByggrStatusByLegalId(organizationNumber, PartyType.ENTERPRISE, MUNICIPALITY_ID);
 		verify(ecosService).getEcosStatusByLegalId(organizationNumber, PartyType.ENTERPRISE, MUNICIPALITY_ID);
-		verifyNoMoreInteractions(byggrService, ecosService);
-		verifyNoInteractions(caseMappingService, caseDataService);
+		verify(caseDataService).getStatusesByFilter(CASE_DATA_ORGANIZATION_FILTER.formatted(organizationNumber), MUNICIPALITY_ID);
+		verifyNoMoreInteractions(byggrService, ecosService, caseDataService);
+		verifyNoInteractions(caseMappingService);
 	}
 
 	@Test

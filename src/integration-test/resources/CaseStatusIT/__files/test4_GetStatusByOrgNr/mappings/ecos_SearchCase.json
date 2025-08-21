@@ -20,7 +20,7 @@
 			"Content-Type": "text/xml; charset=utf-8",
 			"X-Powered-By": "ASP.NET"
 		},
-		"bodyFileName": "test4_GetStatusByOrgNr/response/ecos_SearchCase.xml",
+		"bodyFileName": "test4_GetStatusByOrgNr/responses/ecos_SearchCase.xml",
 		"status": 200
 	},
 	"name": "ecos2publicservices_minutmiljoservicesvc_SearchCase"

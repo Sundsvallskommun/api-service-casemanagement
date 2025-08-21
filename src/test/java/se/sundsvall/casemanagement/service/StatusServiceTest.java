@@ -60,28 +60,30 @@ class StatusServiceTest {
 
 	@Test
 	void getStatusByOrgNr() {
-		var caseStatuses = List.of(createCaseStatusDTO(), createCaseStatusDTO());
+		final var caseStatuses = List.of(createCaseStatusDTO(), createCaseStatusDTO());
 		when(byggrServiceMock.getByggrStatusByLegalId(ORGANIZATION_NUMBER, ENTERPRISE, MUNICIPALITY_ID)).thenReturn(caseStatuses);
 		when(ecosServiceMock.getEcosStatusByLegalId(ORGANIZATION_NUMBER, ENTERPRISE, MUNICIPALITY_ID)).thenReturn(caseStatuses);
+		when(caseDataServiceMock.getStatusesByFilter(CASE_DATA_ORGANIZATION_FILTER.formatted(ORGANIZATION_NUMBER), MUNICIPALITY_ID)).thenReturn(caseStatuses);
 
-		var result = statusService.getStatusByOrgNr(MUNICIPALITY_ID, ORGANIZATION_NUMBER);
+		final var result = statusService.getStatusByOrgNr(MUNICIPALITY_ID, ORGANIZATION_NUMBER);
 
-		assertThat(result).hasSize(4);
+		assertThat(result).hasSize(6);
 		verify(byggrServiceMock).getByggrStatusByLegalId(ORGANIZATION_NUMBER, ENTERPRISE, MUNICIPALITY_ID);
 		verify(ecosServiceMock).getEcosStatusByLegalId(ORGANIZATION_NUMBER, ENTERPRISE, MUNICIPALITY_ID);
-		verifyNoMoreInteractions(byggrServiceMock, ecosServiceMock);
-		verifyNoInteractions(caseDataServiceMock, caseMappingServiceMock, partyIntegrationMock);
+		verify(caseDataServiceMock).getStatusesByFilter(CASE_DATA_ORGANIZATION_FILTER.formatted(ORGANIZATION_NUMBER), MUNICIPALITY_ID);
+		verifyNoMoreInteractions(byggrServiceMock, ecosServiceMock, caseDataServiceMock);
+		verifyNoInteractions(caseMappingServiceMock, partyIntegrationMock);
 	}
 
 	@Test
 	void getStatusByExternalCaseIdByggR() {
-		var caseMapping = createCaseMapping(mapping -> mapping.setSystem(SystemType.BYGGR));
-		var caseStatusDTO = createCaseStatusDTO();
+		final var caseMapping = createCaseMapping(mapping -> mapping.setSystem(SystemType.BYGGR));
+		final var caseStatusDTO = createCaseStatusDTO();
 
 		when(caseMappingServiceMock.getCaseMapping(EXTERNAL_CASE_ID, MUNICIPALITY_ID)).thenReturn(caseMapping);
 		when(byggrServiceMock.toByggrStatus(caseMapping)).thenReturn(caseStatusDTO);
 
-		var result = statusService.getStatusByExternalCaseId(MUNICIPALITY_ID, EXTERNAL_CASE_ID);
+		final var result = statusService.getStatusByExternalCaseId(MUNICIPALITY_ID, EXTERNAL_CASE_ID);
 
 		assertThat(result).isEqualTo(caseStatusDTO);
 		verify(caseMappingServiceMock).getCaseMapping(EXTERNAL_CASE_ID, MUNICIPALITY_ID);
@@ -92,13 +94,13 @@ class StatusServiceTest {
 
 	@Test
 	void getStatusByExternalCaseIdEcos() {
-		var caseMapping = createCaseMapping(mapping -> mapping.setSystem(SystemType.ECOS));
-		var caseStatusDTO = createCaseStatusDTO();
+		final var caseMapping = createCaseMapping(mapping -> mapping.setSystem(SystemType.ECOS));
+		final var caseStatusDTO = createCaseStatusDTO();
 
 		when(caseMappingServiceMock.getCaseMapping(EXTERNAL_CASE_ID, MUNICIPALITY_ID)).thenReturn(caseMapping);
 		when(ecosServiceMock.getStatus(caseMapping.getCaseId(), caseMapping.getExternalCaseId(), MUNICIPALITY_ID)).thenReturn(caseStatusDTO);
 
-		var result = statusService.getStatusByExternalCaseId(MUNICIPALITY_ID, EXTERNAL_CASE_ID);
+		final var result = statusService.getStatusByExternalCaseId(MUNICIPALITY_ID, EXTERNAL_CASE_ID);
 
 		assertThat(result).isEqualTo(caseStatusDTO);
 		verify(caseMappingServiceMock).getCaseMapping(EXTERNAL_CASE_ID, MUNICIPALITY_ID);
@@ -109,13 +111,13 @@ class StatusServiceTest {
 
 	@Test
 	void getStatusByExternalCaseIdCaseData() {
-		var caseMapping = createCaseMapping(mapping -> mapping.setSystem(SystemType.CASE_DATA));
-		var caseStatusDTO = createCaseStatusDTO();
+		final var caseMapping = createCaseMapping(mapping -> mapping.setSystem(SystemType.CASE_DATA));
+		final var caseStatusDTO = createCaseStatusDTO();
 
 		when(caseMappingServiceMock.getCaseMapping(EXTERNAL_CASE_ID, MUNICIPALITY_ID)).thenReturn(caseMapping);
 		when(caseDataServiceMock.getStatus(caseMapping, MUNICIPALITY_ID)).thenReturn(caseStatusDTO);
 
-		var result = statusService.getStatusByExternalCaseId(MUNICIPALITY_ID, EXTERNAL_CASE_ID);
+		final var result = statusService.getStatusByExternalCaseId(MUNICIPALITY_ID, EXTERNAL_CASE_ID);
 
 		assertThat(result).isEqualTo(caseStatusDTO);
 		verify(caseMappingServiceMock).getCaseMapping(EXTERNAL_CASE_ID, MUNICIPALITY_ID);
@@ -126,8 +128,8 @@ class StatusServiceTest {
 
 	@Test
 	void getStatusesByPartyIdEnterprise() {
-		Map<PartyType, String> partyTypeStringMap = Map.of(ENTERPRISE, ORGANIZATION_NUMBER);
-		var caseStatusDTO = createCaseStatusDTO();
+		final Map<PartyType, String> partyTypeStringMap = Map.of(ENTERPRISE, ORGANIZATION_NUMBER);
+		final var caseStatusDTO = createCaseStatusDTO();
 
 		when(partyIntegrationMock.getLegalIdByPartyId(MUNICIPALITY_ID, PARTY_ID)).thenReturn(partyTypeStringMap);
 		when(alkTServiceMock.getStatusesByPartyId(PARTY_ID, MUNICIPALITY_ID)).thenReturn(List.of(caseStatusDTO));
@@ -135,7 +137,7 @@ class StatusServiceTest {
 		when(byggrServiceMock.getByggrStatusByLegalId(ORGANIZATION_NUMBER, ENTERPRISE, MUNICIPALITY_ID)).thenReturn(List.of(caseStatusDTO));
 		when(ecosServiceMock.getEcosStatusByLegalId(ORGANIZATION_NUMBER, ENTERPRISE, MUNICIPALITY_ID)).thenReturn(List.of(caseStatusDTO));
 
-		var result = statusService.getStatusesByPartyId(MUNICIPALITY_ID, PARTY_ID);
+		final var result = statusService.getStatusesByPartyId(MUNICIPALITY_ID, PARTY_ID);
 
 		assertThat(result).hasSize(4);
 		verify(partyIntegrationMock).getLegalIdByPartyId(MUNICIPALITY_ID, PARTY_ID);
@@ -148,8 +150,8 @@ class StatusServiceTest {
 
 	@Test
 	void getStatusesByPartyIdPrivate() {
-		Map<PartyType, String> partyTypeStringMap = Map.of(PRIVATE, PERSONAL_NUMBER);
-		var caseStatusDTO = createCaseStatusDTO();
+		final Map<PartyType, String> partyTypeStringMap = Map.of(PRIVATE, PERSONAL_NUMBER);
+		final var caseStatusDTO = createCaseStatusDTO();
 
 		when(partyIntegrationMock.getLegalIdByPartyId(MUNICIPALITY_ID, PARTY_ID)).thenReturn(partyTypeStringMap);
 		when(alkTServiceMock.getStatusesByPartyId(PARTY_ID, MUNICIPALITY_ID)).thenReturn(List.of(caseStatusDTO));
@@ -157,7 +159,7 @@ class StatusServiceTest {
 		when(byggrServiceMock.getByggrStatusByLegalId(PERSONAL_NUMBER, PRIVATE, MUNICIPALITY_ID)).thenReturn(List.of(caseStatusDTO));
 		when(ecosServiceMock.getEcosStatusByLegalId(PERSONAL_NUMBER, PRIVATE, MUNICIPALITY_ID)).thenReturn(List.of(caseStatusDTO));
 
-		var result = statusService.getStatusesByPartyId(MUNICIPALITY_ID, PARTY_ID);
+		final var result = statusService.getStatusesByPartyId(MUNICIPALITY_ID, PARTY_ID);
 
 		assertThat(result).hasSize(4);
 		verify(partyIntegrationMock).getLegalIdByPartyId(MUNICIPALITY_ID, PARTY_ID);
@@ -170,10 +172,10 @@ class StatusServiceTest {
 
 	@Test
 	void getStatusesByPartyIdNoMatch() {
-		Map<PartyType, String> partyTypeStringMap = Map.of();
+		final Map<PartyType, String> partyTypeStringMap = Map.of();
 		when(partyIntegrationMock.getLegalIdByPartyId(MUNICIPALITY_ID, PARTY_ID)).thenReturn(partyTypeStringMap);
 
-		var result = statusService.getStatusesByPartyId(MUNICIPALITY_ID, PARTY_ID);
+		final var result = statusService.getStatusesByPartyId(MUNICIPALITY_ID, PARTY_ID);
 
 		assertThat(result).isEmpty();
 		verify(partyIntegrationMock).getLegalIdByPartyId(MUNICIPALITY_ID, PARTY_ID);
@@ -184,12 +186,12 @@ class StatusServiceTest {
 
 	@Test
 	void getCaseStatusesByLegalId() {
-		var caseStatusDTO = createCaseStatusDTO();
+		final var caseStatusDTO = createCaseStatusDTO();
 
 		when(byggrServiceMock.getByggrStatusByLegalId(ORGANIZATION_NUMBER, ENTERPRISE, MUNICIPALITY_ID)).thenReturn(List.of(caseStatusDTO));
 		when(ecosServiceMock.getEcosStatusByLegalId(ORGANIZATION_NUMBER, ENTERPRISE, MUNICIPALITY_ID)).thenReturn(List.of(caseStatusDTO));
 
-		var result = statusService.getCaseStatusesByLegalId(ORGANIZATION_NUMBER, ENTERPRISE, MUNICIPALITY_ID);
+		final var result = statusService.getCaseStatusesByLegalId(ORGANIZATION_NUMBER, ENTERPRISE, MUNICIPALITY_ID);
 
 		assertThat(result).hasSize(2);
 		verify(byggrServiceMock).getByggrStatusByLegalId(ORGANIZATION_NUMBER, ENTERPRISE, MUNICIPALITY_ID);
