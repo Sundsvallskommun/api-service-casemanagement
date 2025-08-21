@@ -48,6 +48,7 @@ public class StatusService {
 
 		caseStatuses.addAll(byggrService.getByggrStatusByLegalId(organizationNumber, ENTERPRISE, municipalityId));
 		caseStatuses.addAll(ecosService.getEcosStatusByLegalId(organizationNumber, ENTERPRISE, municipalityId));
+		caseStatuses.addAll(caseDataService.getStatusesByFilter(CASE_DATA_ORGANIZATION_FILTER.formatted(organizationNumber), municipalityId));
 
 		return caseStatuses;
 	}
@@ -64,10 +65,10 @@ public class StatusService {
 	}
 
 	public List<CaseStatusDTO> getStatusesByPartyId(final String municipalityId, final String partyId) {
-		Map<PartyType, String> partyTypeAndLegalIdMap = partyIntegration.getLegalIdByPartyId(municipalityId, partyId);
+		final Map<PartyType, String> partyTypeAndLegalIdMap = partyIntegration.getLegalIdByPartyId(municipalityId, partyId);
 
 		if (partyTypeAndLegalIdMap.containsKey(PRIVATE)) {
-			List<CaseStatusDTO> caseStatuses = new ArrayList<>();
+			final List<CaseStatusDTO> caseStatuses = new ArrayList<>();
 			// AlkT statuses
 			caseStatuses.addAll(alkTService.getStatusesByPartyId(partyId, municipalityId));
 			// CaseData statuses
@@ -78,8 +79,8 @@ public class StatusService {
 		}
 
 		if (partyTypeAndLegalIdMap.containsKey(ENTERPRISE)) {
-			List<CaseStatusDTO> caseStatuses = new ArrayList<>();
-			var legalId = partyTypeAndLegalIdMap.get(ENTERPRISE);
+			final List<CaseStatusDTO> caseStatuses = new ArrayList<>();
+			final var legalId = partyTypeAndLegalIdMap.get(ENTERPRISE);
 			// AlkT statuses
 			caseStatuses.addAll(alkTService.getStatusesByPartyId(partyId, municipalityId));
 			// CaseData statuses
@@ -93,7 +94,7 @@ public class StatusService {
 	}
 
 	List<CaseStatusDTO> getCaseStatusesByLegalId(final String legalId, final PartyType partyType, final String municipalityId) {
-		List<CaseStatusDTO> caseStatuses = new ArrayList<>();
+		final List<CaseStatusDTO> caseStatuses = new ArrayList<>();
 		caseStatuses.addAll(byggrService.getByggrStatusByLegalId(legalId, partyType, municipalityId));
 		caseStatuses.addAll(ecosService.getEcosStatusByLegalId(legalId, partyType, municipalityId));
 		return caseStatuses;

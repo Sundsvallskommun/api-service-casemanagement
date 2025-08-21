@@ -11,15 +11,13 @@ public class LegalIdUtility {
 	private LegalIdUtility() {}
 
 	/**
-	 * Method for adding 16 as prefix if incoming legalId passes the following tests:
-	 * - string is not null
-	 * - string has a character length of exactly 10
-	 * If sent in string doesn't pass the test above, the string is returned untouched.
+	 * Method for adding 16 as a prefix if incoming legalId passes the following tests: - string is not null - string has a
+	 * character length of exactly 10 If sent in string doesn't pass the test above, the string is returned untouched.
 	 *
 	 * @param  legalId string
-	 * @return         string prefixed with 16 or untouched string if the it does not match the tests above
+	 * @return         string prefixed with 16 or untouched strings if it does not match the tests above
 	 */
-	public static String prefixOrgnbr(String legalId) {
+	public static String prefixOrgNr(final String legalId) {
 		return ofNullable(legalId)
 			.filter(string -> string.length() == 10)
 			.map(string -> "16" + string)
@@ -27,16 +25,14 @@ public class LegalIdUtility {
 	}
 
 	/**
-	 * Method to add a hyphen after position 4 when string passes the following tests:
-	 * - string is not null
-	 * - string has a minimum length of 4
-	 * - string contains no hyphen
-	 * If sent in string doesn't pass the test above, the string is returned untouched.
+	 * Method to add a hyphen after position 4 when a string passes the following tests: - string is not null - string has a
+	 * minimum length of 4 - string contains no hyphen If sent in string doesn't pass the test above, the string is returned
+	 * untouched.
 	 *
 	 * @param  legalId string
 	 * @return         string with hyphen added or untouched string if it doesn't pass the tests above
 	 */
-	public static String addHyphen(String legalId) {
+	public static String addHyphen(final String legalId) {
 		return ofNullable(legalId)
 			.filter(string -> string.length() >= LEGAL_ID_MINIMUM_LENGTH)
 			.filter(string -> containsNone(string, "-"))

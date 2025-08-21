@@ -247,7 +247,7 @@ public class ByggrService {
 			.filter(OrganizationDTO.class::isInstance)
 			.findFirst()
 			.map(stakeholder -> ((OrganizationDTO) stakeholder).getOrganizationNumber())
-			.map(LegalIdUtility::prefixOrgnbr)
+			.map(LegalIdUtility::prefixOrgNr)
 			.map(LegalIdUtility::addHyphen)
 			.orElse(null);
 
