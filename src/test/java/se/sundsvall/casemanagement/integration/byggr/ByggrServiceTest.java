@@ -359,7 +359,7 @@ class ByggrServiceTest {
 	void updateByggRCaseNeighborHoodNotification1() {
 		final var byggrServiceSpy = Mockito.spy(byggrService);
 		final var byggRCaseDto = createByggRCaseDTO(NEIGHBORHOOD_NOTIFICATION, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
-		final var confirmDeliveryRequest = new ConfirmDeliveryRequest().caseId(byggRCaseDto.getExtraParameters().get(ERRAND_NR)).system(BYGGR);
+		final var confirmDeliveryRequest = new ConfirmDeliveryRequest().delivered(true).caseId(byggRCaseDto.getExtraParameters().get(ERRAND_NR)).system(BYGGR);
 		doNothing().when(byggrServiceSpy).respondToNeighborhoodNotification(byggRCaseDto);
 		when(caseRepositoryMock.findByIdAndMunicipalityId(byggRCaseDto.getExternalCaseId(), MUNICIPALITY_ID)).thenReturn(Optional.of(CaseEntity.builder().build()));
 
@@ -403,7 +403,7 @@ class ByggrServiceTest {
 	void updateByggRCaseByggrAddCertifiedInspector1() {
 		final var byggrServiceSpy = Mockito.spy(byggrService);
 		final var byggRCaseDto = createByggRCaseDTO(BYGGR_ADD_CERTIFIED_INSPECTOR, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
-		final var confirmDeliveryRequest = new ConfirmDeliveryRequest().caseId(byggRCaseDto.getExtraParameters().get(ERRAND_NR)).system(BYGGR);
+		final var confirmDeliveryRequest = new ConfirmDeliveryRequest().delivered(true).caseId(byggRCaseDto.getExtraParameters().get(ERRAND_NR)).system(BYGGR);
 		doNothing().when(byggrServiceSpy).addCertifiedInspector(byggRCaseDto);
 		when(caseRepositoryMock.findByIdAndMunicipalityId(byggRCaseDto.getExternalCaseId(), MUNICIPALITY_ID)).thenReturn(Optional.of(CaseEntity.builder().build()));
 
@@ -449,7 +449,7 @@ class ByggrServiceTest {
 	void updateByggRCaseByggrAdditionalDocuments1() {
 		final var byggrServiceSpy = Mockito.spy(byggrService);
 		final var byggRCaseDto = createByggRCaseDTO(BYGGR_ADDITIONAL_DOCUMENTS, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
-		final var confirmDeliveryRequest = new ConfirmDeliveryRequest().caseId(byggRCaseDto.getExtraParameters().get(ERRAND_NR)).system(BYGGR);
+		final var confirmDeliveryRequest = new ConfirmDeliveryRequest().delivered(true).caseId(byggRCaseDto.getExtraParameters().get(ERRAND_NR)).system(BYGGR);
 		doNothing().when(byggrServiceSpy).addAdditionalDocuments(byggRCaseDto);
 		when(caseRepositoryMock.findByIdAndMunicipalityId(byggRCaseDto.getExternalCaseId(), MUNICIPALITY_ID)).thenReturn(Optional.of(CaseEntity.builder().build()));
 
