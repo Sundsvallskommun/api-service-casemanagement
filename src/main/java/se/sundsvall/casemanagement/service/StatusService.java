@@ -3,6 +3,7 @@ package se.sundsvall.casemanagement.service;
 import static generated.client.party.PartyType.ENTERPRISE;
 import static generated.client.party.PartyType.PRIVATE;
 import static java.util.Collections.emptyList;
+import static se.sundsvall.casemanagement.util.Constants.CASE_DATA_STATUS_ROLE_SEARCH;
 
 import generated.client.party.PartyType;
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ import se.sundsvall.casemanagement.integration.party.PartyIntegration;
 public class StatusService {
 
 	static final String CASE_DATA_ORGANIZATION_FILTER = "stakeholders.organizationNumber:'%s'";
-	static final String CASE_DATA_PERSON_FILTER = "stakeholders.personId:'%s'";
+	static final String CASE_DATA_PERSON_FILTER = "stakeholders.personId:'%s' and exists(stakeholders.roles:'%s')";
 
 	private final ByggrService byggrService;
 	private final EcosService ecosService;
@@ -71,7 +72,7 @@ public class StatusService {
 			// AlkT statuses
 			caseStatuses.addAll(alkTService.getStatusesByPartyId(partyId, municipalityId));
 			// CaseData statuses
-			caseStatuses.addAll(caseDataService.getStatusesByFilter(CASE_DATA_PERSON_FILTER.formatted(partyId), municipalityId));
+			caseStatuses.addAll(caseDataService.getStatusesByFilter(CASE_DATA_PERSON_FILTER.formatted(partyId, CASE_DATA_STATUS_ROLE_SEARCH), municipalityId));
 			// ByggR and Ecos statuses
 			caseStatuses.addAll(getCaseStatusesByLegalId(partyTypeAndLegalIdMap.get(PRIVATE), PRIVATE, municipalityId));
 			return caseStatuses;
