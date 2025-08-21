@@ -47,7 +47,7 @@ public abstract class Processor {
 
 		log.info("Successful processed errand for externalCaseId {} and municipalityId: {})", flowInstanceID, municipalityId);
 
-		final var confirmDeliveryRequest = new ConfirmDeliveryRequest().caseId(caseID).system(system);
+		final var confirmDeliveryRequest = new ConfirmDeliveryRequest().caseId(caseID).delivered(true).system(system);
 		oepIntegratorClient.confirmDelivery(municipalityId, InstanceType.EXTERNAL, flowInstanceID, confirmDeliveryRequest);
 
 		caseRepository.findByIdAndMunicipalityId(flowInstanceID, municipalityId)
