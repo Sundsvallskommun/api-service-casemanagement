@@ -49,6 +49,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.testcontainers.shaded.org.apache.commons.lang3.RandomStringUtils;
 import org.zalando.problem.Problem;
@@ -321,18 +323,18 @@ class CaseDataServiceTest {
 	}
 
 	@Test
-	void getErrands() {
+	void getStatuses() {
 		final var partyId = UUID.randomUUID().toString();
 		final var filter = "stakeholder.organizationNumber=%s".formatted(partyId);
 		final var namespace = "OTHER";
 		final Page<Errand> page = new PageImpl<>(List.of(new Errand(), new Errand(), new Errand()));
-		when(caseDataClientMock.getErrands(MUNICIPALITY_ID, namespace, filter, "1000")).thenReturn(page);
+		when(caseDataClientMock.getErrands(MUNICIPALITY_ID, namespace, filter, PageRequest.of(0, 100, Sort.unsorted()))).thenReturn(page);
 
-		final var result = caseDataService.getErrands(MUNICIPALITY_ID, namespace, filter);
+		final var result = caseDataService.getStatuses(MUNICIPALITY_ID, namespace, filter);
 
 		assertThat(result).hasSize(3);
 
-		verify(caseDataClientMock).getErrands(MUNICIPALITY_ID, namespace, filter, "1000");
+		verify(caseDataClientMock).getErrands(MUNICIPALITY_ID, namespace, filter, PageRequest.of(0, 100, Sort.unsorted()));
 		verifyNoMoreInteractions(caseDataClientMock);
 	}
 
@@ -343,8 +345,8 @@ class CaseDataServiceTest {
 		final var namespaceMap = Map.of(MUNICIPALITY_ID, List.of(namespace1, namespace2));
 		final var errand = createErrand();
 		final Page<Errand> page = new PageImpl<>(List.of(errand));
-		when(caseDataClientMock.getErrands(MUNICIPALITY_ID, namespace1, "filter", "1000")).thenReturn(page);
-		when(caseDataClientMock.getErrands(MUNICIPALITY_ID, namespace2, "filter", "1000")).thenReturn(page);
+		when(caseDataClientMock.getErrands(MUNICIPALITY_ID, namespace1, "filter", PageRequest.of(0, 100, Sort.unsorted()))).thenReturn(page);
+		when(caseDataClientMock.getErrands(MUNICIPALITY_ID, namespace2, "filter", PageRequest.of(0, 100, Sort.unsorted()))).thenReturn(page);
 		when(caseDataPropertiesMock.namespaces()).thenReturn(namespaceMap);
 
 		final var result = caseDataService.getStatusesByFilter("filter", MUNICIPALITY_ID);
@@ -358,8 +360,8 @@ class CaseDataServiceTest {
 			assertThat(caseStatus.getServiceName()).isEqualTo("VALUE1");
 		});
 		verify(caseDataPropertiesMock).namespaces();
-		verify(caseDataClientMock).getErrands(MUNICIPALITY_ID, namespace1, "filter", "1000");
-		verify(caseDataClientMock).getErrands(MUNICIPALITY_ID, namespace2, "filter", "1000");
+		verify(caseDataClientMock).getErrands(MUNICIPALITY_ID, namespace1, "filter", PageRequest.of(0, 100, Sort.unsorted()));
+		verify(caseDataClientMock).getErrands(MUNICIPALITY_ID, namespace2, "filter", PageRequest.of(0, 100, Sort.unsorted()));
 		verifyNoMoreInteractions(caseDataClientMock, caseDataPropertiesMock);
 		verifyNoInteractions(caseMappingServiceMock);
 	}

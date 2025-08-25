@@ -16,6 +16,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -108,9 +109,6 @@ public interface CaseDataClient {
 			description = "Syntax description: [spring-filter](https://github.com/turkraft/spring-filter/blob/85730f950a5f8623159cc0eb4d737555f9382bb7/README.md#syntax)",
 			example = "caseType:'PARKING_PERMIT' and stakeholders.firstName~'*mar*' and applicationReceived>'2022-09-08T12:18:03.747+02:00'",
 			schema = @Schema(implementation = String.class)) final String filter,
-		@RequestParam @Parameter(
-			description = "CaseData uses pagination but we always need to fetch every errand for the given filter. Set the size to a high number to fetch all errands.",
-			example = "1000",
-			schema = @Schema(implementation = String.class)) final String size);
+		PageRequest pageRequest);
 
 }

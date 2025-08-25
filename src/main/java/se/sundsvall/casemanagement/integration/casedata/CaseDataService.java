@@ -30,6 +30,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
@@ -223,16 +225,29 @@ public class CaseDataService {
 		return "OTHER";
 	}
 
-	public List<Errand> getErrands(final String municipalityId, final String namespace, final String filter) {
-		final var page = caseDataClient.getErrands(municipalityId, namespace, filter, "1000");
-		return page.getContent();
+	public List<CaseStatusDTO> getStatuses(final String municipalityId, final String namespace, final String filter) {
+		int pageNumber = 0;
+		Page<Errand> response;
+		final List<CaseStatusDTO> allErrands = new ArrayList<>();
+		do {
+			response = caseDataClient.getErrands(municipalityId, namespace, filter, PageRequest.of(pageNumber, 100));
+			final var errands = response.getContent().stream()
+				.map(this::toCaseStatusDTO)
+				.filter(Objects::nonNull)
+				.toList();
+			if (!errands.isEmpty()) {
+				allErrands.addAll(errands);
+			}
+			pageNumber++;
+		} while (response.hasNext());
+
+		return allErrands;
 	}
 
 	public List<CaseStatusDTO> getStatusesByFilter(final String filter, final String municipalityId) {
 		final List<CaseStatusDTO> caseStatuses = new ArrayList<>();
 		for (final var namespace : caseDataProperties.namespaces().get(municipalityId)) {
-			final var errands = getErrands(municipalityId, namespace, filter);
-			errands.forEach(errand -> caseStatuses.add(toCaseStatusDTO(errand)));
+			caseStatuses.addAll(getStatuses(municipalityId, namespace, filter));
 		}
 		return caseStatuses;
 	}

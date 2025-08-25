@@ -10,8 +10,11 @@
 			"filter": {
 				"equalTo": "stakeholders.personId:'f2af73ba-fa39-474b-b2ff-cc420158266d' and exists(stakeholders.roles:'APPLICANT')"
 			},
+			"page": {
+				"equalTo": "0"
+			},
 			"size": {
-				"equalTo": "1000"
+				"equalTo": "100"
 			}
 		},
 		"urlPath": "/case-data/2281/NAMESPACE_1/errands"

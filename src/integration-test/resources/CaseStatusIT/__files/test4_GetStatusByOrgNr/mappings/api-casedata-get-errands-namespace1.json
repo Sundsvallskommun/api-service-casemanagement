@@ -10,8 +10,11 @@
 			"filter": {
 				"equalTo": "stakeholders.organizationNumber:'123456-4321'"
 			},
+			"page": {
+				"equalTo": "0"
+			},
 			"size": {
-				"equalTo": "1000"
+				"equalTo": "100"
 			}
 		},
 		"urlPath": "/case-data/2281/NAMESPACE_1/errands"
