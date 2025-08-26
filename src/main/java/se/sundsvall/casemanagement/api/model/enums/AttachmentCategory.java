@@ -131,7 +131,7 @@ public enum AttachmentCategory {
 	RECEIVED_APPLICATION_CONFI("BEKMOTANS", "Bekräftelse mottagen ansökan"),
 	REBUTTAL("BEMÖ", "Bemötande"),
 	VISIT_REPORTS_KA("BESKA", "Besöksrapporter KA"),
-	DECISION("BESLUT", "Beslut"),
+	BYGGR_DECISION("BESLUT", "Beslut"),
 	APPENDIX("BIL", "Bilaga"),
 	FIRE_SKETCH("BRS", "Brandskiss"),
 	FIRE_PROTECTION_DESCRIPTION("BRAB", "Brandskyddsbeskrivning"),
@@ -148,7 +148,7 @@ public enum AttachmentCategory {
 	PHOTO("FOTO", "Foto"),
 	POWER_OF_ATTORNEY_2("FUM", "Fullmakt"),
 	COMPLETION_INSURANCE("FSF", "Färdigställandeförsäkring"),
-	COVER_LETTER("FÖLJ", "Följebrev"),
+	BYGGR_COVER_LETTER("FÖLJ", "Följebrev"),
 	PRELIMINARY_DECISION("FÖRB", "Förhandsbesked"),
 	PROPOSED_CONTROL_PLAN("FÖRK", "Förslag till kontrollplan"),
 	PROPOSED_DEMOLITION_PLAN("FÖRR", "Förslag till rivningsplan"),
@@ -288,7 +288,16 @@ public enum AttachmentCategory {
 	SITUATION_PLAN("SITUATION_PLAN", "Situationsplan"),
 	LETTER("LETTER", "Brev"),
 	EMAIL("EMAIL", "E-post"),
-	MEDICAL_OPINION("MEDICAL_OPINION", "Medicinskt utlåtande");
+	MEDICAL_OPINION("MEDICAL_OPINION", "Medicinskt utlåtande"),
+
+	MEX_CONTRACT("MEX_CONTRACT", "Avtal"),
+	NEW_MEX_REQUEST("NEW_MEX_REQUEST", "Inkommen förfrågan"),
+	NOTICE("NOTICE", "Kallelse"),
+	REFERRAL_CONSULTATION("REFERRAL_CONSULTATION", "Remiss/Samråd"),
+	STATEMENT("STATEMENT", "Uttalande"),
+	IMAGE_PHOTO("IMAGE_PHOTO", "Bild/Foto"),
+	DECISION("DECISION", "Beslut"),
+	COVER_LETTER("COVER_LETTER", "Följebrev");
 
 	private final String description;
 
