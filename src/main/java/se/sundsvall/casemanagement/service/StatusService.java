@@ -71,11 +71,15 @@ public class StatusService {
 		final Map<PartyType, String> partyTypeAndLegalIdMap = partyIntegration.getLegalIdByPartyId(municipalityId, partyId);
 
 		if (partyTypeAndLegalIdMap.containsKey(PRIVATE)) {
+
+			final var legalId = partyTypeAndLegalIdMap.get(PRIVATE);
+
 			final var alktFuture = CompletableFuture.supplyAsync(() -> alkTService.getStatusesByPartyId(partyId, municipalityId));
 			final var caseDataFuture = CompletableFuture.supplyAsync(() -> caseDataService.getStatusesByFilter(CASE_DATA_PERSON_FILTER.formatted(partyId, CASE_DATA_STATUS_ROLE_SEARCH), municipalityId));
-			final var byggREcosFuture = CompletableFuture.supplyAsync(() -> getCaseStatusesByLegalId(partyTypeAndLegalIdMap.get(PRIVATE), PRIVATE, municipalityId));
+			final var byggrFuture = CompletableFuture.supplyAsync(() -> byggrService.getByggrStatusByLegalId(legalId, PRIVATE, municipalityId));
+			final var ecosFuture = CompletableFuture.supplyAsync(() -> ecosService.getEcosStatusByLegalId(legalId, PRIVATE, municipalityId));
 
-			return Stream.of(alktFuture, caseDataFuture, byggREcosFuture)
+			return Stream.of(alktFuture, caseDataFuture, byggrFuture, ecosFuture)
 				.map(CompletableFuture::join)
 				.flatMap(List::stream)
 				.toList();
@@ -86,9 +90,10 @@ public class StatusService {
 
 			final var alktFuture = CompletableFuture.supplyAsync(() -> alkTService.getStatusesByPartyId(partyId, municipalityId));
 			final var caseDataFuture = CompletableFuture.supplyAsync(() -> caseDataService.getStatusesByFilter(CASE_DATA_ORGANIZATION_FILTER.formatted(legalId), municipalityId));
-			final var byggREcosFuture = CompletableFuture.supplyAsync(() -> getCaseStatusesByLegalId(legalId, ENTERPRISE, municipalityId));
+			final var byggrFuture = CompletableFuture.supplyAsync(() -> byggrService.getByggrStatusByLegalId(legalId, ENTERPRISE, municipalityId));
+			final var ecosFuture = CompletableFuture.supplyAsync(() -> ecosService.getEcosStatusByLegalId(legalId, ENTERPRISE, municipalityId));
 
-			return Stream.of(alktFuture, caseDataFuture, byggREcosFuture)
+			return Stream.of(alktFuture, caseDataFuture, byggrFuture, ecosFuture)
 				.map(CompletableFuture::join)
 				.flatMap(List::stream)
 				.toList();
