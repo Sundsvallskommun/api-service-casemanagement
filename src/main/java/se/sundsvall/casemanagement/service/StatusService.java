@@ -4,6 +4,7 @@ import static generated.client.party.PartyType.ENTERPRISE;
 import static generated.client.party.PartyType.PRIVATE;
 import static java.util.Collections.emptyList;
 import static se.sundsvall.casemanagement.util.Constants.CASE_DATA_STATUS_ROLE_SEARCH;
+import static se.sundsvall.dept44.util.LogUtils.sanitizeForLogging;
 
 import generated.client.party.PartyType;
 import java.util.List;
@@ -48,8 +49,8 @@ public class StatusService {
 	}
 
 	public List<CaseStatusDTO> getStatusByOrgNr(final String municipalityId, final String organizationNumber) {
-		final var byggrFuture = getByggrStatus(municipalityId, organizationNumber, organizationNumber, ENTERPRISE);
-		final var ecosFuture = getEcosStatus(municipalityId, organizationNumber, organizationNumber, ENTERPRISE);
+		final var byggrFuture = getByggrStatus(municipalityId, organizationNumber, ENTERPRISE);
+		final var ecosFuture = getEcosStatus(municipalityId, organizationNumber, ENTERPRISE);
 		final var caseDataFuture = getCaseDataStatus(municipalityId, CASE_DATA_ORGANIZATION_FILTER.formatted(organizationNumber));
 
 		return Stream.of(byggrFuture, ecosFuture, caseDataFuture)
@@ -78,8 +79,8 @@ public class StatusService {
 
 			final var alktFuture = getAlktStatus(municipalityId, partyId);
 			final var caseDataFuture = getCaseDataStatus(municipalityId, CASE_DATA_PERSON_FILTER.formatted(partyId, CASE_DATA_STATUS_ROLE_SEARCH));
-			final var byggrFuture = getByggrStatus(municipalityId, legalId, partyId, PRIVATE);
-			final var ecosFuture = getEcosStatus(municipalityId, legalId, partyId, PRIVATE);
+			final var byggrFuture = getByggrStatus(municipalityId, legalId, PRIVATE);
+			final var ecosFuture = getEcosStatus(municipalityId, legalId, PRIVATE);
 
 			return Stream.of(alktFuture, caseDataFuture, byggrFuture, ecosFuture)
 				.map(CompletableFuture::join)
@@ -92,8 +93,8 @@ public class StatusService {
 
 			final var alktFuture = getAlktStatus(municipalityId, partyId);
 			final var caseDataFuture = getCaseDataStatus(municipalityId, CASE_DATA_ORGANIZATION_FILTER.formatted(legalId));
-			final var byggrFuture = getByggrStatus(municipalityId, legalId, partyId, ENTERPRISE);
-			final var ecosFuture = getEcosStatus(municipalityId, legalId, partyId, ENTERPRISE);
+			final var byggrFuture = getByggrStatus(municipalityId, legalId, ENTERPRISE);
+			final var ecosFuture = getEcosStatus(municipalityId, legalId, ENTERPRISE);
 
 			return Stream.of(alktFuture, caseDataFuture, byggrFuture, ecosFuture)
 				.map(CompletableFuture::join)
@@ -107,31 +108,31 @@ public class StatusService {
 	private CompletableFuture<List<CaseStatusDTO>> getAlktStatus(final String municipalityId, final String partyId) {
 		return CompletableFuture.supplyAsync(() -> alkTService.getStatusesByPartyId(partyId, municipalityId))
 			.exceptionally(ex -> {
-				log.warn("AlkT status fetch failed for party {} in municipality {}: {}", partyId, municipalityId, ex.getMessage());
+				log.warn("AlkT status fetch failed for party {} in municipality {}: {}", partyId, sanitizeForLogging(municipalityId), ex.getMessage());
 				return emptyList();
 			});
 	}
 
 	private CompletableFuture<List<CaseStatusDTO>> getCaseDataStatus(final String municipalityId, final String filter) {
-		return CompletableFuture.supplyAsync(() -> caseDataService.getStatusesByFilter(filter, municipalityId))
+		return CompletableFuture.supplyAsync(() -> caseDataService.getStatusesByFilter(filter, sanitizeForLogging(municipalityId)))
 			.exceptionally(ex -> {
-				log.warn("CaseData status fetch failed for filter {} with  in municipality {}: {}", filter, municipalityId, ex.getMessage());
+				log.warn("CaseData status fetch failed for filter {} with  in municipality {}: {}", sanitizeForLogging(filter), sanitizeForLogging(municipalityId), ex.getMessage());
 				return emptyList();
 			});
 	}
 
-	private CompletableFuture<List<CaseStatusDTO>> getByggrStatus(final String municipalityId, final String legalId, final String partyId, final PartyType partyType) {
+	private CompletableFuture<List<CaseStatusDTO>> getByggrStatus(final String municipalityId, final String legalId, final PartyType partyType) {
 		return CompletableFuture.supplyAsync(() -> byggrService.getByggrStatusByLegalId(legalId, partyType, municipalityId))
 			.exceptionally(ex -> {
-				log.warn("Byggr status fetch failed for party {} {} with legalId {} in municipality {}: {}", partyId, partyType, legalId, municipalityId, ex.getMessage());
+				log.warn("Byggr status fetch failed for {} party with legalId {} in municipality {}: {}", partyType, sanitizeForLogging(legalId), sanitizeForLogging(municipalityId), ex.getMessage());
 				return emptyList();
 			});
 	}
 
-	private CompletableFuture<List<CaseStatusDTO>> getEcosStatus(final String municipalityId, final String legalId, final String partyId, final PartyType partyType) {
+	private CompletableFuture<List<CaseStatusDTO>> getEcosStatus(final String municipalityId, final String legalId, final PartyType partyType) {
 		return CompletableFuture.supplyAsync(() -> ecosService.getEcosStatusByLegalId(legalId, partyType, municipalityId))
 			.exceptionally(ex -> {
-				log.warn("Ecos status fetch failed for party {} {} with legalId {} in municipality {}: {}", partyId, partyType, legalId, municipalityId, ex.getMessage());
+				log.warn("Ecos status fetch failed for {} party  with legalId {} in municipality {}: {}", partyType, sanitizeForLogging(legalId), sanitizeForLogging(municipalityId), ex.getMessage());
 				return emptyList();
 			});
 	}
