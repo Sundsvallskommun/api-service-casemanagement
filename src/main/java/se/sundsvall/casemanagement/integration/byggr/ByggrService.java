@@ -1,7 +1,7 @@
 package se.sundsvall.casemanagement.integration.byggr;
 
+import static generated.client.party.PartyType.ENTERPRISE;
 import static generated.client.party.PartyType.PRIVATE;
-import static java.util.Collections.emptyList;
 import static org.zalando.problem.Status.BAD_REQUEST;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.WITH_NULLABLE_FACILITY_TYPE;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.createAddAdditionalDocumentsHandelse;
@@ -49,6 +49,7 @@ import arendeexport.Arende2;
 import arendeexport.ArendeFastighet;
 import arendeexport.ArendeIntressent;
 import arendeexport.ArrayOfAbstractArendeObjekt2;
+import arendeexport.ArrayOfArende1;
 import arendeexport.ArrayOfArendeIntressent2;
 import arendeexport.ArrayOfString;
 import arendeexport.Fastighet;
@@ -264,16 +265,6 @@ public class ByggrService {
 			.orElseThrow(() -> Problem.valueOf(BAD_REQUEST, "No stakeholder found in the incoming request."));
 	}
 
-	/**
-	 * Fetches a ByggR case based on the case number.
-	 *
-	 * @param  dnr the case number
-	 * @return     Arende, a ByggR case
-	 */
-	public Arende getByggRCase(final String dnr) {
-		return arendeExportClient.getArende(new GetArende().withDnr(dnr)).getGetArendeResult();
-	}
-
 	public SaveNewArendeResponse2 saveNewCase(final ByggRCaseDTO byggRCase, final String municipalityId) {
 		byggRCase.setMunicipalityId(municipalityId);
 		final Map<String, CaseTypeData> caseTypeMap = new HashMap<>();
@@ -329,19 +320,19 @@ public class ByggrService {
 			.withArendeIntressentRoller(new ArrayOfString().withString(StakeholderRole.APPLICANT.getText()))
 			.withHandelseIntressentRoller(new ArrayOfString().withString(StakeholderRole.APPLICANT.getText()));
 
-		var arrayOfByggrArende = arendeExportClient.getRelateradeArendenByPersOrgNrAndRole(getRelateradeArendenByPersOrgNrAndRoleInput).getGetRelateradeArendenByPersOrgNrAndRoleResult();
+		var arrayOfByggrArenden = new ArrayOfArende1();
 
-		if (arrayOfByggrArende == null) {
-			return emptyList();
+		if (partyType.equals(ENTERPRISE)) {
+			arrayOfByggrArenden = arendeExportClient.getRelateradeArendenByPersOrgNrAndRole(getRelateradeArendenByPersOrgNrAndRoleInput).getGetRelateradeArendenByPersOrgNrAndRoleResult();
 		}
 
 		// If no cases are found, try to fetch cases with formatted legal id
-		if (arrayOfByggrArende.getArende().isEmpty()) {
+		if (arrayOfByggrArenden == null || arrayOfByggrArenden.getArende().isEmpty()) {
 			getRelateradeArendenByPersOrgNrAndRoleInput.setPersOrgNr(CaseUtil.getFormattedLegalId(partyType, legalId));
-			arrayOfByggrArende = arendeExportClient.getRelateradeArendenByPersOrgNrAndRole(getRelateradeArendenByPersOrgNrAndRoleInput).getGetRelateradeArendenByPersOrgNrAndRoleResult();
+			arrayOfByggrArenden = arendeExportClient.getRelateradeArendenByPersOrgNrAndRole(getRelateradeArendenByPersOrgNrAndRoleInput).getGetRelateradeArendenByPersOrgNrAndRoleResult();
 		}
 
-		return arrayOfByggrArende.getArende().stream().map(byggrArende -> {
+		return arrayOfByggrArenden.getArende().stream().map(byggrArende -> {
 			final var caseMappingList = caseMappingService.getCaseMapping(null, byggrArende.getDnr(), municipalityId);
 
 			return toByggrStatus(byggrArende, Optional.ofNullable(caseMappingList)
@@ -354,7 +345,7 @@ public class ByggrService {
 
 	public ArrayOfArendeIntressent2 getByggrIntressenter(final ByggRCaseDTO byggRCase) {
 
-		// Add all stakeholders from case to the list
+		// Add all stakeholders from a case to the list
 		final var stakeholders = new ArrayList<>(byggRCase.getStakeholders());
 		populateStakeholderListWithPropertyOwners(byggRCase, stakeholders);
 		final var personIds = filterPersonId(stakeholders);
@@ -418,7 +409,7 @@ public class ByggrService {
 		final var usedPropertyDesignations = new ArrayList<String>();
 		byggRCase.getFacilities().forEach(facilityDTO -> {
 			if (usedPropertyDesignations.contains(facilityDTO.getAddress().getPropertyDesignation())) {
-				// If we already have created a "arendeFastighet" with the same propertyDesignation,
+				// If we already have created an "arendeFastighet" with the same propertyDesignation,
 				// we should not create a duplicate. Skip this iteration.
 				return;
 			}
