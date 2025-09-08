@@ -51,7 +51,7 @@ class PartyServiceTest {
 		assertThat(result).isNotNull().isNotEmpty();
 		assertThat(result.getFirst().get(createdOrganizationPartyID)).isNotNull().satisfies(party -> assertThat(party.getGuid()).isNotEmpty());
 
-		verify(minutMiljoClientMock, times(2)).searchParty(any(SearchParty.class));
+		verify(minutMiljoClientMock, times(1)).searchParty(any(SearchParty.class));
 		verify(minutMiljoClientMock, times(1)).createOrganizationParty(any(CreateOrganizationParty.class));
 		verify(minutMiljoClientMock, times(1)).addPartyToCase(any());
 

@@ -6,7 +6,6 @@ import generated.client.party.PartyType;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import minutmiljo.AddPartyToCase;
 import minutmiljo.AddPartyToCaseSvcDto;
 import minutmiljo.AddressTypeSvcDto;
@@ -24,7 +23,6 @@ import minutmiljo.OrganizationSvcDto;
 import minutmiljo.PartyAddressSvcDto;
 import minutmiljo.PersonSvcDto;
 import minutmiljo.SearchParty;
-import minutmiljo.SearchPartyResponse;
 import minutmiljo.SearchPartySvcDto;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
@@ -172,27 +170,25 @@ public class PartyService {
 	}
 
 	/**
-	 * Search for party with and without hyphen in personal number
+	 * Search for a party with a hyphen in personal number
 	 *
 	 * @param  personId personId for person to search for
 	 * @return          ArrayOfPartySvcDto
 	 */
 	private ArrayOfPartySvcDto searchPartyByPersonId(final String personId, final String municipalityId) {
 
-		final var searchPartyWithHyphen = new SearchParty()
+		final var searchParty = new SearchParty()
 			.withModel(new SearchPartySvcDto()
 				.withPersonalIdentificationNumber((CaseUtil
 					.getSokigoFormattedPersonalNumber(partyIntegration.getLegalIdByPartyId(municipalityId, personId).get(PRIVATE)))));
 
-		final var resultWithHyphen = minutMiljoClient.searchParty(searchPartyWithHyphen);
+		final var result = minutMiljoClient.searchParty(searchParty);
 
-		if (resultWithHyphen != null && !resultWithHyphen.getSearchPartyResult().getPartySvcDto().isEmpty()) {
-			return resultWithHyphen.getSearchPartyResult();
+		if (result != null && !result.getSearchPartyResult().getPartySvcDto().isEmpty()) {
+			return result.getSearchPartyResult();
 		} else {
-			final var searchPartyWithoutHyphen = new SearchParty().withModel(new SearchPartySvcDto()
-				.withPersonalIdentificationNumber(partyIntegration.getLegalIdByPartyId(municipalityId, personId).get(PRIVATE)));
 
-			return Optional.ofNullable(minutMiljoClient.searchParty(searchPartyWithoutHyphen)).orElse(new SearchPartyResponse()).getSearchPartyResult();
+			return new ArrayOfPartySvcDto();
 		}
 	}
 
@@ -274,63 +270,31 @@ public class PartyService {
 
 	public ArrayOfPartySvcDto searchPartyByOrganizationNumber(final String organizationNumber) {
 
-		// Find party both with and without prefix "16"
-		final var allParties = new ArrayOfPartySvcDto();
-
-		// Search for party without prefix
-		final var searchPartyWithoutPrefix = new SearchParty()
-			.withModel(new SearchPartySvcDto()
-				.withOrganizationIdentificationNumber(organizationNumber));
-
-		final var partiesWithoutPrefix = minutMiljoClient.searchParty(searchPartyWithoutPrefix);
-
-		// Search for party with prefix
-		final var searchPartyWithPrefix = new SearchParty()
+		final var searchParty = new SearchParty()
 			.withModel(new SearchPartySvcDto()
 				.withOrganizationIdentificationNumber(CaseUtil.getSokigoFormattedOrganizationNumber(organizationNumber)));
 
-		final var partiesWithPrefix = minutMiljoClient.searchParty(searchPartyWithPrefix);
+		final var parties = minutMiljoClient.searchParty(searchParty);
 
-		if (partiesWithoutPrefix != null) {
-			allParties.getPartySvcDto().addAll(partiesWithoutPrefix.getSearchPartyResult().getPartySvcDto());
-		}
-		if (partiesWithPrefix != null) {
-			allParties.getPartySvcDto().addAll(partiesWithPrefix.getSearchPartyResult().getPartySvcDto());
+		if (parties != null) {
+			return parties.getSearchPartyResult();
 		}
 
-		return allParties;
+		return new ArrayOfPartySvcDto();
 	}
 
 	public ArrayOfPartySvcDto searchPartyByLegalId(final String legalId, final PartyType partyType) {
 
-		// Find party both with and without prefix "16"
-		final var allParties = new ArrayOfPartySvcDto();
+		final var parties = minutMiljoClient.searchParty(createSearchParty(legalId, partyType));
 
-		final var partiesWithoutPrefix = minutMiljoClient.searchParty(createSearchPartyWithoutPrefixedLegalId(legalId, partyType));
-		final var partiesWithPrefix = minutMiljoClient.searchParty(createSearchPartyWithPrefixedLegalId(legalId, partyType));
-
-		if (partiesWithoutPrefix != null) {
-			allParties.getPartySvcDto().addAll(partiesWithoutPrefix.getSearchPartyResult().getPartySvcDto());
-		}
-		if (partiesWithPrefix != null) {
-			allParties.getPartySvcDto().addAll(partiesWithPrefix.getSearchPartyResult().getPartySvcDto());
+		if (parties != null) {
+			return parties.getSearchPartyResult();
 		}
 
-		return allParties;
+		return new ArrayOfPartySvcDto();
 	}
 
-	private SearchParty createSearchPartyWithoutPrefixedLegalId(final String legalId, final PartyType partyType) {
-		final var searchParty = new SearchParty()
-			.withModel(new SearchPartySvcDto());
-		if (partyType == PartyType.ENTERPRISE) {
-			searchParty.getModel().setOrganizationIdentificationNumber(legalId);
-		} else {
-			searchParty.getModel().setPersonalIdentificationNumber(legalId);
-		}
-		return searchParty;
-	}
-
-	private SearchParty createSearchPartyWithPrefixedLegalId(final String legalId, final PartyType partyType) {
+	private SearchParty createSearchParty(final String legalId, final PartyType partyType) {
 		final var searchParty = new SearchParty()
 			.withModel(new SearchPartySvcDto());
 		if (partyType == PartyType.ENTERPRISE) {

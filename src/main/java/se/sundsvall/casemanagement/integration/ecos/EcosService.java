@@ -163,7 +163,7 @@ public class EcosService {
 
 	@NotNull
 	private static String getFilename(final AttachmentDTO attachmentDTO) {
-		// Filename must end with extension for the preview in Ecos to work
+		// Filename must end with an extension for the preview in Ecos to work
 		String filename = attachmentDTO.getName().toLowerCase();
 		final String extension = attachmentDTO.getExtension().toLowerCase();
 		if (!filename.endsWith(extension)) {
@@ -864,7 +864,6 @@ public class EcosService {
 	public List<CaseStatusDTO> getEcosStatusByLegalId(final String legalId, final PartyType partyType, final String municipalityId) {
 		final List<CaseStatusDTO> caseStatusDTOList = new ArrayList<>();
 
-		// Find party both with and without prefix "16"
 		final ArrayOfPartySvcDto allParties = partyService.searchPartyByLegalId(legalId, partyType);
 
 		// Search Ecos Case
