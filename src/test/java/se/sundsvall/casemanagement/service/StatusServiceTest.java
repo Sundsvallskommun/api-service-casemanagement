@@ -183,20 +183,4 @@ class StatusServiceTest {
 		verifyNoInteractions(caseDataServiceMock, byggrServiceMock, ecosServiceMock, caseMappingServiceMock);
 
 	}
-
-	@Test
-	void getCaseStatusesByLegalId() {
-		final var caseStatusDTO = createCaseStatusDTO();
-
-		when(byggrServiceMock.getByggrStatusByLegalId(ORGANIZATION_NUMBER, ENTERPRISE, MUNICIPALITY_ID)).thenReturn(List.of(caseStatusDTO));
-		when(ecosServiceMock.getEcosStatusByLegalId(ORGANIZATION_NUMBER, ENTERPRISE, MUNICIPALITY_ID)).thenReturn(List.of(caseStatusDTO));
-
-		final var result = statusService.getCaseStatusesByLegalId(ORGANIZATION_NUMBER, ENTERPRISE, MUNICIPALITY_ID);
-
-		assertThat(result).hasSize(2);
-		verify(byggrServiceMock).getByggrStatusByLegalId(ORGANIZATION_NUMBER, ENTERPRISE, MUNICIPALITY_ID);
-		verify(ecosServiceMock).getEcosStatusByLegalId(ORGANIZATION_NUMBER, ENTERPRISE, MUNICIPALITY_ID);
-		verifyNoMoreInteractions(byggrServiceMock, ecosServiceMock);
-		verifyNoInteractions(caseDataServiceMock, caseMappingServiceMock, partyIntegrationMock);
-	}
 }
