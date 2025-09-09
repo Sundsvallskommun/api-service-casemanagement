@@ -10,8 +10,9 @@ import generated.client.party.PartyType;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Stream;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import se.sundsvall.casemanagement.api.model.CaseStatusDTO;
 import se.sundsvall.casemanagement.integration.alkt.AlkTService;
@@ -20,12 +21,13 @@ import se.sundsvall.casemanagement.integration.casedata.CaseDataService;
 import se.sundsvall.casemanagement.integration.ecos.EcosService;
 import se.sundsvall.casemanagement.integration.party.PartyIntegration;
 
-@Slf4j
 @Service
 public class StatusService {
 
 	static final String CASE_DATA_ORGANIZATION_FILTER = "stakeholders.organizationNumber:'%s'";
 	static final String CASE_DATA_PERSON_FILTER = "stakeholders.personId:'%s' and exists(stakeholders.roles:'%s')";
+
+	private static final Logger LOG = Logger.getLogger(StatusService.class.getName());
 
 	private final ByggrService byggrService;
 	private final EcosService ecosService;
@@ -108,7 +110,7 @@ public class StatusService {
 	private CompletableFuture<List<CaseStatusDTO>> getAlktStatus(final String municipalityId, final String partyId) {
 		return CompletableFuture.supplyAsync(() -> alkTService.getStatusesByPartyId(partyId, municipalityId))
 			.exceptionally(ex -> {
-				log.warn("AlkT status fetch failed for party {} in municipality {}: {}", partyId, sanitizeForLogging(municipalityId), ex.getMessage());
+				LOG.log(Level.WARNING, String.format("AlkT status fetch failed for party %s in municipality %s: %s", partyId, sanitizeForLogging(municipalityId), ex.getMessage()));
 				return emptyList();
 			});
 	}
@@ -116,7 +118,7 @@ public class StatusService {
 	private CompletableFuture<List<CaseStatusDTO>> getCaseDataStatus(final String municipalityId, final String filter) {
 		return CompletableFuture.supplyAsync(() -> caseDataService.getStatusesByFilter(filter, sanitizeForLogging(municipalityId)))
 			.exceptionally(ex -> {
-				log.warn("CaseData status fetch failed for filter {} with  in municipality {}: {}", sanitizeForLogging(filter), sanitizeForLogging(municipalityId), ex.getMessage());
+				LOG.log(Level.WARNING, String.format("CaseData status fetch failed for filter %s in municipality %s: %s", sanitizeForLogging(filter), sanitizeForLogging(municipalityId), ex.getMessage()));
 				return emptyList();
 			});
 	}
@@ -124,7 +126,7 @@ public class StatusService {
 	private CompletableFuture<List<CaseStatusDTO>> getByggrStatus(final String municipalityId, final String legalId, final PartyType partyType) {
 		return CompletableFuture.supplyAsync(() -> byggrService.getByggrStatusByLegalId(legalId, partyType, municipalityId))
 			.exceptionally(ex -> {
-				log.warn("Byggr status fetch failed for {} party with legalId {} in municipality {}: {}", partyType, sanitizeForLogging(legalId), sanitizeForLogging(municipalityId), ex.getMessage());
+				LOG.log(Level.WARNING, String.format("Byggr status fetch failed for %s party with legalId %s in municipality %s: %s", partyType, sanitizeForLogging(legalId), sanitizeForLogging(municipalityId), ex.getMessage()));
 				return emptyList();
 			});
 	}
@@ -132,7 +134,7 @@ public class StatusService {
 	private CompletableFuture<List<CaseStatusDTO>> getEcosStatus(final String municipalityId, final String legalId, final PartyType partyType) {
 		return CompletableFuture.supplyAsync(() -> ecosService.getEcosStatusByLegalId(legalId, partyType, municipalityId))
 			.exceptionally(ex -> {
-				log.warn("Ecos status fetch failed for {} party  with legalId {} in municipality {}: {}", partyType, sanitizeForLogging(legalId), sanitizeForLogging(municipalityId), ex.getMessage());
+				LOG.log(Level.WARNING, String.format("Ecos status fetch failed for %s party with legalId %s in municipality %s: %s", partyType, sanitizeForLogging(legalId), sanitizeForLogging(municipalityId), ex.getMessage()));
 				return emptyList();
 			});
 	}
