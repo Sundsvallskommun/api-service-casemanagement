@@ -108,33 +108,33 @@ public class StatusService {
 	}
 
 	private CompletableFuture<List<CaseStatusDTO>> getAlktStatus(final String municipalityId, final String partyId) {
-		return CompletableFuture.supplyAsync(() -> alkTService.getStatusesByPartyId(partyId, municipalityId))
+		return alkTService.getStatusesByPartyId(partyId, municipalityId)
 			.exceptionally(ex -> {
-				LOG.log(Level.WARNING, String.format("AlkT status fetch failed for party %s in municipality %s: %s", partyId, sanitizeForLogging(municipalityId), ex.getMessage()));
+				LOG.log(Level.WARNING, String.format("AlkT status fetch failed for party %s in municipality %s: %s", partyId, sanitizeForLogging(municipalityId), ex.getMessage()), ex);
 				return emptyList();
 			});
 	}
 
 	private CompletableFuture<List<CaseStatusDTO>> getCaseDataStatus(final String municipalityId, final String filter) {
-		return CompletableFuture.supplyAsync(() -> caseDataService.getStatusesByFilter(filter, sanitizeForLogging(municipalityId)))
+		return caseDataService.getStatusesByFilter(filter, sanitizeForLogging(municipalityId))
 			.exceptionally(ex -> {
-				LOG.log(Level.WARNING, String.format("CaseData status fetch failed for filter %s in municipality %s: %s", sanitizeForLogging(filter), sanitizeForLogging(municipalityId), ex.getMessage()));
+				LOG.log(Level.WARNING, String.format("CaseData status fetch failed for filter %s in municipality %s: %s", sanitizeForLogging(filter), sanitizeForLogging(municipalityId), ex.getMessage()), ex);
 				return emptyList();
 			});
 	}
 
 	private CompletableFuture<List<CaseStatusDTO>> getByggrStatus(final String municipalityId, final String legalId, final PartyType partyType) {
-		return CompletableFuture.supplyAsync(() -> byggrService.getByggrStatusByLegalId(legalId, partyType, municipalityId))
+		return byggrService.getByggrStatusByLegalId(legalId, partyType, municipalityId)
 			.exceptionally(ex -> {
-				LOG.log(Level.WARNING, String.format("Byggr status fetch failed for %s party with legalId %s in municipality %s: %s", partyType, sanitizeForLogging(legalId), sanitizeForLogging(municipalityId), ex.getMessage()));
+				LOG.log(Level.WARNING, String.format("Byggr status fetch failed for %s party with legalId %s in municipality %s: %s", partyType, sanitizeForLogging(legalId), sanitizeForLogging(municipalityId), ex.getMessage()), ex);
 				return emptyList();
 			});
 	}
 
 	private CompletableFuture<List<CaseStatusDTO>> getEcosStatus(final String municipalityId, final String legalId, final PartyType partyType) {
-		return CompletableFuture.supplyAsync(() -> ecosService.getEcosStatusByLegalId(legalId, partyType, municipalityId))
+		return ecosService.getEcosStatusByLegalId(legalId, partyType, municipalityId)
 			.exceptionally(ex -> {
-				LOG.log(Level.WARNING, String.format("Ecos status fetch failed for %s party with legalId %s in municipality %s: %s", partyType, sanitizeForLogging(legalId), sanitizeForLogging(municipalityId), ex.getMessage()));
+				LOG.log(Level.WARNING, String.format("Ecos status fetch failed for %s party with legalId %s in municipality %s: %s", partyType, sanitizeForLogging(legalId), sanitizeForLogging(municipalityId), ex.getMessage()), ex);
 				return emptyList();
 			});
 	}

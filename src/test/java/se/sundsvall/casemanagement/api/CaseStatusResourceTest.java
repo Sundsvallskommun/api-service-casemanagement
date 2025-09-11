@@ -1,6 +1,7 @@
 package se.sundsvall.casemanagement.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -11,6 +12,7 @@ import static se.sundsvall.casemanagement.TestUtil.createCaseStatusDTO;
 
 import generated.client.party.PartyType;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -54,8 +56,9 @@ class CaseStatusResourceTest {
 	@Test
 	void getStatusByOrgNr() {
 		final var organizationNumber = "20220622-2396";
-		when(byggrService.getByggrStatusByLegalId(organizationNumber, PartyType.ENTERPRISE, MUNICIPALITY_ID)).thenReturn(List.of(createCaseStatusDTO()));
-		when(ecosService.getEcosStatusByLegalId(organizationNumber, PartyType.ENTERPRISE, MUNICIPALITY_ID)).thenReturn(List.of(createCaseStatusDTO()));
+		when(byggrService.getByggrStatusByLegalId(organizationNumber, PartyType.ENTERPRISE, MUNICIPALITY_ID)).thenReturn(CompletableFuture.completedFuture(List.of(createCaseStatusDTO())));
+		when(ecosService.getEcosStatusByLegalId(organizationNumber, PartyType.ENTERPRISE, MUNICIPALITY_ID)).thenReturn(CompletableFuture.completedFuture(List.of(createCaseStatusDTO())));
+		when(caseDataService.getStatusesByFilter(any(), any())).thenReturn(CompletableFuture.completedFuture(List.of()));
 
 		final var response = webTestClient.get()
 			.uri(uriBuilder -> uriBuilder.path(ORG_PATH).build(organizationNumber))
@@ -77,9 +80,9 @@ class CaseStatusResourceTest {
 	@Test
 	void getStatusByOrgNrNoMatch() {
 		final var organizationNumber = "20220622-2396";
-		when(byggrService.getByggrStatusByLegalId(organizationNumber, PartyType.ENTERPRISE, MUNICIPALITY_ID)).thenReturn(List.of());
-		when(ecosService.getEcosStatusByLegalId(organizationNumber, PartyType.ENTERPRISE, MUNICIPALITY_ID)).thenReturn(List.of());
-		when(caseDataService.getStatusesByFilter(MUNICIPALITY_ID, organizationNumber)).thenReturn(List.of());
+		when(byggrService.getByggrStatusByLegalId(organizationNumber, PartyType.ENTERPRISE, MUNICIPALITY_ID)).thenReturn(CompletableFuture.completedFuture(List.of()));
+		when(ecosService.getEcosStatusByLegalId(organizationNumber, PartyType.ENTERPRISE, MUNICIPALITY_ID)).thenReturn(CompletableFuture.completedFuture(List.of()));
+		when(caseDataService.getStatusesByFilter(any(), any())).thenReturn(CompletableFuture.completedFuture(List.of()));
 
 		final var response = webTestClient.get()
 			.uri(uriBuilder -> uriBuilder.path(ORG_PATH).build(organizationNumber))

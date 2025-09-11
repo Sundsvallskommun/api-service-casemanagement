@@ -16,6 +16,7 @@ import static se.sundsvall.casemanagement.util.Constants.CASE_DATA_STATUS_ROLE_S
 import generated.client.party.PartyType;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -61,9 +62,9 @@ class StatusServiceTest {
 	@Test
 	void getStatusByOrgNr() {
 		final var caseStatuses = List.of(createCaseStatusDTO(), createCaseStatusDTO());
-		when(byggrServiceMock.getByggrStatusByLegalId(ORGANIZATION_NUMBER, ENTERPRISE, MUNICIPALITY_ID)).thenReturn(caseStatuses);
-		when(ecosServiceMock.getEcosStatusByLegalId(ORGANIZATION_NUMBER, ENTERPRISE, MUNICIPALITY_ID)).thenReturn(caseStatuses);
-		when(caseDataServiceMock.getStatusesByFilter(CASE_DATA_ORGANIZATION_FILTER.formatted(ORGANIZATION_NUMBER), MUNICIPALITY_ID)).thenReturn(caseStatuses);
+		when(byggrServiceMock.getByggrStatusByLegalId(ORGANIZATION_NUMBER, ENTERPRISE, MUNICIPALITY_ID)).thenReturn(CompletableFuture.completedFuture(caseStatuses));
+		when(ecosServiceMock.getEcosStatusByLegalId(ORGANIZATION_NUMBER, ENTERPRISE, MUNICIPALITY_ID)).thenReturn(CompletableFuture.completedFuture(caseStatuses));
+		when(caseDataServiceMock.getStatusesByFilter(CASE_DATA_ORGANIZATION_FILTER.formatted(ORGANIZATION_NUMBER), MUNICIPALITY_ID)).thenReturn(CompletableFuture.completedFuture(caseStatuses));
 
 		final var result = statusService.getStatusByOrgNr(MUNICIPALITY_ID, ORGANIZATION_NUMBER);
 
@@ -132,10 +133,10 @@ class StatusServiceTest {
 		final var caseStatusDTO = createCaseStatusDTO();
 
 		when(partyIntegrationMock.getLegalIdByPartyId(MUNICIPALITY_ID, PARTY_ID)).thenReturn(partyTypeStringMap);
-		when(alkTServiceMock.getStatusesByPartyId(PARTY_ID, MUNICIPALITY_ID)).thenReturn(List.of(caseStatusDTO));
-		when(caseDataServiceMock.getStatusesByFilter(CASE_DATA_ORGANIZATION_FILTER.formatted(ORGANIZATION_NUMBER), MUNICIPALITY_ID)).thenReturn(List.of(caseStatusDTO));
-		when(byggrServiceMock.getByggrStatusByLegalId(ORGANIZATION_NUMBER, ENTERPRISE, MUNICIPALITY_ID)).thenReturn(List.of(caseStatusDTO));
-		when(ecosServiceMock.getEcosStatusByLegalId(ORGANIZATION_NUMBER, ENTERPRISE, MUNICIPALITY_ID)).thenReturn(List.of(caseStatusDTO));
+		when(alkTServiceMock.getStatusesByPartyId(PARTY_ID, MUNICIPALITY_ID)).thenReturn(CompletableFuture.completedFuture(List.of(caseStatusDTO)));
+		when(caseDataServiceMock.getStatusesByFilter(CASE_DATA_ORGANIZATION_FILTER.formatted(ORGANIZATION_NUMBER), MUNICIPALITY_ID)).thenReturn(CompletableFuture.completedFuture(List.of(caseStatusDTO)));
+		when(byggrServiceMock.getByggrStatusByLegalId(ORGANIZATION_NUMBER, ENTERPRISE, MUNICIPALITY_ID)).thenReturn(CompletableFuture.completedFuture(List.of(caseStatusDTO)));
+		when(ecosServiceMock.getEcosStatusByLegalId(ORGANIZATION_NUMBER, ENTERPRISE, MUNICIPALITY_ID)).thenReturn(CompletableFuture.completedFuture(List.of(caseStatusDTO)));
 
 		final var result = statusService.getStatusesByPartyId(MUNICIPALITY_ID, PARTY_ID);
 
@@ -154,10 +155,10 @@ class StatusServiceTest {
 		final var caseStatusDTO = createCaseStatusDTO();
 
 		when(partyIntegrationMock.getLegalIdByPartyId(MUNICIPALITY_ID, PARTY_ID)).thenReturn(partyTypeStringMap);
-		when(alkTServiceMock.getStatusesByPartyId(PARTY_ID, MUNICIPALITY_ID)).thenReturn(List.of(caseStatusDTO));
-		when(caseDataServiceMock.getStatusesByFilter(CASE_DATA_PERSON_FILTER.formatted(PARTY_ID, CASE_DATA_STATUS_ROLE_SEARCH), MUNICIPALITY_ID)).thenReturn(List.of(caseStatusDTO));
-		when(byggrServiceMock.getByggrStatusByLegalId(PERSONAL_NUMBER, PRIVATE, MUNICIPALITY_ID)).thenReturn(List.of(caseStatusDTO));
-		when(ecosServiceMock.getEcosStatusByLegalId(PERSONAL_NUMBER, PRIVATE, MUNICIPALITY_ID)).thenReturn(List.of(caseStatusDTO));
+		when(alkTServiceMock.getStatusesByPartyId(PARTY_ID, MUNICIPALITY_ID)).thenReturn(CompletableFuture.completedFuture(List.of(caseStatusDTO)));
+		when(caseDataServiceMock.getStatusesByFilter(CASE_DATA_PERSON_FILTER.formatted(PARTY_ID, CASE_DATA_STATUS_ROLE_SEARCH), MUNICIPALITY_ID)).thenReturn(CompletableFuture.completedFuture(List.of(caseStatusDTO)));
+		when(byggrServiceMock.getByggrStatusByLegalId(PERSONAL_NUMBER, PRIVATE, MUNICIPALITY_ID)).thenReturn(CompletableFuture.completedFuture(List.of(caseStatusDTO)));
+		when(ecosServiceMock.getEcosStatusByLegalId(PERSONAL_NUMBER, PRIVATE, MUNICIPALITY_ID)).thenReturn(CompletableFuture.completedFuture(List.of(caseStatusDTO)));
 
 		final var result = statusService.getStatusesByPartyId(MUNICIPALITY_ID, PARTY_ID);
 

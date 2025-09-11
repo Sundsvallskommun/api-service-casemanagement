@@ -81,6 +81,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -1096,7 +1097,7 @@ class ByggrServiceTest {
 
 	// Test getByggRStatusByOrgNr
 	@Test
-	void testGetByggRStatusByOrgNr() {
+	void testGetByggRStatusByOrgNr() throws ExecutionException, InterruptedException {
 
 		final String caseId1 = MessageFormat.format("BYGG-2021-{0}", new Random().nextInt(100000));
 		final String caseId2 = MessageFormat.format("BYGG-2022-{0}", new Random().nextInt(100000));
@@ -1173,7 +1174,7 @@ class ByggrServiceTest {
 		when(arendeExportClientMock.getRelateradeArendenByPersOrgNrAndRole(any())).thenReturn(getRelateradeArendenByPersOrgNrAndRoleResponse);
 
 		final String orgnr = TestUtil.generateRandomOrganizationNumber();
-		final var getStatusResult = byggrService.getByggrStatusByLegalId(orgnr, PartyType.ENTERPRISE, MUNICIPALITY_ID);
+		final var getStatusResult = byggrService.getByggrStatusByLegalId(orgnr, PartyType.ENTERPRISE, MUNICIPALITY_ID).get();
 
 		assertThat(getStatusResult).hasSize(2);
 		assertCaseStatus(caseId1, caseId1, externalCaseID1, CaseType.valueOf(caseMappingList1.getFirst().getCaseType()), caseMappingList1.getFirst().getServiceName(), handelse2.getHandelseslag(), handelse2.getStartDatum(), getStatusResult.getFirst());

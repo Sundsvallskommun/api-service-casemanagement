@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -337,7 +338,7 @@ class CaseDataServiceTest {
 	}
 
 	@Test
-	void getStatusByFilter() {
+	void getStatusByFilter() throws ExecutionException, InterruptedException {
 		final var namespace1 = "namespace1";
 		final var namespace2 = "namespace2";
 		final var namespaceMap = Map.of(MUNICIPALITY_ID, List.of(namespace1, namespace2));
@@ -347,7 +348,7 @@ class CaseDataServiceTest {
 		when(caseDataClientMock.getErrands(MUNICIPALITY_ID, namespace2, "filter", "1000")).thenReturn(page);
 		when(caseDataPropertiesMock.namespaces()).thenReturn(namespaceMap);
 
-		final var result = caseDataService.getStatusesByFilter("filter", MUNICIPALITY_ID);
+		final var result = caseDataService.getStatusesByFilter("filter", MUNICIPALITY_ID).get();
 
 		assertThat(result).hasSize(2).allSatisfy(caseStatus -> {
 			assertThat(caseStatus.getSystem()).isEqualTo(SystemType.CASE_DATA);

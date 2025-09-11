@@ -74,9 +74,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
 import se.sundsvall.casemanagement.api.model.AttachmentDTO;
@@ -315,7 +317,8 @@ public class ByggrService {
 		return ByggrMapper.toByggrStatus(arende, externalCaseId, caseMappingList);
 	}
 
-	public List<CaseStatusDTO> getByggrStatusByLegalId(final String legalId, final PartyType partyType, final String municipalityId) {
+	@Async
+	public CompletableFuture<List<CaseStatusDTO>> getByggrStatusByLegalId(final String legalId, final PartyType partyType, final String municipalityId) {
 		final var getRelateradeArendenByPersOrgNrAndRoleInput = new GetRelateradeArendenByPersOrgNrAndRole()
 			.withPersOrgNr(legalId)
 			.withArendeIntressentRoller(new ArrayOfString().withString(StakeholderRole.APPLICANT.getText()))
@@ -333,15 +336,16 @@ public class ByggrService {
 			arrayOfByggrArenden = arendeExportClient.getRelateradeArendenByPersOrgNrAndRole(getRelateradeArendenByPersOrgNrAndRoleInput).getGetRelateradeArendenByPersOrgNrAndRoleResult();
 		}
 
-		return Optional.ofNullable(arrayOfByggrArenden.getArende()).orElse(emptyList()).stream().map(byggrArende -> {
+		var statusList = Optional.ofNullable(arrayOfByggrArenden.getArende()).orElse(emptyList()).stream().map(byggrArende -> {
 			final var caseMappingList = caseMappingService.getCaseMapping(null, byggrArende.getDnr(), municipalityId);
 
 			return toByggrStatus(byggrArende, Optional.ofNullable(caseMappingList)
 				.filter(list -> !list.isEmpty())
 				.map(list -> list.getFirst().getExternalCaseId())
 				.orElse(null), municipalityId);
-		})
-			.toList();
+		}).toList();
+
+		return CompletableFuture.completedFuture(statusList);
 	}
 
 	public ArrayOfArendeIntressent2 getByggrIntressenter(final ByggRCaseDTO byggRCase) {
