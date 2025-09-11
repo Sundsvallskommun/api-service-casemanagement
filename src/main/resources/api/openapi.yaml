@@ -804,6 +804,7 @@ components:
           type: string
           description: Stakeholder emailaddress
           example: test.testorsson@sundsvall.se
+          format: email
         cellphoneNumber:
           type: string
           description: Stakeholder cellphone number
