@@ -48,10 +48,6 @@
 			<groupId>se.sundsvall.dept44</groupId>
 			<artifactId>dept44-starter-feign</artifactId>
 		</dependency>
-		<!--<dependency>
-			<groupId>org.glassfish.jaxb</groupId>
-			<artifactId>jaxb-runtime</artifactId>
-		</dependency>-->
 		<!-- DB -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
