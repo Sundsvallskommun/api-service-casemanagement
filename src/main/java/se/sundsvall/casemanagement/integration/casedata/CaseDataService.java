@@ -30,7 +30,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import org.springframework.http.HttpHeaders;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
 import org.zalando.problem.ThrowableProblem;
@@ -228,13 +230,14 @@ public class CaseDataService {
 		return page.getContent();
 	}
 
-	public List<CaseStatusDTO> getStatusesByFilter(final String filter, final String municipalityId) {
+	@Async
+	public CompletableFuture<List<CaseStatusDTO>> getStatusesByFilter(final String filter, final String municipalityId) {
 		final List<CaseStatusDTO> caseStatuses = new ArrayList<>();
 		for (final var namespace : caseDataProperties.namespaces().get(municipalityId)) {
 			final var errands = getErrands(municipalityId, namespace, filter);
 			errands.forEach(errand -> caseStatuses.add(toCaseStatusDTO(errand)));
 		}
-		return caseStatuses;
+		return CompletableFuture.completedFuture(caseStatuses);
 	}
 
 	CaseStatusDTO toCaseStatusDTO(final Errand errand) {

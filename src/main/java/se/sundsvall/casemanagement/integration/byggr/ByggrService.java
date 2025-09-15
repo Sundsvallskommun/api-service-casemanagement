@@ -1,5 +1,6 @@
 package se.sundsvall.casemanagement.integration.byggr;
 
+import static generated.client.party.PartyType.ENTERPRISE;
 import static generated.client.party.PartyType.PRIVATE;
 import static java.util.Collections.emptyList;
 import static org.zalando.problem.Status.BAD_REQUEST;
@@ -49,6 +50,7 @@ import arendeexport.Arende2;
 import arendeexport.ArendeFastighet;
 import arendeexport.ArendeIntressent;
 import arendeexport.ArrayOfAbstractArendeObjekt2;
+import arendeexport.ArrayOfArende1;
 import arendeexport.ArrayOfArendeIntressent2;
 import arendeexport.ArrayOfString;
 import arendeexport.Fastighet;
@@ -72,9 +74,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
 import se.sundsvall.casemanagement.api.model.AttachmentDTO;
@@ -264,16 +268,6 @@ public class ByggrService {
 			.orElseThrow(() -> Problem.valueOf(BAD_REQUEST, "No stakeholder found in the incoming request."));
 	}
 
-	/**
-	 * Fetches a ByggR case based on the case number.
-	 *
-	 * @param  dnr the case number
-	 * @return     Arende, a ByggR case
-	 */
-	public Arende getByggRCase(final String dnr) {
-		return arendeExportClient.getArende(new GetArende().withDnr(dnr)).getGetArendeResult();
-	}
-
 	public SaveNewArendeResponse2 saveNewCase(final ByggRCaseDTO byggRCase, final String municipalityId) {
 		byggRCase.setMunicipalityId(municipalityId);
 		final Map<String, CaseTypeData> caseTypeMap = new HashMap<>();
@@ -323,38 +317,40 @@ public class ByggrService {
 		return ByggrMapper.toByggrStatus(arende, externalCaseId, caseMappingList);
 	}
 
-	public List<CaseStatusDTO> getByggrStatusByLegalId(final String legalId, final PartyType partyType, final String municipalityId) {
+	@Async
+	public CompletableFuture<List<CaseStatusDTO>> getByggrStatusByLegalId(final String legalId, final PartyType partyType, final String municipalityId) {
 		final var getRelateradeArendenByPersOrgNrAndRoleInput = new GetRelateradeArendenByPersOrgNrAndRole()
 			.withPersOrgNr(legalId)
 			.withArendeIntressentRoller(new ArrayOfString().withString(StakeholderRole.APPLICANT.getText()))
 			.withHandelseIntressentRoller(new ArrayOfString().withString(StakeholderRole.APPLICANT.getText()));
 
-		var arrayOfByggrArende = arendeExportClient.getRelateradeArendenByPersOrgNrAndRole(getRelateradeArendenByPersOrgNrAndRoleInput).getGetRelateradeArendenByPersOrgNrAndRoleResult();
+		var arrayOfByggrArenden = new ArrayOfArende1();
 
-		if (arrayOfByggrArende == null) {
-			return emptyList();
+		if (partyType.equals(ENTERPRISE)) {
+			arrayOfByggrArenden = arendeExportClient.getRelateradeArendenByPersOrgNrAndRole(getRelateradeArendenByPersOrgNrAndRoleInput).getGetRelateradeArendenByPersOrgNrAndRoleResult();
 		}
 
 		// If no cases are found, try to fetch cases with formatted legal id
-		if (arrayOfByggrArende.getArende().isEmpty()) {
+		if (arrayOfByggrArenden == null || arrayOfByggrArenden.getArende().isEmpty()) {
 			getRelateradeArendenByPersOrgNrAndRoleInput.setPersOrgNr(CaseUtil.getFormattedLegalId(partyType, legalId));
-			arrayOfByggrArende = arendeExportClient.getRelateradeArendenByPersOrgNrAndRole(getRelateradeArendenByPersOrgNrAndRoleInput).getGetRelateradeArendenByPersOrgNrAndRoleResult();
+			arrayOfByggrArenden = arendeExportClient.getRelateradeArendenByPersOrgNrAndRole(getRelateradeArendenByPersOrgNrAndRoleInput).getGetRelateradeArendenByPersOrgNrAndRoleResult();
 		}
 
-		return arrayOfByggrArende.getArende().stream().map(byggrArende -> {
+		var statusList = Optional.ofNullable(arrayOfByggrArenden.getArende()).orElse(emptyList()).stream().map(byggrArende -> {
 			final var caseMappingList = caseMappingService.getCaseMapping(null, byggrArende.getDnr(), municipalityId);
 
 			return toByggrStatus(byggrArende, Optional.ofNullable(caseMappingList)
 				.filter(list -> !list.isEmpty())
 				.map(list -> list.getFirst().getExternalCaseId())
 				.orElse(null), municipalityId);
-		})
-			.toList();
+		}).toList();
+
+		return CompletableFuture.completedFuture(statusList);
 	}
 
 	public ArrayOfArendeIntressent2 getByggrIntressenter(final ByggRCaseDTO byggRCase) {
 
-		// Add all stakeholders from case to the list
+		// Add all stakeholders from a case to the list
 		final var stakeholders = new ArrayList<>(byggRCase.getStakeholders());
 		populateStakeholderListWithPropertyOwners(byggRCase, stakeholders);
 		final var personIds = filterPersonId(stakeholders);
@@ -418,7 +414,7 @@ public class ByggrService {
 		final var usedPropertyDesignations = new ArrayList<String>();
 		byggRCase.getFacilities().forEach(facilityDTO -> {
 			if (usedPropertyDesignations.contains(facilityDTO.getAddress().getPropertyDesignation())) {
-				// If we already have created a "arendeFastighet" with the same propertyDesignation,
+				// If we already have created an "arendeFastighet" with the same propertyDesignation,
 				// we should not create a duplicate. Skip this iteration.
 				return;
 			}

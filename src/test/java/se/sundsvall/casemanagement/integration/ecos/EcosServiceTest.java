@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 import minutmiljo.AddDocumentsToCase;
 import minutmiljo.ArrayOfOccurrenceListItemSvcDto;
 import minutmiljo.ArrayOfPartySvcDto;
@@ -779,7 +780,7 @@ class EcosServiceTest {
 	}
 
 	@Test
-	void testGetStatusByOrgnr() {
+	void testGetStatusByOrgnr() throws ExecutionException, InterruptedException {
 		// Arrange
 		final var caseNumber = MessageFormat.format("MK-2022-{0}", new Random().nextInt(100000));
 		final var caseId = UUID.randomUUID().toString();
@@ -833,7 +834,7 @@ class EcosServiceTest {
 		when(partyServiceMock.searchPartyByLegalId(orgnr, PartyType.ENTERPRISE)).thenReturn(arrayOfPartySvcDto);
 
 		// Act
-		final var result = ecosService.getEcosStatusByLegalId(orgnr, PartyType.ENTERPRISE, MUNICIPALITY_ID);
+		final var result = ecosService.getEcosStatusByLegalId(orgnr, PartyType.ENTERPRISE, MUNICIPALITY_ID).get();
 
 		// Assert
 		assertThat(result).hasSize(2);

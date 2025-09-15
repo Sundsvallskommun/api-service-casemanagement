@@ -20,13 +20,26 @@
 		<jaxb2-fluent-api.version>3.0</jaxb2-fluent-api.version>
 		<failsafe.version>3.3.2</failsafe.version>
 		<jcifs.version>1.3.17</jcifs.version>
+		<jaxb-plugins.version>4.0.9</jaxb-plugins.version>
 	</properties>
 	<dependencies>
-		<!-- Dept44 Framework -->
+		<!-- Test -->
 		<dependency>
 			<groupId>se.sundsvall.dept44</groupId>
-			<artifactId>dept44-starter</artifactId>
+			<artifactId>dept44-starter-test</artifactId>
+			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>mariadb</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<!-- Dept44 Framework -->
 		<dependency>
 			<groupId>se.sundsvall.dept44</groupId>
 			<artifactId>dept44-common-validators</artifactId>
@@ -47,22 +60,6 @@
 		<dependency>
 			<groupId>org.flywaydb</groupId>
 			<artifactId>flyway-mysql</artifactId>
-		</dependency>
-		<!-- Test -->
-		<dependency>
-			<groupId>se.sundsvall.dept44</groupId>
-			<artifactId>dept44-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.testcontainers</groupId>
-			<artifactId>junit-jupiter</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.testcontainers</groupId>
-			<artifactId>mariadb</artifactId>
-			<scope>test</scope>
 		</dependency>
 		<!-- Other -->
 		<dependency>
@@ -191,118 +188,93 @@
 			</plugin>
 			<!-- Generate java from wsdl -->
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>jaxb2-maven-plugin</artifactId>
-				<version>${jaxb2-maven-plugin.version}</version>
-				<!-- Enables fluent builder for generated classes -->
-				<dependencies>
-					<dependency>
-						<groupId>org.jvnet.jaxb2_commons</groupId>
-						<artifactId>jaxb2-fluent-api</artifactId>
-						<version>${jaxb2-fluent-api.version}</version>
-					</dependency>
-				</dependencies>
+				<groupId>org.jvnet.jaxb</groupId>
+				<artifactId>jaxb-maven-plugin</artifactId>
+				<version>${jaxb-plugins.version}</version>
+				<configuration>
+					<bindingDirectory>${project.basedir}/src/main/resources/integrations/soap</bindingDirectory>
+					<extension>true</extension>
+					<args>
+						<arg>-wsdl</arg>
+						<arg>-Xfluent-api</arg>
+						<arg>-XautoNameResolution</arg>
+					</args>
+					<plugins>
+						<plugin>
+							<groupId>org.jvnet.jaxb</groupId>
+							<artifactId>jaxb-plugins</artifactId>
+							<version>${jaxb-plugins.version}</version>
+						</plugin>
+					</plugins>
+					<encoding>UTF-8</encoding>
+				</configuration>
 				<executions>
 					<execution>
 						<id>minutmiljo</id>
 						<goals>
-							<goal>xjc</goal>
+							<goal>generate</goal>
 						</goals>
 						<configuration>
-							<outputDirectory>${generated-sources-path}/${generated-sources-java-path}</outputDirectory>
-							<clearOutputDir>false</clearOutputDir>
-							<packageName>minutmiljo</packageName>
-							<encoding>UTF-8</encoding>
-							<addGeneratedAnnotation>true</addGeneratedAnnotation>
-							<noGeneratedHeaderComments>true</noGeneratedHeaderComments>
-							<sourceType>wsdl</sourceType>
-							<!-- Enable fluent -->
-							<arguments>
-								<argument>-Xfluent-api</argument>
-								<argument>-XautoNameResolution</argument>
-							</arguments>
-							<sources>
-								<source>${project.basedir}/src/main/resources/integrations/soap/minutmiljo/MinutMiljoService.wsdl</source>
-							</sources>
-							<xjbSources>
-								<xjbSource>${project.basedir}/src/main/resources/integrations/soap/bindings.xjb</xjbSource>
-							</xjbSources>
+							<generatePackage>minutmiljo</generatePackage>
+							<generateDirectory>${generated-sources-path}/${generated-sources-java-path}/xjc-minutmiljo</generateDirectory>
+							<schemaDirectory>${project.basedir}/src/main/resources/integrations/soap/minutmiljo</schemaDirectory>
+							<schemaIncludes>
+								<include>MinutMiljoService.wsdl</include>
+							</schemaIncludes>
+							<bindingIncludes>
+								<include>bindings.xjb</include>
+							</bindingIncludes>
 						</configuration>
 					</execution>
 					<execution>
 						<id>callback</id>
 						<goals>
-							<goal>xjc</goal>
+							<goal>generate</goal>
 						</goals>
 						<configuration>
-							<outputDirectory>${generated-sources-path}/${generated-sources-java-path}</outputDirectory>
-							<clearOutputDir>false</clearOutputDir>
-							<packageName>callback</packageName>
-							<encoding>UTF-8</encoding>
-							<addGeneratedAnnotation>true</addGeneratedAnnotation>
-							<noGeneratedHeaderComments>true</noGeneratedHeaderComments>
-							<sourceType>wsdl</sourceType>
-							<arguments>
-								<argument>-Xfluent-api</argument>
-								<argument>-XautoNameResolution</argument>
-							</arguments>
-							<sources>
-								<source>${project.basedir}/src/main/resources/integrations/soap/callback/oep.wsdl</source>
-							</sources>
-							<xjbSources>
-								<xjbSource>${project.basedir}/src/main/resources/integrations/soap/bindings.xjb</xjbSource>
-							</xjbSources>
+							<generatePackage>callback</generatePackage>
+							<generateDirectory>${generated-sources-path}/${generated-sources-java-path}/xjc-callback</generateDirectory>
+							<schemaDirectory>${project.basedir}/src/main/resources/integrations/soap/callback</schemaDirectory>
+							<schemaIncludes>
+								<include>oep.wsdl</include>
+							</schemaIncludes>
+							<bindingIncludes>
+								<include>bindings.xjb</include>
+							</bindingIncludes>
 						</configuration>
 					</execution>
 					<execution>
 						<id>minutmiljoV2</id>
 						<goals>
-							<goal>xjc</goal>
+							<goal>generate</goal>
 						</goals>
 						<configuration>
-							<outputDirectory>${generated-sources-path}/${generated-sources-java-path}</outputDirectory>
-							<clearOutputDir>false</clearOutputDir>
-							<packageName>minutmiljoV2</packageName>
-							<encoding>UTF-8</encoding>
-							<addGeneratedAnnotation>true</addGeneratedAnnotation>
-							<noGeneratedHeaderComments>true</noGeneratedHeaderComments>
-							<sourceType>wsdl</sourceType>
-							<arguments>
-								<argument>-Xfluent-api</argument>
-								<argument>-XautoNameResolution</argument>
-							</arguments>
-							<sources>
-								<source>${project.basedir}/src/main/resources/integrations/soap/minutmiljoV2/MinutMiljoServiceV2.wsdl</source>
-							</sources>
-							<xjbSources>
-								<xjbSource>${project.basedir}/src/main/resources/integrations/soap/bindings.xjb</xjbSource>
-							</xjbSources>
+							<generatePackage>minutmiljoV2</generatePackage>
+							<generateDirectory>${generated-sources-path}/${generated-sources-java-path}/xjc-minutmiljoV2</generateDirectory>
+							<schemaDirectory>${project.basedir}/src/main/resources/integrations/soap/minutmiljoV2</schemaDirectory>
+							<schemaIncludes>
+								<include>MinutMiljoServiceV2.wsdl</include>
+							</schemaIncludes>
+							<bindingIncludes>
+								<include>bindings.xjb</include>
+							</bindingIncludes>
 						</configuration>
 					</execution>
 					<execution>
 						<id>arendeexport</id>
 						<goals>
-							<goal>xjc</goal>
+							<goal>generate</goal>
 						</goals>
 						<configuration>
-							<outputDirectory>${generated-sources-path}/${generated-sources-java-path}</outputDirectory>
-							<clearOutputDir>false</clearOutputDir>
-							<packageName>arendeexport</packageName>
-							<encoding>UTF-8</encoding>
-							<addGeneratedAnnotation>true</addGeneratedAnnotation>
-							<noGeneratedHeaderComments>true</noGeneratedHeaderComments>
-							<sourceType>wsdl</sourceType>
-							<!-- Enable fluent -->
-							<arguments>
-								<argument>-Xfluent-api</argument>
-								<argument>-XautoNameResolution</argument>
-							</arguments>
-							<sources>
-								<source>${project.basedir}/src/main/resources/integrations/soap/arendeexport/ArendeExportWS.wsdl</source>
-							</sources>
-							<xjbSources>
-								<xjbSource>${project.basedir}/src/main/resources/integrations/soap/bindings.xjb</xjbSource>
-							</xjbSources>
+							<generatePackage>arendeexport</generatePackage>
+							<generateDirectory>${generated-sources-path}/${generated-sources-java-path}/xjc-arendeexport</generateDirectory>
+							<schemaDirectory>${project.basedir}/src/main/resources/integrations/soap/arendeexport</schemaDirectory>
+							<schemaIncludes>
+								<include>ArendeExportWS.wsdl</include>
+							</schemaIncludes>
+							<bindingIncludes>
+								<include>bindings.xjb</include>
+							</bindingIncludes>
 						</configuration>
 					</execution>
 				</executions>

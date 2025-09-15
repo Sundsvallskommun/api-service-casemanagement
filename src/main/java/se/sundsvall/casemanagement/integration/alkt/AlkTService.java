@@ -8,8 +8,10 @@ import generated.client.alkt.Owner;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import se.sundsvall.casemanagement.api.model.CaseStatusDTO;
 
@@ -26,13 +28,14 @@ public class AlkTService {
 		this.alkTClient = alkTClient;
 	}
 
-	public List<CaseStatusDTO> getStatusesByPartyId(final String partyId, final String municipalityId) {
+	@Async
+	public CompletableFuture<List<CaseStatusDTO>> getStatusesByPartyId(final String partyId, final String municipalityId) {
 		final var owners = getOwnersByPartyId(partyId, municipalityId);
 		final var modelCases = owners.stream()
 			.flatMap(owner -> owner.getEstablishments().stream())
 			.flatMap(establishment -> establishment.getCases().stream())
 			.toList();
-		return mapToCaseStatuses(modelCases);
+		return CompletableFuture.completedFuture(mapToCaseStatuses(modelCases));
 	}
 
 	List<Owner> getOwnersByPartyId(final String partyId, final String municipalityId) {

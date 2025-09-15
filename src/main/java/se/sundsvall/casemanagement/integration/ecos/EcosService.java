@@ -54,6 +54,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import minutmiljo.AddDocumentsToCase;
 import minutmiljo.AddDocumentsToCaseSvcDto;
 import minutmiljo.AddFacilityToCase;
@@ -119,6 +120,7 @@ import minutmiljoV2.RegisterDocumentCaseSvcDtoV2;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
@@ -163,7 +165,7 @@ public class EcosService {
 
 	@NotNull
 	private static String getFilename(final AttachmentDTO attachmentDTO) {
-		// Filename must end with extension for the preview in Ecos to work
+		// Filename must end with an extension for the preview in Ecos to work
 		String filename = attachmentDTO.getName().toLowerCase();
 		final String extension = attachmentDTO.getExtension().toLowerCase();
 		if (!filename.endsWith(extension)) {
@@ -861,10 +863,10 @@ public class EcosService {
 		throw Problem.valueOf(Status.NOT_FOUND, Constants.ERR_MSG_STATUS_NOT_FOUND);
 	}
 
-	public List<CaseStatusDTO> getEcosStatusByLegalId(final String legalId, final PartyType partyType, final String municipalityId) {
+	@Async
+	public CompletableFuture<List<CaseStatusDTO>> getEcosStatusByLegalId(final String legalId, final PartyType partyType, final String municipalityId) {
 		final List<CaseStatusDTO> caseStatusDTOList = new ArrayList<>();
 
-		// Find party both with and without prefix "16"
 		final ArrayOfPartySvcDto allParties = partyService.searchPartyByLegalId(legalId, partyType);
 
 		// Search Ecos Case
@@ -888,7 +890,7 @@ public class EcosService {
 			});
 		}
 
-		return caseStatusDTOList;
+		return CompletableFuture.completedFuture(caseStatusDTOList);
 	}
 
 	public void addDocumentsToCase(final String caseId, final List<AttachmentDTO> attachmentDTOList) {

@@ -17,6 +17,7 @@ import generated.client.alkt.Owner;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,11 +43,11 @@ class AlkTServiceTest {
 	private AlkTService service;
 
 	@Test
-	void getStatusesByPartyId() {
+	void getStatusesByPartyId() throws ExecutionException, InterruptedException {
 		final var owners = List.of(createOwner(), createOwner());
 		when(alkTClientMock.getOwners(MUNICIPALITY_ID, PARTY_ID)).thenReturn(owners);
 
-		final var result = service.getStatusesByPartyId(PARTY_ID, MUNICIPALITY_ID);
+		final var result = service.getStatusesByPartyId(PARTY_ID, MUNICIPALITY_ID).get();
 
 		// Each owner have 2 establishments, each establishment have 2 cases, total 8 cases
 		assertThat(result).hasSize(8)
