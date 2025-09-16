@@ -25,7 +25,7 @@ import se.sundsvall.casemanagement.integration.party.PartyIntegration;
 public class StatusService {
 
 	static final String CASE_DATA_ORGANIZATION_FILTER = "stakeholders.organizationNumber:'%s'";
-	static final String CASE_DATA_PERSON_FILTER = "stakeholders.personId:'%s' and exists(stakeholders.roles:'%s')";
+	static final String CASE_DATA_PERSON_FILTER = "exists(stakeholders.personId:'%s' and stakeholders.roles:'%s')";
 
 	private static final Logger LOG = Logger.getLogger(StatusService.class.getName());
 
