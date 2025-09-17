@@ -1,5 +1,6 @@
 package se.sundsvall.casemanagement.integration.ecos;
 
+import static java.util.Collections.emptyList;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANDRING_AV_LIVSMEDELSVERKSAMHET;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_ANDRING_AVLOPPSANLAGGNING;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_ANDRING_AVLOPPSANORDNING;
@@ -835,7 +836,10 @@ public class EcosService {
 				.filter(list -> !list.isEmpty())
 				.isPresent()) {
 
-				final var caseMapping = Optional.ofNullable(caseMappingService.getCaseMapping(externalCaseId, caseId, municipalityId).getFirst()).orElse(new CaseMapping());
+				final var caseMapping = Optional.ofNullable(caseMappingService.getCaseMapping(externalCaseId, caseId, municipalityId)).orElse(emptyList())
+					.stream()
+					.findFirst()
+					.orElse(new CaseMapping());
 
 				final var latestOccurrence = ecosCase.getOccurrences()
 					.getOccurrenceListItemSvcDto()
