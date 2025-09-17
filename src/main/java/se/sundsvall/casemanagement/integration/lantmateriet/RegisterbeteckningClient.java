@@ -19,5 +19,4 @@ public interface RegisterbeteckningClient {
 		@RequestParam String beteckning,
 		@RequestParam String status,
 		@RequestParam int maxHits);
-
 }
