@@ -15,7 +15,6 @@
 	<properties>
 		<!--- Service properties -->
 		<generated-sources-path>${project.build.directory}/generated-sources</generated-sources-path>
-		<generated-sources-java-path>src/main/java</generated-sources-java-path>
 		<jaxb2-maven-plugin.version>3.3.0</jaxb2-maven-plugin.version>
 		<jaxb2-fluent-api.version>3.0</jaxb2-fluent-api.version>
 		<failsafe.version>3.3.2</failsafe.version>
@@ -94,7 +93,6 @@
 					<generateSupportingFiles>false</generateSupportingFiles>
 					<configOptions>
 						<useSpringBoot3>true</useSpringBoot3>
-						<sourceFolder>${generated-sources-java-path}</sourceFolder>
 						<dateLibrary>java8</dateLibrary>
 						<apiPackage>generated</apiPackage>
 						<openApiNullable>false</openApiNullable>
@@ -167,25 +165,6 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>build-helper-maven-plugin</artifactId>
-				<version>${build-helper-maven-plugin.version}</version>
-				<executions>
-					<execution>
-						<id>add-generated-source</id>
-						<goals>
-							<goal>add-source</goal>
-						</goals>
-						<phase>initialize</phase>
-						<configuration>
-							<sources>
-								<source>${generated-sources-path}/${generated-sources-java-path}</source>
-							</sources>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
 			<!-- Generate java from wsdl -->
 			<plugin>
 				<groupId>org.jvnet.jaxb</groupId>
@@ -216,7 +195,7 @@
 						</goals>
 						<configuration>
 							<generatePackage>minutmiljo</generatePackage>
-							<generateDirectory>${generated-sources-path}/${generated-sources-java-path}/xjc-minutmiljo</generateDirectory>
+							<generateDirectory>${generated-sources-path}/xjc-minutmiljo</generateDirectory>
 							<schemaDirectory>${project.basedir}/src/main/resources/integrations/soap/minutmiljo</schemaDirectory>
 							<schemaIncludes>
 								<include>MinutMiljoService.wsdl</include>
@@ -233,7 +212,7 @@
 						</goals>
 						<configuration>
 							<generatePackage>callback</generatePackage>
-							<generateDirectory>${generated-sources-path}/${generated-sources-java-path}/xjc-callback</generateDirectory>
+							<generateDirectory>${generated-sources-path}/xjc-callback</generateDirectory>
 							<schemaDirectory>${project.basedir}/src/main/resources/integrations/soap/callback</schemaDirectory>
 							<schemaIncludes>
 								<include>oep.wsdl</include>
@@ -250,7 +229,7 @@
 						</goals>
 						<configuration>
 							<generatePackage>minutmiljoV2</generatePackage>
-							<generateDirectory>${generated-sources-path}/${generated-sources-java-path}/xjc-minutmiljoV2</generateDirectory>
+							<generateDirectory>${generated-sources-path}/xjc-minutmiljoV2</generateDirectory>
 							<schemaDirectory>${project.basedir}/src/main/resources/integrations/soap/minutmiljoV2</schemaDirectory>
 							<schemaIncludes>
 								<include>MinutMiljoServiceV2.wsdl</include>
@@ -267,7 +246,7 @@
 						</goals>
 						<configuration>
 							<generatePackage>arendeexport</generatePackage>
-							<generateDirectory>${generated-sources-path}/${generated-sources-java-path}/xjc-arendeexport</generateDirectory>
+							<generateDirectory>${generated-sources-path}/xjc-arendeexport</generateDirectory>
 							<schemaDirectory>${project.basedir}/src/main/resources/integrations/soap/arendeexport</schemaDirectory>
 							<schemaIncludes>
 								<include>ArendeExportWS.wsdl</include>
@@ -275,6 +254,29 @@
 							<bindingIncludes>
 								<include>bindings.xjb</include>
 							</bindingIncludes>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>${build-helper-maven-plugin.version}</version>
+				<executions>
+					<execution>
+						<id>add-generated-source</id>
+						<goals>
+							<goal>add-source</goal>
+						</goals>
+						<phase>initialize</phase>
+						<configuration>
+							<sources>
+								<source>${generated-sources-path}/models</source>
+								<source>${generated-sources-path}/xjc-arendeexport</source>
+								<source>${generated-sources-path}/xjc-callback</source>
+								<source>${generated-sources-path}/xjc-minutmiljo</source>
+								<source>${generated-sources-path}/xjc-minutmiljoV2</source>
+							</sources>
 						</configuration>
 					</execution>
 				</executions>
@@ -296,6 +298,19 @@
 						<exclude>**/callback/**</exclude>
 						<exclude>**/arendeexport/**</exclude>
 					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<annotationProcessorPaths>
+						<path>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+							<version>1.18.40</version>
+						</path>
+					</annotationProcessorPaths>
 				</configuration>
 			</plugin>
 		</plugins>
