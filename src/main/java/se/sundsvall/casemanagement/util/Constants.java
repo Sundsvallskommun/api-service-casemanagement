@@ -179,48 +179,48 @@ public final class Constants {
 	public static final String SWEDEN = "Sverige";
 	public static final String POST_CASES_REQUEST_BODY_EXAMPLE = """
 		{
-				"externalCaseId": "e19981ad-34b2-4e14-88f5-133f61ca85aa",
-				"caseType": "NYBYGGNAD_ANSOKAN_OM_BYGGLOV",
-				"facilities": [
-					{
-						"facilityType": "STOREHOUSE",
-						"address": {
-							"addressCategories": [
-								"VISITING_ADDRESS"
-							],
-							"propertyDesignation": "SUNDSVALL BALDER 2"
-						}
-					}
-				],
-				"stakeholders": [
-					{
-						"type": "ORGANIZATION",
-						"roles": [
-							"APPLICANT",
-							"PAYMENT_PERSON"
-						],
-						"organizationName": "Testorganisationen",
-						"organizationNumber": "123456-1234"
-					},
-					{
-						"type": "PERSON",
-						"roles": [
-							"CONTACT_PERSON"
-						],
-						"firstName": "Test",
-						"lastName": "Testsson",
-						"personId": "e19981ad-34b2-4e14-88f5-133f61ca85aa"
-					}
-				],
-				"attachments": [
-					{
-						"category": "ANS",
-						"name": "Some_name_2022-03-07",
-						"extension": ".pdf",
-						"file": "dGVzdA=="
-					}
-				]
-			}""";
+		    "externalCaseId":"e19981ad-34b2-4e14-88f5-133f61ca85aa",
+		    "caseType":"NYBYGGNAD_ANSOKAN_OM_BYGGLOV",
+		    "facilities":[
+		        {
+		            "facilityType":"STOREHOUSE",
+		            "address":{
+		                "addressCategories":[
+		                    "VISITING_ADDRESS"
+		                ],
+		                "propertyDesignation":"SUNDSVALL BALDER 2"
+		            }
+		        }
+		    ],
+		    "stakeholders":[
+		        {
+		            "type":"ORGANIZATION",
+		            "roles":[
+		                "APPLICANT",
+		                "PAYMENT_PERSON"
+		            ],
+		            "organizationName":"Testorganisationen",
+		            "organizationNumber":"123456-1234"
+		        },
+		        {
+		            "type":"PERSON",
+		            "roles":[
+		                "CONTACT_PERSON"
+		            ],
+		            "firstName":"Test",
+		            "lastName":"Testsson",
+		            "personId":"e19981ad-34b2-4e14-88f5-133f61ca85aa"
+		        }
+		    ],
+		    "attachments":[
+		        {
+		            "category":"ANS",
+		            "name":"Some_name_2022-03-07",
+		            "extension":".pdf",
+		            "file":"dGVzdA=="
+		        }
+		    ]
+		}""";
 
 	public static final String INFILTRATION_PLANT_SVC_DTO = "InfiltrationPlantSvcDto_";
 	public static final String CLOSED_TANK_SVC_DTO = "ClosedTankSvcDto_";

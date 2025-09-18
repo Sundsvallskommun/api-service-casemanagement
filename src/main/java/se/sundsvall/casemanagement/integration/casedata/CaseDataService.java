@@ -169,7 +169,11 @@ public class CaseDataService {
 			.withExternalCaseId(caseMapping.getExternalCaseId())
 			.withStatus(latestStatus.getStatusType())
 			.withServiceName(caseMapping.getServiceName())
-			.withTimestamp(latestStatus.getCreated().atZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime())
+			.withTimestamp(
+				Optional.ofNullable(latestStatus)
+					.map(Status::getCreated)
+					.map(t -> t.atZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime())
+					.orElse(null))
 			.build();
 	}
 

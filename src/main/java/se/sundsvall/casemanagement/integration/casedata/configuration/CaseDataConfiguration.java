@@ -40,5 +40,4 @@ public class CaseDataConfiguration {
 				.build())
 			.composeCustomizersToOne();
 	}
-
 }

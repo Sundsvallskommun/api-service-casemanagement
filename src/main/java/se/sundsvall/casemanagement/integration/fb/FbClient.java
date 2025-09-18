@@ -16,22 +16,37 @@ import se.sundsvall.casemanagement.integration.fb.model.ResponseDto;
 public interface FbClient {
 
 	@PostMapping(path = "/fbservice/Fastighet/info/uuid")
-	ResponseDto getPropertyInfoByUuid(@RequestBody List<String> registerenheter, @RequestParam(name = "Database") String database,
-		@RequestParam(name = "User") String user, @RequestParam(name = "Password") String password);
+	ResponseDto getPropertyInfoByUuid(
+		@RequestBody List<String> registerenheter,
+		@RequestParam(name = "Database") String database,
+		@RequestParam(name = "User") String user,
+		@RequestParam(name = "Password") String password);
 
 	@PostMapping(path = "/fbservice/adress/search/fastighet/uuid")
-	ResponseDto getAddressInfoByUuid(@RequestBody List<String> registerenheter, @RequestParam(name = "Database") String database,
-		@RequestParam("User") String user, @RequestParam("Password") String password);
+	ResponseDto getAddressInfoByUuid(
+		@RequestBody List<String> registerenheter,
+		@RequestParam(name = "Database") String database,
+		@RequestParam("User") String user,
+		@RequestParam("Password") String password);
 
 	@PostMapping(path = "/fbservice/agare/search/lagfarenAgare/fastighet/fnr")
-	ResponseDto getPropertyOwnerByFnr(@RequestBody List<Integer> fnrList, @RequestParam(name = "Database") String database,
-		@RequestParam(name = "User") String user, @RequestParam(name = "Password") String password);
+	ResponseDto getPropertyOwnerByFnr(
+		@RequestBody List<Integer> fnrList,
+		@RequestParam(name = "Database") String database,
+		@RequestParam(name = "User") String user,
+		@RequestParam(name = "Password") String password);
 
 	@PostMapping(path = "/fbservice/Agare/inskriven/inskrivenAgareUuid")
-	ResponseDto getPropertyOwnerInfoByUuid(@RequestBody List<String> uuidList, @RequestParam(name = "Database") String database,
-		@RequestParam(name = "User") String user, @RequestParam(name = "Password") String password);
+	ResponseDto getPropertyOwnerInfoByUuid(
+		@RequestBody List<String> uuidList,
+		@RequestParam(name = "Database") String database,
+		@RequestParam(name = "User") String user,
+		@RequestParam(name = "Password") String password);
 
 	@PostMapping(path = "/fbservice/Agare/adress/personOrganisationsNummer")
-	ResponseDto getPropertyOwnerAddressByPersOrgNr(@RequestBody List<String> persOrgNrList, @RequestParam(name = "Database") String database,
-		@RequestParam(name = "User") String user, @RequestParam(name = "Password") String password);
+	ResponseDto getPropertyOwnerAddressByPersOrgNr(
+		@RequestBody List<String> persOrgNrList,
+		@RequestParam(name = "Database") String database,
+		@RequestParam(name = "User") String user,
+		@RequestParam(name = "Password") String password);
 }
