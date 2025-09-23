@@ -19,7 +19,7 @@
 		<jaxb2-fluent-api.version>3.0</jaxb2-fluent-api.version>
 		<failsafe.version>3.3.2</failsafe.version>
 		<jcifs.version>1.3.17</jcifs.version>
-		<jaxb-plugins.version>4.0.10</jaxb-plugins.version>
+		<jaxb-plugins.version>4.0.11</jaxb-plugins.version>
 	</properties>
 	<dependencies>
 		<!-- Test -->
