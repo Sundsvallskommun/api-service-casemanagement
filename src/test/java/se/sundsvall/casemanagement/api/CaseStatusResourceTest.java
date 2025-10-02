@@ -36,7 +36,7 @@ class CaseStatusResourceTest {
 	private static final String ORG_PATH = "/" + MUNICIPALITY_ID + "/organization/{organizationNumber}/cases/status";
 
 	private static final String PATH = "/" + MUNICIPALITY_ID + "/cases/{externalCaseId}/status";
-	private static final String CASE_DATA_ORGANIZATION_FILTER = "stakeholders.organizationNumber:'%s'";
+	private static final String CASE_DATA_ORGANIZATION_FILTER = "exists(stakeholders.organizationNumber:'%s' and stakeholders.roles:'APPLICANT')";
 
 	@MockitoBean
 	private ByggrService byggrService;

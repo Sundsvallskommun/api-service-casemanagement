@@ -24,7 +24,7 @@ import se.sundsvall.casemanagement.integration.party.PartyIntegration;
 @Service
 public class StatusService {
 
-	static final String CASE_DATA_ORGANIZATION_FILTER = "stakeholders.organizationNumber:'%s'";
+	static final String CASE_DATA_ORGANIZATION_FILTER = "exists(stakeholders.organizationNumber:'%s' and stakeholders.roles:'%s')";
 	static final String CASE_DATA_PERSON_FILTER = "exists(stakeholders.personId:'%s' and stakeholders.roles:'%s')";
 
 	private static final Logger LOG = Logger.getLogger(StatusService.class.getName());
@@ -53,7 +53,7 @@ public class StatusService {
 	public List<CaseStatusDTO> getStatusByOrgNr(final String municipalityId, final String organizationNumber) {
 		final var byggrFuture = getByggrStatus(municipalityId, organizationNumber, ENTERPRISE);
 		final var ecosFuture = getEcosStatus(municipalityId, organizationNumber, ENTERPRISE);
-		final var caseDataFuture = getCaseDataStatus(municipalityId, CASE_DATA_ORGANIZATION_FILTER.formatted(organizationNumber));
+		final var caseDataFuture = getCaseDataStatus(municipalityId, CASE_DATA_ORGANIZATION_FILTER.formatted(organizationNumber, CASE_DATA_STATUS_ROLE_SEARCH));
 
 		return Stream.of(byggrFuture, ecosFuture, caseDataFuture)
 			.map(CompletableFuture::join)
@@ -94,7 +94,7 @@ public class StatusService {
 			final var legalId = partyTypeAndLegalIdMap.get(ENTERPRISE);
 
 			final var alktFuture = getAlktStatus(municipalityId, partyId);
-			final var caseDataFuture = getCaseDataStatus(municipalityId, CASE_DATA_ORGANIZATION_FILTER.formatted(legalId));
+			final var caseDataFuture = getCaseDataStatus(municipalityId, CASE_DATA_ORGANIZATION_FILTER.formatted(legalId, CASE_DATA_STATUS_ROLE_SEARCH));
 			final var byggrFuture = getByggrStatus(municipalityId, legalId, ENTERPRISE);
 			final var ecosFuture = getEcosStatus(municipalityId, legalId, ENTERPRISE);
 
