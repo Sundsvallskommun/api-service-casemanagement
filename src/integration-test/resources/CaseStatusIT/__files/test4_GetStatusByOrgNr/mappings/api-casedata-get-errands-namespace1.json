@@ -8,7 +8,7 @@
 		"method": "GET",
 		"queryParameters": {
 			"filter": {
-				"equalTo": "stakeholders.organizationNumber:'123456-4321'"
+				"equalTo": "exists(stakeholders.organizationNumber:'123456-4321' and stakeholders.roles:'APPLICANT')"
 			},
 			"size": {
 				"equalTo": "1000"

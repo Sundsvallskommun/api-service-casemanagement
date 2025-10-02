@@ -64,14 +64,14 @@ class StatusServiceTest {
 		final var caseStatuses = List.of(createCaseStatusDTO(), createCaseStatusDTO());
 		when(byggrServiceMock.getByggrStatusByLegalId(ORGANIZATION_NUMBER, ENTERPRISE, MUNICIPALITY_ID)).thenReturn(CompletableFuture.completedFuture(caseStatuses));
 		when(ecosServiceMock.getEcosStatusByLegalId(ORGANIZATION_NUMBER, ENTERPRISE, MUNICIPALITY_ID)).thenReturn(CompletableFuture.completedFuture(caseStatuses));
-		when(caseDataServiceMock.getStatusesByFilter(CASE_DATA_ORGANIZATION_FILTER.formatted(ORGANIZATION_NUMBER), MUNICIPALITY_ID)).thenReturn(CompletableFuture.completedFuture(caseStatuses));
+		when(caseDataServiceMock.getStatusesByFilter(CASE_DATA_ORGANIZATION_FILTER.formatted(ORGANIZATION_NUMBER, CASE_DATA_STATUS_ROLE_SEARCH), MUNICIPALITY_ID)).thenReturn(CompletableFuture.completedFuture(caseStatuses));
 
 		final var result = statusService.getStatusByOrgNr(MUNICIPALITY_ID, ORGANIZATION_NUMBER);
 
 		assertThat(result).hasSize(6);
 		verify(byggrServiceMock).getByggrStatusByLegalId(ORGANIZATION_NUMBER, ENTERPRISE, MUNICIPALITY_ID);
 		verify(ecosServiceMock).getEcosStatusByLegalId(ORGANIZATION_NUMBER, ENTERPRISE, MUNICIPALITY_ID);
-		verify(caseDataServiceMock).getStatusesByFilter(CASE_DATA_ORGANIZATION_FILTER.formatted(ORGANIZATION_NUMBER), MUNICIPALITY_ID);
+		verify(caseDataServiceMock).getStatusesByFilter(CASE_DATA_ORGANIZATION_FILTER.formatted(ORGANIZATION_NUMBER, CASE_DATA_STATUS_ROLE_SEARCH), MUNICIPALITY_ID);
 		verifyNoMoreInteractions(byggrServiceMock, ecosServiceMock, caseDataServiceMock);
 		verifyNoInteractions(caseMappingServiceMock, partyIntegrationMock);
 	}
@@ -134,7 +134,7 @@ class StatusServiceTest {
 
 		when(partyIntegrationMock.getLegalIdByPartyId(MUNICIPALITY_ID, PARTY_ID)).thenReturn(partyTypeStringMap);
 		when(alkTServiceMock.getStatusesByPartyId(PARTY_ID, MUNICIPALITY_ID)).thenReturn(CompletableFuture.completedFuture(List.of(caseStatusDTO)));
-		when(caseDataServiceMock.getStatusesByFilter(CASE_DATA_ORGANIZATION_FILTER.formatted(ORGANIZATION_NUMBER), MUNICIPALITY_ID)).thenReturn(CompletableFuture.completedFuture(List.of(caseStatusDTO)));
+		when(caseDataServiceMock.getStatusesByFilter(CASE_DATA_ORGANIZATION_FILTER.formatted(ORGANIZATION_NUMBER, CASE_DATA_STATUS_ROLE_SEARCH), MUNICIPALITY_ID)).thenReturn(CompletableFuture.completedFuture(List.of(caseStatusDTO)));
 		when(byggrServiceMock.getByggrStatusByLegalId(ORGANIZATION_NUMBER, ENTERPRISE, MUNICIPALITY_ID)).thenReturn(CompletableFuture.completedFuture(List.of(caseStatusDTO)));
 		when(ecosServiceMock.getEcosStatusByLegalId(ORGANIZATION_NUMBER, ENTERPRISE, MUNICIPALITY_ID)).thenReturn(CompletableFuture.completedFuture(List.of(caseStatusDTO)));
 
@@ -142,7 +142,7 @@ class StatusServiceTest {
 
 		assertThat(result).hasSize(4);
 		verify(partyIntegrationMock).getLegalIdByPartyId(MUNICIPALITY_ID, PARTY_ID);
-		verify(caseDataServiceMock).getStatusesByFilter(CASE_DATA_ORGANIZATION_FILTER.formatted(ORGANIZATION_NUMBER), MUNICIPALITY_ID);
+		verify(caseDataServiceMock).getStatusesByFilter(CASE_DATA_ORGANIZATION_FILTER.formatted(ORGANIZATION_NUMBER, CASE_DATA_STATUS_ROLE_SEARCH), MUNICIPALITY_ID);
 		verify(byggrServiceMock).getByggrStatusByLegalId(ORGANIZATION_NUMBER, ENTERPRISE, MUNICIPALITY_ID);
 		verify(ecosServiceMock).getEcosStatusByLegalId(ORGANIZATION_NUMBER, ENTERPRISE, MUNICIPALITY_ID);
 		verifyNoMoreInteractions(partyIntegrationMock, caseDataServiceMock, byggrServiceMock, ecosServiceMock);
