@@ -47,6 +47,7 @@ import arendeexport.Handelse;
 import arendeexport.HandelseIntressent;
 import arendeexport.IntressentAttention;
 import arendeexport.SaveNewHandelse;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -748,6 +749,7 @@ class ByggrMapperTest {
 		arende.setHandelseLista(new ArrayOfHandelse().withHandelse(new Handelse()
 			.withHandelseslag(BYGGR_HANDELSESLAG_KOMPLETTERANDE_BYGGLOVHANDLINGAR)
 			.withHandelsetyp(BYGGR_HANDELSETYP_BESLUT)
+			.withStartDatum(LocalDateTime.now())
 
 		));
 		final var caseMappings = List.of(
@@ -762,6 +764,7 @@ class ByggrMapperTest {
 		// Assert
 		assertThat(result).isNotNull().hasNoNullFieldsOrPropertiesExcept("timestamp", "namespace");
 		assertThat(result.getStatus()).isEqualTo("KOMPBYGG");
+		assertThat(result.getTimestamp()).isCloseTo(LocalDateTime.now(), within(1, SECONDS));
 	}
 
 	@Test
@@ -771,6 +774,7 @@ class ByggrMapperTest {
 		final var arende = new Arende();
 		arende.setDnr("someDnr");
 		arende.setArendeId(123456);
+		arende.setAnkomstDatum(LocalDate.now());
 		final var caseMappings = List.of(
 			CaseMapping.builder()
 				.withCaseId("someCaseId")
@@ -782,6 +786,7 @@ class ByggrMapperTest {
 		var caseStatusDTO = ByggrMapper.toByggrStatus(arende, "someCaseId", caseMappings);
 		assertThat(caseStatusDTO).isNotNull().hasNoNullFieldsOrPropertiesExcept("timestamp", "namespace");
 		assertThat(caseStatusDTO.getStatus()).isEqualTo("Okänt");
+		assertThat(caseStatusDTO.getTimestamp()).isEqualTo(LocalDate.now().atStartOfDay());
 	}
 
 	@Test
@@ -792,6 +797,7 @@ class ByggrMapperTest {
 		arende.setDnr("someDnr");
 		arende.setArendeId(123456);
 		arende.setStatus(BYGGR_STATUS_AVSLUTAT);
+		arende.setAnkomstDatum(LocalDate.now());
 		arende.setHandelseLista(new ArrayOfHandelse().withHandelse(new Handelse()
 			.withHandelseslag(BYGGR_HANDELSESLAG_KOMPLETTERANDE_BYGGLOVHANDLINGAR)
 			.withHandelsetyp(BYGGR_HANDELSETYP_BESLUT)
@@ -809,6 +815,7 @@ class ByggrMapperTest {
 		// Assert
 		assertThat(result).isNotNull().hasNoNullFieldsOrPropertiesExcept("timestamp", "namespace");
 		assertThat(result.getStatus()).isEqualTo("Avslutat");
+		assertThat(result.getTimestamp()).isEqualTo(LocalDate.now().atStartOfDay());
 	}
 
 	@Test
