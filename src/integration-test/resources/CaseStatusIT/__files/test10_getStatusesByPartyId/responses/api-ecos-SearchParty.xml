@@ -2,7 +2,7 @@
 	<s:Body>
 		<SearchPartyResponse xmlns="urn:Ecos.API.MinutMiljo.Service.V1">
 			<SearchPartyResult xmlns:a="urn:Ecos.API.MinutMiljo.DataContracts.V1"
-			  xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+				xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
 				<a:PartySvcDto i:type="a:PersonSvcDto">
 					<a:Addresses>
 						<a:PartyAddressSvcDto>
@@ -84,7 +84,7 @@
 									<a:ContactPathId>e19981ad-34b2-4e14-88f5-133f61ca85aa
 									</a:ContactPathId>
 									<a:Note i:nil="true" />
-									<a:Value>0701234567</a:Value>
+									<a:Value>0701740605</a:Value>
 								</a:ContactInfoItemSvcDto>
 							</a:ContactDetails>
 							<a:ContactId>e19981ad-34b2-4e14-88f5-133f61ca85aa</a:ContactId>
