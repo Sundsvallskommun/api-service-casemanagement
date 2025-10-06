@@ -50,7 +50,7 @@ public abstract class StakeholderDTO {
 	@Schema(description = "Stakeholder phone number", example = "060123456")
 	private String phoneNumber;
 
-	@Schema(description = "Stakeholder cellphone number", example = "0701234567")
+	@Schema(description = "Stakeholder cellphone number", example = "0701740605")
 	private String cellphoneNumber;
 
 	@Email
