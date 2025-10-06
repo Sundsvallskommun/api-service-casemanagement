@@ -407,7 +407,9 @@ public final class ByggrMapper {
 
 	static CaseStatusDTO toByggrStatus(final Arende arende, final String externalCaseId, final List<CaseMapping> caseMappingList) {
 		final var caseStatusDTO = buildCaseStatusDTO(arende, externalCaseId, caseMappingList);
-
+		final var ankomstDatum = Optional.ofNullable(arende.getAnkomstDatum()).map(LocalDate::atStartOfDay).orElse(null);
+		// Timestamp is set to ankomstdatum as default, but will be updated if a relevant handelse is found.
+		caseStatusDTO.setTimestamp(ankomstDatum);
 		if (isCaseClosed(arende)) {
 			caseStatusDTO.setStatus(arende.getStatus());
 			return caseStatusDTO;
@@ -420,7 +422,7 @@ public final class ByggrMapper {
 				caseStatusDTO.setStatus(getHandelseStatus(handelse.getHandelsetyp(), handelse.getHandelseslag(), handelse.getHandelseutfall()));
 
 				if (caseStatusDTO.getStatus() != null) {
-					caseStatusDTO.setTimestamp(handelse.getStartDatum());
+					caseStatusDTO.setTimestamp(Optional.ofNullable(handelse.getStartDatum()).orElse(ankomstDatum));
 					return caseStatusDTO;
 				}
 			}
