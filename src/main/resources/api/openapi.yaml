@@ -7,7 +7,7 @@ info:
     url: https://opensource.org/licenses/MIT
   version: "8.3"
 servers:
-  - url: http://localhost:52274
+  - url: http://localhost:52580
     description: Generated server url
 tags:
   - name: Status
@@ -803,6 +803,7 @@ components:
         emailAddress:
           type: string
           description: Stakeholder emailaddress
+          format: email
           example: test.testorsson@sundsvall.se
         cellphoneNumber:
           type: string
@@ -829,6 +830,12 @@ components:
     Problem:
       type: object
       properties:
+        title:
+          type: string
+        detail:
+          type: string
+        status:
+          $ref: "#/components/schemas/StatusType"
         instance:
           type: string
           format: uri
@@ -839,12 +846,6 @@ components:
           type: object
           additionalProperties:
             type: object
-        status:
-          $ref: "#/components/schemas/StatusType"
-        title:
-          type: string
-        detail:
-          type: string
     StatusType:
       type: object
       properties:
@@ -893,6 +894,8 @@ components:
           type: string
         message:
           type: string
+        detail:
+          type: string
         instance:
           type: string
           format: uri
@@ -900,8 +903,6 @@ components:
           type: object
           additionalProperties:
             type: object
-        detail:
-          type: string
         suppressed:
           type: array
           items:
@@ -964,6 +965,12 @@ components:
                 type: boolean
         message:
           type: string
+        title:
+          type: string
+        detail:
+          type: string
+        status:
+          $ref: "#/components/schemas/StatusType"
         instance:
           type: string
           format: uri
@@ -974,12 +981,6 @@ components:
           type: object
           additionalProperties:
             type: object
-        status:
-          $ref: "#/components/schemas/StatusType"
-        title:
-          type: string
-        detail:
-          type: string
         suppressed:
           type: array
           items:
