@@ -50,7 +50,13 @@ public enum StakeholderRole {
 	SECTION_HEAD("Sektionschef"),
 	ALTERNATE("Suppleant"),
 	REPORTER("Anmälare"),
-	SECRETARY("Sekreterare");
+	SECRETARY("Sekreterare"),
+
+	RELATIVE("Anhörig"),
+	LEGAL_GUARDIAN("Vårdnadshavare"),
+	LEGAL_REPRESENTATIVE("Juridiskt ombud"),
+	HEALTHCARE_PERSONNEL("Sjukvårdspersonal"),
+	OTHER("Annan");
 
 	private final String text;
 
