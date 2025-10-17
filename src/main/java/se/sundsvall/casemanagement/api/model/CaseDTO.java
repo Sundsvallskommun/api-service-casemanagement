@@ -34,6 +34,8 @@ import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MARKLOV
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_APPLICATION_FOR_ROAD_ALLOWANCE;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_BUILDING_PERMIT;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_BUY_LAND_FROM_THE_MUNICIPALITY;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_BUY_LAND_FROM_THE_MUNICIPALITY_BUSINESS;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_BUY_LAND_FROM_THE_MUNICIPALITY_PRIVATE;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_BUY_SMALL_HOUSE_PLOT;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_EARLY_DIALOG_PLAN_NOTIFICATION;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_EASEMENT;
@@ -56,8 +58,6 @@ import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_REQ
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_RETURNED_TO_CONTACT_SUNDSVALL;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_ROAD_ASSOCIATION;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_SELL_LAND_TO_THE_MUNICIPALITY;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_SELL_LAND_TO_THE_MUNICIPALITY_BUSINESS;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_SELL_LAND_TO_THE_MUNICIPALITY_PRIVATE;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_SMALL_BOAT_HARBOR_DOCK_PORT;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_SQUARE_PLACE;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_STORMWATER;
@@ -204,8 +204,8 @@ import lombok.experimental.SuperBuilder;
 		MEX_ROAD_ASSOCIATION,
 		MEX_RETURNED_TO_CONTACT_SUNDSVALL,
 		MEX_SMALL_BOAT_HARBOR_DOCK_PORT,
-		MEX_SELL_LAND_TO_THE_MUNICIPALITY_PRIVATE,
-		MEX_SELL_LAND_TO_THE_MUNICIPALITY_BUSINESS
+		MEX_BUY_LAND_FROM_THE_MUNICIPALITY_BUSINESS,
+		MEX_BUY_LAND_FROM_THE_MUNICIPALITY_PRIVATE
 	})
 })
 @Data

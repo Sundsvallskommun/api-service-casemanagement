@@ -174,7 +174,7 @@ class CaseDataServiceTest {
 		verify(caseDataClientMock, times(1)).patchStatusOnErrand(eq(MUNICIPALITY_ID), eq(namespace), eq(errandId), statusArgumentCaptor.capture());
 
 		final var patchErrand = patchErrandArgumentCaptor.getValue();
-		assertThat(patchErrand.getCaseType()).isEqualTo(PatchErrand.CaseTypeEnum.fromValue(inputCase.getCaseType()));
+		assertThat(patchErrand.getCaseType()).isEqualTo(inputCase.getCaseType());
 		assertThat(patchErrand.getExternalCaseId()).isEqualTo(inputCase.getExternalCaseId());
 		assertThat(patchErrand.getDescription()).isEqualTo(inputCase.getDescription());
 		assertThat(patchErrand.getCaseTitleAddition()).isEqualTo(inputCase.getCaseTitleAddition());
