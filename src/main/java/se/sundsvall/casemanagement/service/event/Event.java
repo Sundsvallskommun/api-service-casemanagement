@@ -15,10 +15,13 @@ public abstract class Event<T extends Serializable> extends ApplicationEvent imp
 
 	private final String municipalityId;
 
-	protected Event(final Object source, final T payload, final String municipalityId) {
+	private final String requestId;
+
+	protected Event(final Object source, final T payload, final String municipalityId, final String requestId) {
 		super(source);
 		this.payload = payload;
 		this.municipalityId = municipalityId;
+		this.requestId = requestId;
 	}
 
 }

@@ -11,6 +11,7 @@ import static org.hamcrest.CoreMatchers.allOf;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Random;
 import javax.sql.rowset.serial.SerialClob;
 import org.hamcrest.MatcherAssert;
@@ -23,6 +24,7 @@ class CaseEntityTest {
 	@BeforeAll
 	static void setup() {
 		registerValueGenerator(() -> LocalDateTime.now().plusDays(new Random().nextInt()), LocalDateTime.class);
+		registerValueGenerator(() -> OffsetDateTime.now().plusDays(new Random().nextInt()), OffsetDateTime.class);
 	}
 
 	@Test
@@ -43,6 +45,8 @@ class CaseEntityTest {
 		final var ecosCaseDTO = EcosCaseDTO.builder().build();
 		final var dto = new SerialClob(ecosCaseDTO.toString().toCharArray());
 		final var municipalityId = "2281";
+		final var created = OffsetDateTime.now();
+		final var requestId = "requestId";
 
 		// Act
 		final var object = CaseEntity.builder()
@@ -50,6 +54,8 @@ class CaseEntityTest {
 			.withDeliveryStatus(deliveryStatus)
 			.withDto(dto)
 			.withMunicipalityId(municipalityId)
+			.withCreated(created)
+			.withRequestId(requestId)
 			.build();
 
 		// Assert
@@ -58,6 +64,8 @@ class CaseEntityTest {
 		assertThat(object.getDeliveryStatus()).isEqualTo(deliveryStatus);
 		assertThat(object.getDto()).isEqualTo(dto);
 		assertThat(object.getMunicipalityId()).isEqualTo(municipalityId);
+		assertThat(object.getCreated()).isEqualTo(created);
+		assertThat(object.getRequestId()).isEqualTo(requestId);
 	}
 
 	@Test
