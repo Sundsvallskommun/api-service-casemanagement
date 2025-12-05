@@ -1,5 +1,7 @@
 package se.sundsvall.casemanagement.integration.db.model;
 
+import static org.hibernate.annotations.TimeZoneStorageType.NORMALIZE;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -9,12 +11,14 @@ import jakarta.persistence.Index;
 import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import java.sql.Clob;
+import java.time.OffsetDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.With;
 import org.hibernate.Length;
+import org.hibernate.annotations.TimeZoneStorage;
 
 @Entity
 @Data
@@ -40,5 +44,12 @@ public class CaseEntity {
 	@Column(columnDefinition = "varchar(255)")
 	@Enumerated(EnumType.STRING)
 	private DeliveryStatus deliveryStatus;
+
+	@Column(name = "request_id")
+	private String requestId;
+
+	@Column(name = "created")
+	@TimeZoneStorage(NORMALIZE)
+	private OffsetDateTime created;
 
 }

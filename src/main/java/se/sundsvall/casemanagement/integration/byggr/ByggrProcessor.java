@@ -23,6 +23,7 @@ import se.sundsvall.casemanagement.service.event.IncomingByggrCase;
 import se.sundsvall.casemanagement.service.event.UpdateByggrCase;
 import se.sundsvall.casemanagement.util.EnvironmentUtil;
 import se.sundsvall.casemanagement.util.Processor;
+import se.sundsvall.dept44.requestid.RequestId;
 
 @Component
 class ByggrProcessor extends Processor {
@@ -58,6 +59,7 @@ class ByggrProcessor extends Processor {
 
 	@EventListener(UpdateByggrCase.class)
 	public void handleUpdateByggrCase(final UpdateByggrCase event) throws IOException, SQLException {
+		RequestId.init(event.getRequestId());
 		final var caseEntity = caseRepository.findByIdAndMunicipalityId(event.getPayload().getExternalCaseId(), event.getMunicipalityId()).orElse(null);
 
 		if (caseEntity == null) {
@@ -79,6 +81,7 @@ class ByggrProcessor extends Processor {
 
 	@EventListener(IncomingByggrCase.class)
 	public void handleIncomingErrand(final IncomingByggrCase event) throws SQLException, IOException {
+		RequestId.init(event.getRequestId());
 
 		final var caseEntity = caseRepository.findByIdAndMunicipalityId(event.getPayload().getExternalCaseId(), event.getMunicipalityId()).orElse(null);
 

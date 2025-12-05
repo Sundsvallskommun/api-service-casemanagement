@@ -20,6 +20,7 @@ import se.sundsvall.casemanagement.integration.oepintegrator.OepIntegratorClient
 import se.sundsvall.casemanagement.service.event.IncomingEcosCase;
 import se.sundsvall.casemanagement.util.EnvironmentUtil;
 import se.sundsvall.casemanagement.util.Processor;
+import se.sundsvall.dept44.requestid.RequestId;
 
 @Component
 class EcosProcessor extends Processor {
@@ -51,6 +52,7 @@ class EcosProcessor extends Processor {
 
 	@EventListener(IncomingEcosCase.class)
 	public void handleIncomingErrand(final IncomingEcosCase event) throws SQLException, IOException {
+		RequestId.init(event.getRequestId());
 
 		final var caseEntity = caseRepository.findByIdAndMunicipalityId(event.getPayload().getExternalCaseId(), event.getMunicipalityId()).orElse(null);
 
