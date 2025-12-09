@@ -66,7 +66,7 @@ class CaseResource {
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
 		@Schema(oneOf = {
 			ByggRCaseDTO.class, EcosCaseDTO.class, OtherCaseDTO.class
-		}, example = POST_CASES_REQUEST_BODY_EXAMPLE) @RequestBody @Valid final CaseDTO caseDTOInput) {
+		}, examples = POST_CASES_REQUEST_BODY_EXAMPLE) @RequestBody @Valid final CaseDTO caseDTOInput) {
 
 		// Validates that it doesn't exist any case with the same oep-ID and municipalityId
 		caseMappingService.validateUniqueCase(caseDTOInput, municipalityId);
@@ -84,7 +84,7 @@ class CaseResource {
 		@Parameter(name = "externalCaseId", description = "External case id", example = "1234") @PathVariable final String externalCaseId,
 		@Schema(oneOf = {
 			ByggRCaseDTO.class, EcosCaseDTO.class, OtherCaseDTO.class
-		}, example = POST_CASES_REQUEST_BODY_EXAMPLE) @RequestBody @Valid final CaseDTO caseDTOInput) {
+		}, examples = POST_CASES_REQUEST_BODY_EXAMPLE) @RequestBody @Valid final CaseDTO caseDTOInput) {
 
 		if (caseDTOInput instanceof final OtherCaseDTO otherCaseDTO) {
 			caseDataService.putErrand(Long.valueOf(caseMappingService.getCaseMapping(externalCaseId, municipalityId).getCaseId()), otherCaseDTO, municipalityId);

@@ -17,31 +17,31 @@ import se.sundsvall.casemanagement.api.model.enums.SystemType;
 @Schema(description = "Case status model")
 public class CaseStatusDTO {
 
-	@Schema(description = "The system type", example = "BYGGR")
+	@Schema(description = "The system type", examples = "BYGGR")
 	private SystemType system;
 
-	@Schema(description = "The case type", example = "BYGGLOV")
+	@Schema(description = "The case type", examples = "BYGGLOV")
 	private String caseType;
 
-	@Schema(description = "The external case id", example = "123456")
+	@Schema(description = "The external case id", examples = "123456")
 	private String externalCaseId;
 
-	@Schema(description = "The case id", example = "caa230c6-abb4-4592-ad9a-34e263c2787d")
+	@Schema(description = "The case id", examples = "caa230c6-abb4-4592-ad9a-34e263c2787d")
 	private String caseId;
 
-	@Schema(description = "Case status", example = "Pågående")
+	@Schema(description = "Case status", examples = "Pågående")
 	private String status;
 
-	@Schema(description = "Service name", example = "Nybyggnad - Ansökan om bygglov")
+	@Schema(description = "Service name", examples = "Nybyggnad - Ansökan om bygglov")
 	private String serviceName;
 
-	@Schema(description = "The timestamp", example = "2022-01-01T12:00:00")
+	@Schema(description = "The timestamp", examples = "2022-01-01T12:00:00")
 	private LocalDateTime timestamp;
 
-	@Schema(description = "The namespace", example = "NAMESPACE")
+	@Schema(description = "The namespace", examples = "NAMESPACE")
 	private String namespace;
 
-	@Schema(description = "The errand number", example = "BYGG 2022-000003")
+	@Schema(description = "The errand number", examples = "BYGG 2022-000003")
 	private String errandNumber;
 
 }

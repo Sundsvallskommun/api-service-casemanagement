@@ -27,16 +27,16 @@ public class FacilityDTO implements Serializable {
 
 	private static final long serialVersionUID = -2904255346222794001L;
 
-	@Schema(description = "Description of the facility", example = "En fritextbeskrivning av facility.")
+	@Schema(description = "Description of the facility", examples = "En fritextbeskrivning av facility.")
 	private String description;
 
-	@Schema(description = "The type of facility", example = "GARAGE")
+	@Schema(description = "The type of facility", examples = "GARAGE")
 	private String facilityType;
 
-	@Schema(description = "The name on the sign.", example = "Sundsvalls testfabrik")
+	@Schema(description = "The name on the sign.", examples = "Sundsvalls testfabrik")
 	private String facilityCollectionName;
 
-	@Schema(description = "Is it a main facility?", example = "true")
+	@Schema(description = "Is it a main facility?", examples = "true")
 	private boolean mainFacility;
 
 	@NotNull(groups = ByggRConstraints.class)

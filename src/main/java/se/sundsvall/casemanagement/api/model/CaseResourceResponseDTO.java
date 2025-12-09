@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Schema(description = "Case resource response")
 public class CaseResourceResponseDTO {
 
-	@Schema(description = "The case id", example = "1234")
+	@Schema(description = "The case id", examples = "1234")
 	private String caseId;
 
 }

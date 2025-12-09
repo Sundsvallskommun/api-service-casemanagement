@@ -51,7 +51,7 @@ class CaseStatusResource {
 	@Operation(description = "Returns the latest status for each of the cases where the specified organization has the role \"applicant\".")
 	ResponseEntity<List<CaseStatusDTO>> getStatusByOrgNr(
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
-		@Pattern(regexp = ORGNR_PATTERN_REGEX, message = ORGNR_PATTERN_MESSAGE) @Schema(description = "Organization number with 10 or 12 digits.", example = "20220622-2396") @Parameter(name = "organizationNumber",
+		@Pattern(regexp = ORGNR_PATTERN_REGEX, message = ORGNR_PATTERN_MESSAGE) @Schema(description = "Organization number with 10 or 12 digits.", examples = "20220622-2396") @Parameter(name = "organizationNumber",
 			description = "OrganizationNumber") @PathVariable final String organizationNumber) {
 		final var caseStatuses = statusService.getStatusByOrgNr(municipalityId, organizationNumber);
 

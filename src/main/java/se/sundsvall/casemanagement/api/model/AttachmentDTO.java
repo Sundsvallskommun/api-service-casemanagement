@@ -17,26 +17,26 @@ import se.sundsvall.casemanagement.api.validation.ValidAttachmentCategory;
 public class AttachmentDTO {
 
 	@ValidAttachmentCategory
-	@Schema(description = "The attachment category", example = "DOCUMENT")
+	@Schema(description = "The attachment category", examples = "DOCUMENT")
 	private String category;
 
 	@NotBlank
-	@Schema(description = "The attachment name", example = "Attachment name")
+	@Schema(description = "The attachment name", examples = "Attachment name")
 	private String name;
 
-	@Schema(description = "A note on an attachment", example = "A note on an attachment.")
+	@Schema(description = "A note on an attachment", examples = "A note on an attachment.")
 	private String note;
 
 	@NotBlank
-	@Schema(description = "The file extension", example = ".pdf")
+	@Schema(description = "The file extension", examples = ".pdf")
 	private String extension;
 
 	@NotBlank
-	@Schema(description = "the mime type of the attachment", example = "application/pdf")
+	@Schema(description = "the mime type of the attachment", examples = "application/pdf")
 	private String mimeType;
 
 	@NotBlank
-	@Schema(type = "string", format = "byte", description = "Base64-encoded file (plain text)", example = "dGVzdA==")
+	@Schema(type = "string", format = "byte", description = "Base64-encoded file (plain text)", examples = "dGVzdA==")
 	private String file;
 
 	@Schema(description = "Extra parameters for the attachment")

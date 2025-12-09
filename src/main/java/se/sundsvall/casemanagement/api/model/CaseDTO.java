@@ -219,17 +219,17 @@ import lombok.experimental.SuperBuilder;
 public abstract class CaseDTO {
 
 	@NotBlank
-	@Schema(description = "Case ID from the client.", example = "caa230c6-abb4-4592-ad9a-34e263c2787b")
+	@Schema(description = "Case ID from the client.", examples = "caa230c6-abb4-4592-ad9a-34e263c2787b")
 	private String externalCaseId;
 
 	@NotNull
-	@Schema(description = "The case type", example = "NYBYGGNAD_ANSOKAN_OM_BYGGLOV")
+	@Schema(description = "The case type", examples = "NYBYGGNAD_ANSOKAN_OM_BYGGLOV")
 	private String caseType;
 
-	@Schema(description = "Some description of the case.", example = "En fritextbeskrivning av case.")
+	@Schema(description = "Some description of the case.", examples = "En fritextbeskrivning av case.")
 	private String description;
 
-	@Schema(description = "Additions to the case title. Right now only applicable to cases of CaseType: NYBYGGNAD_ANSOKAN_OM_BYGGLOV.", example = "Eldstad/rökkanal, Skylt")
+	@Schema(description = "Additions to the case title. Right now only applicable to cases of CaseType: NYBYGGNAD_ANSOKAN_OM_BYGGLOV.", examples = "Eldstad/rökkanal, Skylt")
 	private String caseTitleAddition;
 
 	@NotEmpty

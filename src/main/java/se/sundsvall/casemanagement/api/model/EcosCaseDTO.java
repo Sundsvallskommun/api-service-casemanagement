@@ -29,12 +29,12 @@ public class EcosCaseDTO extends CaseDTO implements Serializable {
 
 	private static final long serialVersionUID = -3388775057880057355L;
 
-	@Schema(description = "Start date for the business.", format = "date", example = "2022-01-01")
+	@Schema(description = "Start date for the business.", format = "date", examples = "2022-01-01")
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	private LocalDate startDate;
 
 	@FutureOrPresent
-	@Schema(description = "End date of the business if it is time-limited.", format = "date", example = "2022-06-01")
+	@Schema(description = "End date of the business if it is time-limited.", format = "date", examples = "2022-06-01")
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	private LocalDate endDate;
 

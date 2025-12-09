@@ -28,34 +28,34 @@ public class AddressDTO implements Serializable {
 	@Schema(description = "An address can have one or more address categories. For example, it can be the same address that is to be used for mail and invoices.")
 	private List<AddressCategory> addressCategories;
 
-	@Schema(example = "Testargatan")
+	@Schema(examples = "Testargatan")
 	private String street;
 
-	@Schema(example = "18")
+	@Schema(examples = "18")
 	private String houseNumber;
 
-	@Schema(example = "123 45")
+	@Schema(examples = "123 45")
 	private String postalCode;
 
-	@Schema(example = "Sundsvall")
+	@Schema(examples = "Sundsvall")
 	private String city;
 
-	@Schema(example = Constants.SWEDEN)
+	@Schema(examples = Constants.SWEDEN)
 	private String country;
 
-	@Schema(description = "c/o", example = "Test Testorsson")
+	@Schema(description = "c/o", examples = "Test Testorsson")
 	private String careOf;
 
-	@Schema(example = "Test Testorsson")
+	@Schema(examples = "Test Testorsson")
 	private String attention;
 
 	@NotBlank(groups = {
 		EcosConstraints.class, ByggRConstraints.class
 	})
-	@Schema(example = "SUNDSVALL BALDER 7:2")
+	@Schema(examples = "SUNDSVALL BALDER 7:2")
 	private String propertyDesignation;
 
-	@Schema(example = "LGH 1001")
+	@Schema(examples = "LGH 1001")
 	private String appartmentNumber;
 
 	@Schema(description = "The address coordinates")
