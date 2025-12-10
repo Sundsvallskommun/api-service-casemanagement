@@ -1,7 +1,9 @@
 
     create table CaseEntity (
+        created datetime(6),
         id varchar(255) not null,
         municipalityId varchar(255),
+        request_id varchar(255),
         deliveryStatus varchar(255),
         dto longtext,
         primary key (id)

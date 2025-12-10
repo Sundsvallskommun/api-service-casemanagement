@@ -37,6 +37,7 @@ import se.sundsvall.casemanagement.service.event.UpdateByggrCase;
 @ExtendWith(MockitoExtension.class)
 class ByggrProcessorTest {
 
+	private static final String REQUEST_ID = "requestId";
 	private static final String MUNICIPALITY_ID = "2281";
 
 	@Mock
@@ -56,7 +57,7 @@ class ByggrProcessorTest {
 
 	@Test
 	void testHandleUpdateByggRCase() throws SQLException, IOException {
-		final var event = new UpdateByggrCase(CaseService.class, createByggRCaseDTO(CaseType.ANDRING_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION), MUNICIPALITY_ID);
+		final var event = new UpdateByggrCase(CaseService.class, createByggRCaseDTO(CaseType.ANDRING_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION), MUNICIPALITY_ID, REQUEST_ID);
 
 		final var objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 		final var jsonString = objectMapper.writeValueAsString(event.getPayload());
@@ -75,7 +76,7 @@ class ByggrProcessorTest {
 
 	@Test
 	void testHandleUpdateByggRCaseNoErrandFound() throws SQLException, IOException {
-		final var event = new UpdateByggrCase(CaseService.class, new ByggRCaseDTO(), MUNICIPALITY_ID);
+		final var event = new UpdateByggrCase(CaseService.class, new ByggRCaseDTO(), MUNICIPALITY_ID, REQUEST_ID);
 
 		byggrProcessor.handleUpdateByggrCase(event);
 
@@ -87,7 +88,7 @@ class ByggrProcessorTest {
 
 	@Test
 	void testHandleIncomingErrand() throws SQLException, IOException {
-		final var event = new IncomingByggrCase(CaseService.class, createByggRCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION), MUNICIPALITY_ID);
+		final var event = new IncomingByggrCase(CaseService.class, createByggRCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION), MUNICIPALITY_ID, REQUEST_ID);
 
 		final var objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 		final var jsonString = objectMapper.writeValueAsString(event.getPayload());
@@ -106,7 +107,7 @@ class ByggrProcessorTest {
 
 	@Test
 	void testHandleIncomingErrandNoErrandFound() throws SQLException, IOException {
-		final var event = new IncomingByggrCase(CaseService.class, new ByggRCaseDTO(), MUNICIPALITY_ID);
+		final var event = new IncomingByggrCase(CaseService.class, new ByggRCaseDTO(), MUNICIPALITY_ID, REQUEST_ID);
 
 		byggrProcessor.handleIncomingErrand(event);
 
@@ -118,7 +119,7 @@ class ByggrProcessorTest {
 
 	@Test
 	void testHandleIncomingErrandMaximumFound() throws SQLException, IOException {
-		final var event = new IncomingByggrCase(CaseService.class, createByggRCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION), MUNICIPALITY_ID);
+		final var event = new IncomingByggrCase(CaseService.class, createByggRCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION), MUNICIPALITY_ID, REQUEST_ID);
 
 		final var objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 		final String jsonString = objectMapper.writeValueAsString(event.getPayload());

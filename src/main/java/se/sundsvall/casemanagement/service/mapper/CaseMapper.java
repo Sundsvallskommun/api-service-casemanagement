@@ -7,11 +7,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.sql.Clob;
 import java.sql.SQLException;
+import java.time.OffsetDateTime;
 import javax.sql.rowset.serial.SerialClob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.sundsvall.casemanagement.api.model.CaseDTO;
 import se.sundsvall.casemanagement.integration.db.model.CaseEntity;
+import se.sundsvall.dept44.requestid.RequestId;
 
 public final class CaseMapper {
 
@@ -29,6 +31,8 @@ public final class CaseMapper {
 			.withDto(toClob(dto))
 			.withMunicipalityId(municipalityId)
 			.withDeliveryStatus(PENDING)
+			.withRequestId(RequestId.get())
+			.withCreated(OffsetDateTime.now())
 			.build();
 	}
 

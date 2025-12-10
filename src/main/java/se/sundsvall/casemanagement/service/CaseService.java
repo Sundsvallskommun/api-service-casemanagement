@@ -15,6 +15,7 @@ import se.sundsvall.casemanagement.service.event.IncomingEcosCase;
 import se.sundsvall.casemanagement.service.event.IncomingOtherCase;
 import se.sundsvall.casemanagement.service.event.UpdateByggrCase;
 import se.sundsvall.casemanagement.service.util.Validator;
+import se.sundsvall.dept44.requestid.RequestId;
 
 @Service
 public class CaseService {
@@ -63,19 +64,19 @@ public class CaseService {
 	}
 
 	private void handleUpdateByggRCase(final ByggRCaseDTO byggRCaseDTO, final String municipalityId) {
-		eventPublisher.publishEvent(new UpdateByggrCase(this, byggRCaseDTO, municipalityId));
+		eventPublisher.publishEvent(new UpdateByggrCase(this, byggRCaseDTO, municipalityId, RequestId.get()));
 	}
 
 	private void handleByggRCase(final ByggRCaseDTO byggRCaseDTO, final String municipalityId) {
-		eventPublisher.publishEvent(new IncomingByggrCase(this, byggRCaseDTO, municipalityId));
+		eventPublisher.publishEvent(new IncomingByggrCase(this, byggRCaseDTO, municipalityId, RequestId.get()));
 	}
 
 	private void handleEcosCase(final EcosCaseDTO ecosCaseDTO, final String municipalityId) {
-		eventPublisher.publishEvent(new IncomingEcosCase(this, ecosCaseDTO, municipalityId));
+		eventPublisher.publishEvent(new IncomingEcosCase(this, ecosCaseDTO, municipalityId, RequestId.get()));
 	}
 
 	private void handleOtherCase(final OtherCaseDTO otherCaseDTO, final String municipalityId) {
-		eventPublisher.publishEvent(new IncomingOtherCase(this, otherCaseDTO, municipalityId));
+		eventPublisher.publishEvent(new IncomingOtherCase(this, otherCaseDTO, municipalityId, RequestId.get()));
 	}
 
 }
