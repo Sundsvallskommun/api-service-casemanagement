@@ -19,14 +19,14 @@ import lombok.experimental.SuperBuilder;
 public class OrganizationDTO extends StakeholderDTO {
 
 	@NotBlank
-	@Schema(description = "Organization name", example = "Sundsvalls testfabrik")
+	@Schema(description = "Organization name", examples = "Sundsvalls testfabrik")
 	private String organizationName;
 
 	@NotBlank
-	@Schema(description = "Organization number with 10 or 12 digits.", example = "20220622-2396")
+	@Schema(description = "Organization number with 10 or 12 digits.", examples = "20220622-2396")
 	private String organizationNumber;
 
-	@Schema(description = "The authorized signatory", example = "Test Testorsson")
+	@Schema(description = "The authorized signatory", examples = "Test Testorsson")
 	private String authorizedSignatory;
 
 }

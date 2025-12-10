@@ -39,7 +39,7 @@ import se.sundsvall.casemanagement.api.validation.EcosStakeholderRole;
 public abstract class StakeholderDTO {
 
 	@NotNull
-	@Schema(description = "The type of stakeholder", example = "PERSON")
+	@Schema(description = "The type of stakeholder", examples = "PERSON")
 	private StakeholderType type;
 
 	@Schema(description = "A stakeholder can have one or more roles.", enumAsRef = true)
@@ -47,14 +47,14 @@ public abstract class StakeholderDTO {
 	@ByggRStakeholderRole(groups = ByggRConstraints.class)
 	private List<String> roles;
 
-	@Schema(description = "Stakeholder phone number", example = "060123456")
+	@Schema(description = "Stakeholder phone number", examples = "060123456")
 	private String phoneNumber;
 
-	@Schema(description = "Stakeholder cellphone number", example = "0701740605")
+	@Schema(description = "Stakeholder cellphone number", examples = "0701740605")
 	private String cellphoneNumber;
 
 	@Email
-	@Schema(description = "Stakeholder emailaddress", example = "test.testorsson@sundsvall.se")
+	@Schema(description = "Stakeholder emailaddress", examples = "test.testorsson@sundsvall.se")
 	private String emailAddress;
 
 	@Valid

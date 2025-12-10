@@ -26,7 +26,7 @@ public class ByggRCaseDTO extends CaseDTO implements Serializable {
 
 	private static final long serialVersionUID = 1688217969349003646L;
 
-	@Schema(description = "The case diary number", example = "2021-1234")
+	@Schema(description = "The case diary number", examples = "2021-1234")
 	private String diaryNumber;
 
 	@NotEmpty(groups = ByggRFacilityConstraints.class)
@@ -35,6 +35,6 @@ public class ByggRCaseDTO extends CaseDTO implements Serializable {
 	private List<@Valid FacilityDTO> facilities;
 
 	@Null
-	@Schema(description = "The municipality ID for the case", example = "1234", accessMode = Schema.AccessMode.READ_ONLY)
+	@Schema(description = "The municipality ID for the case", examples = "1234", accessMode = Schema.AccessMode.READ_ONLY)
 	private String municipalityId;
 }

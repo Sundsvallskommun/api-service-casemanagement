@@ -10,7 +10,7 @@ import lombok.Getter;
  *
  */
 @Getter
-@Schema(description = "Case types", example = NYBYGGNAD_ANSOKAN_OM_BYGGLOV)
+@Schema(description = "Case types", examples = NYBYGGNAD_ANSOKAN_OM_BYGGLOV)
 public enum CaseType {
 
 	// =================== Byggr ===================

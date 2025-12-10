@@ -50,8 +50,8 @@ class OpenApiSpecificationIT {
 		final var existingOpenApiSpecification = ResourceUtils.asString(openApiResource);
 		final var currentOpenApiSpecification = getCurrentOpenApiSpecification();
 
-		writeString(Path.of("target/api.yaml"), currentOpenApiSpecification);
-
+		writeString(Path.of("target/openapi.yml"), currentOpenApiSpecification);
+		
 		assertThatJson(toJson(currentOpenApiSpecification))
 			.withOptions(List.of(Option.IGNORING_ARRAY_ORDER))
 			.whenIgnoringPaths("servers")
@@ -74,8 +74,8 @@ class OpenApiSpecificationIT {
 	/**
 	 * Attempts to convert the given YAML (no YAML-check...) to JSON.
 	 *
-	 * @param  yaml the YAML to convert
-	 * @return      a JSON string
+	 * @param yaml the YAML to convert
+	 * @return a JSON string
 	 */
 	private String toJson(final String yaml) {
 		try {

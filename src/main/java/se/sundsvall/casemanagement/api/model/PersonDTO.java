@@ -21,19 +21,19 @@ import se.sundsvall.dept44.common.validators.annotation.ValidUuid;
 public class PersonDTO extends StakeholderDTO {
 
 	@NotBlank
-	@Schema(description = "The person's first name", example = "Test")
+	@Schema(description = "The person's first name", examples = "Test")
 	private String firstName;
 
 	@NotBlank
-	@Schema(description = "The person's last name", example = "Testorsson")
+	@Schema(description = "The person's last name", examples = "Testorsson")
 	private String lastName;
 
 	@NotBlank(groups = PersonConstraints.class)
 	@ValidUuid(nullable = true, message = "personId must be a valid GUID")
-	@Schema(description = "The person's id", example = "3ed5bc30-6308-4fd5-a5a7-78d7f96f4438")
+	@Schema(description = "The person's id", examples = "3ed5bc30-6308-4fd5-a5a7-78d7f96f4438")
 	private String personId;
 
-	@Schema(description = "The person's personal number", example = "20000101-1234", accessMode = Schema.AccessMode.READ_ONLY)
+	@Schema(description = "The person's personal number", examples = "20000101-1234", accessMode = Schema.AccessMode.READ_ONLY)
 	private String personalNumber;
 
 }
