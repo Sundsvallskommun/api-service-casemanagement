@@ -1,0 +1,27 @@
+{
+	"request": {
+		"method": "POST",
+		"queryParameters": {
+			"User": {
+				"matches": "\\w+"
+			},
+			"Database": {
+				"matches": "\\w+"
+			},
+			"Password": {
+				"matches": "\\w+"
+			}
+		},
+		"urlPath": "/fbservice/agare/search/lagfarenAgare/fastighet/fnr"
+	},
+	"response": {
+		"headers": {
+			"Server": "Kestrel",
+			"Date": "Tue, 27 Jul 2021 13:51:17 GMT",
+			"Content-Type": "application/json; charset=utf-8",
+			"X-Powered-By": "ASP.NET"
+		},
+		"body": "{\"statusKod\":0,\"statusMeddelande\":\"\",\"fel\":null,\"data\":[{\"fnr\":12345678,\"grupp\":[{\"identitetsnummer\":\"16123456-1234\",\"uuid\":\"e19981ad-34b2-4e14-88f5-133f61ca85aa\"}]}]}",
+		"status": 200
+	}
+}

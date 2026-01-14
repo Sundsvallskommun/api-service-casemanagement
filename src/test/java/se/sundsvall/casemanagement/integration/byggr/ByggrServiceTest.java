@@ -894,7 +894,7 @@ class ByggrServiceTest {
 		assertOrganizationDTO(applicant, applicants.getFirst());
 	}
 
-	// 1 applicant that is also propertyOwner + 1 more propertyOwner
+	// 1 applicant that is also a propertyOwner + 1 more propertyOwner
 	@Test
 	void testPopulateStakeholderListWithPropertyOwners2() {
 		final var input = createByggRCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
@@ -984,7 +984,7 @@ class ByggrServiceTest {
 			null);
 	}
 
-	// Test two persons with same personId - should generate handelse
+	// Test two persons with the same personId - should generate handelse
 	@Test
 	void testDoublePersonId() {
 		final String personId = UUID.randomUUID().toString();
@@ -1233,7 +1233,7 @@ class ByggrServiceTest {
 	}
 
 	/**
-	 * Test scenario where there is 1 person stakeholder. Should retrieve and return personal number from citizen service.
+	 * Test scenario where there is a 1-person stakeholder. Should retrieve and return personal number from citizen service.
 	 */
 	@Test
 	void extractStakeholderId1() {
@@ -1249,7 +1249,7 @@ class ByggrServiceTest {
 	}
 
 	/**
-	 * Test scenario where there is 2 stakeholders, one person and one organization. Should return the organization
+	 * Test a scenario where there are 2 stakeholders, one person, and one organization. Should return the organization
 	 * stakeholders organization number.
 	 */
 	@Test
@@ -1268,8 +1268,8 @@ class ByggrServiceTest {
 	}
 
 	/**
-	 * Test scenario where there is 2 stakeholders, one person and one organization and the organization number is in 10
-	 * digit format. Should add "16" prefix to the organization stakeholders organization number and return.
+	 * Test scenario where there are 2 stakeholders, one person, and one organization and the organization number is in
+	 * 10-digit format. Should add the "16" prefix to the organization stakeholders organization number and return.
 	 */
 	@Test
 	void extractStakeholderId3() {
@@ -1284,6 +1284,90 @@ class ByggrServiceTest {
 
 		assertThat(result).isEqualTo("16123456-1234");
 		verifyNoInteractions(partyIntegrationMock);
+	}
+
+	@Test
+	void getByggrIntressenter_withSundsvallsKommunAsPropertyOwner() {
+		// Arrange
+		final var byggRCase = TestUtil.createByggRCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+
+		// Create a property owner organization that is Sundsvalls kommun
+		final var sundsvallsKommunPropertyOwner = new OrganizationDTO();
+		sundsvallsKommunPropertyOwner.setOrganizationName("Sundsvalls kommun");
+		sundsvallsKommunPropertyOwner.setOrganizationNumber(Constants.SUNDSVALLS_KOMMUN_ORGNR_10);
+		sundsvallsKommunPropertyOwner.setRoles(List.of(StakeholderRole.PROPERTY_OWNER.toString()));
+
+		byggRCase.getStakeholders().add(sundsvallsKommunPropertyOwner);
+
+		// Mock GetIntressent response from ByggR
+		final var intressentFromByggr = new arendeexport.Intressent();
+		intressentFromByggr.setIntressentId(107445);
+		intressentFromByggr.setIntressentVersionId(214462);
+
+		final var getIntressentResponse2 = new arendeexport.GetIntressentResponse2();
+		final var arrayOfIntressent = new arendeexport.ArrayOfIntressent();
+		arrayOfIntressent.getIntressent().add(intressentFromByggr);
+		getIntressentResponse2.setIntressent(arrayOfIntressent);
+
+		final var getIntressentResponse = new arendeexport.GetIntressentResponse();
+		getIntressentResponse.setGetIntressentResult(getIntressentResponse2);
+
+		when(arendeExportClientMock.getIntressent(any())).thenReturn(getIntressentResponse);
+
+		// Act
+		final var result = byggrService.getByggrIntressenter(byggRCase);
+
+		// Assert
+		assertThat(result).isNotNull();
+		assertThat(result.getIntressent()).isNotEmpty();
+
+		// Find the Sundsvalls kommun intressent in the result
+		final var sundsvallsKommunIntressent = result.getIntressent().stream()
+			.filter(i -> i.getIntressentId() != null && i.getIntressentId().equals(107445))
+			.findFirst();
+
+		assertThat(sundsvallsKommunIntressent).isPresent();
+		assertThat(sundsvallsKommunIntressent.get().getIntressentId()).isEqualTo(107445);
+		assertThat(sundsvallsKommunIntressent.get().getIntressentVersionId()).isEqualTo(214462);
+
+		// Verify that GetIntressent was called
+		verify(arendeExportClientMock).getIntressent(any(arendeexport.GetIntressent.class));
+	}
+
+	@Test
+	void getByggrIntressenter_withSundsvallsKommunAsPropertyOwner_fallbackWhenGetIntressentFails() {
+		// Arrange
+		final var byggRCase = TestUtil.createByggRCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+
+		// Create a property owner organization that is Sundsvalls kommun
+		final var sundsvallsKommunPropertyOwner = new OrganizationDTO();
+		sundsvallsKommunPropertyOwner.setOrganizationName("Sundsvalls kommun");
+		sundsvallsKommunPropertyOwner.setOrganizationNumber(Constants.SUNDSVALLS_KOMMUN_ORGNR_12);
+		sundsvallsKommunPropertyOwner.setRoles(List.of(StakeholderRole.PROPERTY_OWNER.toString()));
+
+		byggRCase.getStakeholders().add(sundsvallsKommunPropertyOwner);
+
+		// Mock GetIntressent to return an empty result (no intressent found)
+		final var getIntressentResponse = new arendeexport.GetIntressentResponse();
+		when(arendeExportClientMock.getIntressent(any())).thenReturn(getIntressentResponse);
+
+		// Act
+		final var result = byggrService.getByggrIntressenter(byggRCase);
+
+		// Assert - should fall back to using organization number
+		assertThat(result).isNotNull();
+		assertThat(result.getIntressent()).isNotEmpty();
+
+		// Find the Sundsvalls kommun intressent in the result
+		final var sundsvallsKommunIntressent = result.getIntressent().stream()
+			.filter(i -> Constants.SUNDSVALLS_KOMMUN_ORGNR_12.equals(i.getPersOrgNr()))
+			.findFirst();
+
+		assertThat(sundsvallsKommunIntressent).isPresent();
+		assertThat(sundsvallsKommunIntressent.get().getPersOrgNr()).isEqualTo(Constants.SUNDSVALLS_KOMMUN_ORGNR_12);
+
+		// Verify that GetIntressent was called
+		verify(arendeExportClientMock).getIntressent(any(arendeexport.GetIntressent.class));
 	}
 
 }

@@ -193,7 +193,7 @@ class EcosServiceTest {
 		final RegisterDocumentCaseSvcDtoV2 registerDocumentCaseSvcDtoV2 = registerDocumentArgumentCaptor.getValue().getRegisterDocumentCaseSvcDto();
 
 		assertThat(registerDocumentCaseSvcDtoV2.getCaseSubtitleFree()).isEqualTo(eCase.getFacilities().getFirst().getFacilityCollectionName() + ", " + eCase.getFacilities().getFirst().getAddress().getPropertyDesignation().toUpperCase());
-		assertThat(registerDocumentCaseSvcDtoV2.getOccurrenceTypeId()).isEqualTo(Constants.ECOS_OCCURENCE_TYPE_ID_ANMALAN);
+		assertThat(registerDocumentCaseSvcDtoV2.getOccurrenceTypeId()).isEqualTo(Constants.ECOS_OCCURRENCE_TYPE_ID_ANMALAN);
 		assertThat(registerDocumentCaseSvcDtoV2.getHandlingOfficerGroupId()).isEqualTo(Constants.ECOS_HANDLING_OFFICER_GROUP_ID_EXPEDITIONEN);
 		assertThat(registerDocumentCaseSvcDtoV2.getDiaryPlanId()).isEqualTo(Constants.ECOS_DIARY_PLAN_LIVSMEDEL);
 		assertThat(registerDocumentCaseSvcDtoV2.getProcessTypeId()).isEqualTo(Constants.ECOS_PROCESS_TYPE_ID_REGISTRERING_AV_LIVSMEDEL);
@@ -700,7 +700,7 @@ class EcosServiceTest {
 		assertThat(result.getCaseId()).isEqualTo(createOccurrenceOnCaseArgumentCaptor.getValue().getCreateOccurrenceOnCaseSvcDto().getCaseId());
 		assertThat(createOccurrenceOnCaseArgumentCaptor.getValue().getCreateOccurrenceOnCaseSvcDto().getOccurrenceDate()).isNotNull();
 		assertThat(createOccurrenceOnCaseArgumentCaptor.getValue().getCreateOccurrenceOnCaseSvcDto().getOccurrenceTypeId()).isEqualTo(Constants.ECOS_OCCURRENCE_TYPE_ID_INFO_FRAN_ETJANST);
-		assertThat(createOccurrenceOnCaseArgumentCaptor.getValue().getCreateOccurrenceOnCaseSvcDto().getNote()).isEqualTo(Constants.ECOS_OCCURENCE_TEXT_MOBIL_ANLAGGNING);
+		assertThat(createOccurrenceOnCaseArgumentCaptor.getValue().getCreateOccurrenceOnCaseSvcDto().getNote()).isEqualTo(Constants.ECOS_OCCURRENCE_TEXT_MOBIL_ANLAGGNING);
 
 		// If facility doesn't have any address, we should not register any facility and therefore not add any stakeholder to
 		// facility.
