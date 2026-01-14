@@ -1,0 +1,43 @@
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+	<s:Body>
+		<GetIntressentResponse xmlns="www.tekis.se/ServiceContract">
+			<GetIntressentResult>
+				<Intressent>
+					<intressent intressentId="107445" persOrgNr="16212000-2411" arForetag="true" intressentVersionId="214462" kundnr="107445" arInternKund="false" arAktiv="true" checksum="|-329106453">
+						<namn xmlns="www.tekis.se/arende">Sundsvalls Kommun</namn>
+						<postNr xmlns="www.tekis.se/arende">851 85</postNr>
+						<ort xmlns="www.tekis.se/arende">Sundsvall</ort>
+						<intressentKommunikationLista xmlns="www.tekis.se/arende">
+							<intressentKommunikation arAktiv="true" checksum="808371512">
+								<beskrivning>060-12 34 56</beskrivning>
+								<komtyp>MOB</komtyp>
+							</intressentKommunikation>
+							<intressentKommunikation arAktiv="true" checksum="652876242">
+								<beskrivning>060-191000</beskrivning>
+								<komtyp>MOB</komtyp>
+							</intressentKommunikation>
+							<intressentKommunikation arAktiv="true" checksum="-871694190">
+								<beskrivning>test@sundsvall.se</beskrivning>
+								<komtyp>Epost</komtyp>
+							</intressentKommunikation>
+							<intressentKommunikation arAktiv="true" checksum="1333708008">
+								<beskrivning>test@sundsvall.se</beskrivning>
+								<komtyp>Epost</komtyp>
+								<attention attentionId="48867" checksum="-1342153272">
+									<attention>Test Testsson</attention>
+								</attention>
+							</intressentKommunikation>
+							<intressentKommunikation arAktiv="true" checksum="1561274678">
+								<beskrivning>test@sundsvall.se</beskrivning>
+								<komtyp>Epost</komtyp>
+								<attention attentionId="49367" checksum="-2019678924">
+									<attention>Test Testsson</attention>
+								</attention>
+							</intressentKommunikation>
+						</intressentKommunikationLista>
+					</intressent>
+				</Intressent>
+			</GetIntressentResult>
+		</GetIntressentResponse>
+	</s:Body>
+</s:Envelope>

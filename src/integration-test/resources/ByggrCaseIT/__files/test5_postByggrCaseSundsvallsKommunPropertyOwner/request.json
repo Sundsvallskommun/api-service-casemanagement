@@ -1,0 +1,97 @@
+{
+	"externalCaseId": "5124",
+	"attachments": [
+		{
+			"note": null,
+			"extension": ".pdf",
+			"file": "dGVzdA==",
+			"name": "Ansökan om bygglov",
+			"extraParameters": null,
+			"mimeType": "application/pdf",
+			"category": "ANS"
+		}
+	],
+	"diaryNumber": null,
+	"caseTitleAddition": null,
+	"description": null,
+	"extraParameters": null,
+	"stakeholders": [
+		{
+			"firstName": "Test",
+			"lastName": "Testorsson",
+			"emailAddress": "test@sundsvall.se",
+			"cellphoneNumber": "060123456",
+			"addresses": null,
+			"phoneNumber": "0701740605",
+			"roles": [
+				"APPLICANT"
+			],
+			"extraParameters": null,
+			"personId": "e19981ad-34b2-4e14-88f5-133f61ca85aa",
+			"personalNumber": null,
+			"type": "PERSON"
+		},
+		{
+			"emailAddress": null,
+			"cellphoneNumber": null,
+			"addresses": [
+				{
+					"country": "Sweden",
+					"city": "Sundsvall",
+					"postalCode": null,
+					"houseNumber": "123",
+					"extraParameters": null,
+					"appartmentNumber": null,
+					"isZoningPlanArea": null,
+					"invoiceMarking": null,
+					"careOf": null,
+					"addressCategories": [
+						"POSTAL_ADDRESS",
+						"VISITING_ADDRESS",
+						"INVOICE_ADDRESS"
+					],
+					"street": "Testargatan",
+					"attention": null,
+					"propertyDesignation": null,
+					"location": null
+				}
+			],
+			"phoneNumber": null,
+			"organizationName": "organizationName",
+			"organizationNumber": "16212000-2411",
+			"authorizedSignatory": null,
+			"roles": [
+				"PROPERTY_OWNER"
+			],
+			"extraParameters": null,
+			"type": "ORGANIZATION"
+		}
+	],
+	"facilities": [
+		{
+			"address": {
+				"country": null,
+				"city": null,
+				"postalCode": null,
+				"houseNumber": null,
+				"extraParameters": null,
+				"appartmentNumber": null,
+				"isZoningPlanArea": null,
+				"invoiceMarking": null,
+				"careOf": null,
+				"addressCategories": [
+					"INVOICE_ADDRESS"
+				],
+				"street": null,
+				"attention": null,
+				"propertyDesignation": "SUNDSVALL BALDER 2",
+				"location": null
+			},
+			"facilityType": "ONE_FAMILY_HOUSE",
+			"mainFacility": true,
+			"description": null,
+			"extraParameters": null
+		}
+	],
+	"caseType": "NYBYGGNAD_ANSOKAN_OM_BYGGLOV"
+}

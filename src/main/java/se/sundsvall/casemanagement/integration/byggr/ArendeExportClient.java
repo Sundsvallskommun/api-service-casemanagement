@@ -4,6 +4,8 @@ import arendeexport.GetArende;
 import arendeexport.GetArendeResponse;
 import arendeexport.GetDocument;
 import arendeexport.GetDocumentResponse;
+import arendeexport.GetIntressent;
+import arendeexport.GetIntressentResponse;
 import arendeexport.GetRelateradeArendenByPersOrgNrAndRole;
 import arendeexport.GetRelateradeArendenByPersOrgNrAndRoleResponse;
 import arendeexport.GetRemisserByPersOrgNr;
@@ -55,6 +57,11 @@ public interface ArendeExportClient {
 		"SOAPAction=www.tekis.se/ServiceContract/V4/IExportArenden/GetRelateradeArendenByPersOrgNrAndRole"
 	})
 	GetRelateradeArendenByPersOrgNrAndRoleResponse getRelateradeArendenByPersOrgNrAndRole(GetRelateradeArendenByPersOrgNrAndRole input);
+
+	@PostMapping(consumes = TEXT_XML_UTF8, headers = {
+		"SOAPAction=www.tekis.se/ServiceContract/V4/IExportArenden/GetIntressent"
+	})
+	GetIntressentResponse getIntressent(GetIntressent input);
 
 	@PostMapping(consumes = TEXT_XML_UTF8, headers = {
 		"SOAPAction=www.tekis.se/ServiceContract/V4/IExportArenden/GetRemisserByPersOrgNr"

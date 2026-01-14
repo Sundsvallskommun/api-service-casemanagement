@@ -1,0 +1,23 @@
+{
+	"request": {
+		"method": "POST",
+		"bodyPatterns": [
+			{
+				"contains": "GetIntressent"
+			}
+		],
+		"url": "/TekisArende/ArendeExportWS.svc"
+	},
+	"response": {
+		"headers": {
+			"Server": "Microsoft-IIS/10.0",
+			"Vary": "Accept-Encoding",
+			"Date": "Wed, 28 Jul 2021 06:31:46 GMT",
+			"Content-Type": "text/xml; charset=utf-8",
+			"X-Powered-By": "ASP.NET"
+		},
+		"bodyFileName": "test5_postByggrCaseSundsvallsKommunPropertyOwner/response/byggr-getintressent.xml",
+		"status": 200
+	},
+	"name": "byggr-getintressent"
+}

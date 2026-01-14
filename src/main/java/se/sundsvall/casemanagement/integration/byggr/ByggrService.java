@@ -222,7 +222,7 @@ public class ByggrService {
 		final var comment = byggRCase.getExtraParameters().get(COMMENT);
 		final var property = byggRCase.getExtraParameters().get(PROPERTY);
 		final var errandInformation = byggRCase.getExtraParameters().get(ERRAND_INFORMATION);
-		// Extracts the remiss id that is placed within [] in the property string
+		// Extracts the remiss id placed within [] in the property string
 		final var remissId = Integer.parseInt(property.replaceAll("^[^\\[]*\\[([^]]+)].*", "$1"));
 
 		final var saveNewRemissvar = new SaveNewRemissvar()
@@ -244,7 +244,7 @@ public class ByggrService {
 	 * partyIntegration and use this personal number as the stakeholder id.
 	 *
 	 * @param  stakeholders List of stakeholders
-	 * @return              String, organization number or personal number of the stakeholder.
+	 * @return              String, organization number, or personal number of the stakeholder.
 	 */
 	public String extractStakeholderId(final List<StakeholderDTO> stakeholders, final String municipalityId) {
 		final var organizationId = stakeholders.stream()
@@ -336,7 +336,7 @@ public class ByggrService {
 			arrayOfByggrArenden = arendeExportClient.getRelateradeArendenByPersOrgNrAndRole(getRelateradeArendenByPersOrgNrAndRoleInput).getGetRelateradeArendenByPersOrgNrAndRoleResult();
 		}
 
-		var statusList = Optional.ofNullable(arrayOfByggrArenden.getArende()).orElse(emptyList()).stream().map(byggrArende -> {
+		final var statusList = Optional.ofNullable(arrayOfByggrArenden.getArende()).orElse(emptyList()).stream().map(byggrArende -> {
 			final var caseMappingList = caseMappingService.getCaseMapping(null, byggrArende.getDnr(), municipalityId);
 
 			return toByggrStatus(byggrArende, Optional.ofNullable(caseMappingList)
@@ -359,15 +359,23 @@ public class ByggrService {
 			.map(stakeholderDTO -> {
 
 				final var intressent = new ArendeIntressent();
-				setStakeholderFields(stakeholderDTO, personIds, intressent);
-				if (stakeholderDTO.getAddresses() != null) {
-					toAdressDTos(stakeholderDTO, intressent);
+
+				// Check if this is Sundsvalls kommun as the property owner
+				if (isSundsvallsKommunPropertyOwner(stakeholderDTO)) {
+					// Use intressentId and intressentVersionId from ByggR instead of persOrgNr
+					setSundsvallsKommunIntressentFields(intressent, stakeholderDTO);
+				} else {
+					setStakeholderFields(stakeholderDTO, personIds, intressent);
+					if (stakeholderDTO.getAddresses() != null) {
+						toAdressDTos(stakeholderDTO, intressent);
+					}
+					intressent.withIntressentKommunikationLista(toByggrContactInfo(stakeholderDTO, intressent.getAttention()));
 				}
-				intressent.withIntressentKommunikationLista(toByggrContactInfo(stakeholderDTO, intressent.getAttention()))
-					.withRollLista(toArrayOfRoles(stakeholderDTO));
+
+				intressent.withRollLista(toArrayOfRoles(stakeholderDTO));
 				return intressent;
 			})
-			.filter(intressent -> StringUtils.isNotBlank(intressent.getPersOrgNr()))
+			.filter(intressent -> StringUtils.isNotBlank(intressent.getPersOrgNr()) || (intressent.getIntressentId() != null && intressent.getIntressentVersionId() != null))
 			.toList());
 	}
 
@@ -397,6 +405,82 @@ public class ByggrService {
 			populateStakeholderListWithPropertyOwnerPersons(persons, stakeholders, propertyOwners);
 			populateStakeholderListWithPropertyOwnerOrganizations(organizations, stakeholders, propertyOwners);
 		});
+	}
+
+	/**
+	 * Check if a stakeholder is Sundsvalls kommun and has the property owner role
+	 *
+	 * @param  stakeholder The stakeholder to check
+	 * @return             true if it's Sundsvalls kommun with the property owner role
+	 */
+	private boolean isSundsvallsKommunPropertyOwner(final StakeholderDTO stakeholder) {
+		if (!(stakeholder instanceof final OrganizationDTO orgDto)) {
+			return false;
+		}
+
+		if (!stakeholder.getRoles().contains(StakeholderRole.PROPERTY_OWNER.toString())) {
+			return false;
+		}
+
+		final var orgNr = orgDto.getOrganizationNumber();
+		return Constants.SUNDSVALLS_KOMMUN_ORGNR_10.equals(orgNr) ||
+			Constants.SUNDSVALLS_KOMMUN_ORGNR_12.equals(orgNr);
+	}
+
+	/**
+	 * Set intressent fields for Sundsvalls kommun by fetching from ByggR using kundnummer
+	 *
+	 * @param intressent  The intressent to populate
+	 * @param stakeholder The stakeholder data
+	 */
+	private void setSundsvallsKommunIntressentFields(final ArendeIntressent intressent, final StakeholderDTO stakeholder) {
+		try {
+			final var intressentData = getSundsvallsKommunIntressentFromByggr();
+			if (intressentData != null) {
+				intressent.setIntressentId(intressentData.getIntressentId());
+				intressent.setIntressentVersionId(intressentData.getIntressentVersionId());
+				LOG.debug("Using ByggR intressent for Sundsvalls kommun: intressentId={}, intressentVersionId={}",
+					intressentData.getIntressentId(), intressentData.getIntressentVersionId());
+			} else {
+				LOG.warn("Could not fetch Sundsvalls kommun intressent from ByggR, falling back to organization number");
+				// Fallback to using organization number
+				fallbackToOrgNr(intressent, stakeholder);
+			}
+		} catch (final Exception e) {
+			LOG.error("Error fetching Sundsvalls kommun intressent from ByggR, falling back to organization number", e);
+			// Fallback to using organization number
+			fallbackToOrgNr(intressent, stakeholder);
+		}
+	}
+
+	private void fallbackToOrgNr(final ArendeIntressent intressent, final StakeholderDTO stakeholder) {
+		if (stakeholder instanceof final OrganizationDTO orgDto) {
+			intressent.setPersOrgNr(orgDto.getOrganizationNumber());
+		}
+	}
+
+	/**
+	 * Fetch Sundsvalls kommun intressent details from ByggR using GetIntressent operation
+	 *
+	 * @return The intressent from ByggR, or null if not found
+	 */
+	private arendeexport.Intressent getSundsvallsKommunIntressentFromByggr() {
+		final var getIntressent = new arendeexport.GetIntressent()
+			.withMessage(new arendeexport.GetIntressentMessage()
+				.withHandlaggarSign(Constants.SYSTEM)
+				.withKundNr(Constants.SUNDSVALLS_KOMMUN_BYGGR_KUNDNR)
+				.withStatusFilter(arendeexport.StatusFilter.AKTIV));
+
+		final var response = arendeExportClient.getIntressent(getIntressent);
+
+		if (response != null &&
+			response.getGetIntressentResult() != null &&
+			response.getGetIntressentResult().getIntressent() != null &&
+			!response.getGetIntressentResult().getIntressent().getIntressent().isEmpty()) {
+			return response.getGetIntressentResult().getIntressent().getIntressent().getFirst();
+		}
+
+		return null;
 	}
 
 	private String getPersonalNumber(final PersonDTO personDTOStakeholder, final String municipalityId) {

@@ -700,7 +700,7 @@ public class EcosService {
 	public RegisterDocumentCaseResultSvcDto registerDocument(final EcosCaseDTO eCase) {
 		final var registerDocumentCaseSvcDtoV2 = new RegisterDocumentCaseSvcDtoV2();
 		final var registerDocument = new RegisterDocument();
-		registerDocumentCaseSvcDtoV2.setOccurrenceTypeId(Constants.ECOS_OCCURENCE_TYPE_ID_ANMALAN);
+		registerDocumentCaseSvcDtoV2.setOccurrenceTypeId(Constants.ECOS_OCCURRENCE_TYPE_ID_ANMALAN);
 		registerDocumentCaseSvcDtoV2.setHandlingOfficerGroupId(Constants.ECOS_HANDLING_OFFICER_GROUP_ID_EXPEDITIONEN);
 		registerDocumentCaseSvcDtoV2.setDiaryPlanId(getDiaryPlanId(eCase.getCaseType()));
 		registerDocumentCaseSvcDtoV2.setProcessTypeId(getProcessTypeId(eCase.getCaseType()));
@@ -762,7 +762,7 @@ public class EcosService {
 			case ANMALAN_INSTALLATION_VARMEPUMP -> Constants.ECOS_PROCESS_TYPE_ID_ANMALAN_INSTALLATION_VARMEPUMP;
 			case ANSOKAN_TILLSTAND_VARMEPUMP -> Constants.ECOS_PROCESS_TYPE_ID_ANSOKAN_TILLSTAND_VARMEPUMP;
 			case ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP -> Constants.ECOS_PROCESS_TYPE_ID_ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP;
-			case ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC -> Constants.ECOS_PROCESS_TYPE_ID_ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC;
+			case ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC -> Constants.ECOS_PROCESS_TYPE_ID_ANMALAN_INSTALLATION_ENSKILT_AVLOPP_UTAN_WC;
 			case ANMALAN_ANDRING_AVLOPPSANLAGGNING -> Constants.ECOS_PROCESS_TYPE_ID_ANMALAN_ANDRING_AVLOPPSANLAGGNING;
 			case ANMALAN_ANDRING_AVLOPPSANORDNING -> Constants.ECOS_PROCESS_TYPE_ID_ANMALAN_ANDRING_AVLOPPSANORDNING;
 			case ANMALAN_HALSOSKYDDSVERKSAMHET -> Constants.ECOS_PROCESS_TYPE_ID_ANMALAN_HALSOSKYDDSVERKSAMHET;
@@ -812,7 +812,7 @@ public class EcosService {
 		createOccurrenceOnCaseSvcDto.setCaseId(caseId);
 		createOccurrenceOnCaseSvcDto.setOccurrenceDate(LocalDateTime.now());
 		createOccurrenceOnCaseSvcDto.setOccurrenceTypeId(Constants.ECOS_OCCURRENCE_TYPE_ID_INFO_FRAN_ETJANST);
-		createOccurrenceOnCaseSvcDto.setNote(Constants.ECOS_OCCURENCE_TEXT_MOBIL_ANLAGGNING);
+		createOccurrenceOnCaseSvcDto.setNote(Constants.ECOS_OCCURRENCE_TEXT_MOBIL_ANLAGGNING);
 		createOccurrenceOnCase.setCreateOccurrenceOnCaseSvcDto(createOccurrenceOnCaseSvcDto);
 
 		minutMiljoClient.createOccurrenceOnCase(createOccurrenceOnCase);
