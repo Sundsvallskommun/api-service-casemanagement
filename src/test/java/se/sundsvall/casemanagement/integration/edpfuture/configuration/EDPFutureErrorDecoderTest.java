@@ -1,4 +1,4 @@
-package se.sundsvall.casemanagement.integration.byggr.configuration;
+package se.sundsvall.casemanagement.integration.edpfuture.configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -10,28 +10,26 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import se.sundsvall.dept44.exception.ServerProblem;
 
-class ArendeExportErrorDecoderTest {
+class EDPFutureErrorDecoderTest {
 
-	private ArendeExportErrorDecoder errorDecoder;
+	private EDPFutureErrorDecoder errorDecoder;
 
 	@BeforeEach
 	void setUp() {
-		errorDecoder = new ArendeExportErrorDecoder();
+		errorDecoder = new EDPFutureErrorDecoder();
 	}
 
 	@Test
 	void shouldDecodeEmptyResponse() {
-		// given
 		final var response = mock(Response.class);
 		when(response.body()).thenReturn(null);
 		when(response.reason()).thenReturn("Bad Request");
 
-		// when
 		final var decodedError = errorDecoder.decode("someMethodKey", response);
 
-		// then
 		assertThat(decodedError).isInstanceOf(ServerProblem.class);
-		assertThat(decodedError.getMessage()).isEqualTo("Bad Gateway: Unknown problem in communication with ArendeExport (ByggR) Bad Request");
+		assertThat(decodedError.getMessage()).isEqualTo("Bad Gateway: Unknown problem in communication with EDPFuture: Bad Request");
+
 	}
 
 	@Test
@@ -47,7 +45,7 @@ class ArendeExportErrorDecoderTest {
 
 		// then
 		assertThat(decodedError).isInstanceOf(ServerProblem.class);
-		assertThat(decodedError.getMessage()).isEqualTo("Bad Gateway: Unknown problem in communication with ArendeExport (ByggR) Failed to read response body");
+		assertThat(decodedError.getMessage()).isEqualTo("Bad Gateway: Unknown problem in communication with EDPFuture: Failed to read response body");
 	}
 
 }
