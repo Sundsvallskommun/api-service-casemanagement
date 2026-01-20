@@ -206,6 +206,23 @@
 						</configuration>
 					</execution>
 					<execution>
+						<id>edpfuture</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<generatePackage>edpfuture</generatePackage>
+							<generateDirectory>${generated-sources-path}/xjc-edpfuture</generateDirectory>
+							<schemaDirectory>${project.basedir}/src/main/resources/integrations/soap/edpfuture</schemaDirectory>
+							<schemaIncludes>
+								<include>EDPFuture.wsdl</include>
+							</schemaIncludes>
+							<bindingIncludes>
+								<include>bindings.xjb</include>
+							</bindingIncludes>
+						</configuration>
+					</execution>
+					<execution>
 						<id>callback</id>
 						<goals>
 							<goal>generate</goal>
@@ -273,6 +290,7 @@
 							<sources>
 								<source>${generated-sources-path}/models</source>
 								<source>${generated-sources-path}/xjc-arendeexport</source>
+								<source>${generated-sources-path}/xjc-edpfuture</source>
 								<source>${generated-sources-path}/xjc-callback</source>
 								<source>${generated-sources-path}/xjc-minutmiljo</source>
 								<source>${generated-sources-path}/xjc-minutmiljoV2</source>
@@ -293,6 +311,7 @@
 						<exclude>**/util/Constants*</exclude>
 						<exclude>**/enums/**</exclude>
 						<exclude>**/generated/**</exclude>
+						<exclude>**/edpfuture/**</exclude>
 						<exclude>**/minutmiljo/**</exclude>
 						<exclude>**/minutmiljoV2/**</exclude>
 						<exclude>**/callback/**</exclude>
