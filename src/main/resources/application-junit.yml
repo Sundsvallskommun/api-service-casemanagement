@@ -84,7 +84,7 @@ integration:
     oauth2ClientId: clientId
     oauth2ClientSecret: clientSecret
     oauth2TokenUrl: token.url
-  edpfuture:
+  edp-future:
     url: edpfuture.url
     read-timeout: 60
     connect-timeout: 5

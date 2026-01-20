@@ -15,7 +15,7 @@ import se.sundsvall.dept44.configuration.feign.FeignMultiCustomizer;
 @Import(FeignConfiguration.class)
 public class EDPFutureConfiguration {
 
-	public static final String REGISTRATION_ID = "edpfuture";
+	public static final String REGISTRATION_ID = "edp-future";
 
 	private static final JAXBContextFactory JAXB_FACTORY = new JAXBContextFactory.Builder()
 		.withMarshallerJAXBEncoding(StandardCharsets.UTF_8.toString())

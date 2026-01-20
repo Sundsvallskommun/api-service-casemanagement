@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import se.sundsvall.casemanagement.integration.edpfuture.configuration.EDPFutureConfiguration;
 
 @FeignClient(name = REGISTRATION_ID,
-	url = "${integration.edpfuture.url}",
+	url = "${integration.edp-future.url}",
 	configuration = EDPFutureConfiguration.class)
 @CircuitBreaker(name = REGISTRATION_ID)
 public interface EDPFutureClient {
@@ -50,11 +50,3 @@ public interface EDPFutureClient {
 	SubmitOrderTypeApplicationV14 submitOrderTypeApplicationV1_4(final SubmitOrderTypeApplicationV14 request);
 
 }
-
-/*
- * ⦁ GetAuthorizedUsers (hämtar kundnummer)
- * ⦁ GetBuildingsByAutorizationRoleV1_2 (hämtar anläggningsnummer)
- * ⦁ GetServicesByBuildingIdForOrder (hämtar tjänstnummer)
- * ⦁ GetRenhOrderTypesForServiceV1_7 (hämtar ordertyper)
- * ⦁ SubmitOrderTypeApplicationV1_4 (fyller I antal I ordertypen och skickar in)
- */

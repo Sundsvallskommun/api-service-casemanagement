@@ -74,6 +74,6 @@ integration:
     oauth2ClientSecret: ${SUNDSVALLS_KOMMUN_CONSUMER_SECRET}
     oauth2TokenUrl: http://localhost:${wiremock.server.port:}/token
     url: http://localhost:${wiremock.server.port:}/oep-integrator
-  edpfuture:
+  edp-future:
     url: http://localhost:${wiremock.server.port:}/edpfuture
     api-key: apiKey

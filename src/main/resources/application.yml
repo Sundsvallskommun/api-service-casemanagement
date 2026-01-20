@@ -70,7 +70,7 @@ integration:
     oauth2ClientSecret: override
     oauth2TokenUrl: override
     url: override
-  edpfuture:
+  edp-future:
     url: override
     read-timeout: 60
     connect-timeout: 5
