@@ -1,13 +1,5 @@
 package se.sundsvall.casemanagement.service.mapper;
 
-import static java.util.Collections.emptyList;
-import static java.util.Objects.isNull;
-import static java.util.Optional.ofNullable;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static se.sundsvall.casemanagement.api.model.enums.AddressCategory.POSTAL_ADDRESS;
-import static se.sundsvall.casemanagement.api.model.enums.StakeholderRole.PROPERTY_OWNER;
-import static se.sundsvall.casemanagement.util.Constants.SWEDEN;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -20,6 +12,14 @@ import se.sundsvall.casemanagement.integration.fb.model.FbPropertyInfo;
 import se.sundsvall.casemanagement.integration.fb.model.GruppItem;
 import se.sundsvall.casemanagement.integration.fb.model.ResponseDto;
 import se.sundsvall.casemanagement.util.CaseUtil;
+
+import static java.util.Collections.emptyList;
+import static java.util.Objects.isNull;
+import static java.util.Optional.ofNullable;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static se.sundsvall.casemanagement.api.model.enums.AddressCategory.POSTAL_ADDRESS;
+import static se.sundsvall.casemanagement.api.model.enums.StakeholderRole.PROPERTY_OWNER;
+import static se.sundsvall.casemanagement.util.Constants.SWEDEN;
 
 public final class FbMapper {
 

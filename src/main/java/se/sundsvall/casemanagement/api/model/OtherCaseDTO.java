@@ -1,7 +1,5 @@
 package se.sundsvall.casemanagement.api.model;
 
-import static java.util.Collections.emptyList;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -13,6 +11,8 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+
+import static java.util.Collections.emptyList;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)

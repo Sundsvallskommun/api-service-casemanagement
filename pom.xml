@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>se.sundsvall.dept44</groupId>
 		<artifactId>dept44-service-parent</artifactId>
-		<version>7.0.0</version>
+		<version>7.0.1</version>
 		<relativePath />
 		<!-- lookup parent from repository -->
 	</parent>
@@ -35,7 +35,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.testcontainers</groupId>
-			<artifactId>mariadb</artifactId>
+			<artifactId>testcontainers-mariadb</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<!-- Dept44 Framework -->
@@ -136,6 +136,18 @@
 							<inputSpec>${project.basedir}/src/main/resources/integrations/rest/case-data.yml</inputSpec>
 							<configOptions>
 								<modelPackage>generated.client.casedata</modelPackage>
+							</configOptions>
+						</configuration>
+					</execution>
+					<execution>
+						<id>eventlog</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>${project.basedir}/src/main/resources/integrations/rest/eventlog-api.yml</inputSpec>
+							<configOptions>
+								<modelPackage>generated.client.eventlog</modelPackage>
 							</configOptions>
 						</configuration>
 					</execution>

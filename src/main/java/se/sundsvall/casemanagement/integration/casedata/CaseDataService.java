@@ -1,25 +1,5 @@
 package se.sundsvall.casemanagement.integration.casedata;
 
-import static generated.client.casedata.Errand.ChannelEnum.ESERVICE;
-import static generated.client.casedata.Stakeholder.TypeEnum.PERSON;
-import static java.time.OffsetDateTime.now;
-import static java.util.Collections.emptyList;
-import static org.zalando.problem.Status.NOT_FOUND;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.LOST_PARKING_PERMIT;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.MEX_CASE_TYPES;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.PARKING_PERMIT;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.PARKING_PERMIT_RENEWAL;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.PRH_CASE_TYPES;
-import static se.sundsvall.casemanagement.api.model.enums.Namespace.ANGE_PARKING_PERMIT;
-import static se.sundsvall.casemanagement.api.model.enums.Namespace.SBK_MEX;
-import static se.sundsvall.casemanagement.api.model.enums.Namespace.SBK_PARKING_PERMIT;
-import static se.sundsvall.casemanagement.api.model.enums.SystemType.CASE_DATA;
-import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toAttachment;
-import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toErrand;
-import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toPatchErrand;
-import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toStakeholders;
-import static se.sundsvall.casemanagement.util.Constants.SERVICE_NAME;
-
 import generated.client.casedata.Errand;
 import generated.client.casedata.ExtraParameter;
 import generated.client.casedata.Stakeholder;
@@ -44,6 +24,26 @@ import se.sundsvall.casemanagement.integration.casedata.configuration.CaseDataPr
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.service.CaseMappingService;
 import se.sundsvall.casemanagement.util.Constants;
+
+import static generated.client.casedata.Errand.ChannelEnum.ESERVICE;
+import static generated.client.casedata.Stakeholder.TypeEnum.PERSON;
+import static java.time.OffsetDateTime.now;
+import static java.util.Collections.emptyList;
+import static org.zalando.problem.Status.NOT_FOUND;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.LOST_PARKING_PERMIT;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.MEX_CASE_TYPES;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.PARKING_PERMIT;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.PARKING_PERMIT_RENEWAL;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.PRH_CASE_TYPES;
+import static se.sundsvall.casemanagement.api.model.enums.Namespace.ANGE_PARKING_PERMIT;
+import static se.sundsvall.casemanagement.api.model.enums.Namespace.SBK_MEX;
+import static se.sundsvall.casemanagement.api.model.enums.Namespace.SBK_PARKING_PERMIT;
+import static se.sundsvall.casemanagement.api.model.enums.SystemType.CASE_DATA;
+import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toAttachment;
+import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toErrand;
+import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toPatchErrand;
+import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toStakeholders;
+import static se.sundsvall.casemanagement.util.Constants.SERVICE_NAME;
 
 @Service
 public class CaseDataService {

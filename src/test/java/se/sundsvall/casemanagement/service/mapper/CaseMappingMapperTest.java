@@ -1,9 +1,5 @@
 package se.sundsvall.casemanagement.service.mapper;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static se.sundsvall.casemanagement.api.model.enums.AttachmentCategory.UNDERLAG_RISKKLASSNING;
-import static se.sundsvall.casemanagement.util.Constants.SERVICE_NAME;
-
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -15,6 +11,10 @@ import se.sundsvall.casemanagement.api.model.CaseDTO;
 import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
 import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static se.sundsvall.casemanagement.api.model.enums.AttachmentCategory.UNDERLAG_RISKKLASSNING;
+import static se.sundsvall.casemanagement.util.Constants.SERVICE_NAME;
 
 class CaseMappingMapperTest {
 

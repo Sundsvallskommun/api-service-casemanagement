@@ -1,10 +1,10 @@
 package se.sundsvall.casemanagement.util;
 
-import static java.time.format.DateTimeFormatter.ISO_DATE;
-
 import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 import java.time.LocalDate;
 import java.util.Optional;
+
+import static java.time.format.DateTimeFormatter.ISO_DATE;
 
 public class LocalDateAdapter extends XmlAdapter<String, LocalDate> {
 

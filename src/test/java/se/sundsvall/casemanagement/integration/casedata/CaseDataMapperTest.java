@@ -1,17 +1,5 @@
 package se.sundsvall.casemanagement.integration.casedata;
 
-import static generated.client.casedata.Stakeholder.TypeEnum.ORGANIZATION;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.tuple;
-import static se.sundsvall.casemanagement.TestUtil.createAddressDTO;
-import static se.sundsvall.casemanagement.TestUtil.createAttachmentDTO;
-import static se.sundsvall.casemanagement.TestUtil.createCoordinatesDTO;
-import static se.sundsvall.casemanagement.TestUtil.createExtraParameters;
-import static se.sundsvall.casemanagement.TestUtil.createFacilityDTO;
-import static se.sundsvall.casemanagement.TestUtil.createOtherCaseDTO;
-import static se.sundsvall.casemanagement.TestUtil.createStakeholderDTO;
-import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toContactInformation;
-
 import generated.client.casedata.ContactInformation;
 import generated.client.casedata.Errand;
 import generated.client.casedata.PatchErrand;
@@ -27,6 +15,18 @@ import se.sundsvall.casemanagement.api.model.enums.AddressCategory;
 import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
 import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderType;
+
+import static generated.client.casedata.Stakeholder.TypeEnum.ORGANIZATION;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
+import static se.sundsvall.casemanagement.TestUtil.createAddressDTO;
+import static se.sundsvall.casemanagement.TestUtil.createAttachmentDTO;
+import static se.sundsvall.casemanagement.TestUtil.createCoordinatesDTO;
+import static se.sundsvall.casemanagement.TestUtil.createExtraParameters;
+import static se.sundsvall.casemanagement.TestUtil.createFacilityDTO;
+import static se.sundsvall.casemanagement.TestUtil.createOtherCaseDTO;
+import static se.sundsvall.casemanagement.TestUtil.createStakeholderDTO;
+import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toContactInformation;
 
 class CaseDataMapperTest {
 

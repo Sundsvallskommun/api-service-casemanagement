@@ -1,18 +1,5 @@
 package se.sundsvall.casemanagement.service;
 
-import static generated.client.party.PartyType.ENTERPRISE;
-import static generated.client.party.PartyType.PRIVATE;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-import static se.sundsvall.casemanagement.TestUtil.createCaseMapping;
-import static se.sundsvall.casemanagement.TestUtil.createCaseStatusDTO;
-import static se.sundsvall.casemanagement.service.StatusService.CASE_DATA_ORGANIZATION_FILTER;
-import static se.sundsvall.casemanagement.service.StatusService.CASE_DATA_PERSON_FILTER;
-import static se.sundsvall.casemanagement.util.Constants.CASE_DATA_STATUS_ROLE_SEARCH;
-
 import generated.client.party.PartyType;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +15,19 @@ import se.sundsvall.casemanagement.integration.byggr.ByggrService;
 import se.sundsvall.casemanagement.integration.casedata.CaseDataService;
 import se.sundsvall.casemanagement.integration.ecos.EcosService;
 import se.sundsvall.casemanagement.integration.party.PartyIntegration;
+
+import static generated.client.party.PartyType.ENTERPRISE;
+import static generated.client.party.PartyType.PRIVATE;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+import static se.sundsvall.casemanagement.TestUtil.createCaseMapping;
+import static se.sundsvall.casemanagement.TestUtil.createCaseStatusDTO;
+import static se.sundsvall.casemanagement.service.StatusService.CASE_DATA_ORGANIZATION_FILTER;
+import static se.sundsvall.casemanagement.service.StatusService.CASE_DATA_PERSON_FILTER;
+import static se.sundsvall.casemanagement.util.Constants.CASE_DATA_STATUS_ROLE_SEARCH;
 
 @ExtendWith(MockitoExtension.class)
 class StatusServiceTest {

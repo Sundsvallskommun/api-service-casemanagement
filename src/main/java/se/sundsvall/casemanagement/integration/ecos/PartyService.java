@@ -1,7 +1,5 @@
 package se.sundsvall.casemanagement.integration.ecos;
 
-import static generated.client.party.PartyType.PRIVATE;
-
 import generated.client.party.PartyType;
 import java.util.Collections;
 import java.util.List;
@@ -36,6 +34,8 @@ import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
 import se.sundsvall.casemanagement.integration.party.PartyIntegration;
 import se.sundsvall.casemanagement.util.CaseUtil;
 import se.sundsvall.casemanagement.util.Constants;
+
+import static generated.client.party.PartyType.PRIVATE;
 
 @Service
 public class PartyService {

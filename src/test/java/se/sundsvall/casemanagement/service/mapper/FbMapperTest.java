@@ -1,11 +1,5 @@
 package se.sundsvall.casemanagement.service.mapper;
 
-import static java.util.Collections.emptyList;
-import static org.assertj.core.api.Assertions.assertThat;
-import static se.sundsvall.casemanagement.api.model.enums.AddressCategory.POSTAL_ADDRESS;
-import static se.sundsvall.casemanagement.api.model.enums.StakeholderRole.PROPERTY_OWNER;
-import static se.sundsvall.casemanagement.util.Constants.SWEDEN;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +15,12 @@ import se.sundsvall.casemanagement.api.model.AddressDTO;
 import se.sundsvall.casemanagement.integration.fb.model.DataItem;
 import se.sundsvall.casemanagement.integration.fb.model.GruppItem;
 import se.sundsvall.casemanagement.integration.fb.model.ResponseDto;
+
+import static java.util.Collections.emptyList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static se.sundsvall.casemanagement.api.model.enums.AddressCategory.POSTAL_ADDRESS;
+import static se.sundsvall.casemanagement.api.model.enums.StakeholderRole.PROPERTY_OWNER;
+import static se.sundsvall.casemanagement.util.Constants.SWEDEN;
 
 class FbMapperTest {
 

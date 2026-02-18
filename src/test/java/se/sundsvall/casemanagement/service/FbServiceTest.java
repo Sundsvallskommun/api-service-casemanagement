@@ -1,13 +1,5 @@
 package se.sundsvall.casemanagement.service;
 
-import static java.util.Collections.emptyList;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static se.sundsvall.casemanagement.TestUtil.ADRESSPLATS_ID;
-import static se.sundsvall.casemanagement.TestUtil.FNR;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -31,6 +23,14 @@ import se.sundsvall.casemanagement.integration.fb.model.GruppItem;
 import se.sundsvall.casemanagement.integration.fb.model.ResponseDto;
 import se.sundsvall.casemanagement.integration.lantmateriet.model.Registerbeteckningsreferens;
 import se.sundsvall.casemanagement.util.Constants;
+
+import static java.util.Collections.emptyList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static se.sundsvall.casemanagement.TestUtil.ADRESSPLATS_ID;
+import static se.sundsvall.casemanagement.TestUtil.FNR;
 
 @ExtendWith(MockitoExtension.class)
 class FbServiceTest {

@@ -1,7 +1,5 @@
 package se.sundsvall.casemanagement.service.mapper;
 
-import static se.sundsvall.casemanagement.integration.db.model.DeliveryStatus.PENDING;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -14,6 +12,8 @@ import org.slf4j.LoggerFactory;
 import se.sundsvall.casemanagement.api.model.CaseDTO;
 import se.sundsvall.casemanagement.integration.db.model.CaseEntity;
 import se.sundsvall.dept44.requestid.RequestId;
+
+import static se.sundsvall.casemanagement.integration.db.model.DeliveryStatus.PENDING;
 
 public final class CaseMapper {
 

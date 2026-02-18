@@ -1,16 +1,5 @@
 package se.sundsvall.casemanagement.integration.ecos;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-import static se.sundsvall.casemanagement.TestUtil.ADRESSPLATS_ID;
-import static se.sundsvall.casemanagement.TestUtil.FNR;
-
 import generated.client.party.PartyType;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
@@ -56,6 +45,7 @@ import minutmiljo.SearchFacilityResultSvcDto;
 import minutmiljo.SepticTankSvcDto;
 import minutmiljoV2.RegisterDocument;
 import minutmiljoV2.RegisterDocumentCaseSvcDtoV2;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -63,7 +53,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.testcontainers.shaded.org.apache.commons.lang3.RandomStringUtils;
 import org.zalando.problem.Problem;
 import se.sundsvall.casemanagement.TestUtil;
 import se.sundsvall.casemanagement.api.model.AddressDTO;
@@ -85,6 +74,17 @@ import se.sundsvall.casemanagement.service.CaseMappingService;
 import se.sundsvall.casemanagement.service.FbService;
 import se.sundsvall.casemanagement.util.CaseUtil;
 import se.sundsvall.casemanagement.util.Constants;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+import static se.sundsvall.casemanagement.TestUtil.ADRESSPLATS_ID;
+import static se.sundsvall.casemanagement.TestUtil.FNR;
 
 @ExtendWith(MockitoExtension.class)
 class EcosServiceTest {
@@ -722,21 +722,21 @@ class EcosServiceTest {
 			.withCaseId(caseId)
 			.withCaseType(CaseType.REGISTRERING_AV_LIVSMEDEL.toString())
 			.withSystem(SystemType.ECOS)
-			.withServiceName(RandomStringUtils.random(10, true, false))
+			.withServiceName(RandomStringUtils.secure().next(10, true, false))
 			.withTimestamp(LocalDateTime.now())
 			.build();
 
 		final var occurrenceListItemSvcDto1 = new OccurrenceListItemSvcDto()
 			.withOccurrenceDate(LocalDateTime.now().minusDays(5))
-			.withOccurrenceDescription(RandomStringUtils.random(5, true, false));
+			.withOccurrenceDescription(RandomStringUtils.secure().next(5, true, false));
 
 		final var occurrenceListItemSvcDto2 = new OccurrenceListItemSvcDto()
 			.withOccurrenceDate(LocalDateTime.now().minusDays(1))
-			.withOccurrenceDescription(RandomStringUtils.random(5, true, false));
+			.withOccurrenceDescription(RandomStringUtils.secure().next(5, true, false));
 
 		final var occurrenceListItemSvcDto3 = new OccurrenceListItemSvcDto()
 			.withOccurrenceDate(LocalDateTime.now().minusDays(3))
-			.withOccurrenceDescription(RandomStringUtils.random(5, true, false));
+			.withOccurrenceDescription(RandomStringUtils.secure().next(5, true, false));
 
 		final var arrayOfOccurrenceListItemSvcDto = new ArrayOfOccurrenceListItemSvcDto();
 		arrayOfOccurrenceListItemSvcDto.getOccurrenceListItemSvcDto().addAll(List.of(occurrenceListItemSvcDto1, occurrenceListItemSvcDto2, occurrenceListItemSvcDto3));
@@ -805,22 +805,22 @@ class EcosServiceTest {
 			.withCaseId(caseId)
 			.withCaseType(CaseType.REGISTRERING_AV_LIVSMEDEL.toString())
 			.withSystem(SystemType.ECOS)
-			.withServiceName(RandomStringUtils.random(10, true, false))
+			.withServiceName(RandomStringUtils.secure().next(10, true, false))
 			.withTimestamp(LocalDateTime.now())
 			.build();
 
 		final var arrayOfOccurrenceListItemSvcDto = new ArrayOfOccurrenceListItemSvcDto();
 		final var occurrenceListItemSvcDto1 = new OccurrenceListItemSvcDto()
 			.withOccurrenceDate(LocalDateTime.now().minusDays(5))
-			.withOccurrenceDescription(RandomStringUtils.random(5, true, false));
+			.withOccurrenceDescription(RandomStringUtils.secure().next(5, true, false));
 
 		final var occurrenceListItemSvcDto2 = new OccurrenceListItemSvcDto()
 			.withOccurrenceDate(LocalDateTime.now().minusDays(1))
-			.withOccurrenceDescription(RandomStringUtils.random(5, true, false));
+			.withOccurrenceDescription(RandomStringUtils.secure().next(5, true, false));
 
 		final var occurrenceListItemSvcDto3 = new OccurrenceListItemSvcDto()
 			.withOccurrenceDate(LocalDateTime.now().minusDays(3))
-			.withOccurrenceDescription(RandomStringUtils.random(5, true, false));
+			.withOccurrenceDescription(RandomStringUtils.secure().next(5, true, false));
 		arrayOfOccurrenceListItemSvcDto.getOccurrenceListItemSvcDto().addAll(List.of(occurrenceListItemSvcDto1, occurrenceListItemSvcDto2, occurrenceListItemSvcDto3));
 
 		final var caseSvcDto = new CaseSvcDto()

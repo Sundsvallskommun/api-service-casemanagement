@@ -50,6 +50,11 @@ integration:
     oauth2ClientSecret: clientSecret
     oauth2TokenUrl: token.url
     url: citizen.url
+  eventlog:
+    oauth2ClientId: clientId
+    oauth2ClientSecret: clientSecret
+    oauth2TokenUrl: token.url
+    url: eventlog.url
   party:
     oauth2ClientId: clientId
     oauth2ClientSecret: clientSecret

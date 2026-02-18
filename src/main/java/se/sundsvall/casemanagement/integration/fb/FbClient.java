@@ -1,7 +1,5 @@
 package se.sundsvall.casemanagement.integration.fb;
 
-import static se.sundsvall.casemanagement.integration.fb.configuration.FbConfiguration.REGISTRATION_ID;
-
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import java.util.List;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -10,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import se.sundsvall.casemanagement.integration.fb.configuration.FbConfiguration;
 import se.sundsvall.casemanagement.integration.fb.model.ResponseDto;
+
+import static se.sundsvall.casemanagement.integration.fb.configuration.FbConfiguration.REGISTRATION_ID;
 
 @FeignClient(name = REGISTRATION_ID, url = "${integration.fb.url}", configuration = FbConfiguration.class)
 @CircuitBreaker(name = REGISTRATION_ID)

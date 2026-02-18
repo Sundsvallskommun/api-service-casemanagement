@@ -1,11 +1,5 @@
 package se.sundsvall.casemanagement.service;
 
-import static generated.client.party.PartyType.ENTERPRISE;
-import static generated.client.party.PartyType.PRIVATE;
-import static java.util.Collections.emptyList;
-import static se.sundsvall.casemanagement.util.Constants.CASE_DATA_STATUS_ROLE_SEARCH;
-import static se.sundsvall.dept44.util.LogUtils.sanitizeForLogging;
-
 import generated.client.party.PartyType;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +14,12 @@ import se.sundsvall.casemanagement.integration.byggr.ByggrService;
 import se.sundsvall.casemanagement.integration.casedata.CaseDataService;
 import se.sundsvall.casemanagement.integration.ecos.EcosService;
 import se.sundsvall.casemanagement.integration.party.PartyIntegration;
+
+import static generated.client.party.PartyType.ENTERPRISE;
+import static generated.client.party.PartyType.PRIVATE;
+import static java.util.Collections.emptyList;
+import static se.sundsvall.casemanagement.util.Constants.CASE_DATA_STATUS_ROLE_SEARCH;
+import static se.sundsvall.dept44.util.LogUtils.sanitizeForLogging;
 
 @Service
 public class StatusService {
