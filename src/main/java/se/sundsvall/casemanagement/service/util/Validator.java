@@ -1,12 +1,5 @@
 package se.sundsvall.casemanagement.service.util;
 
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.ANMALAN_ATTEFALL;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.BYGGR_ADDITIONAL_DOCUMENTS;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.BYGGR_ADD_CERTIFIED_INSPECTOR;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.NEIGHBORHOOD_NOTIFICATION;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.WITH_NULLABLE_FACILITY_TYPE;
-
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;
@@ -27,6 +20,13 @@ import se.sundsvall.casemanagement.api.validation.ByggRConstraints;
 import se.sundsvall.casemanagement.api.validation.ByggRFacilityConstraints;
 import se.sundsvall.casemanagement.api.validation.EcosConstraints;
 import se.sundsvall.casemanagement.api.validation.PersonConstraints;
+
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.ANMALAN_ATTEFALL;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.BYGGR_ADDITIONAL_DOCUMENTS;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.BYGGR_ADD_CERTIFIED_INSPECTOR;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.NEIGHBORHOOD_NOTIFICATION;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.WITH_NULLABLE_FACILITY_TYPE;
 
 @Component
 public class Validator {

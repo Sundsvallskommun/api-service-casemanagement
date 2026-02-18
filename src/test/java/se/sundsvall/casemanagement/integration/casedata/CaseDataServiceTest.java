@@ -1,5 +1,51 @@
 package se.sundsvall.casemanagement.integration.casedata;
 
+import generated.client.casedata.Errand;
+import generated.client.casedata.Errand.ChannelEnum;
+import generated.client.casedata.PatchErrand;
+import generated.client.casedata.Stakeholder;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Stream;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.http.ResponseEntity;
+import org.zalando.problem.Problem;
+import org.zalando.problem.Status;
+import org.zalando.problem.ThrowableProblem;
+import se.sundsvall.casemanagement.TestUtil;
+import se.sundsvall.casemanagement.api.model.CaseDTO;
+import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
+import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
+import se.sundsvall.casemanagement.api.model.enums.CaseType;
+import se.sundsvall.casemanagement.api.model.enums.Namespace;
+import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
+import se.sundsvall.casemanagement.api.model.enums.StakeholderType;
+import se.sundsvall.casemanagement.api.model.enums.SystemType;
+import se.sundsvall.casemanagement.integration.casedata.configuration.CaseDataProperties;
+import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
+import se.sundsvall.casemanagement.service.CaseMappingService;
+import se.sundsvall.casemanagement.util.Constants;
+
 import static generated.client.casedata.Stakeholder.TypeEnum.PERSON;
 import static java.time.OffsetDateTime.now;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,52 +68,6 @@ import static se.sundsvall.casemanagement.api.model.enums.Namespace.SBK_MEX;
 import static se.sundsvall.casemanagement.api.model.enums.Namespace.SBK_PARKING_PERMIT;
 import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toAttachment;
 import static se.sundsvall.casemanagement.util.Constants.SERVICE_NAME;
-
-import generated.client.casedata.Errand;
-import generated.client.casedata.Errand.ChannelEnum;
-import generated.client.casedata.PatchErrand;
-import generated.client.casedata.Stakeholder;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
-import java.util.concurrent.ExecutionException;
-import java.util.stream.Stream;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.http.ResponseEntity;
-import org.testcontainers.shaded.org.apache.commons.lang3.RandomStringUtils;
-import org.zalando.problem.Problem;
-import org.zalando.problem.Status;
-import org.zalando.problem.ThrowableProblem;
-import se.sundsvall.casemanagement.TestUtil;
-import se.sundsvall.casemanagement.api.model.CaseDTO;
-import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
-import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
-import se.sundsvall.casemanagement.api.model.enums.CaseType;
-import se.sundsvall.casemanagement.api.model.enums.Namespace;
-import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
-import se.sundsvall.casemanagement.api.model.enums.StakeholderType;
-import se.sundsvall.casemanagement.api.model.enums.SystemType;
-import se.sundsvall.casemanagement.integration.casedata.configuration.CaseDataProperties;
-import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
-import se.sundsvall.casemanagement.service.CaseMappingService;
-import se.sundsvall.casemanagement.util.Constants;
 
 @ExtendWith(MockitoExtension.class)
 class CaseDataServiceTest {
@@ -99,6 +99,20 @@ class CaseDataServiceTest {
 
 	@Captor
 	private ArgumentCaptor<generated.client.casedata.Attachment> attachmentArgumentCaptor;
+
+	private static Stream<Arguments> argumentsProvider() {
+		return Stream.of(
+			Arguments.of(PARKING_PERMIT, MUNICIPALITY_ID, SBK_PARKING_PERMIT, "externalCaseId", false),
+			Arguments.of(LOST_PARKING_PERMIT, MUNICIPALITY_ID, SBK_PARKING_PERMIT, "externalCaseId", false),
+			Arguments.of(PARKING_PERMIT_RENEWAL, MUNICIPALITY_ID, SBK_PARKING_PERMIT, "externalCaseId", false),
+			Arguments.of(PARKING_PERMIT, MUNICIPALITY_ID_ANGE, ANGE_PARKING_PERMIT, "externalCaseId", true),
+			Arguments.of(LOST_PARKING_PERMIT, MUNICIPALITY_ID_ANGE, ANGE_PARKING_PERMIT, "externalCaseId", true),
+			Arguments.of(PARKING_PERMIT_RENEWAL, MUNICIPALITY_ID_ANGE, ANGE_PARKING_PERMIT, "externalCaseId", true),
+			Arguments.of(PARKING_PERMIT_RENEWAL, MUNICIPALITY_ID_ANGE, ANGE_PARKING_PERMIT, "externalCaseId", true),
+			Arguments.of(PARKING_PERMIT_RENEWAL, MUNICIPALITY_ID_ANGE, ANGE_PARKING_PERMIT, null, false),
+			Arguments.of(MEX_BUILDING_PERMIT, MUNICIPALITY_ID, SBK_MEX, "externalCaseId", false),
+			Arguments.of(MEX_BUILDING_PERMIT, MUNICIPALITY_ID_ANGE, SBK_MEX, "externalCaseId", false));
+	}
 
 	@ParameterizedTest
 	@MethodSource("argumentsProvider")
@@ -243,17 +257,17 @@ class CaseDataServiceTest {
 		final var namespace = SBK_PARKING_PERMIT.name();
 		errandMock.setId(caseId);
 		final var statusMock1 = new generated.client.casedata.Status()
-			.statusType(RandomStringUtils.random(10, true, false))
+			.statusType(RandomStringUtils.secure().next(10, true, false))
 			.created(now().minusDays(10))
-			.description(RandomStringUtils.random(10, true, false));
+			.description(RandomStringUtils.secure().next(10, true, false));
 		final var statusMock2 = new generated.client.casedata.Status()
-			.statusType(RandomStringUtils.random(10, true, false))
+			.statusType(RandomStringUtils.secure().next(10, true, false))
 			.created(now().minusDays(5))
-			.description(RandomStringUtils.random(10, true, false));
+			.description(RandomStringUtils.secure().next(10, true, false));
 		final var statusMock3 = new generated.client.casedata.Status()
-			.statusType(RandomStringUtils.random(10, true, false))
+			.statusType(RandomStringUtils.secure().next(10, true, false))
 			.created(now().minusDays(20))
-			.description(RandomStringUtils.random(10, true, false));
+			.description(RandomStringUtils.secure().next(10, true, false));
 		errandMock.setStatuses(List.of(statusMock1, statusMock2, statusMock3));
 
 		final var caseMapping = CaseMapping.builder()
@@ -261,7 +275,7 @@ class CaseDataServiceTest {
 			.withExternalCaseId(UUID.randomUUID().toString())
 			.withSystem(SystemType.CASE_DATA)
 			.withCaseType(CaseType.PARKING_PERMIT.toString())
-			.withServiceName(RandomStringUtils.random(10, true, false))
+			.withServiceName(RandomStringUtils.secure().next(10, true, false))
 			.build();
 		// Mock
 		when(caseDataClientMock.getErrand(MUNICIPALITY_ID, namespace, caseId)).thenReturn(errandMock);
@@ -429,20 +443,6 @@ class CaseDataServiceTest {
 		otherCase.setExtraParameters(TestUtil.createExtraParameters());
 		otherCase.getExtraParameters().put("application.priority", "HIGH");
 		return otherCase;
-	}
-
-	private static Stream<Arguments> argumentsProvider() {
-		return Stream.of(
-			Arguments.of(PARKING_PERMIT, MUNICIPALITY_ID, SBK_PARKING_PERMIT, "externalCaseId", false),
-			Arguments.of(LOST_PARKING_PERMIT, MUNICIPALITY_ID, SBK_PARKING_PERMIT, "externalCaseId", false),
-			Arguments.of(PARKING_PERMIT_RENEWAL, MUNICIPALITY_ID, SBK_PARKING_PERMIT, "externalCaseId", false),
-			Arguments.of(PARKING_PERMIT, MUNICIPALITY_ID_ANGE, ANGE_PARKING_PERMIT, "externalCaseId", true),
-			Arguments.of(LOST_PARKING_PERMIT, MUNICIPALITY_ID_ANGE, ANGE_PARKING_PERMIT, "externalCaseId", true),
-			Arguments.of(PARKING_PERMIT_RENEWAL, MUNICIPALITY_ID_ANGE, ANGE_PARKING_PERMIT, "externalCaseId", true),
-			Arguments.of(PARKING_PERMIT_RENEWAL, MUNICIPALITY_ID_ANGE, ANGE_PARKING_PERMIT, "externalCaseId", true),
-			Arguments.of(PARKING_PERMIT_RENEWAL, MUNICIPALITY_ID_ANGE, ANGE_PARKING_PERMIT, null, false),
-			Arguments.of(MEX_BUILDING_PERMIT, MUNICIPALITY_ID, SBK_MEX, "externalCaseId", false),
-			Arguments.of(MEX_BUILDING_PERMIT, MUNICIPALITY_ID_ANGE, SBK_MEX, "externalCaseId", false));
 	}
 
 }

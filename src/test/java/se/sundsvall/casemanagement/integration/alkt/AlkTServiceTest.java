@@ -1,16 +1,5 @@
 package se.sundsvall.casemanagement.integration.alkt;
 
-import static java.time.temporal.ChronoUnit.SECONDS;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.within;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-import static se.sundsvall.casemanagement.api.model.enums.SystemType.ALKT;
-import static se.sundsvall.casemanagement.integration.alkt.AlkTService.CASE_TYPE;
-import static se.sundsvall.casemanagement.integration.alkt.AlkTService.FINISHED;
-import static se.sundsvall.casemanagement.integration.alkt.AlkTService.ONGOING;
-
 import generated.client.alkt.Establishment;
 import generated.client.alkt.ModelCase;
 import generated.client.alkt.Owner;
@@ -26,6 +15,17 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import static java.time.temporal.ChronoUnit.SECONDS;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+import static se.sundsvall.casemanagement.api.model.enums.SystemType.ALKT;
+import static se.sundsvall.casemanagement.integration.alkt.AlkTService.CASE_TYPE;
+import static se.sundsvall.casemanagement.integration.alkt.AlkTService.FINISHED;
+import static se.sundsvall.casemanagement.integration.alkt.AlkTService.ONGOING;
 
 @ExtendWith(MockitoExtension.class)
 class AlkTServiceTest {

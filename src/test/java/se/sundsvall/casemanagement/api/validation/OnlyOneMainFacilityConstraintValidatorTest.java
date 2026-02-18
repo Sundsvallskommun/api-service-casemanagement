@@ -1,8 +1,5 @@
 package se.sundsvall.casemanagement.api.validation;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static se.sundsvall.casemanagement.TestUtil.createFacilityDTO;
-
 import jakarta.validation.ConstraintValidatorContext;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -11,6 +8,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.sundsvall.casemanagement.api.validation.impl.OnlyOneMainFacilityConstraintValidator;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static se.sundsvall.casemanagement.TestUtil.createFacilityDTO;
 
 @ExtendWith(MockitoExtension.class)
 class OnlyOneMainFacilityConstraintValidatorTest {

@@ -1,12 +1,5 @@
 package se.sundsvall.casemanagement.integration.casedata;
 
-import static generated.client.casedata.ContactInformation.ContactTypeEnum.CELLPHONE;
-import static generated.client.casedata.ContactInformation.ContactTypeEnum.EMAIL;
-import static generated.client.casedata.ContactInformation.ContactTypeEnum.PHONE;
-import static generated.client.casedata.Stakeholder.TypeEnum.ORGANIZATION;
-import static generated.client.casedata.Stakeholder.TypeEnum.PERSON;
-import static java.util.Collections.emptyList;
-
 import generated.client.casedata.Address;
 import generated.client.casedata.ContactInformation;
 import generated.client.casedata.Coordinates;
@@ -31,6 +24,13 @@ import se.sundsvall.casemanagement.api.model.OrganizationDTO;
 import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
 import se.sundsvall.casemanagement.api.model.PersonDTO;
 import se.sundsvall.casemanagement.api.model.StakeholderDTO;
+
+import static generated.client.casedata.ContactInformation.ContactTypeEnum.CELLPHONE;
+import static generated.client.casedata.ContactInformation.ContactTypeEnum.EMAIL;
+import static generated.client.casedata.ContactInformation.ContactTypeEnum.PHONE;
+import static generated.client.casedata.Stakeholder.TypeEnum.ORGANIZATION;
+import static generated.client.casedata.Stakeholder.TypeEnum.PERSON;
+import static java.util.Collections.emptyList;
 
 public final class CaseDataMapper {
 

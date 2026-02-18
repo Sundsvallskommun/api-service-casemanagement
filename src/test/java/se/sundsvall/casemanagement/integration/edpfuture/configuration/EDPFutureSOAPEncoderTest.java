@@ -1,7 +1,5 @@
 package se.sundsvall.casemanagement.integration.edpfuture.configuration;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import edpfuture.AgarbyteBlankett;
 import feign.RequestTemplate;
 import feign.jaxb.JAXBContextFactory;
@@ -11,6 +9,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.InputSource;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class EDPFutureSOAPEncoderTest {
 

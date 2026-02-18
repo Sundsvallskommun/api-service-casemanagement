@@ -1,10 +1,5 @@
 package se.sundsvall.casemanagement;
 
-import static generated.client.party.PartyType.PRIVATE;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.lenient;
-
 import arendeexport.AbstractArendeObjekt;
 import arendeexport.Arende;
 import arendeexport.ArendeFastighet;
@@ -75,6 +70,11 @@ import se.sundsvall.casemanagement.integration.fb.model.FbPropertyInfo;
 import se.sundsvall.casemanagement.integration.party.PartyIntegration;
 import se.sundsvall.casemanagement.service.FbService;
 import se.sundsvall.casemanagement.util.Constants;
+
+import static generated.client.party.PartyType.PRIVATE;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.lenient;
 
 public final class TestUtil {
 

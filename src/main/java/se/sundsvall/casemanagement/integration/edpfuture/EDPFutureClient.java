@@ -1,7 +1,5 @@
 package se.sundsvall.casemanagement.integration.edpfuture;
 
-import static se.sundsvall.casemanagement.integration.edpfuture.configuration.EDPFutureConfiguration.REGISTRATION_ID;
-
 import edpfuture.GetAuthorizedUsers;
 import edpfuture.GetAuthorizedUsersResponse;
 import edpfuture.GetBuildingsByAutorizationRoleV12;
@@ -15,6 +13,8 @@ import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import se.sundsvall.casemanagement.integration.edpfuture.configuration.EDPFutureConfiguration;
+
+import static se.sundsvall.casemanagement.integration.edpfuture.configuration.EDPFutureConfiguration.REGISTRATION_ID;
 
 @FeignClient(name = REGISTRATION_ID,
 	url = "${integration.edp-future.url}",

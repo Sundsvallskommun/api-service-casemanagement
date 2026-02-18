@@ -1,8 +1,5 @@
 package se.sundsvall.casemanagement.integration.alkt;
 
-import static java.lang.Boolean.TRUE;
-import static se.sundsvall.casemanagement.api.model.enums.SystemType.ALKT;
-
 import generated.client.alkt.ModelCase;
 import generated.client.alkt.Owner;
 import java.time.OffsetDateTime;
@@ -14,6 +11,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import se.sundsvall.casemanagement.api.model.CaseStatusDTO;
+
+import static java.lang.Boolean.TRUE;
+import static se.sundsvall.casemanagement.api.model.enums.SystemType.ALKT;
 
 @Service
 public class AlkTService {

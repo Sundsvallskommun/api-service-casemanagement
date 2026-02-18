@@ -1,7 +1,5 @@
 package se.sundsvall.casemanagement.integration.casedata;
 
-import static se.sundsvall.casemanagement.integration.casedata.configuration.CaseDataConfiguration.CLIENT_ID;
-
 import generated.client.casedata.Attachment;
 import generated.client.casedata.Errand;
 import generated.client.casedata.PatchErrand;
@@ -26,6 +24,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import se.sundsvall.casemanagement.integration.casedata.configuration.CaseDataConfiguration;
+
+import static se.sundsvall.casemanagement.integration.casedata.configuration.CaseDataConfiguration.CLIENT_ID;
 
 @FeignClient(name = CLIENT_ID, url = "${integration.case-data.url}", configuration = CaseDataConfiguration.class)
 @CircuitBreaker(name = CLIENT_ID)

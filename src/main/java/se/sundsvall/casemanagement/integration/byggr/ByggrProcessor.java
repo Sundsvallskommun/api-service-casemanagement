@@ -1,7 +1,5 @@
 package se.sundsvall.casemanagement.integration.byggr;
 
-import static se.sundsvall.casemanagement.util.Constants.BYGGR;
-
 import arendeexport.SaveNewArendeResponse2;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -24,6 +22,8 @@ import se.sundsvall.casemanagement.service.event.UpdateByggrCase;
 import se.sundsvall.casemanagement.util.EnvironmentUtil;
 import se.sundsvall.casemanagement.util.Processor;
 import se.sundsvall.dept44.requestid.RequestId;
+
+import static se.sundsvall.casemanagement.util.Constants.BYGGR;
 
 @Component
 class ByggrProcessor extends Processor {

@@ -1,10 +1,10 @@
 package se.sundsvall.casemanagement.integration.ecos.configuration;
 
-import static org.zalando.problem.Status.BAD_GATEWAY;
-
 import org.zalando.problem.ThrowableProblem;
 import se.sundsvall.casemanagement.integration.util.AbstractErrorDecoder;
 import se.sundsvall.dept44.exception.ClientProblem;
+
+import static org.zalando.problem.Status.BAD_GATEWAY;
 
 public class MinutMiljoErrorDecoder extends AbstractErrorDecoder {
 

@@ -1,7 +1,5 @@
 package se.sundsvall.casemanagement.integration.byggr;
 
-import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.filterPersonId;
-
 import arendeexport.Arende;
 import arendeexport.ArendeIntressent;
 import java.util.List;
@@ -12,6 +10,8 @@ import se.sundsvall.casemanagement.api.model.PersonDTO;
 import se.sundsvall.casemanagement.api.model.StakeholderDTO;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
 import se.sundsvall.casemanagement.util.Constants;
+
+import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.filterPersonId;
 
 public final class ByggrUtil {
 

@@ -1,7 +1,5 @@
 package se.sundsvall.casemanagement.integration.db.model;
 
-import static org.hibernate.annotations.TimeZoneStorageType.NORMALIZE;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -19,6 +17,8 @@ import lombok.NoArgsConstructor;
 import lombok.With;
 import org.hibernate.Length;
 import org.hibernate.annotations.TimeZoneStorage;
+
+import static org.hibernate.annotations.TimeZoneStorageType.NORMALIZE;
 
 @Entity
 @Data

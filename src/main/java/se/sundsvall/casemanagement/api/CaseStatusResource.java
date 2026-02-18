@@ -1,12 +1,5 @@
 package se.sundsvall.casemanagement.api;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
-import static org.springframework.http.ResponseEntity.notFound;
-import static org.springframework.http.ResponseEntity.ok;
-import static se.sundsvall.casemanagement.util.Constants.ORGNR_PATTERN_MESSAGE;
-import static se.sundsvall.casemanagement.util.Constants.ORGNR_PATTERN_REGEX;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -27,6 +20,13 @@ import se.sundsvall.casemanagement.api.model.CaseStatusDTO;
 import se.sundsvall.casemanagement.service.StatusService;
 import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
 import se.sundsvall.dept44.common.validators.annotation.ValidUuid;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
+import static org.springframework.http.ResponseEntity.notFound;
+import static org.springframework.http.ResponseEntity.ok;
+import static se.sundsvall.casemanagement.util.Constants.ORGNR_PATTERN_MESSAGE;
+import static se.sundsvall.casemanagement.util.Constants.ORGNR_PATTERN_REGEX;
 
 @RestController
 @Validated

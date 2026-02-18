@@ -42,6 +42,11 @@ integration:
     oauth2ClientSecret: ${SUNDSVALLS_KOMMUN_CONSUMER_SECRET}
     oauth2TokenUrl: http://localhost:${wiremock.server.port:}/token
     url: http://localhost:${wiremock.server.port:}/citizen
+  eventlog:
+    oauth2-client-id: ${SUNDSVALLS_KOMMUN_CONSUMER_KEY}
+    oauth2-client-secret: ${SUNDSVALLS_KOMMUN_CONSUMER_SECRET}
+    oauth2-token-url: http://localhost:${wiremock.server.port:}/token
+    url: http://localhost:${wiremock.server.port:}/eventlog
   party:
     oauth2ClientId: ${SUNDSVALLS_KOMMUN_CONSUMER_KEY}
     oauth2ClientSecret: ${SUNDSVALLS_KOMMUN_CONSUMER_SECRET}

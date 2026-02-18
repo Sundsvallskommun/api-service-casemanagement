@@ -1,9 +1,5 @@
 package se.sundsvall.casemanagement.integration.oepintegrator;
 
-import static org.springframework.http.MediaType.ALL_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static se.sundsvall.casemanagement.integration.oepintegrator.configuration.OepIntegratorConfiguration.REGISTRATION_ID;
-
 import generated.client.oep_integrator.CaseStatusChangeRequest;
 import generated.client.oep_integrator.ConfirmDeliveryRequest;
 import generated.client.oep_integrator.InstanceType;
@@ -15,6 +11,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import se.sundsvall.casemanagement.integration.oepintegrator.configuration.OepIntegratorConfiguration;
+
+import static org.springframework.http.MediaType.ALL_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static se.sundsvall.casemanagement.integration.oepintegrator.configuration.OepIntegratorConfiguration.REGISTRATION_ID;
 
 @FeignClient(name = REGISTRATION_ID, url = "${integration.oep-integrator.url}", configuration = OepIntegratorConfiguration.class, dismiss404 = true)
 @CircuitBreaker(name = REGISTRATION_ID)

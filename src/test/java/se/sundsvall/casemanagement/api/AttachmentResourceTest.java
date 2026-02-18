@@ -1,12 +1,5 @@
 package se.sundsvall.casemanagement.api;
 
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-import static se.sundsvall.casemanagement.TestUtil.createAttachment;
-import static se.sundsvall.casemanagement.TestUtil.createCaseMapping;
-
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +14,13 @@ import se.sundsvall.casemanagement.integration.byggr.ByggrService;
 import se.sundsvall.casemanagement.integration.casedata.CaseDataService;
 import se.sundsvall.casemanagement.integration.ecos.EcosService;
 import se.sundsvall.casemanagement.service.CaseMappingService;
+
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static se.sundsvall.casemanagement.TestUtil.createAttachment;
+import static se.sundsvall.casemanagement.TestUtil.createCaseMapping;
 
 @SpringBootTest(classes = Application.class, webEnvironment = RANDOM_PORT)
 @ActiveProfiles("junit")

@@ -1,16 +1,16 @@
 package se.sundsvall.casemanagement.integration.lantmateriet.model;
 
+import org.apache.commons.lang3.RandomStringUtils;
+import org.assertj.core.api.Assertions;
+import org.hamcrest.MatcherAssert;
+import org.junit.jupiter.api.Test;
+
 import static com.google.code.beanmatchers.BeanMatchers.hasValidBeanConstructor;
 import static com.google.code.beanmatchers.BeanMatchers.hasValidBeanEquals;
 import static com.google.code.beanmatchers.BeanMatchers.hasValidBeanHashCode;
 import static com.google.code.beanmatchers.BeanMatchers.hasValidBeanToString;
 import static com.google.code.beanmatchers.BeanMatchers.hasValidGettersAndSetters;
 import static org.hamcrest.CoreMatchers.allOf;
-
-import org.assertj.core.api.Assertions;
-import org.hamcrest.MatcherAssert;
-import org.junit.jupiter.api.Test;
-import org.testcontainers.shaded.org.apache.commons.lang3.RandomStringUtils;
 
 class RegisterbeteckningsreferensTest {
 
@@ -26,10 +26,10 @@ class RegisterbeteckningsreferensTest {
 
 	@Test
 	void testFields() {
-		Registerbeteckningsreferens object = new Registerbeteckningsreferens();
-		object.setRegisterenhet(RandomStringUtils.randomAlphabetic(10));
-		object.setBeteckning(RandomStringUtils.randomAlphabetic(10));
-		object.setBeteckningsid(RandomStringUtils.randomAlphabetic(10));
+		final Registerbeteckningsreferens object = new Registerbeteckningsreferens();
+		object.setRegisterenhet(RandomStringUtils.secure().nextAlphabetic(10));
+		object.setBeteckning(RandomStringUtils.secure().nextAlphabetic(10));
+		object.setBeteckningsid(RandomStringUtils.secure().nextAlphabetic(10));
 
 		Assertions.assertThat(object).isNotNull().hasNoNullFieldsOrProperties();
 	}

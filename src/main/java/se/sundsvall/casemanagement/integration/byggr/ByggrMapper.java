@@ -1,18 +1,5 @@
 package se.sundsvall.casemanagement.integration.byggr;
 
-import static java.util.function.Predicate.not;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static se.sundsvall.casemanagement.api.model.enums.SystemType.BYGGR;
-import static se.sundsvall.casemanagement.integration.byggr.ByggrUtil.hasHandelseList;
-import static se.sundsvall.casemanagement.integration.byggr.ByggrUtil.isCaseClosed;
-import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDLING_STATUS_INKOMMEN;
-import static se.sundsvall.casemanagement.util.Constants.BYGGR_KOMTYP_EPOST;
-import static se.sundsvall.casemanagement.util.Constants.BYGGR_KOMTYP_HEMTELEFON;
-import static se.sundsvall.casemanagement.util.Constants.BYGGR_KOMTYP_MOBIL;
-import static se.sundsvall.casemanagement.util.Constants.BYGGR_STATUS_OKANT;
-import static se.sundsvall.casemanagement.util.Constants.HANDELSETYP_ANMALAN;
-import static se.sundsvall.casemanagement.util.Constants.HANDELSETYP_ANSOKAN;
-
 import arendeexport.Aktorbehorighet;
 import arendeexport.Arende;
 import arendeexport.ArendeIntressent;
@@ -66,6 +53,19 @@ import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.integration.db.model.CaseTypeData;
 import se.sundsvall.casemanagement.util.Constants;
+
+import static java.util.function.Predicate.not;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static se.sundsvall.casemanagement.api.model.enums.SystemType.BYGGR;
+import static se.sundsvall.casemanagement.integration.byggr.ByggrUtil.hasHandelseList;
+import static se.sundsvall.casemanagement.integration.byggr.ByggrUtil.isCaseClosed;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDLING_STATUS_INKOMMEN;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR_KOMTYP_EPOST;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR_KOMTYP_HEMTELEFON;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR_KOMTYP_MOBIL;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR_STATUS_OKANT;
+import static se.sundsvall.casemanagement.util.Constants.HANDELSETYP_ANMALAN;
+import static se.sundsvall.casemanagement.util.Constants.HANDELSETYP_ANSOKAN;
 
 public final class ByggrMapper {
 

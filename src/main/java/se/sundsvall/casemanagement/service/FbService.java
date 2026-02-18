@@ -1,15 +1,5 @@
 package se.sundsvall.casemanagement.service;
 
-import static java.util.Objects.isNull;
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-import static se.sundsvall.casemanagement.service.mapper.FbMapper.toAddressDTO;
-import static se.sundsvall.casemanagement.service.mapper.FbMapper.toAdressplatsId;
-import static se.sundsvall.casemanagement.service.mapper.FbMapper.toFbPropertyInfo;
-import static se.sundsvall.casemanagement.service.mapper.FbMapper.toFnr;
-import static se.sundsvall.casemanagement.service.mapper.FbMapper.toOrganizationDTO;
-import static se.sundsvall.casemanagement.service.mapper.FbMapper.toPersonDTO;
-import static se.sundsvall.casemanagement.service.mapper.FbMapper.toPropertyUuids;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -26,6 +16,16 @@ import se.sundsvall.casemanagement.integration.fb.model.FbPropertyInfo;
 import se.sundsvall.casemanagement.integration.fb.model.ResponseDto;
 import se.sundsvall.casemanagement.integration.lantmateriet.model.Registerbeteckningsreferens;
 import se.sundsvall.casemanagement.util.Constants;
+
+import static java.util.Objects.isNull;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+import static se.sundsvall.casemanagement.service.mapper.FbMapper.toAddressDTO;
+import static se.sundsvall.casemanagement.service.mapper.FbMapper.toAdressplatsId;
+import static se.sundsvall.casemanagement.service.mapper.FbMapper.toFbPropertyInfo;
+import static se.sundsvall.casemanagement.service.mapper.FbMapper.toFnr;
+import static se.sundsvall.casemanagement.service.mapper.FbMapper.toOrganizationDTO;
+import static se.sundsvall.casemanagement.service.mapper.FbMapper.toPersonDTO;
+import static se.sundsvall.casemanagement.service.mapper.FbMapper.toPropertyUuids;
 
 @Service
 public class FbService {

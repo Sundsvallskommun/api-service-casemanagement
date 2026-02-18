@@ -1,10 +1,10 @@
 package se.sundsvall.casemanagement.util;
 
-import static java.lang.String.join;
-
 import java.util.Arrays;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
+
+import static java.lang.String.join;
 
 @Component
 public class EnvironmentUtil {
