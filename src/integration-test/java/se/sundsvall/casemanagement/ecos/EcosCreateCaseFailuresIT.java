@@ -1,7 +1,5 @@
 package se.sundsvall.casemanagement.ecos;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +9,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.zalando.problem.violations.ConstraintViolationProblem;
-
 import se.sundsvall.casemanagement.Application;
 import se.sundsvall.casemanagement.api.model.CaseResourceResponseDTO;
 import se.sundsvall.casemanagement.api.model.enums.CaseType;
@@ -20,6 +17,8 @@ import se.sundsvall.casemanagement.integration.db.CaseMappingRepository;
 import se.sundsvall.casemanagement.integration.db.CaseRepository;
 import se.sundsvall.dept44.test.AbstractAppTest;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ActiveProfiles("it")
 @Testcontainers
@@ -30,14 +29,12 @@ import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 })
 public class EcosCreateCaseFailuresIT extends AbstractAppTest {
 
+	public static final String ECOS_CASE_ID = "e19981ad-34b2-4e14-88f5-133f61ca85aa";
 	private static final String REQUEST = "request.json";
 	private static final String RESPONSE = "response.json";
-	public static final String ECOS_CASE_ID = "e19981ad-34b2-4e14-88f5-133f61ca85aa";
-
 	private static final String MUNICIPALITY_ID = "2281";
 
 	private static final String PATH = "/" + MUNICIPALITY_ID + "/cases";
-
 
 	@Autowired
 	private CaseMappingRepository caseMappingRepository;
@@ -67,16 +64,13 @@ public class EcosCreateCaseFailuresIT extends AbstractAppTest {
 		// Make sure that there doesn't exist a case entity
 		assertThat(caseRepository.findById("1256239125")).isEmpty();
 		// Make sure that there exists a case mapping
-		assertThat(caseMappingRepository.findAllByExternalCaseIdAndMunicipalityId("1256239125", MUNICIPALITY_ID))
-			.isNotNull()
-			.hasSize(1)
-			.allSatisfy(caseMapping -> {
-				assertThat(caseMapping.getExternalCaseId()).isEqualTo("1256239125");
-				assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.REGISTRERING_AV_LIVSMEDEL.toString());
-				assertThat(caseMapping.getCaseId()).isEqualTo(ECOS_CASE_ID);
-				assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
-			});
-		caseMappingRepository.delete(caseMappingRepository.findAllByExternalCaseIdAndMunicipalityId("1256239125", MUNICIPALITY_ID).getFirst());
+		final var caseMapping = caseMappingRepository.findByExternalCaseIdAndMunicipalityId("1256239125", MUNICIPALITY_ID);
+		assertThat(caseMapping).isNotNull();
+		assertThat(caseMapping.getExternalCaseId()).isEqualTo("1256239125");
+		assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.REGISTRERING_AV_LIVSMEDEL.toString());
+		assertThat(caseMapping.getCaseId()).isEqualTo(ECOS_CASE_ID);
+		assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
+		caseMappingRepository.delete(caseMapping);
 	}
 
 	@Test
@@ -95,9 +89,8 @@ public class EcosCreateCaseFailuresIT extends AbstractAppTest {
 		// Make sure that there doesn't exist a case entity
 		assertThat(caseRepository.findById(EXTERNAL_CASE_ID)).isEmpty();
 		// Make sure that there doesn't exist a case mapping
-		assertThat(caseMappingRepository.findAllByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID))
-			.isNotNull()
-			.isEmpty();
+		assertThat(caseMappingRepository.findByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID))
+			.isNull();
 	}
 
 	@Test
@@ -121,9 +114,8 @@ public class EcosCreateCaseFailuresIT extends AbstractAppTest {
 		//  Make sure that there exists a case entity
 		assertThat(caseRepository.findById(EXTERNAL_CASE_ID)).isPresent();
 		// Make sure that there doesn't exist a case mapping
-		assertThat(caseMappingRepository.findAllByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID))
-			.isNotNull()
-			.isEmpty();
+		assertThat(caseMappingRepository.findByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID))
+			.isNull();
 	}
 
 	@Test
@@ -147,9 +139,8 @@ public class EcosCreateCaseFailuresIT extends AbstractAppTest {
 		// Make sure that there exists a case entity
 		assertThat(caseRepository.findById(EXTERNAL_CASE_ID)).isPresent();
 		// Make sure that there doesn't exist a case mapping
-		assertThat(caseMappingRepository.findAllByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID))
-			.isNotNull()
-			.isEmpty();
+		assertThat(caseMappingRepository.findByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID))
+			.isNull();
 	}
 
 }

@@ -80,6 +80,13 @@ integration:
     read-timeout: 60
     connect-timeout: 5
     api-key: override
+scheduler:
+  status:
+    cron: 0 0 * * * *
+    name: StatusScheduler
+    lock-at-most-for: PT10M
+    maximum-execution-time: PT10M
+    municipality-ids: 2281
 logbook:
   body-filters:
     json-path:

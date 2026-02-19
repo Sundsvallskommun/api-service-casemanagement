@@ -1141,7 +1141,6 @@ components:
         timestamp:
           type: string
           format: date-time
-          readOnly: true
       required:
         - caseType
         - system

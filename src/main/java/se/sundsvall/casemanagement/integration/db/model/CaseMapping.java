@@ -1,6 +1,5 @@
 package se.sundsvall.casemanagement.integration.db.model;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -54,7 +53,6 @@ public class CaseMapping {
 	@Column(name = "serviceName")
 	private String serviceName;
 
-	@Schema(accessMode = Schema.AccessMode.READ_ONLY)
 	@Column(name = "timestamp")
 	private LocalDateTime timestamp;
 
