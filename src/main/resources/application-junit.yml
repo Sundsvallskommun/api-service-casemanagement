@@ -25,6 +25,13 @@ spring:
             scripts:
               action: create
               create-target: target/database/generated-schema.sql
+scheduler:
+  status:
+    cron: "-"
+    name: StatusScheduler
+    lock-at-most-for: PT10M
+    maximum-execution-time: PT10M
+    municipality-ids: 2281
 integration:
   arendeexport:
     url:

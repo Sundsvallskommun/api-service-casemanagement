@@ -1,9 +1,5 @@
 package se.sundsvall.casemanagement.casedata;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.http.HttpMethod.POST;
-import static org.springframework.http.HttpMethod.PUT;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +15,10 @@ import se.sundsvall.casemanagement.integration.db.CaseMappingRepository;
 import se.sundsvall.casemanagement.integration.db.CaseRepository;
 import se.sundsvall.dept44.test.AbstractAppTest;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpMethod.PUT;
 
 @Testcontainers
 @WireMockAppTestSuite(files = "classpath:/CasedataIT/", classes = Application.class)
@@ -62,15 +62,12 @@ class CaseDataIT extends AbstractAppTest {
 		// Make sure that there doesn't exist a case entity
 		assertThat(caseRepository.findByIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID)).isEmpty();
 		// Make sure that there exists a case mapping
-		assertThat(caseMappingRepository.findAllByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID))
-			.isNotNull()
-			.hasSize(1)
-			.allSatisfy(caseMapping -> {
-				assertThat(caseMapping.getExternalCaseId()).isEqualTo(EXTERNAL_CASE_ID);
-				assertThat(caseMapping.getCaseId()).isEqualTo(CASE_DATA_ID);
-				assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.PARKING_PERMIT.toString());
-				assertThat(caseMapping.getSystem()).isEqualTo(SystemType.CASE_DATA);
-			});
+		final var caseMapping = caseMappingRepository.findByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID);
+		assertThat(caseMapping).isNotNull();
+		assertThat(caseMapping.getExternalCaseId()).isEqualTo(EXTERNAL_CASE_ID);
+		assertThat(caseMapping.getCaseId()).isEqualTo(CASE_DATA_ID);
+		assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.PARKING_PERMIT.toString());
+		assertThat(caseMapping.getSystem()).isEqualTo(SystemType.CASE_DATA);
 	}
 
 	@Test
@@ -89,9 +86,8 @@ class CaseDataIT extends AbstractAppTest {
 		// Make sure that there exists a case entity
 		assertThat(caseRepository.findByIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID)).isPresent();
 		// Make sure that there doesn't exist a case mapping
-		assertThat(caseMappingRepository.findAllByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID))
-			.isNotNull()
-			.isEmpty();
+		assertThat(caseMappingRepository.findByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID))
+			.isNull();
 	}
 
 	@Test
@@ -124,14 +120,11 @@ class CaseDataIT extends AbstractAppTest {
 		// Make sure that there doesn't exist a case entity
 		assertThat(caseRepository.findByIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID_ANGE)).isEmpty();
 		// Make sure that there exists a case mapping
-		assertThat(caseMappingRepository.findAllByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID_ANGE))
-			.isNotNull()
-			.hasSize(1)
-			.allSatisfy(caseMapping -> {
-				assertThat(caseMapping.getExternalCaseId()).isEqualTo(EXTERNAL_CASE_ID);
-				assertThat(caseMapping.getCaseId()).isEqualTo(CASE_DATA_ID);
-				assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.PARKING_PERMIT.toString());
-				assertThat(caseMapping.getSystem()).isEqualTo(SystemType.CASE_DATA);
-			});
+		final var caseMapping = caseMappingRepository.findByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID_ANGE);
+		assertThat(caseMapping).isNotNull();
+		assertThat(caseMapping.getExternalCaseId()).isEqualTo(EXTERNAL_CASE_ID);
+		assertThat(caseMapping.getCaseId()).isEqualTo(CASE_DATA_ID);
+		assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.PARKING_PERMIT.toString());
+		assertThat(caseMapping.getSystem()).isEqualTo(SystemType.CASE_DATA);
 	}
 }

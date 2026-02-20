@@ -1,9 +1,5 @@
 package se.sundsvall.casemanagement.byggr;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.http.HttpMethod.POST;
-import static org.springframework.http.HttpStatus.OK;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +14,10 @@ import se.sundsvall.casemanagement.integration.db.CaseMappingRepository;
 import se.sundsvall.casemanagement.integration.db.CaseRepository;
 import se.sundsvall.dept44.test.AbstractAppTest;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpStatus.OK;
 
 @Testcontainers
 @WireMockAppTestSuite(files = "classpath:/ByggrCaseIT", classes = Application.class)
@@ -61,15 +61,12 @@ class ByggrCaseIT extends AbstractAppTest {
 		// Make sure that there doesn't exist a case entity
 		assertThat(caseRepository.findById(EXTERNAL_CASE_ID)).isEmpty();
 		// Make sure that there exists a case mapping
-		assertThat(caseMappingRepository.findAllByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID))
-			.isNotNull()
-			.hasSize(1)
-			.allSatisfy(caseMapping -> {
-				assertThat(caseMapping.getExternalCaseId()).isEqualTo(EXTERNAL_CASE_ID);
-				assertThat(caseMapping.getCaseId()).isEqualTo("BYGG 2021-000200");
-				assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV.toString());
-				assertThat(caseMapping.getSystem()).isEqualTo(SystemType.BYGGR);
-			});
+		final var caseMapping = caseMappingRepository.findByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID);
+		assertThat(caseMapping).isNotNull();
+		assertThat(caseMapping.getExternalCaseId()).isEqualTo(EXTERNAL_CASE_ID);
+		assertThat(caseMapping.getCaseId()).isEqualTo("BYGG 2021-000200");
+		assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV.toString());
+		assertThat(caseMapping.getSystem()).isEqualTo(SystemType.BYGGR);
 	}
 
 	@Test
@@ -121,16 +118,12 @@ class ByggrCaseIT extends AbstractAppTest {
 		// Make sure that there doesn't exist a case entity
 		assertThat(caseRepository.findById(EXTERNAL_CASE_ID)).isEmpty();
 		// Make sure that there exists a case mapping
-		final var all = caseMappingRepository.findAll();
-		assertThat(caseMappingRepository.findAllByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID))
-			.isNotNull()
-			.hasSize(1)
-			.allSatisfy(caseMapping -> {
-				assertThat(caseMapping.getExternalCaseId()).isEqualTo(EXTERNAL_CASE_ID);
-				assertThat(caseMapping.getCaseId()).isEqualTo("BYGG 2021-000200");
-				assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV.toString());
-				assertThat(caseMapping.getSystem()).isEqualTo(SystemType.BYGGR);
-			});
+		final var caseMapping = caseMappingRepository.findByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID);
+		assertThat(caseMapping).isNotNull();
+		assertThat(caseMapping.getExternalCaseId()).isEqualTo(EXTERNAL_CASE_ID);
+		assertThat(caseMapping.getCaseId()).isEqualTo("BYGG 2021-000200");
+		assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV.toString());
+		assertThat(caseMapping.getSystem()).isEqualTo(SystemType.BYGGR);
 
 	}
 
