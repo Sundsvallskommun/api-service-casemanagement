@@ -1,0 +1,14 @@
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+	<s:Body>
+		<GetUpdatedArendenResponse xmlns="www.tekis.se/ServiceContract">
+			<GetUpdatedArendenResult>
+				<Arenden>
+					<arende dnr="3522" arendeId="12345" xmlns:a="www.tekis.se/arende">
+						<status xmlns="www.tekis.se/arende">Pågående</status>
+						<ankomstDatum xmlns="www.tekis.se/arende">2021-08-18</ankomstDatum>
+					</arende>
+				</Arenden>
+			</GetUpdatedArendenResult>
+		</GetUpdatedArendenResponse>
+	</s:Body>
+</s:Envelope>

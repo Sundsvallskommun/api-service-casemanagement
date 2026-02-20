@@ -1,0 +1,24 @@
+{
+	"request": {
+		"headers": {
+			"SoapAction": {
+				"equalTo": "www.tekis.se/ServiceContract/V4/IExportArenden/GetUpdatedArenden"
+			}
+		},
+		"method": "POST",
+		"bodyPatterns": [
+			{
+				"contains": "GetUpdatedArenden"
+			}
+		],
+		"url": "/TekisArende/ArendeExportWS.svc"
+	},
+	"response": {
+		"headers": {
+			"Content-Type": "text/xml; charset=utf-8"
+		},
+		"bodyFileName": "test1_checkAndUpdateStatus/responses/api-byggr-GetUpdatedArenden.xml",
+		"status": 200
+	},
+	"name": "api-byggr-GetUpdatedArenden"
+}
