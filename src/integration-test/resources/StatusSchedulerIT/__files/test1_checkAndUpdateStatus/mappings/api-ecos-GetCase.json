@@ -1,0 +1,24 @@
+{
+	"request": {
+		"headers": {
+			"SoapAction": {
+				"equalTo": "urn:Ecos.API.MinutMiljo.Service.V1/IMinutMiljoService/GetCase"
+			}
+		},
+		"method": "POST",
+		"bodyPatterns": [
+			{
+				"contains": "GetCase"
+			}
+		],
+		"url": "/Ecos2PublicServices/MinutMiljoService.svc"
+	},
+	"response": {
+		"headers": {
+			"Content-Type": "text/xml; charset=utf-8"
+		},
+		"bodyFileName": "test1_checkAndUpdateStatus/responses/api-ecos-GetCase.xml",
+		"status": 200
+	},
+	"name": "api-ecos-GetCase"
+}

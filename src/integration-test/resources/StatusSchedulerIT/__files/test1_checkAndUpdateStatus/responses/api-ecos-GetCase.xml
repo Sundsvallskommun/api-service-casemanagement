@@ -1,0 +1,35 @@
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+	<s:Body>
+		<GetCaseResponse xmlns="urn:Ecos.API.MinutMiljo.Service.V1">
+			<GetCaseResult xmlns:a="urn:Ecos.API.MinutMiljo.DataContracts.V1"
+				xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+				<a:CaseId>e19981ad-34b2-4e14-88f5-133f61ca85aa</a:CaseId>
+				<a:CaseNumber>MK-2021-837</a:CaseNumber>
+				<a:CaseSubtitle>Test Case, SUNDSVALL BALDER 2</a:CaseSubtitle>
+				<a:CaseSubtitleFree />
+				<a:Documents />
+				<a:EstateAddress>Testargatan 1 12345 Sundsvall Sverige</a:EstateAddress>
+				<a:EstateDesignation>Test Case</a:EstateDesignation>
+				<a:Occurrences>
+					<a:OccurrenceListItemSvcDto>
+						<a:Documents />
+						<a:OccurrenceDate>2021-09-08T13:21:49.7366667</a:OccurrenceDate>
+						<a:OccurrenceDescription>Beslut</a:OccurrenceDescription>
+						<a:OccurrenceId>e19981ad-34b2-4e14-88f5-133f61ca85aa</a:OccurrenceId>
+						<a:OccurrenceKindId>e19981ad-34b2-4e14-88f5-133f61ca85aa</a:OccurrenceKindId>
+						<a:OccurrenceTypeId>e19981ad-34b2-4e14-88f5-133f61ca85aa</a:OccurrenceTypeId>
+					</a:OccurrenceListItemSvcDto>
+					<a:OccurrenceListItemSvcDto>
+						<a:Documents />
+						<a:OccurrenceDate>2021-08-31T13:46:42.6466667</a:OccurrenceDate>
+						<a:OccurrenceDescription>Anmälan</a:OccurrenceDescription>
+						<a:OccurrenceId>e19981ad-34b2-4e14-88f5-133f61ca85bb</a:OccurrenceId>
+						<a:OccurrenceKindId>e19981ad-34b2-4e14-88f5-133f61ca85bb</a:OccurrenceKindId>
+						<a:OccurrenceTypeId>e19981ad-34b2-4e14-88f5-133f61ca85bb</a:OccurrenceTypeId>
+					</a:OccurrenceListItemSvcDto>
+				</a:Occurrences>
+				<a:ProcessTypeName>Registrering av livsmedelsanläggning</a:ProcessTypeName>
+			</GetCaseResult>
+		</GetCaseResponse>
+	</s:Body>
+</s:Envelope>
