@@ -14,6 +14,7 @@ import java.time.OffsetDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Stream;
 import minutmiljo.ArrayOfFilterSvcDto;
 import minutmiljo.ArrayOfOccurrenceListItemSvcDto;
@@ -53,6 +54,7 @@ public class StatusSchedulerWorker {
 	private static final String EVENT_OWNER = "CaseManagement";
 	private static final String EVENT_SOURCE_TYPE = "Errand";
 	private static final String METADATA_KEY_STATUS = "Status";
+	private static final String METADATA_KEY_CASE_ID = "ExternalCaseId";
 	private static final Duration CLOCK_SKEW_BUFFER = Duration.ofMinutes(10);
 
 	private final MinutMiljoClient minutMiljoClient;
@@ -200,9 +202,12 @@ public class StatusSchedulerWorker {
 			.owner(EVENT_OWNER)
 			.message("Status updated to " + status)
 			.sourceType(EVENT_SOURCE_TYPE)
-			.metadata(List.of(new Metadata().key(METADATA_KEY_STATUS).value(status)));
+			.metadata(List.of(
+				new Metadata().key(METADATA_KEY_STATUS).value(status),
+				new Metadata().key(METADATA_KEY_CASE_ID).value(externalCaseId)));
 
-		eventlogClient.createEvent(municipalityId, externalCaseId, event);
+		final var uuid = UUID.randomUUID().toString();
+		eventlogClient.createEvent(municipalityId, uuid, event);
 	}
 
 	private ExecutionInformationEntity initializeExecutionInfo(final String municipalityId) {
