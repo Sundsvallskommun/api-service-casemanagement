@@ -5,6 +5,8 @@ import arendeexport.ArendeBatch;
 import arendeexport.ArrayOfArende;
 import arendeexport.GetUpdatedArendenResponse;
 import generated.client.eventlog.Event;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.Optional;
 import minutmiljo.ArrayOfOccurrenceListItemSvcDto;
@@ -60,6 +62,9 @@ class StatusSchedulerWorkerTest {
 
 	@Captor
 	private ArgumentCaptor<Event> eventCaptor;
+
+	@Captor
+	private ArgumentCaptor<ExecutionInformationEntity> executionInfoCaptor;
 
 	@InjectMocks
 	private StatusSchedulerWorker worker;
@@ -204,6 +209,61 @@ class StatusSchedulerWorkerTest {
 	}
 
 	@Test
+	void updateStatusesSetsNextExecutionFromByggrBatchEndMinusClockSkew() {
+		// Arrange
+		final var lastExecution = OffsetDateTime.now().minusHours(1);
+		final var batchEnd = LocalDateTime.now().minusMinutes(5);
+		final var executionInfo = ExecutionInformationEntity.create()
+			.withMunicipalityId(MUNICIPALITY_ID)
+			.withLastSuccessfulExecution(lastExecution);
+
+		final var byggrResponse = new GetUpdatedArendenResponse();
+		final var batch = new ArendeBatch();
+		batch.setBatchEnd(batchEnd);
+		batch.setArenden(new ArrayOfArende());
+		byggrResponse.setGetUpdatedArendenResult(batch);
+
+		when(executionInformationRepositoryMock.findById(MUNICIPALITY_ID)).thenReturn(Optional.of(executionInfo));
+		when(arendeExportClientMock.getUpdatedArenden(any())).thenReturn(byggrResponse);
+		when(minutMiljoClientMock.searchCase(any())).thenReturn(createEmptyEcosResponse());
+
+		// Act
+		worker.updateStatuses(MUNICIPALITY_ID);
+
+		// Assert
+		verify(executionInformationRepositoryMock).save(executionInfoCaptor.capture());
+		final var savedExecution = executionInfoCaptor.getValue().getLastSuccessfulExecution();
+		final var expectedExecution = batchEnd.minus(Duration.ofMinutes(10)).atOffset(lastExecution.getOffset());
+		assertThat(savedExecution).isEqualTo(expectedExecution);
+	}
+
+	@Test
+	void updateStatusesFallsBackToNowWhenBatchEndIsNull() {
+		// Arrange
+		final var lastExecution = OffsetDateTime.now().minusHours(1);
+		final var executionInfo = ExecutionInformationEntity.create()
+			.withMunicipalityId(MUNICIPALITY_ID)
+			.withLastSuccessfulExecution(lastExecution);
+
+		final var byggrResponse = new GetUpdatedArendenResponse();
+		byggrResponse.setGetUpdatedArendenResult(null);
+
+		when(executionInformationRepositoryMock.findById(MUNICIPALITY_ID)).thenReturn(Optional.of(executionInfo));
+		when(arendeExportClientMock.getUpdatedArenden(any())).thenReturn(byggrResponse);
+		when(minutMiljoClientMock.searchCase(any())).thenReturn(createEmptyEcosResponse());
+
+		// Act
+		final var before = OffsetDateTime.now();
+		worker.updateStatuses(MUNICIPALITY_ID);
+		final var after = OffsetDateTime.now();
+
+		// Assert
+		verify(executionInformationRepositoryMock).save(executionInfoCaptor.capture());
+		final var savedExecution = executionInfoCaptor.getValue().getLastSuccessfulExecution();
+		assertThat(savedExecution).isBetween(before, after);
+	}
+
+	@Test
 	void updateStatusesSkipsEcosCaseWithNoMapping() {
 		// Arrange
 		final var lastExecution = OffsetDateTime.now().minusHours(1);
@@ -230,6 +290,7 @@ class StatusSchedulerWorkerTest {
 	private GetUpdatedArendenResponse createEmptyByggrResponse() {
 		final var response = new GetUpdatedArendenResponse();
 		final var batch = new ArendeBatch();
+		batch.setBatchEnd(LocalDateTime.now());
 		batch.setArenden(new ArrayOfArende());
 		response.setGetUpdatedArendenResult(batch);
 		return response;
@@ -238,6 +299,7 @@ class StatusSchedulerWorkerTest {
 	private GetUpdatedArendenResponse createByggrResponse(final Arende2 arende) {
 		final var response = new GetUpdatedArendenResponse();
 		final var batch = new ArendeBatch();
+		batch.setBatchEnd(LocalDateTime.now());
 		final var array = new ArrayOfArende();
 		array.getArende().add(arende);
 		batch.setArenden(array);
