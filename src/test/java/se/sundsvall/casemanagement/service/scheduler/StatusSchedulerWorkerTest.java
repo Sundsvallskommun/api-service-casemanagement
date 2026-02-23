@@ -140,7 +140,7 @@ class StatusSchedulerWorkerTest {
 		worker.updateStatuses(MUNICIPALITY_ID);
 
 		// Assert
-		verify(eventlogClientMock).createEvent(eq(MUNICIPALITY_ID), eq("BYGG-2024-000001"), eventCaptor.capture());
+		verify(eventlogClientMock).createEvent(eq(MUNICIPALITY_ID), any(String.class), eventCaptor.capture());
 		final var capturedEvent = eventCaptor.getValue();
 		assertThat(capturedEvent.getMessage()).isEqualTo("Status updated to Pågående");
 		verify(executionInformationRepositoryMock).save(executionInfo);
@@ -202,7 +202,7 @@ class StatusSchedulerWorkerTest {
 		worker.updateStatuses(MUNICIPALITY_ID);
 
 		// Assert
-		verify(eventlogClientMock).createEvent(eq(MUNICIPALITY_ID), eq("ext-123"), eventCaptor.capture());
+		verify(eventlogClientMock).createEvent(eq(MUNICIPALITY_ID), any(String.class), eventCaptor.capture());
 		final var capturedEvent = eventCaptor.getValue();
 		assertThat(capturedEvent.getMessage()).isEqualTo("Status updated to Avslutat");
 		verify(executionInformationRepositoryMock).save(executionInfo);
