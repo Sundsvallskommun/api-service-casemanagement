@@ -87,6 +87,10 @@ public final class Constants {
 	public static final String ECOS_DIARY_PLAN_HALSOSKYDD = "86100879-6451-4310-AAB2-9C1F9F663F69";
 	public static final String ECOS_OCCURRENCE_TYPE_ID_ANMALAN = "34BA125B-E9EE-4389-AEAE-9F66288C1B63";
 	public static final String ECOS_HANDLING_OFFICER_GROUP_ID_EXPEDITIONEN = "58E6A5CE-C6EE-42B4-A96A-BD25D693420E";
+	public static final String ECOS_CASE_STATUS_ID_AVSKRIVET = "90da6733-8d85-4078-b135-3689533fdce0";
+	public static final String ECOS_CASE_STATUS_ID_UNDER_BEREDNING = "c339a926-f226-48f6-996c-6384f76f8e8d";
+	public static final String ECOS_CASE_STATUS_ID_AVSLUTAT = "fea9f1bf-f4b5-431b-bb6f-8859d3936112";
+	public static final String ECOS_CASE_STATUS_ID_MAKULERAT = "76aac0f5-5b4f-4a4b-b997-c5b02c346943";
 
 	// Registrering av livsmedelsanläggning
 	public static final String ECOS_PROCESS_TYPE_ID_REGISTRERING_AV_LIVSMEDEL = "A764A86B-7327-445B-98C5-C26543D6F705";

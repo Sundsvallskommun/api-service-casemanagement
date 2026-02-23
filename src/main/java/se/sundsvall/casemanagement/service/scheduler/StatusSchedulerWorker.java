@@ -8,11 +8,13 @@ import arendeexport.GetUpdatedArenden;
 import arendeexport.GetUpdatedArendenResponse;
 import generated.client.eventlog.Event;
 import generated.client.eventlog.Metadata;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 import minutmiljo.ArrayOfFilterSvcDto;
 import minutmiljo.ArrayOfOccurrenceListItemSvcDto;
 import minutmiljo.ArrayOfSearchCaseResultSvcDto;
@@ -21,6 +23,7 @@ import minutmiljo.CaseSvcDto;
 import minutmiljo.GetCase;
 import minutmiljo.GetCaseResponse;
 import minutmiljo.OccurrenceListItemSvcDto;
+import minutmiljo.OrFilterSvcDto;
 import minutmiljo.SearchCase;
 import minutmiljo.SearchCaseResponse;
 import minutmiljo.SearchCaseResultSvcDto;
@@ -37,6 +40,10 @@ import se.sundsvall.casemanagement.integration.eventlog.EventlogClient;
 
 import static generated.client.eventlog.EventType.UPDATE;
 import static java.time.OffsetDateTime.now;
+import static se.sundsvall.casemanagement.util.Constants.ECOS_CASE_STATUS_ID_AVSKRIVET;
+import static se.sundsvall.casemanagement.util.Constants.ECOS_CASE_STATUS_ID_AVSLUTAT;
+import static se.sundsvall.casemanagement.util.Constants.ECOS_CASE_STATUS_ID_MAKULERAT;
+import static se.sundsvall.casemanagement.util.Constants.ECOS_CASE_STATUS_ID_UNDER_BEREDNING;
 
 @Component
 public class StatusSchedulerWorker {
@@ -46,6 +53,7 @@ public class StatusSchedulerWorker {
 	private static final String EVENT_OWNER = "CaseManagement";
 	private static final String EVENT_SOURCE_TYPE = "Errand";
 	private static final String METADATA_KEY_STATUS = "Status";
+	private static final Duration CLOCK_SKEW_BUFFER = Duration.ofMinutes(10);
 
 	private final MinutMiljoClient minutMiljoClient;
 	private final ArendeExportClient arendeExportClient;
@@ -71,28 +79,34 @@ public class StatusSchedulerWorker {
 			.orElseGet(() -> initializeExecutionInfo(municipalityId));
 
 		final var lastExecution = executionInfo.getLastSuccessfulExecution();
-		final var currentExecution = now();
 
 		LOG.info("Updating statuses for municipality {} since {}", municipalityId, lastExecution);
 
-		updateByggrStatuses(municipalityId, lastExecution);
+		final var byggrBatchEnd = updateByggrStatuses(municipalityId, lastExecution);
 		updateEcosStatuses(municipalityId, lastExecution);
 
-		executionInfo.setLastSuccessfulExecution(currentExecution);
+		final var nextExecution = byggrBatchEnd
+			.map(batchEnd -> batchEnd.minus(CLOCK_SKEW_BUFFER))
+			.map(batchEnd -> batchEnd.atOffset(lastExecution.getOffset()))
+			.orElseGet(OffsetDateTime::now);
+
+		executionInfo.setLastSuccessfulExecution(nextExecution);
 		executionInformationRepository.save(executionInfo);
 
-		LOG.info("Status update completed for municipality {}", municipalityId);
+		LOG.info("Status update completed for municipality {}. Next lower bound: {}", municipalityId, nextExecution);
 	}
 
-	private void updateByggrStatuses(final String municipalityId, final OffsetDateTime since) {
+	private Optional<LocalDateTime> updateByggrStatuses(final String municipalityId, final OffsetDateTime since) {
 		final var filter = new BatchFilter()
 			.withLowerExclusiveBound(since.toLocalDateTime())
 			.withUpperInclusiveBound(LocalDateTime.now());
 
 		final var response = arendeExportClient.getUpdatedArenden(new GetUpdatedArenden().withFilter(filter));
 
-		final var arenden = Optional.ofNullable(response)
-			.map(GetUpdatedArendenResponse::getGetUpdatedArendenResult)
+		final var batch = Optional.ofNullable(response)
+			.map(GetUpdatedArendenResponse::getGetUpdatedArendenResult);
+
+		final var arenden = batch
 			.map(ArendeBatch::getArenden)
 			.map(ArrayOfArende::getArende)
 			.orElse(List.of());
@@ -100,6 +114,8 @@ public class StatusSchedulerWorker {
 		LOG.info("Found {} updated ByggR cases for municipality {}", arenden.size(), municipalityId);
 
 		arenden.forEach(arende -> processByggrArende(arende, municipalityId));
+
+		return batch.map(ArendeBatch::getBatchEnd);
 	}
 
 	private void processByggrArende(final Arende2 arende, final String municipalityId) {
@@ -125,11 +141,19 @@ public class StatusSchedulerWorker {
 	}
 
 	private List<SearchCaseResultSvcDto> searchEcosCasesSince(final OffsetDateTime since) {
-		final var statusFilter = new CaseStatusFilterSvcDto();
-		statusFilter.setCaseStatusFromDate(since.toLocalDateTime());
+		final var sinceLocal = since.toLocalDateTime();
+
+		final var orFilters = new ArrayOfFilterSvcDto();
+		Stream.of(ECOS_CASE_STATUS_ID_AVSKRIVET, ECOS_CASE_STATUS_ID_UNDER_BEREDNING, ECOS_CASE_STATUS_ID_AVSLUTAT, ECOS_CASE_STATUS_ID_MAKULERAT)
+			.map(statusId -> new CaseStatusFilterSvcDto()
+				.withCaseStatusFromDate(sinceLocal)
+				.withCaseStatusId(statusId))
+			.forEach(orFilters.getFilterSvcDto()::add);
+
+		final var orFilter = new OrFilterSvcDto().withFilters(orFilters);
 
 		final var filters = new ArrayOfFilterSvcDto();
-		filters.getFilterSvcDto().add(statusFilter);
+		filters.getFilterSvcDto().add(orFilter);
 
 		final var searchModel = new SearchCaseSvcDto();
 		searchModel.setFilters(filters);

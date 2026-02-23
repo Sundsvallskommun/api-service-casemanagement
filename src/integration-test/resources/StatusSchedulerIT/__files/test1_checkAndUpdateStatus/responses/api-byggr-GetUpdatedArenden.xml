@@ -1,11 +1,25 @@
 <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
-	<s:Body>
+	<s:Body xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 		<GetUpdatedArendenResponse xmlns="www.tekis.se/ServiceContract">
 			<GetUpdatedArendenResult>
+				<BatchStart>2021-08-18T00:00:00</BatchStart>
+				<BatchEnd>2021-08-18T23:59:59</BatchEnd>
 				<Arenden>
-					<arende dnr="3522" arendeId="12345" xmlns:a="www.tekis.se/arende">
+					<arende arendeId="12345" dnr="3522" diarieprefix="BYGG" komkod="2281" enhetkod="SBK" arendegrupp="LOV" arendetyp="BL" arendeslag="A" arendeklass="" namndkod="SBN" kalla="3" checksum="3">
 						<status xmlns="www.tekis.se/arende">Pågående</status>
+						<beskrivning xmlns="www.tekis.se/arende">Bygglov för nybyggnad</beskrivning>
 						<ankomstDatum xmlns="www.tekis.se/arende">2021-08-18</ankomstDatum>
+						<uppdateradDatum xmlns="www.tekis.se/arende">2021-08-18</uppdateradDatum>
+						<registreradDatum xmlns="www.tekis.se/arende">2021-08-18</registreradDatum>
+						<handlaggare handlaggareId="-1" signatur="" xmlns="www.tekis.se/arende">
+							<fornamn/>
+							<efternamn/>
+						</handlaggare>
+						<intressentLista xmlns="www.tekis.se/arende"/>
+						<handelseLista xmlns="www.tekis.se/arende"/>
+						<projektnr xmlns="www.tekis.se/arende">BALDER 2</projektnr>
+						<objektLista xmlns="www.tekis.se/arende"/>
 					</arende>
 				</Arenden>
 			</GetUpdatedArendenResult>
