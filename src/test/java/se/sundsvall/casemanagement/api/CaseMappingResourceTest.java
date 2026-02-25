@@ -8,10 +8,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
-import org.zalando.problem.Problem;
 import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.service.CaseMappingService;
+import se.sundsvall.dept44.problem.Problem;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -19,7 +19,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.zalando.problem.Status.NOT_FOUND;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @ExtendWith(MockitoExtension.class)
 class CaseMappingResourceTest {

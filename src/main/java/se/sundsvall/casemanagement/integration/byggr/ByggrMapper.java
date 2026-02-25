@@ -37,8 +37,6 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.zalando.problem.Problem;
-import org.zalando.problem.Status;
 import se.sundsvall.casemanagement.api.model.AddressDTO;
 import se.sundsvall.casemanagement.api.model.AttachmentDTO;
 import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
@@ -53,9 +51,11 @@ import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.integration.db.model.CaseTypeData;
 import se.sundsvall.casemanagement.util.Constants;
+import se.sundsvall.dept44.problem.Problem;
 
 import static java.util.function.Predicate.not;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static se.sundsvall.casemanagement.api.model.enums.SystemType.BYGGR;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrUtil.hasHandelseList;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrUtil.isCaseClosed;
@@ -85,7 +85,7 @@ public final class ByggrMapper {
 				setPersonFields(intressent, personDTO);
 			}
 			case final OrganizationDTO organizationDTO -> setOrganizationFields(intressent, organizationDTO);
-			default -> throw Problem.valueOf(Status.BAD_REQUEST, "Invalid stakeholder type");
+			default -> throw Problem.valueOf(BAD_REQUEST, "Invalid stakeholder type");
 		}
 	}
 
@@ -388,7 +388,7 @@ public final class ByggrMapper {
 		}
 		if (AddressCategory.INVOICE_ADDRESS.equals(addressCategory)) {
 			if (stakeholderDTO instanceof PersonDTO) {
-				throw Problem.valueOf(Status.BAD_REQUEST, Constants.ERR_MSG_PERSON_INVOICE_ADDRESS);
+				throw Problem.valueOf(BAD_REQUEST, Constants.ERR_MSG_PERSON_INVOICE_ADDRESS);
 			}
 
 			intressent.setFakturaAdress(toFakturaadress(addressDTO));

@@ -1,6 +1,5 @@
 package se.sundsvall.casemanagement.ecos;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
@@ -39,7 +38,7 @@ class EcosCreateCaseIT extends AbstractAppTest {
 	private CaseRepository caseRepository;
 
 	@Test
-	void test2_AnmalanVarmepump() throws JsonProcessingException, ClassNotFoundException {
+	void test2_AnmalanVarmepump() throws ClassNotFoundException {
 
 		final var result = setupCall()
 			.withHttpMethod(POST)
@@ -67,7 +66,7 @@ class EcosCreateCaseIT extends AbstractAppTest {
 	}
 
 	@Test
-	void test3_TillstandVarmepump() throws JsonProcessingException, ClassNotFoundException {
+	void test3_TillstandVarmepump() throws ClassNotFoundException {
 		final var EXTERNAL_CASE_ID = "414646967";
 
 		final var result = setupCall()
@@ -96,7 +95,7 @@ class EcosCreateCaseIT extends AbstractAppTest {
 	}
 
 	@Test
-	void test4_AnsokanAvlopp() throws JsonProcessingException, ClassNotFoundException {
+	void test4_AnsokanAvlopp() throws ClassNotFoundException {
 		final var EXTERNAL_CASE_ID = "869540711";
 
 		final var result = setupCall()
@@ -126,7 +125,7 @@ class EcosCreateCaseIT extends AbstractAppTest {
 	}
 
 	@Test
-	void test5_AnmalanAvlopp() throws JsonProcessingException, ClassNotFoundException {
+	void test5_AnmalanAvlopp() throws ClassNotFoundException {
 		final var EXTERNAL_CASE_ID = "1569613013";
 
 		final var result = setupCall()
@@ -156,7 +155,7 @@ class EcosCreateCaseIT extends AbstractAppTest {
 	}
 
 	@Test
-	void test6_Avloppsanlaggning() throws JsonProcessingException, ClassNotFoundException {
+	void test6_Avloppsanlaggning() throws ClassNotFoundException {
 		final var EXTERNAL_CASE_ID = "325594400";
 
 		final var result = setupCall()
@@ -186,7 +185,7 @@ class EcosCreateCaseIT extends AbstractAppTest {
 	}
 
 	@Test
-	void test7_Avloppsanordning() throws JsonProcessingException, ClassNotFoundException {
+	void test7_Avloppsanordning() throws ClassNotFoundException {
 		final var EXTERNAL_CASE_ID = "516589049";
 
 		final var result = setupCall()
@@ -216,7 +215,7 @@ class EcosCreateCaseIT extends AbstractAppTest {
 	}
 
 	@Test
-	void test8_Halsoskyddsverksamhet() throws JsonProcessingException, ClassNotFoundException {
+	void test8_Halsoskyddsverksamhet() throws ClassNotFoundException {
 
 		final var EXTERNAL_CASE_ID = "1097173756";
 
@@ -247,7 +246,7 @@ class EcosCreateCaseIT extends AbstractAppTest {
 	}
 
 	@Test
-	void test9_Livsmedel() throws JsonProcessingException, ClassNotFoundException {
+	void test9_Livsmedel() throws ClassNotFoundException {
 		final var EXTERNAL_CASE_ID = "1195222212";
 
 		final var result = setupCall()
@@ -280,7 +279,7 @@ class EcosCreateCaseIT extends AbstractAppTest {
 	 * Test case for creating an Ecos case with case type: ANDRING_AV_LIVSMEDELSVERKSAMHET
 	 */
 	@Test
-	void test10_createCase_10() throws JsonProcessingException, ClassNotFoundException {
+	void test10_createCase_10() throws ClassNotFoundException {
 		final var externalCaseId = "1195222321";
 
 		final var result = setupCall()
@@ -312,7 +311,7 @@ class EcosCreateCaseIT extends AbstractAppTest {
 	 * Test case for creating an Ecos case with case type: INFORMATION_OM_UPPHORANDE_AV_VERKSAMHET
 	 */
 	@Test
-	void test11_createCase_11() throws JsonProcessingException, ClassNotFoundException {
+	void test11_createCase_11() throws ClassNotFoundException {
 		final var externalCaseId = "1195222123";
 
 		final var result = setupCall()

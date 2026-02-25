@@ -4,6 +4,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -23,6 +24,7 @@ import static se.sundsvall.casemanagement.TestUtil.createAttachment;
 import static se.sundsvall.casemanagement.TestUtil.createCaseMapping;
 
 @SpringBootTest(classes = Application.class, webEnvironment = RANDOM_PORT)
+@AutoConfigureWebTestClient
 @ActiveProfiles("junit")
 class AttachmentResourceTest {
 

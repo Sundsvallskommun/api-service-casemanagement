@@ -6,8 +6,6 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.zalando.problem.Problem;
-import org.zalando.problem.Status;
 import se.sundsvall.casemanagement.api.model.AddressDTO;
 import se.sundsvall.casemanagement.api.model.StakeholderDTO;
 import se.sundsvall.casemanagement.integration.fb.FbClient;
@@ -16,9 +14,11 @@ import se.sundsvall.casemanagement.integration.fb.model.FbPropertyInfo;
 import se.sundsvall.casemanagement.integration.fb.model.ResponseDto;
 import se.sundsvall.casemanagement.integration.lantmateriet.model.Registerbeteckningsreferens;
 import se.sundsvall.casemanagement.util.Constants;
+import se.sundsvall.dept44.problem.Problem;
 
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static se.sundsvall.casemanagement.service.mapper.FbMapper.toAddressDTO;
 import static se.sundsvall.casemanagement.service.mapper.FbMapper.toAdressplatsId;
 import static se.sundsvall.casemanagement.service.mapper.FbMapper.toFbPropertyInfo;
@@ -53,10 +53,10 @@ public class FbService {
 		final var trimmedPropertyDesignation = propertyDesignation.trim().toUpperCase();
 
 		final var registerbeteckningsreferens = Optional.ofNullable(registerbeteckningService.getRegisterbeteckningsreferens(trimmedPropertyDesignation))
-			.orElseThrow(() -> Problem.valueOf(Status.BAD_REQUEST, String.format(Constants.ERR_MSG_PROPERTY_DESIGNATION_NOT_FOUND, trimmedPropertyDesignation)));
+			.orElseThrow(() -> Problem.valueOf(BAD_REQUEST, String.format(Constants.ERR_MSG_PROPERTY_DESIGNATION_NOT_FOUND, trimmedPropertyDesignation)));
 
 		return Optional.ofNullable(getFbPropertyInfo(registerbeteckningsreferens))
-			.orElseThrow(() -> Problem.valueOf(Status.BAD_REQUEST, String.format(Constants.ERR_MSG_PROPERTY_DESIGNATION_NOT_FOUND, trimmedPropertyDesignation)));
+			.orElseThrow(() -> Problem.valueOf(BAD_REQUEST, String.format(Constants.ERR_MSG_PROPERTY_DESIGNATION_NOT_FOUND, trimmedPropertyDesignation)));
 
 	}
 

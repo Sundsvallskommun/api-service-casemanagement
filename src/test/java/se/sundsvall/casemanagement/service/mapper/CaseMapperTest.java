@@ -1,7 +1,5 @@
 package se.sundsvall.casemanagement.service.mapper;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -18,6 +16,7 @@ import se.sundsvall.casemanagement.api.model.CaseDTO;
 import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
 import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.integration.db.model.DeliveryStatus;
+import tools.jackson.databind.ObjectMapper;
 
 import static java.util.Objects.nonNull;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,7 +26,7 @@ import static se.sundsvall.casemanagement.api.model.enums.AttachmentCategory.UND
 @ExtendWith(MockitoExtension.class)
 class CaseMapperTest {
 
-	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper().registerModule(new JavaTimeModule());
+	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
 	private static Stream<Arguments> toCaseEntityArguments() {
 		return Stream.of(

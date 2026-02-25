@@ -1,6 +1,5 @@
 package se.sundsvall.casemanagement.byggr;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
@@ -42,7 +41,7 @@ class ByggrCaseIT extends AbstractAppTest {
 	private CaseRepository caseRepository;
 
 	@Test
-	void test1_PostByggrCase() throws JsonProcessingException, ClassNotFoundException {
+	void test1_PostByggrCase() throws ClassNotFoundException {
 
 		final var EXTERNAL_CASE_ID = "5123";
 
@@ -100,7 +99,7 @@ class ByggrCaseIT extends AbstractAppTest {
 	}
 
 	@Test
-	void test5_postByggrCaseSundsvallsKommunPropertyOwner() throws JsonProcessingException, ClassNotFoundException {
+	void test5_postByggrCaseSundsvallsKommunPropertyOwner() throws ClassNotFoundException {
 
 		final var EXTERNAL_CASE_ID = "5124";
 

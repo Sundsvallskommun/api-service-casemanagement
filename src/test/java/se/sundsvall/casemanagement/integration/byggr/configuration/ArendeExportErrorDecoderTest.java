@@ -4,7 +4,7 @@ import feign.Response;
 import java.io.IOException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import se.sundsvall.dept44.exception.ServerProblem;
+import se.sundsvall.dept44.problem.ThrowableProblem;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -30,7 +30,7 @@ class ArendeExportErrorDecoderTest {
 		final var decodedError = errorDecoder.decode("someMethodKey", response);
 
 		// then
-		assertThat(decodedError).isInstanceOf(ServerProblem.class);
+		assertThat(decodedError).isInstanceOf(ThrowableProblem.class);
 		assertThat(decodedError.getMessage()).isEqualTo("Bad Gateway: Unknown problem in communication with ArendeExport (ByggR) Bad Request");
 	}
 
@@ -46,7 +46,7 @@ class ArendeExportErrorDecoderTest {
 		final var decodedError = errorDecoder.decode("someMethodKey", response);
 
 		// then
-		assertThat(decodedError).isInstanceOf(ServerProblem.class);
+		assertThat(decodedError).isInstanceOf(ThrowableProblem.class);
 		assertThat(decodedError.getMessage()).isEqualTo("Bad Gateway: Unknown problem in communication with ArendeExport (ByggR) Failed to read response body");
 	}
 

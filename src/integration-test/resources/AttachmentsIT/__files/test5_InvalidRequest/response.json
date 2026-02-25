@@ -21,7 +21,7 @@
 			"message": "must not be blank"
 		}
 	],
-	"type": "https://zalando.github.io/problem/constraint-violation",
+	"type": "about:blank",
 	"title": "Constraint Violation",
 	"status": 400
 }

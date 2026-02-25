@@ -19,7 +19,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.zalando.problem.AbstractThrowableProblem;
 import se.sundsvall.casemanagement.api.model.AddressDTO;
 import se.sundsvall.casemanagement.api.model.AttachmentDTO;
 import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
@@ -35,6 +34,7 @@ import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderType;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.integration.db.model.CaseTypeData;
+import se.sundsvall.dept44.problem.ThrowableProblem;
 
 import static java.time.LocalDateTime.now;
 import static java.time.temporal.ChronoUnit.SECONDS;
@@ -701,7 +701,7 @@ class ByggrMapperTest {
 		final var arendeIntressent = new ArendeIntressent();
 		// Act
 		assertThatThrownBy(() -> ByggrMapper.toAdressCategory(personDTO, addressDTO, INVOICE_ADDRESS, arendeIntressent))
-			.isInstanceOf(AbstractThrowableProblem.class)
+			.isInstanceOf(ThrowableProblem.class)
 			.hasMessageContaining("Bad Request: Stakeholders of type PERSON should not have an address with the addressCategory INVOICE_ADDRESS");
 	}
 

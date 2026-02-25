@@ -16,8 +16,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.zalando.problem.Problem;
-import org.zalando.problem.violations.ConstraintViolationProblem;
 import se.sundsvall.casemanagement.api.model.AttachmentDTO;
 import se.sundsvall.casemanagement.integration.byggr.ByggrService;
 import se.sundsvall.casemanagement.integration.casedata.CaseDataService;
@@ -25,11 +23,13 @@ import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.integration.ecos.EcosService;
 import se.sundsvall.casemanagement.service.CaseMappingService;
 import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
+import se.sundsvall.dept44.problem.Problem;
+import se.sundsvall.dept44.problem.violations.ConstraintViolationProblem;
 
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
 import static org.springframework.http.ResponseEntity.noContent;
-import static org.zalando.problem.Status.BAD_REQUEST;
 import static se.sundsvall.casemanagement.util.Constants.REQUEST_BODY_MUST_NOT_BE_NULL;
 
 @RestController

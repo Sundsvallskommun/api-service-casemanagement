@@ -2,7 +2,9 @@ package se.sundsvall.casemanagement;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 import org.springframework.test.context.jdbc.Sql;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import se.sundsvall.dept44.test.AbstractAppTest;
@@ -28,7 +30,7 @@ class AttachmentsIT extends AbstractAppTest {
 			.withHttpMethod(HttpMethod.POST)
 			.withServicePath(PATH + "2222/attachments")
 			.withRequest(REQUEST)
-			.withExpectedResponseStatus(HttpStatus.NO_CONTENT)
+			.withExpectedResponseStatus(NO_CONTENT)
 			.sendRequestAndVerifyResponse()
 			.verifyAllStubs();
 	}
@@ -40,7 +42,7 @@ class AttachmentsIT extends AbstractAppTest {
 			.withHttpMethod(HttpMethod.POST)
 			.withServicePath(PATH + "3522/attachments")
 			.withRequest(REQUEST)
-			.withExpectedResponseStatus(HttpStatus.NO_CONTENT)
+			.withExpectedResponseStatus(NO_CONTENT)
 			.sendRequestAndVerifyResponse()
 			.verifyAllStubs();
 	}
@@ -52,7 +54,7 @@ class AttachmentsIT extends AbstractAppTest {
 			.withHttpMethod(HttpMethod.POST)
 			.withServicePath(PATH + "231/attachments")
 			.withRequest(REQUEST)
-			.withExpectedResponseStatus(HttpStatus.NO_CONTENT)
+			.withExpectedResponseStatus(NO_CONTENT)
 			.sendRequestAndVerifyResponse()
 			.verifyAllStubs();
 
@@ -66,7 +68,7 @@ class AttachmentsIT extends AbstractAppTest {
 			.withServicePath(PATH + "123/attachments")
 			.withRequest(REQUEST)
 			.withExpectedResponse(RESPONSE)
-			.withExpectedResponseStatus(HttpStatus.NOT_FOUND)
+			.withExpectedResponseStatus(NOT_FOUND)
 			.sendRequestAndVerifyResponse()
 			.verifyAllStubs();
 
@@ -79,7 +81,7 @@ class AttachmentsIT extends AbstractAppTest {
 			.withServicePath(PATH + "231/attachments")
 			.withRequest(REQUEST)
 			.withExpectedResponse(RESPONSE)
-			.withExpectedResponseStatus(HttpStatus.BAD_REQUEST)
+			.withExpectedResponseStatus(BAD_REQUEST)
 			.sendRequestAndVerifyResponse()
 			.verifyAllStubs();
 	}

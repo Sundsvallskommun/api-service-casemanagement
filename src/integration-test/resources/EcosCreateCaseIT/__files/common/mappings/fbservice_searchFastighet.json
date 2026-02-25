@@ -24,9 +24,5 @@
 		"bodyFileName": "common/response/fbservice_searchFastighet.json",
 		"status": 200
 	},
-	"name": "fbservice_adress_search_fastighet_uuid",
-	"id": "e19981ad-34b2-4e14-88f5-133f61ca85aa",
-	"persistent": true,
-	"insertionIndex": 15,
-	"uuid": "e19981ad-34b2-4e14-88f5-133f61ca85aa"
+	"name": "fbservice_adress_search_fastighet_uuid"
 }
