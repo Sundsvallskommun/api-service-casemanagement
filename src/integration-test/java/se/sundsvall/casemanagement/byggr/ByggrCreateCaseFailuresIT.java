@@ -2,7 +2,7 @@ package se.sundsvall.casemanagement.byggr;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import org.springframework.test.context.jdbc.Sql;
 
 import se.sundsvall.casemanagement.Application;
@@ -29,7 +29,7 @@ class ByggrCreateCaseFailuresIT extends AbstractAppTest {
 			.withHttpMethod(HttpMethod.POST)
 			.withServicePath(PATH)
 			.withRequest(REQUEST)
-			.withExpectedResponseStatus(HttpStatus.BAD_REQUEST)
+			.withExpectedResponseStatus(BAD_REQUEST)
 			.withExpectedResponse(RESPONSE)
 			.sendRequestAndVerifyResponse();
 	}
@@ -40,7 +40,7 @@ class ByggrCreateCaseFailuresIT extends AbstractAppTest {
 			.withHttpMethod(HttpMethod.POST)
 			.withServicePath(PATH)
 			.withRequest(REQUEST)
-			.withExpectedResponseStatus(HttpStatus.BAD_REQUEST)
+			.withExpectedResponseStatus(BAD_REQUEST)
 			.withExpectedResponse(RESPONSE)
 			.sendRequestAndVerifyResponse();
 	}
@@ -51,7 +51,7 @@ class ByggrCreateCaseFailuresIT extends AbstractAppTest {
 			.withHttpMethod(HttpMethod.POST)
 			.withServicePath(PATH)
 			.withRequest(REQUEST)
-			.withExpectedResponseStatus(HttpStatus.BAD_REQUEST)
+			.withExpectedResponseStatus(BAD_REQUEST)
 			.withExpectedResponse(RESPONSE)
 			.sendRequestAndVerifyResponse();
 	}
@@ -62,7 +62,7 @@ class ByggrCreateCaseFailuresIT extends AbstractAppTest {
 			.withHttpMethod(HttpMethod.POST)
 			.withServicePath(PATH)
 			.withRequest(REQUEST)
-			.withExpectedResponseStatus(HttpStatus.BAD_REQUEST)
+			.withExpectedResponseStatus(BAD_REQUEST)
 			.withExpectedResponse(RESPONSE)
 			.sendRequestAndVerifyResponse();
 	}

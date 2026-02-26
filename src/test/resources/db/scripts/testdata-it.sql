@@ -64,3 +64,8 @@ VALUES ('BYGG 2021-000200', '3522', 'NYBYGGNAD_ANSOKAN_OM_BYGGLOV',
 
        ('BYGG 2022-000003', '231156', 'NYBYGGNAD_ANSOKAN_OM_BYGGLOV', 'Ansökan - nybyggnad', 'BYGGR',
         '2023-05-12 14:53:58.672027', '2281');
+
+
+TRUNCATE TABLE execution_information;
+INSERT INTO execution_information (municipality_id, last_successful_execution)
+VALUES ('2281', '2020-01-01 00:00:00.000000');

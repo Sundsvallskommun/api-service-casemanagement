@@ -5,7 +5,7 @@
 			"message": "Only one facility can be defined as main facility"
 		}
 	],
-	"type": "https://zalando.github.io/problem/constraint-violation",
+	"type": "about:blank",
 	"title": "Constraint Violation",
 	"status": 400
 }

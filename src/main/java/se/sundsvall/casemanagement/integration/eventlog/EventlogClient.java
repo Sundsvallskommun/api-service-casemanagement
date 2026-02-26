@@ -38,8 +38,8 @@ public interface EventlogClient {
 	 *
 	 * @param  municipalityId municipality id to fetch events for
 	 * @param  logKey         containing UUID to fetch events for
-	 * @param  pageable       information of page, size and sorting options for the request
-	 * @return                response containing result of search based on the provided parameters
+	 * @param  pageable       information of page, size, and sorting options for the request
+	 * @return                response containing a result of search based on the provided parameters
 	 */
 	@GetMapping(path = "/{municipalityId}/{logKey}", produces = APPLICATION_JSON_VALUE)
 	PageEvent getEvents(

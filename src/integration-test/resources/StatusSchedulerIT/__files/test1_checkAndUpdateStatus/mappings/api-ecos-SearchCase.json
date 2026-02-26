@@ -1,0 +1,24 @@
+{
+	"request": {
+		"headers": {
+			"SoapAction": {
+				"equalTo": "urn:Ecos.API.MinutMiljo.Service.V1/IMinutMiljoService/SearchCase"
+			}
+		},
+		"method": "POST",
+		"bodyPatterns": [
+			{
+				"contains": "SearchCase"
+			}
+		],
+		"url": "/Ecos2PublicServices/MinutMiljoService.svc"
+	},
+	"response": {
+		"headers": {
+			"Content-Type": "text/xml; charset=utf-8"
+		},
+		"bodyFileName": "test1_checkAndUpdateStatus/responses/api-ecos-SearchCase.xml",
+		"status": 200
+	},
+	"name": "api-ecos-SearchCase"
+}

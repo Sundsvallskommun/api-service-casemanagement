@@ -32,6 +32,12 @@
         primary key (value)
     ) engine=InnoDB;
 
+    create table execution_information (
+        municipality_id varchar(4) not null,
+        last_successful_execution datetime(6),
+        primary key (municipality_id)
+    ) engine=InnoDB;
+
     create index case_entity_municipality_id_idx 
        on CaseEntity (municipalityId);
 

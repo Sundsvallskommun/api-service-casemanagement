@@ -7,7 +7,7 @@ import jakarta.xml.soap.SOAPConstants;
 import jakarta.xml.soap.SOAPException;
 import jakarta.xml.soap.SOAPMessage;
 import java.io.IOException;
-import org.zalando.problem.ThrowableProblem;
+import se.sundsvall.dept44.problem.ThrowableProblem;
 
 public abstract class AbstractErrorDecoder implements ErrorDecoder {
 

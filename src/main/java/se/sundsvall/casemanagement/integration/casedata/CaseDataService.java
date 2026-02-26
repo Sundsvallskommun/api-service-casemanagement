@@ -14,8 +14,6 @@ import java.util.concurrent.CompletableFuture;
 import org.springframework.http.HttpHeaders;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.zalando.problem.Problem;
-import org.zalando.problem.ThrowableProblem;
 import se.sundsvall.casemanagement.api.model.AttachmentDTO;
 import se.sundsvall.casemanagement.api.model.CaseStatusDTO;
 import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
@@ -24,12 +22,14 @@ import se.sundsvall.casemanagement.integration.casedata.configuration.CaseDataPr
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.service.CaseMappingService;
 import se.sundsvall.casemanagement.util.Constants;
+import se.sundsvall.dept44.problem.Problem;
+import se.sundsvall.dept44.problem.ThrowableProblem;
 
 import static generated.client.casedata.Errand.ChannelEnum.ESERVICE;
 import static generated.client.casedata.Stakeholder.TypeEnum.PERSON;
 import static java.time.OffsetDateTime.now;
 import static java.util.Collections.emptyList;
-import static org.zalando.problem.Status.NOT_FOUND;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.LOST_PARKING_PERMIT;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.MEX_CASE_TYPES;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.PARKING_PERMIT;

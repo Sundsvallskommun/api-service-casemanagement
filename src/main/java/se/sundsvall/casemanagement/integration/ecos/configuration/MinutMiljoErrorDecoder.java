@@ -1,15 +1,15 @@
 package se.sundsvall.casemanagement.integration.ecos.configuration;
 
-import org.zalando.problem.ThrowableProblem;
 import se.sundsvall.casemanagement.integration.util.AbstractErrorDecoder;
-import se.sundsvall.dept44.exception.ClientProblem;
+import se.sundsvall.dept44.problem.Problem;
+import se.sundsvall.dept44.problem.ThrowableProblem;
 
-import static org.zalando.problem.Status.BAD_GATEWAY;
+import static org.springframework.http.HttpStatus.BAD_GATEWAY;
 
 public class MinutMiljoErrorDecoder extends AbstractErrorDecoder {
 
 	@Override
 	protected ThrowableProblem defaultError(String message) {
-		return new ClientProblem(BAD_GATEWAY, "Bad request exception from MinutMiljo (Ecos): " + message);
+		return Problem.valueOf(BAD_GATEWAY, "Bad request exception from MinutMiljo (Ecos): " + message);
 	}
 }

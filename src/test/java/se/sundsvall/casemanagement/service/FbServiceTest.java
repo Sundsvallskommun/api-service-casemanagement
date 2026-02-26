@@ -8,8 +8,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.zalando.problem.Status;
-import org.zalando.problem.ThrowableProblem;
 import se.sundsvall.casemanagement.TestUtil;
 import se.sundsvall.casemanagement.api.model.AddressDTO;
 import se.sundsvall.casemanagement.api.model.OrganizationDTO;
@@ -23,12 +21,14 @@ import se.sundsvall.casemanagement.integration.fb.model.GruppItem;
 import se.sundsvall.casemanagement.integration.fb.model.ResponseDto;
 import se.sundsvall.casemanagement.integration.lantmateriet.model.Registerbeteckningsreferens;
 import se.sundsvall.casemanagement.util.Constants;
+import se.sundsvall.dept44.problem.ThrowableProblem;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static se.sundsvall.casemanagement.TestUtil.ADRESSPLATS_ID;
 import static se.sundsvall.casemanagement.TestUtil.FNR;
 
@@ -66,7 +66,7 @@ class FbServiceTest {
 		assertThatThrownBy(() -> fbService.getPropertyInfoByPropertyDesignation(propertyDesignation))
 			.isInstanceOf(ThrowableProblem.class)
 			.hasMessage("Bad Request: The specified propertyDesignation(TEST 1:1) could not be found")
-			.hasFieldOrPropertyWithValue("status", Status.BAD_REQUEST);
+			.hasFieldOrPropertyWithValue("status", BAD_REQUEST);
 	}
 
 	@Test
@@ -88,7 +88,7 @@ class FbServiceTest {
 		assertThatThrownBy(() -> fbService.getPropertyInfoByPropertyDesignation(propertyDesignation))
 			.isInstanceOf(ThrowableProblem.class)
 			.hasMessage("Bad Request: The specified propertyDesignation(TEST 1:1) could not be found")
-			.hasFieldOrPropertyWithValue("status", Status.BAD_REQUEST);
+			.hasFieldOrPropertyWithValue("status", BAD_REQUEST);
 	}
 
 	@Test

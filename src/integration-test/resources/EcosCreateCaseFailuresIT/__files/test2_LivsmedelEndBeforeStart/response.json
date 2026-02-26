@@ -9,7 +9,7 @@
 			"message": "must be a date in the present or in the future"
 		}
 	],
-	"type": "https://zalando.github.io/problem/constraint-violation",
+	"type": "about:blank",
 	"title": "Constraint Violation",
 	"status": 400
 }

@@ -23,8 +23,6 @@ import minutmiljo.PersonSvcDto;
 import minutmiljo.SearchParty;
 import minutmiljo.SearchPartySvcDto;
 import org.springframework.stereotype.Service;
-import org.zalando.problem.Problem;
-import org.zalando.problem.Status;
 import se.sundsvall.casemanagement.api.model.AddressDTO;
 import se.sundsvall.casemanagement.api.model.EcosCaseDTO;
 import se.sundsvall.casemanagement.api.model.OrganizationDTO;
@@ -34,8 +32,10 @@ import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
 import se.sundsvall.casemanagement.integration.party.PartyIntegration;
 import se.sundsvall.casemanagement.util.CaseUtil;
 import se.sundsvall.casemanagement.util.Constants;
+import se.sundsvall.dept44.problem.Problem;
 
 import static generated.client.party.PartyType.PRIVATE;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 @Service
 public class PartyService {
@@ -163,7 +163,7 @@ public class PartyService {
 						case CONTACT_PERSON -> Constants.ECOS_ROLE_ID_KONTAKTPERSON;
 						case APPLICANT -> Constants.ECOS_ROLE_ID_SOKANDE;
 						case INSTALLER -> Constants.ECOS_ROLE_ID_INSTALLATOR;
-						default -> throw Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "The request contained a stakeholder role that was not expected. This should be discovered in the validation of the input. Something in the validation is wrong.");
+						default -> throw Problem.valueOf(INTERNAL_SERVER_ERROR, "The request contained a stakeholder role that was not expected. This should be discovered in the validation of the input. Something in the validation is wrong.");
 					};
 				})
 				.toList());

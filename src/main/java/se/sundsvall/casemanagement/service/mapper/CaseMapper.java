@@ -1,8 +1,5 @@
 package se.sundsvall.casemanagement.service.mapper;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.sql.Clob;
 import java.sql.SQLException;
 import java.time.OffsetDateTime;
@@ -12,6 +9,8 @@ import org.slf4j.LoggerFactory;
 import se.sundsvall.casemanagement.api.model.CaseDTO;
 import se.sundsvall.casemanagement.integration.db.model.CaseEntity;
 import se.sundsvall.dept44.requestid.RequestId;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 import static se.sundsvall.casemanagement.integration.db.model.DeliveryStatus.PENDING;
 
@@ -19,7 +18,7 @@ public final class CaseMapper {
 
 	private static final Logger LOG = LoggerFactory.getLogger(CaseMapper.class);
 
-	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper().registerModule(new JavaTimeModule());
+	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
 	private CaseMapper() {
 		// Intentionally empty
@@ -40,7 +39,7 @@ public final class CaseMapper {
 		try {
 			final String jsonString = OBJECT_MAPPER.writeValueAsString(dto);
 			return new SerialClob(jsonString.toCharArray());
-		} catch (final JsonProcessingException | SQLException e) {
+		} catch (final JacksonException | SQLException e) {
 			LOG.error("Failed to convert to Clob", e);
 			return null;
 		}

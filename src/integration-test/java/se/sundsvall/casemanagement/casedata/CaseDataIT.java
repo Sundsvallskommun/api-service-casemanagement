@@ -1,13 +1,9 @@
 package se.sundsvall.casemanagement.casedata;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.http.HttpMethod.POST;
-import static org.springframework.http.HttpMethod.PUT;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
+import static org.springframework.http.HttpStatus.OK;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -19,6 +15,10 @@ import se.sundsvall.casemanagement.integration.db.CaseMappingRepository;
 import se.sundsvall.casemanagement.integration.db.CaseRepository;
 import se.sundsvall.dept44.test.AbstractAppTest;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpMethod.PUT;
 
 @Testcontainers
 @WireMockAppTestSuite(files = "classpath:/CasedataIT/", classes = Application.class)
@@ -44,14 +44,14 @@ class CaseDataIT extends AbstractAppTest {
 	private CaseRepository caseRepository;
 
 	@Test
-	void test1_PostParkingPermitCase() throws JsonProcessingException, ClassNotFoundException {
+	void test1_PostParkingPermitCase() throws ClassNotFoundException {
 		final var EXTERNAL_CASE_ID = "40621444";
 
 		final var result = setupCall()
 			.withHttpMethod(POST)
 			.withServicePath(PATH)
 			.withRequest(REQUEST)
-			.withExpectedResponseStatus(HttpStatus.OK)
+			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE)
 			.sendRequestAndVerifyResponse()
 			.andReturnBody(CaseResourceResponseDTO.class);
@@ -62,15 +62,12 @@ class CaseDataIT extends AbstractAppTest {
 		// Make sure that there doesn't exist a case entity
 		assertThat(caseRepository.findByIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID)).isEmpty();
 		// Make sure that there exists a case mapping
-		assertThat(caseMappingRepository.findAllByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID))
-			.isNotNull()
-			.hasSize(1)
-			.allSatisfy(caseMapping -> {
-				assertThat(caseMapping.getExternalCaseId()).isEqualTo(EXTERNAL_CASE_ID);
-				assertThat(caseMapping.getCaseId()).isEqualTo(CASE_DATA_ID);
-				assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.PARKING_PERMIT.toString());
-				assertThat(caseMapping.getSystem()).isEqualTo(SystemType.CASE_DATA);
-			});
+		final var caseMapping = caseMappingRepository.findByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID);
+		assertThat(caseMapping).isNotNull();
+		assertThat(caseMapping.getExternalCaseId()).isEqualTo(EXTERNAL_CASE_ID);
+		assertThat(caseMapping.getCaseId()).isEqualTo(CASE_DATA_ID);
+		assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.PARKING_PERMIT.toString());
+		assertThat(caseMapping.getSystem()).isEqualTo(SystemType.CASE_DATA);
 	}
 
 	@Test
@@ -82,16 +79,15 @@ class CaseDataIT extends AbstractAppTest {
 			.withHttpMethod(POST)
 			.withServicePath(PATH)
 			.withRequest(REQUEST)
-			.withExpectedResponseStatus(HttpStatus.OK)
+			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE)
 			.sendRequestAndVerifyResponse();
 
 		// Make sure that there exists a case entity
 		assertThat(caseRepository.findByIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID)).isPresent();
 		// Make sure that there doesn't exist a case mapping
-		assertThat(caseMappingRepository.findAllByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID))
-			.isNotNull()
-			.isEmpty();
+		assertThat(caseMappingRepository.findByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID))
+			.isNull();
 	}
 
 	@Test
@@ -101,19 +97,19 @@ class CaseDataIT extends AbstractAppTest {
 			.withHttpMethod(PUT)
 			.withServicePath("/" + MUNICIPALITY_ID + "/cases/231")
 			.withRequest(REQUEST)
-			.withExpectedResponseStatus(HttpStatus.NO_CONTENT)
+			.withExpectedResponseStatus(NO_CONTENT)
 			.sendRequestAndVerifyResponse();
 	}
 
 	@Test
-	void test4_PostParkingPermitCaseAndAnge() throws JsonProcessingException, ClassNotFoundException {
+	void test4_PostParkingPermitCaseAndAnge() throws ClassNotFoundException {
 		final var EXTERNAL_CASE_ID = "40621446";
 
 		final var result = setupCall()
 			.withHttpMethod(POST)
 			.withServicePath(PATH_ANGE)
 			.withRequest(REQUEST)
-			.withExpectedResponseStatus(HttpStatus.OK)
+			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE)
 			.sendRequestAndVerifyResponse()
 			.andReturnBody(CaseResourceResponseDTO.class);
@@ -124,14 +120,11 @@ class CaseDataIT extends AbstractAppTest {
 		// Make sure that there doesn't exist a case entity
 		assertThat(caseRepository.findByIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID_ANGE)).isEmpty();
 		// Make sure that there exists a case mapping
-		assertThat(caseMappingRepository.findAllByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID_ANGE))
-			.isNotNull()
-			.hasSize(1)
-			.allSatisfy(caseMapping -> {
-				assertThat(caseMapping.getExternalCaseId()).isEqualTo(EXTERNAL_CASE_ID);
-				assertThat(caseMapping.getCaseId()).isEqualTo(CASE_DATA_ID);
-				assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.PARKING_PERMIT.toString());
-				assertThat(caseMapping.getSystem()).isEqualTo(SystemType.CASE_DATA);
-			});
+		final var caseMapping = caseMappingRepository.findByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID_ANGE);
+		assertThat(caseMapping).isNotNull();
+		assertThat(caseMapping.getExternalCaseId()).isEqualTo(EXTERNAL_CASE_ID);
+		assertThat(caseMapping.getCaseId()).isEqualTo(CASE_DATA_ID);
+		assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.PARKING_PERMIT.toString());
+		assertThat(caseMapping.getSystem()).isEqualTo(SystemType.CASE_DATA);
 	}
 }
