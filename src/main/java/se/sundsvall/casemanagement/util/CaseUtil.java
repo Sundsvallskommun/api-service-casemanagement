@@ -8,8 +8,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.IntStream;
-import org.zalando.problem.Problem;
-import org.zalando.problem.Status;
+import se.sundsvall.dept44.problem.Problem;
+
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 public final class CaseUtil {
 
@@ -42,14 +43,14 @@ public final class CaseUtil {
 			}
 		}
 
-		throw Problem.valueOf(Status.BAD_REQUEST, MessageFormat.format("Invalid organizationNumber format: {0}", organizationNumber));
+		throw Problem.valueOf(BAD_REQUEST, MessageFormat.format("Invalid organizationNumber format: {0}", organizationNumber));
 
 	}
 
 	public static String getSokigoFormattedPersonalNumber(final String personalNumber) {
 
 		if (personalNumber == null) {
-			throw Problem.valueOf(Status.BAD_REQUEST, "personalNumber must not be null");
+			throw Problem.valueOf(BAD_REQUEST, "personalNumber must not be null");
 		}
 
 		// Validates that the personalNumber is correct example: 20220622-2396
@@ -63,7 +64,7 @@ public final class CaseUtil {
 		if (personalNumber.matches(missingHypen)) {
 			return new StringBuilder(personalNumber).insert(8, "-").toString();
 		}
-		throw Problem.valueOf(Status.BAD_REQUEST, "personalNumber must be 12 digits");
+		throw Problem.valueOf(BAD_REQUEST, "personalNumber must be 12 digits");
 	}
 
 	/**

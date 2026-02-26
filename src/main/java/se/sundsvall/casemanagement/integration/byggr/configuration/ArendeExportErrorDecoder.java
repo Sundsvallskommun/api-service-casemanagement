@@ -1,15 +1,15 @@
 package se.sundsvall.casemanagement.integration.byggr.configuration;
 
-import org.zalando.problem.ThrowableProblem;
 import se.sundsvall.casemanagement.integration.util.AbstractErrorDecoder;
-import se.sundsvall.dept44.exception.ServerProblem;
+import se.sundsvall.dept44.problem.Problem;
+import se.sundsvall.dept44.problem.ThrowableProblem;
 
-import static org.zalando.problem.Status.BAD_GATEWAY;
+import static org.springframework.http.HttpStatus.BAD_GATEWAY;
 
 public class ArendeExportErrorDecoder extends AbstractErrorDecoder {
 
 	@Override
 	protected ThrowableProblem defaultError(String message) {
-		return new ServerProblem(BAD_GATEWAY, "Unknown problem in communication with ArendeExport (ByggR) " + message);
+		return Problem.valueOf(BAD_GATEWAY, "Unknown problem in communication with ArendeExport (ByggR) " + message);
 	}
 }

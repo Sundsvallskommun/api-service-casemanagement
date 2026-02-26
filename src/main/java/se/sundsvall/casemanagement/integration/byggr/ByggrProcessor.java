@@ -1,8 +1,6 @@
 package se.sundsvall.casemanagement.integration.byggr;
 
 import arendeexport.SaveNewArendeResponse2;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import dev.failsafe.Failsafe;
 import dev.failsafe.RetryPolicy;
 import java.io.BufferedReader;
@@ -22,6 +20,7 @@ import se.sundsvall.casemanagement.service.event.UpdateByggrCase;
 import se.sundsvall.casemanagement.util.EnvironmentUtil;
 import se.sundsvall.casemanagement.util.Processor;
 import se.sundsvall.dept44.requestid.RequestId;
+import tools.jackson.databind.ObjectMapper;
 
 import static se.sundsvall.casemanagement.util.Constants.BYGGR;
 
@@ -73,7 +72,7 @@ class ByggrProcessor extends Processor {
 			json = reader.lines().collect(Collectors.joining());
 		}
 
-		final var objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+		final var objectMapper = new ObjectMapper();
 		final var byggRCase = objectMapper.readValue(json, ByggRCaseDTO.class);
 
 		byggrService.updateByggRCase(byggRCase, event.getMunicipalityId());
@@ -96,7 +95,7 @@ class ByggrProcessor extends Processor {
 			json = reader.lines().collect(Collectors.joining());
 		}
 
-		final var objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+		final var objectMapper = new ObjectMapper();
 		final var byggRCaseDTO = objectMapper.readValue(json, ByggRCaseDTO.class);
 
 		try {

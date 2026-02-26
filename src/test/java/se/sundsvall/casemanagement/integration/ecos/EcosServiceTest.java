@@ -53,7 +53,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.zalando.problem.Problem;
 import se.sundsvall.casemanagement.TestUtil;
 import se.sundsvall.casemanagement.api.model.AddressDTO;
 import se.sundsvall.casemanagement.api.model.AttachmentDTO;
@@ -74,6 +73,7 @@ import se.sundsvall.casemanagement.service.CaseMappingService;
 import se.sundsvall.casemanagement.service.FbService;
 import se.sundsvall.casemanagement.util.CaseUtil;
 import se.sundsvall.casemanagement.util.Constants;
+import se.sundsvall.dept44.problem.Problem;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

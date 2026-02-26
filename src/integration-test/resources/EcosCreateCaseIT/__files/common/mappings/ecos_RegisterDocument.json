@@ -30,9 +30,5 @@
 		"body": "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\"><s:Body><RegisterDocumentResponse  xmlns=\"urn:Ecos.API.MinutMiljo.Service.V2\"><RegisterDocumentResult xmlns:a=\"urn:Ecos.API.MinutMiljo.DataContracts.V1\"><a:CaseId>e19981ad-34b2-4e14-88f5-133f61ca85aa</a:CaseId> <a:CaseNumber>MK-2021-837</a:CaseNumber></RegisterDocumentResult></RegisterDocumentResponse></s:Body></s:Envelope>",
 		"status": 200
 	},
-	"name": "ecos2publicservices_minutmiljoservicev2svc_RegisterDocument",
-	"id": "e19981ad-34b2-4e14-88f5-133f61ca85aa",
-	"persistent": true,
-	"insertionIndex": 17,
-	"uuid": "e19981ad-34b2-4e14-88f5-133f61ca85aa"
+	"name": "ecos2publicservices_minutmiljoservicev2svc_RegisterDocument"
 }

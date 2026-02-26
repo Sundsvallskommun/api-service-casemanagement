@@ -12,7 +12,6 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
-import org.zalando.problem.ThrowableProblem;
 import se.sundsvall.casemanagement.api.model.AddressDTO;
 import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
 import se.sundsvall.casemanagement.api.model.EcosCaseDTO;
@@ -24,6 +23,7 @@ import se.sundsvall.casemanagement.service.event.IncomingByggrCase;
 import se.sundsvall.casemanagement.service.event.IncomingEcosCase;
 import se.sundsvall.casemanagement.service.event.IncomingOtherCase;
 import se.sundsvall.casemanagement.service.util.Validator;
+import se.sundsvall.dept44.problem.ThrowableProblem;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;

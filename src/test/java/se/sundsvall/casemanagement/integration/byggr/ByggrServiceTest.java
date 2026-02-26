@@ -44,8 +44,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.zalando.problem.Status;
-import org.zalando.problem.ThrowableProblem;
 import se.sundsvall.casemanagement.TestUtil;
 import se.sundsvall.casemanagement.api.model.AttachmentDTO;
 import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
@@ -72,6 +70,7 @@ import se.sundsvall.casemanagement.service.CaseMappingService;
 import se.sundsvall.casemanagement.service.FbService;
 import se.sundsvall.casemanagement.util.Constants;
 import se.sundsvall.casemanagement.util.EnvironmentUtil;
+import se.sundsvall.dept44.problem.ThrowableProblem;
 
 import static generated.client.party.PartyType.PRIVATE;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -87,6 +86,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static se.sundsvall.casemanagement.TestUtil.FNR;
 import static se.sundsvall.casemanagement.TestUtil.createByggRCaseDTO;
 import static se.sundsvall.casemanagement.TestUtil.createStakeholderDTO;
@@ -786,7 +786,7 @@ class ByggrServiceTest {
 		assertThatThrownBy(
 			() -> byggrService.saveNewCase(input, MUNICIPALITY_ID))
 			.isInstanceOf(ThrowableProblem.class)
-			.hasFieldOrPropertyWithValue("status", Status.BAD_REQUEST)
+			.hasFieldOrPropertyWithValue("status", BAD_REQUEST)
 			.hasFieldOrPropertyWithValue("detail", Constants.ERR_MSG_PERSON_INVOICE_ADDRESS);
 	}
 

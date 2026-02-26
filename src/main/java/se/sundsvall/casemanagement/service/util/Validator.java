@@ -7,8 +7,6 @@ import java.text.MessageFormat;
 import java.util.Objects;
 import java.util.Set;
 import org.springframework.stereotype.Component;
-import org.zalando.problem.Problem;
-import org.zalando.problem.Status;
 import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
 import se.sundsvall.casemanagement.api.model.EcosCaseDTO;
 import se.sundsvall.casemanagement.api.model.PersonDTO;
@@ -20,7 +18,9 @@ import se.sundsvall.casemanagement.api.validation.ByggRConstraints;
 import se.sundsvall.casemanagement.api.validation.ByggRFacilityConstraints;
 import se.sundsvall.casemanagement.api.validation.EcosConstraints;
 import se.sundsvall.casemanagement.api.validation.PersonConstraints;
+import se.sundsvall.dept44.problem.Problem;
 
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.ANMALAN_ATTEFALL;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.BYGGR_ADDITIONAL_DOCUMENTS;
@@ -84,7 +84,7 @@ public class Validator {
 				return;
 			}
 			if (facilityType == null) {
-				throw Problem.valueOf(Status.BAD_REQUEST, MessageFormat.format("FacilityType is not allowed to be null for CaseType {0}", byggRCase.getCaseType()));
+				throw Problem.valueOf(BAD_REQUEST, MessageFormat.format("FacilityType is not allowed to be null for CaseType {0}", byggRCase.getCaseType()));
 			}
 
 			attefallFacilityType = switch (FacilityType.valueOf(facilityType)) {
@@ -95,7 +95,7 @@ public class Validator {
 		}
 
 		if (((Objects.equals(byggRCase.getCaseType(), ANMALAN_ATTEFALL.toString())) && !attefallFacilityType) || ((Objects.equals(byggRCase.getCaseType(), NYBYGGNAD_ANSOKAN_OM_BYGGLOV.toString())) && attefallFacilityType)) {
-			throw Problem.valueOf(Status.BAD_REQUEST, MessageFormat.format("FacilityType {0} is not compatible with CaseType {1}", facilityType, byggRCase.getCaseType()));
+			throw Problem.valueOf(BAD_REQUEST, MessageFormat.format("FacilityType {0} is not compatible with CaseType {1}", facilityType, byggRCase.getCaseType()));
 		}
 	}
 
@@ -115,7 +115,7 @@ public class Validator {
 
 			for (final var facilityDTO : eCase.getFacilities()) {
 				if ((facilityDTO.getFacilityCollectionName() == null) && !WITH_NULLABLE_FACILITY_TYPE.contains(eCase.getCaseType())) {
-					throw Problem.valueOf(Status.BAD_REQUEST, MessageFormat.format("FacilityType is not allowed to be null for CaseType {0}", eCase.getCaseType()));
+					throw Problem.valueOf(BAD_REQUEST, MessageFormat.format("FacilityType is not allowed to be null for CaseType {0}", eCase.getCaseType()));
 				}
 			}
 		}

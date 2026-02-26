@@ -1,9 +1,9 @@
 package se.sundsvall.casemanagement.casedata;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
+import static org.springframework.http.HttpStatus.OK;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -44,14 +44,14 @@ class CaseDataIT extends AbstractAppTest {
 	private CaseRepository caseRepository;
 
 	@Test
-	void test1_PostParkingPermitCase() throws JsonProcessingException, ClassNotFoundException {
+	void test1_PostParkingPermitCase() throws ClassNotFoundException {
 		final var EXTERNAL_CASE_ID = "40621444";
 
 		final var result = setupCall()
 			.withHttpMethod(POST)
 			.withServicePath(PATH)
 			.withRequest(REQUEST)
-			.withExpectedResponseStatus(HttpStatus.OK)
+			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE)
 			.sendRequestAndVerifyResponse()
 			.andReturnBody(CaseResourceResponseDTO.class);
@@ -79,7 +79,7 @@ class CaseDataIT extends AbstractAppTest {
 			.withHttpMethod(POST)
 			.withServicePath(PATH)
 			.withRequest(REQUEST)
-			.withExpectedResponseStatus(HttpStatus.OK)
+			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE)
 			.sendRequestAndVerifyResponse();
 
@@ -97,19 +97,19 @@ class CaseDataIT extends AbstractAppTest {
 			.withHttpMethod(PUT)
 			.withServicePath("/" + MUNICIPALITY_ID + "/cases/231")
 			.withRequest(REQUEST)
-			.withExpectedResponseStatus(HttpStatus.NO_CONTENT)
+			.withExpectedResponseStatus(NO_CONTENT)
 			.sendRequestAndVerifyResponse();
 	}
 
 	@Test
-	void test4_PostParkingPermitCaseAndAnge() throws JsonProcessingException, ClassNotFoundException {
+	void test4_PostParkingPermitCaseAndAnge() throws ClassNotFoundException {
 		final var EXTERNAL_CASE_ID = "40621446";
 
 		final var result = setupCall()
 			.withHttpMethod(POST)
 			.withServicePath(PATH_ANGE)
 			.withRequest(REQUEST)
-			.withExpectedResponseStatus(HttpStatus.OK)
+			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE)
 			.sendRequestAndVerifyResponse()
 			.andReturnBody(CaseResourceResponseDTO.class);

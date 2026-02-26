@@ -1,7 +1,5 @@
 package se.sundsvall.casemanagement.integration.casedata;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import dev.failsafe.Failsafe;
 import dev.failsafe.RetryPolicy;
 import java.io.BufferedReader;
@@ -20,6 +18,7 @@ import se.sundsvall.casemanagement.service.event.IncomingOtherCase;
 import se.sundsvall.casemanagement.util.EnvironmentUtil;
 import se.sundsvall.casemanagement.util.Processor;
 import se.sundsvall.dept44.requestid.RequestId;
+import tools.jackson.databind.ObjectMapper;
 
 @Component
 class CasedataProcessor extends Processor {
@@ -64,7 +63,7 @@ class CasedataProcessor extends Processor {
 			json = reader.lines().collect(Collectors.joining());
 		}
 
-		final var objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+		final var objectMapper = new ObjectMapper();
 		final var otherCaseDTO = objectMapper.readValue(json, OtherCaseDTO.class);
 
 		try {

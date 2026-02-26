@@ -4,12 +4,12 @@ import generated.client.party.PartyType;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import org.junit.jupiter.api.Test;
-import org.zalando.problem.Status;
-import org.zalando.problem.ThrowableProblem;
 import se.sundsvall.casemanagement.TestUtil;
+import se.sundsvall.dept44.problem.ThrowableProblem;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 class CaseUtilTest {
 
@@ -68,7 +68,7 @@ class CaseUtilTest {
 		assertThatThrownBy(() -> CaseUtil.getSokigoFormattedOrganizationNumber("123456-123"))
 			.isInstanceOf(ThrowableProblem.class)
 			.hasMessage("Bad Request: Invalid organizationNumber format: 123456-123")
-			.hasFieldOrPropertyWithValue("status", Status.BAD_REQUEST);
+			.hasFieldOrPropertyWithValue("status", BAD_REQUEST);
 	}
 
 	@Test

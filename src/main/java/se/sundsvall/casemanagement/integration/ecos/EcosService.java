@@ -77,9 +77,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.zalando.problem.Problem;
-import org.zalando.problem.Status;
-import org.zalando.problem.ThrowableProblem;
 import se.sundsvall.casemanagement.api.model.AddressDTO;
 import se.sundsvall.casemanagement.api.model.AttachmentDTO;
 import se.sundsvall.casemanagement.api.model.CaseStatusDTO;
@@ -94,8 +91,13 @@ import se.sundsvall.casemanagement.service.CaseMappingService;
 import se.sundsvall.casemanagement.service.FbService;
 import se.sundsvall.casemanagement.util.CaseUtil;
 import se.sundsvall.casemanagement.util.Constants;
+import se.sundsvall.dept44.problem.Problem;
+import se.sundsvall.dept44.problem.ThrowableProblem;
 
 import static java.util.Collections.emptyList;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANDRING_AV_LIVSMEDELSVERKSAMHET;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_ANDRING_AVLOPPSANLAGGNING;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_ANDRING_AVLOPPSANORDNING;
@@ -205,7 +207,7 @@ public class EcosService {
 					addFacilityToCase(facilityId, registerDocumentResult.getCaseId());
 					yield facilityId;
 				}
-				default -> throw Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "CaseType: " + caseInput.getCaseType() + " is not valid. There is a problem in the API validation.");
+				default -> throw Problem.valueOf(INTERNAL_SERVER_ERROR, "CaseType: " + caseInput.getCaseType() + " is not valid. There is a problem in the API validation.");
 			};
 
 			// -----> AddPartyToFacility
@@ -249,13 +251,13 @@ public class EcosService {
 					.withFacilityFilterSvcDto(facilityStatusFilter, facilityTypeFilter, notFacilityStatusFilters, orgFilter))))
 			.getSearchFacilityResult()
 			.getSearchFacilityResultSvcDto())
-			.orElseThrow(() -> Problem.valueOf(Status.NOT_FOUND, "Could not find facility "));
+			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, "Could not find facility "));
 
 		return result.stream()
 			.filter(resultSvcDto -> resultSvcDto.getFacilityName() != null)
 			.filter(resultSvcDto -> resultSvcDto.getFacilityName().trim().equalsIgnoreCase(facilityName.trim()))
 			.findFirst()
-			.orElseThrow(() -> Problem.valueOf(Status.BAD_REQUEST,
+			.orElseThrow(() -> Problem.valueOf(BAD_REQUEST,
 				("Could not match facilityName: %s to a facility belonging to organization with organizationNumber: %s")
 					.formatted(facilityName, orgNr)))
 			.getFacilityId();
@@ -350,7 +352,7 @@ public class EcosService {
 			LOG.debug("FoodFacility created: {}", foodFacilityGuid);
 			return foodFacilityGuid;
 		}
-		throw Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "FoodFacility could not be created.");
+		throw Problem.valueOf(INTERNAL_SERVER_ERROR, "FoodFacility could not be created.");
 	}
 
 	private String createHeatPumpFacility(final Map<String, String> facilityExtraParameters, final FbPropertyInfo propertyInfo, final RegisterDocumentCaseResultSvcDto registerDocumentResult) {
@@ -376,7 +378,7 @@ public class EcosService {
 		} else if (facilityExtraParameters.keySet().stream().anyMatch(s -> s.startsWith(marinePrefix))) {
 			createHeatPumpFacilitySvcDto = getMarineHeatingFacility(facilityExtraParameters, propertyInfo, registerDocumentResult);
 		} else {
-			throw Problem.valueOf(Status.BAD_REQUEST, MessageFormat.format("The request does not contain any extraParameters on the facility-object with prefix: \"{0}\", \"{1}\"\", \"{2}\"\" or \"{3}\"", airPrefix, geoThermalPrefix, soilPrefix,
+			throw Problem.valueOf(BAD_REQUEST, MessageFormat.format("The request does not contain any extraParameters on the facility-object with prefix: \"{0}\", \"{1}\"\", \"{2}\"\" or \"{3}\"", airPrefix, geoThermalPrefix, soilPrefix,
 				marinePrefix));
 		}
 
@@ -386,7 +388,7 @@ public class EcosService {
 			LOG.debug("HeatPumpFacility created: {}", facilityGuid);
 			return facilityGuid;
 		}
-		throw Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "HeatPumpFacility could not be created");
+		throw Problem.valueOf(INTERNAL_SERVER_ERROR, "HeatPumpFacility could not be created");
 	}
 
 	private CreateHeatPumpFacilityWithHeatTransferFluidSvcDto getGeoThermalHeatingFacility(final Map<String, String> extraParameters, final FbPropertyInfo propertyInfo, final RegisterDocumentCaseResultSvcDto registerDocumentResult) {
@@ -526,7 +528,7 @@ public class EcosService {
 			LOG.debug("Individual Sewage created: {}", facilityGuid);
 			return facilityGuid;
 		}
-		throw Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "Individual Sewage could not be created");
+		throw Problem.valueOf(INTERNAL_SERVER_ERROR, "Individual Sewage could not be created");
 	}
 
 	private FacilityAddressSvcDto getAddress(final FbPropertyInfo propertyInfo) {
@@ -736,7 +738,7 @@ public class EcosService {
 		final var registerDocumentResult = minutMiljoClient.registerDocumentV2(registerDocument).getRegisterDocumentResult();
 
 		if (registerDocumentResult == null) {
-			throw Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "Case could not be created.");
+			throw Problem.valueOf(INTERNAL_SERVER_ERROR, "Case could not be created.");
 		}
 		LOG.debug("Case created with ByggR case number: {}", registerDocumentResult.getCaseNumber());
 		return registerDocumentResult;
@@ -771,7 +773,7 @@ public class EcosService {
 			case ANMALAN_AVHJALPANDEATGARD_FORORENING -> Constants.ECOS_PROCESS_TYPE_ID_ANMALAN_AVHJALPANDEATGARD_FORORENING;
 			case ANDRING_AV_LIVSMEDELSVERKSAMHET -> Constants.ECOS_PROCESS_TYPE_ID_ANDRING_AV_LIVSMEDELSVERKSAMHET;
 			case INFORMATION_OM_UPPHORANDE_AV_VERKSAMHET -> Constants.ECOS_PROCESS_TYPE_ID_INFORMATION_OM_UPPHORANDE_AV_VERKSAMHET;
-			default -> throw Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "CaseType: " + caseType + " is not valid...");
+			default -> throw Problem.valueOf(INTERNAL_SERVER_ERROR, "CaseType: " + caseType + " is not valid...");
 		};
 	}
 
@@ -864,7 +866,7 @@ public class EcosService {
 					.build();
 			}
 		}
-		throw Problem.valueOf(Status.NOT_FOUND, Constants.ERR_MSG_STATUS_NOT_FOUND);
+		throw Problem.valueOf(NOT_FOUND, Constants.ERR_MSG_STATUS_NOT_FOUND);
 	}
 
 	@Async
@@ -940,6 +942,6 @@ public class EcosService {
 			LOG.debug("Health Protection Facility created: {}", facilityGuid);
 			return facilityGuid;
 		}
-		throw Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "Health Protection Facility could not be created");
+		throw Problem.valueOf(INTERNAL_SERVER_ERROR, "Health Protection Facility could not be created");
 	}
 }

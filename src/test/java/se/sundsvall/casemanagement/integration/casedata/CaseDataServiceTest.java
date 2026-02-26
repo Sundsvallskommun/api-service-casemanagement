@@ -29,9 +29,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.ResponseEntity;
-import org.zalando.problem.Problem;
-import org.zalando.problem.Status;
-import org.zalando.problem.ThrowableProblem;
 import se.sundsvall.casemanagement.TestUtil;
 import se.sundsvall.casemanagement.api.model.CaseDTO;
 import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
@@ -45,6 +42,8 @@ import se.sundsvall.casemanagement.integration.casedata.configuration.CaseDataPr
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.service.CaseMappingService;
 import se.sundsvall.casemanagement.util.Constants;
+import se.sundsvall.dept44.problem.Problem;
+import se.sundsvall.dept44.problem.ThrowableProblem;
 
 import static generated.client.casedata.Stakeholder.TypeEnum.PERSON;
 import static java.time.OffsetDateTime.now;
@@ -58,7 +57,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static org.zalando.problem.Status.NOT_FOUND;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.LOST_PARKING_PERMIT;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_BUILDING_PERMIT;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARKING_PERMIT;
@@ -327,11 +326,11 @@ class CaseDataServiceTest {
 		final var namespace = "OTHER";
 		final var caseMapping = CaseMapping.builder().withCaseId(String.valueOf(errandId)).withExternalCaseId(errandNumber).build();
 
-		when(caseDataClientMock.postAttachment(MUNICIPALITY_ID, namespace, errandId, toAttachment(attachment, errandId))).thenThrow(Problem.valueOf(Status.NOT_FOUND));
+		when(caseDataClientMock.postAttachment(MUNICIPALITY_ID, namespace, errandId, toAttachment(attachment, errandId))).thenThrow(Problem.valueOf(NOT_FOUND));
 
 		assertThatThrownBy(() -> caseDataService.patchErrandWithAttachment(caseMapping, attachments, MUNICIPALITY_ID))
 			.isInstanceOf(ThrowableProblem.class)
-			.hasFieldOrPropertyWithValue("status", Status.NOT_FOUND)
+			.hasFieldOrPropertyWithValue("status", NOT_FOUND)
 			.hasFieldOrPropertyWithValue("detail", "No case was found in CaseData with caseId: " + errandId);
 	}
 

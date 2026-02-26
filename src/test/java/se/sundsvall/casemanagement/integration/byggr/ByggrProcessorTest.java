@@ -1,8 +1,6 @@
 package se.sundsvall.casemanagement.integration.byggr;
 
 import arendeexport.SaveNewArendeResponse2;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import dev.failsafe.RetryPolicy;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -23,6 +21,7 @@ import se.sundsvall.casemanagement.integration.db.model.CaseEntity;
 import se.sundsvall.casemanagement.service.CaseService;
 import se.sundsvall.casemanagement.service.event.IncomingByggrCase;
 import se.sundsvall.casemanagement.service.event.UpdateByggrCase;
+import tools.jackson.databind.ObjectMapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -59,7 +58,7 @@ class ByggrProcessorTest {
 	void testHandleUpdateByggRCase() throws SQLException, IOException {
 		final var event = new UpdateByggrCase(CaseService.class, createByggRCaseDTO(CaseType.ANDRING_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION), MUNICIPALITY_ID, REQUEST_ID);
 
-		final var objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+		final var objectMapper = new ObjectMapper();
 		final var jsonString = objectMapper.writeValueAsString(event.getPayload());
 
 		when(caseRepository.findByIdAndMunicipalityId(any(String.class), eq(MUNICIPALITY_ID)))
@@ -90,7 +89,7 @@ class ByggrProcessorTest {
 	void testHandleIncomingErrand() throws SQLException, IOException {
 		final var event = new IncomingByggrCase(CaseService.class, createByggRCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION), MUNICIPALITY_ID, REQUEST_ID);
 
-		final var objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+		final var objectMapper = new ObjectMapper();
 		final var jsonString = objectMapper.writeValueAsString(event.getPayload());
 
 		when(caseRepository.findByIdAndMunicipalityId(any(String.class), eq(MUNICIPALITY_ID)))
@@ -121,7 +120,7 @@ class ByggrProcessorTest {
 	void testHandleIncomingErrandMaximumFound() throws SQLException, IOException {
 		final var event = new IncomingByggrCase(CaseService.class, createByggRCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION), MUNICIPALITY_ID, REQUEST_ID);
 
-		final var objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+		final var objectMapper = new ObjectMapper();
 		final String jsonString = objectMapper.writeValueAsString(event.getPayload());
 
 		when(caseRepository.findByIdAndMunicipalityId(any(String.class), eq(MUNICIPALITY_ID)))

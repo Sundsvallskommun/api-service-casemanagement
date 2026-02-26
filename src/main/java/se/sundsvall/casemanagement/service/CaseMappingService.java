@@ -3,15 +3,15 @@ package se.sundsvall.casemanagement.service;
 import java.text.MessageFormat;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import org.zalando.problem.Problem;
-import org.zalando.problem.Status;
 import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
 import se.sundsvall.casemanagement.api.model.CaseDTO;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
 import se.sundsvall.casemanagement.integration.db.CaseMappingRepository;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
+import se.sundsvall.dept44.problem.Problem;
 
-import static org.zalando.problem.Status.NOT_FOUND;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static se.sundsvall.casemanagement.service.mapper.CaseMappingMapper.toCaseMapping;
 import static se.sundsvall.casemanagement.util.Constants.ERR_MSG_CASES_NOT_FOUND;
 
@@ -66,7 +66,7 @@ public class CaseMappingService {
 		}
 
 		if (externalCaseId != null && caseMappingRepository.existsByExternalCaseIdAndMunicipalityId(externalCaseId, municipalityId)) {
-			throw Problem.valueOf(Status.BAD_REQUEST, MessageFormat.format("A resources already exists with the same externalCaseId: {0}", externalCaseId));
+			throw Problem.valueOf(BAD_REQUEST, MessageFormat.format("A resources already exists with the same externalCaseId: {0}", externalCaseId));
 		}
 	}
 

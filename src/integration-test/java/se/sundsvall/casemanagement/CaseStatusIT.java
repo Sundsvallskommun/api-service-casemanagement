@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.OK;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.jdbc.Sql;
@@ -31,7 +30,7 @@ class CaseStatusIT extends AbstractAppTest {
 	private static final String STATUS_BY_PARTY_PATH = "/{municipalityId}/{partyId}/statuses";
 
 	@Test
-	void test1_GetEcosStatusByExternalCaseId() throws JsonProcessingException, ClassNotFoundException {
+	void test1_GetEcosStatusByExternalCaseId() throws ClassNotFoundException {
 		final var caseId = "e19981ad-34b2-4e14-88f5-133f61ca85aa";
 		final var errandNumber = "MK-2021-837";
 		final var externalCaseId = "2223";
@@ -54,7 +53,7 @@ class CaseStatusIT extends AbstractAppTest {
 	}
 
 	@Test
-	void test2_GetByggrStatusByExternalCaseId() throws JsonProcessingException, ClassNotFoundException {
+	void test2_GetByggrStatusByExternalCaseId() throws ClassNotFoundException {
 		final var errandNumber = "BYGG 2021-000200";
 		final var externalCaseId = "3522";
 		final var dnr = "BYGG 2021-000200";
@@ -76,7 +75,7 @@ class CaseStatusIT extends AbstractAppTest {
 	}
 
 	@Test
-	void test3_GetCaseDataStatusByExternalCaseId() throws JsonProcessingException, ClassNotFoundException {
+	void test3_GetCaseDataStatusByExternalCaseId() throws ClassNotFoundException {
 		final var externalCaseId = "231";
 
 		final var result = setupCall()
@@ -96,7 +95,7 @@ class CaseStatusIT extends AbstractAppTest {
 	}
 
 	@Test
-	void test4_GetStatusByOrgNr() throws JsonProcessingException, ClassNotFoundException {
+	void test4_GetStatusByOrgNr() throws ClassNotFoundException {
 		final String organizationNumber = "123456-4321";
 
 		final var getStatusResponse = Arrays.asList(setupCall()

@@ -9,14 +9,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.zalando.problem.Status;
-import org.zalando.problem.ThrowableProblem;
 import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
 import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
 import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
 import se.sundsvall.casemanagement.integration.db.CaseMappingRepository;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
+import se.sundsvall.dept44.problem.ThrowableProblem;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -25,6 +24,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @ExtendWith(MockitoExtension.class)
 class CaseMappingServiceTest {
@@ -66,7 +67,7 @@ class CaseMappingServiceTest {
 		assertThatThrownBy(() -> caseMappingService.postCaseMapping(caseDTO, caseId, SystemType.ECOS, MUNICIPALITY_ID))
 			.isInstanceOf(ThrowableProblem.class)
 			.hasMessage(MessageFormat.format("Bad Request: A resources already exists with the same externalCaseId: {0}", externalCaseId))
-			.hasFieldOrPropertyWithValue("status", Status.BAD_REQUEST);
+			.hasFieldOrPropertyWithValue("status", BAD_REQUEST);
 
 		verify(caseMappingRepository, never()).save(any());
 	}
@@ -127,7 +128,7 @@ class CaseMappingServiceTest {
 		assertThatThrownBy(() -> caseMappingService.getCaseMapping(caseId, MUNICIPALITY_ID))
 			.isInstanceOf(ThrowableProblem.class)
 			.hasMessage("Not Found: Case not found")
-			.hasFieldOrPropertyWithValue("status", Status.NOT_FOUND);
+			.hasFieldOrPropertyWithValue("status", NOT_FOUND);
 	}
 
 	@Test
@@ -142,7 +143,7 @@ class CaseMappingServiceTest {
 		assertThatThrownBy(() -> caseMappingService.getCaseMapping(externalCaseId, MUNICIPALITY_ID))
 			.isInstanceOf(ThrowableProblem.class)
 			.hasMessage(MessageFormat.format("Not Found: More than one case was found with the same externalCaseId: \"{0}\". This should not be possible.", externalCaseId))
-			.hasFieldOrPropertyWithValue("status", Status.NOT_FOUND);
+			.hasFieldOrPropertyWithValue("status", NOT_FOUND);
 	}
 
 	@Test
@@ -186,7 +187,7 @@ class CaseMappingServiceTest {
 		assertThatThrownBy(() -> caseMappingService.validateUniqueCase(byggRCaseDTO, MUNICIPALITY_ID))
 			.isInstanceOf(ThrowableProblem.class)
 			.hasMessage(MessageFormat.format("Bad Request: A resources already exists with the same externalCaseId: {0}", caseMappingInput.getExternalCaseId()))
-			.hasFieldOrPropertyWithValue("status", Status.BAD_REQUEST);
+			.hasFieldOrPropertyWithValue("status", BAD_REQUEST);
 	}
 
 }

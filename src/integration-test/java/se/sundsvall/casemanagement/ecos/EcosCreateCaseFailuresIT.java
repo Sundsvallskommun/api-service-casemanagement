@@ -1,14 +1,14 @@
 package se.sundsvall.casemanagement.ecos;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.OK;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.zalando.problem.violations.ConstraintViolationProblem;
+import se.sundsvall.dept44.problem.violations.ConstraintViolationProblem;
 import se.sundsvall.casemanagement.Application;
 import se.sundsvall.casemanagement.api.model.CaseResourceResponseDTO;
 import se.sundsvall.casemanagement.api.model.enums.CaseType;
@@ -47,13 +47,13 @@ public class EcosCreateCaseFailuresIT extends AbstractAppTest {
 	// case is not created correctly and a so-called "occurrence" is created on case.
 	// And the test uses different mocks than other happy path tests.
 	@Test
-	void test1_LivsmedelMovingFacility() throws JsonProcessingException, ClassNotFoundException {
+	void test1_LivsmedelMovingFacility() throws ClassNotFoundException {
 
 		final var result = setupCall()
 			.withHttpMethod(HttpMethod.POST)
 			.withServicePath(PATH)
 			.withRequest(REQUEST)
-			.withExpectedResponseStatus(HttpStatus.OK)
+			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE)
 			.sendRequestAndVerifyResponse()
 			.andReturnBody(CaseResourceResponseDTO.class);
@@ -74,14 +74,14 @@ public class EcosCreateCaseFailuresIT extends AbstractAppTest {
 	}
 
 	@Test
-	void test2_LivsmedelEndBeforeStart() throws JsonProcessingException, ClassNotFoundException {
+	void test2_LivsmedelEndBeforeStart() throws ClassNotFoundException {
 		final var EXTERNAL_CASE_ID = "1722008445";
 
 		setupCall()
 			.withHttpMethod(HttpMethod.POST)
 			.withServicePath(PATH)
 			.withRequest(REQUEST)
-			.withExpectedResponseStatus(HttpStatus.BAD_REQUEST)
+			.withExpectedResponseStatus(BAD_REQUEST)
 			.withExpectedResponse(RESPONSE)
 			.sendRequestAndVerifyResponse()
 			.andReturnBody(ConstraintViolationProblem.class);
@@ -94,7 +94,7 @@ public class EcosCreateCaseFailuresIT extends AbstractAppTest {
 	}
 
 	@Test
-	void test3_Livsmedel500Response() throws JsonProcessingException, ClassNotFoundException {
+	void test3_Livsmedel500Response() throws ClassNotFoundException {
 
 		final var EXTERNAL_CASE_ID = "1307815498";
 
@@ -102,7 +102,7 @@ public class EcosCreateCaseFailuresIT extends AbstractAppTest {
 			.withHttpMethod(HttpMethod.POST)
 			.withServicePath(PATH)
 			.withRequest(REQUEST)
-			.withExpectedResponseStatus(HttpStatus.OK)
+			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE)
 			.sendRequestAndVerifyResponse()
 			.andReturnBody(CaseResourceResponseDTO.class);
@@ -119,7 +119,7 @@ public class EcosCreateCaseFailuresIT extends AbstractAppTest {
 	}
 
 	@Test
-	void test4_PropertyDesignationNotFound() throws JsonProcessingException, ClassNotFoundException {
+	void test4_PropertyDesignationNotFound() throws ClassNotFoundException {
 
 		final var EXTERNAL_CASE_ID = "513913320";
 
@@ -127,7 +127,7 @@ public class EcosCreateCaseFailuresIT extends AbstractAppTest {
 			.withHttpMethod(HttpMethod.POST)
 			.withServicePath(PATH)
 			.withRequest(REQUEST)
-			.withExpectedResponseStatus(HttpStatus.OK)
+			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE)
 			.sendRequestAndVerifyResponse()
 			.andReturnBody(CaseResourceResponseDTO.class);
