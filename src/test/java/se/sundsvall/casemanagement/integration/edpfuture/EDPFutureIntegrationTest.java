@@ -36,7 +36,7 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.zalando.problem.ThrowableProblem;
+import se.sundsvall.dept44.problem.Problem;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -44,7 +44,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static org.zalando.problem.Status.BAD_GATEWAY;
+import static org.springframework.http.HttpStatus.BAD_GATEWAY;
 
 @ExtendWith(MockitoExtension.class)
 class EDPFutureIntegrationTest {
@@ -136,7 +136,7 @@ class EDPFutureIntegrationTest {
 			.thenReturn(createGetAuthorizedUsersResponse(EServiceType.MY_SERVICES));
 
 		assertThatThrownBy(() -> edpFutureIntegration.getCustomerId(IDENTITY_NUMBER))
-			.isInstanceOf(ThrowableProblem.class)
+			.isInstanceOf(Problem.class)
 			.hasMessageContaining(BAD_GATEWAY.getReasonPhrase())
 			.hasMessageContaining("No approved eService of type 'Order' found");
 
@@ -170,7 +170,7 @@ class EDPFutureIntegrationTest {
 		when(edpFutureClientMock.getBuildingsByAutorizationRoleV1_2(any())).thenReturn(response);
 
 		assertThatThrownBy(() -> edpFutureIntegration.getBuildingId(ADDRESS, IDENTITY_NUMBER, CUSTOMER_ID))
-			.isInstanceOf(ThrowableProblem.class)
+			.isInstanceOf(Problem.class)
 			.hasMessageContaining(BAD_GATEWAY.getReasonPhrase())
 			.hasMessageContaining("No customer building information found");
 
@@ -184,7 +184,7 @@ class EDPFutureIntegrationTest {
 			.thenReturn(createGetBuildingsResponse("Annan Adress 99"));
 
 		assertThatThrownBy(() -> edpFutureIntegration.getBuildingId(ADDRESS, IDENTITY_NUMBER, CUSTOMER_ID))
-			.isInstanceOf(ThrowableProblem.class)
+			.isInstanceOf(Problem.class)
 			.hasMessageContaining(BAD_GATEWAY.getReasonPhrase())
 			.hasMessageContaining("No building found for the given address");
 
@@ -219,7 +219,7 @@ class EDPFutureIntegrationTest {
 			.thenReturn(createGetServicesResponse("Matavfall"));
 
 		assertThatThrownBy(() -> edpFutureIntegration.sendOrder(IDENTITY_NUMBER, ADDRESS))
-			.isInstanceOf(ThrowableProblem.class)
+			.isInstanceOf(Problem.class)
 			.hasMessageContaining(BAD_GATEWAY.getReasonPhrase())
 			.hasMessageContaining("No service found for the given building id");
 	}
@@ -245,7 +245,7 @@ class EDPFutureIntegrationTest {
 			.thenReturn(createGetOrderTypesResponse("Annan typ", true));
 
 		assertThatThrownBy(() -> edpFutureIntegration.getOrderType(SERVICE_ID))
-			.isInstanceOf(ThrowableProblem.class)
+			.isInstanceOf(Problem.class)
 			.hasMessageContaining(BAD_GATEWAY.getReasonPhrase())
 			.hasMessageContaining("No order type found with the given name");
 
@@ -259,7 +259,7 @@ class EDPFutureIntegrationTest {
 			.thenReturn(createGetOrderTypesResponse(ORDER_TYPE_TEXT, false));
 
 		assertThatThrownBy(() -> edpFutureIntegration.getOrderType(SERVICE_ID))
-			.isInstanceOf(ThrowableProblem.class)
+			.isInstanceOf(Problem.class)
 			.hasMessageContaining(BAD_GATEWAY.getReasonPhrase())
 			.hasMessageContaining("No order rows found for the given order type");
 

@@ -15,9 +15,9 @@ import edpfuture.OrderTypeV14;
 import edpfuture.RHService;
 import edpfuture.SubmitOrderTypeApplicationV14;
 import org.springframework.stereotype.Service;
-import org.zalando.problem.Problem;
+import se.sundsvall.dept44.problem.Problem;
 
-import static org.zalando.problem.Status.BAD_GATEWAY;
+import static org.springframework.http.HttpStatus.BAD_GATEWAY;
 
 @Service
 public class EDPFutureIntegration {
