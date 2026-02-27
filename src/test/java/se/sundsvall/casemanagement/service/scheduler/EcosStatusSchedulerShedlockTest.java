@@ -26,16 +26,16 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @SpringBootTest(properties = {
-	"scheduler.status.cron=* * * * * *",
-	"scheduler.status.name=StatusScheduler",
+	"scheduler.ecos-status.cron=* * * * * *",
+	"scheduler.ecos-status.name=EcosStatusScheduler",
 	"server.shutdown=immediate",
 	"spring.lifecycle.timeout-per-shutdown-phase=0s"
 })
 @ActiveProfiles("junit")
-class StatusSchedulerShedlockTest {
+class EcosStatusSchedulerShedlockTest {
 
 	@Autowired
-	private StatusSchedulerWorker workerMock;
+	private EcosStatusWorker workerMock;
 
 	@Autowired
 	private NamedParameterJdbcTemplate jdbcTemplate;
@@ -44,7 +44,6 @@ class StatusSchedulerShedlockTest {
 
 	@Test
 	void verifyShedLock() {
-		// Let mock hang
 		doAnswer(_ -> {
 			mockCalledTime = LocalDateTime.now();
 			await()
@@ -53,13 +52,11 @@ class StatusSchedulerShedlockTest {
 			return null;
 		}).when(workerMock).updateStatuses(any());
 
-		// Make sure scheduling occurs multiple times
 		await().until(() -> mockCalledTime != null && LocalDateTime.now().isAfter(mockCalledTime.plusSeconds(2)));
 
-		// Verify lock
 		await()
 			.atMost(5, TimeUnit.SECONDS)
-			.untilAsserted(() -> assertThat(getLockedAt("StatusScheduler"))
+			.untilAsserted(() -> assertThat(getLockedAt("EcosStatusScheduler"))
 				.isCloseTo(LocalDateTime.now(Clock.systemUTC()), within(10, ChronoUnit.SECONDS)));
 
 		verify(workerMock, times(1)).updateStatuses(any());
@@ -80,12 +77,12 @@ class StatusSchedulerShedlockTest {
 	}
 
 	@TestConfiguration
-	public static class StatusSchedulerWorkerConfiguration {
+	public static class EcosStatusWorkerConfiguration {
 
 		@Bean
 		@Primary
-		StatusSchedulerWorker createMock() {
-			return Mockito.mock(StatusSchedulerWorker.class);
+		EcosStatusWorker createMock() {
+			return Mockito.mock(EcosStatusWorker.class);
 		}
 
 	}

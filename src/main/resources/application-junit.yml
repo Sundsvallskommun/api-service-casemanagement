@@ -26,9 +26,15 @@ spring:
               action: create
               create-target: target/database/generated-schema.sql
 scheduler:
-  status:
+  byggr-status:
     cron: "-"
-    name: StatusScheduler
+    name: ByggrStatusScheduler
+    lock-at-most-for: PT10M
+    maximum-execution-time: PT10M
+    municipality-ids: 2281
+  ecos-status:
+    cron: "-"
+    name: EcosStatusScheduler
     lock-at-most-for: PT10M
     maximum-execution-time: PT10M
     municipality-ids: 2281
