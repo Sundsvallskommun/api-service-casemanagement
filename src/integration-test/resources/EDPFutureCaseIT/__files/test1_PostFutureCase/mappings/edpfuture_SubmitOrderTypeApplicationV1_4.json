@@ -1,0 +1,19 @@
+{
+	"request": {
+		"method": "POST",
+		"url": "/edpfuture",
+		"headers": {
+			"SOAPAction": {
+				"equalTo": "http://tempuri.org/ISubmitOrderTypeApplicationV1_4/SubmitOrderTypeApplicationV1_4"
+			}
+		}
+	},
+	"response": {
+		"headers": {
+			"Content-Type": "text/xml; charset=utf-8"
+		},
+		"bodyFileName": "test1_PostFutureCase/response/edpfuture_SubmitOrderTypeApplicationV1_4.xml",
+		"status": 200
+	},
+	"name": "edpfuture_SubmitOrderTypeApplicationV1_4"
+}

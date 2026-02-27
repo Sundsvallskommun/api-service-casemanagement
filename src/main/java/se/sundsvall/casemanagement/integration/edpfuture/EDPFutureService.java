@@ -15,17 +15,30 @@ import edpfuture.OrderTypeV14;
 import edpfuture.RHService;
 import edpfuture.SubmitOrderTypeApplicationV14;
 import org.springframework.stereotype.Service;
+import se.sundsvall.casemanagement.api.model.FutureCaseDTO;
+import se.sundsvall.casemanagement.api.model.enums.SystemType;
+import se.sundsvall.casemanagement.service.CaseMappingService;
 import se.sundsvall.dept44.problem.Problem;
 
 import static org.springframework.http.HttpStatus.BAD_GATEWAY;
 
 @Service
-public class EDPFutureIntegration {
+public class EDPFutureService {
 
 	private final EDPFutureClient edpFutureClient;
+	private final CaseMappingService caseMappingService;
 
-	public EDPFutureIntegration(final EDPFutureClient edpFutureClient) {
+	public EDPFutureService(final EDPFutureClient edpFutureClient, final CaseMappingService caseMappingService) {
 		this.edpFutureClient = edpFutureClient;
+		this.caseMappingService = caseMappingService;
+	}
+
+	public void handleOrder(final FutureCaseDTO futureCaseDTO, final String municipalityId) {
+		var identityNumber = futureCaseDTO.getExtraParameters().get("IdentityNumber");
+		var address = futureCaseDTO.getExtraParameters().get("Address");
+
+		sendOrder(identityNumber, address);
+		caseMappingService.postCaseMapping(futureCaseDTO, futureCaseDTO.getExternalCaseId(), SystemType.EDPFUTURE, municipalityId);
 	}
 
 	public void sendOrder(final String identityNumber, final String address) {

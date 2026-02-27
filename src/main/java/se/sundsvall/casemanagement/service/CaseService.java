@@ -6,10 +6,12 @@ import org.springframework.stereotype.Service;
 import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
 import se.sundsvall.casemanagement.api.model.CaseDTO;
 import se.sundsvall.casemanagement.api.model.EcosCaseDTO;
+import se.sundsvall.casemanagement.api.model.FutureCaseDTO;
 import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
 import se.sundsvall.casemanagement.integration.db.CaseRepository;
 import se.sundsvall.casemanagement.service.event.IncomingByggrCase;
 import se.sundsvall.casemanagement.service.event.IncomingEcosCase;
+import se.sundsvall.casemanagement.service.event.IncomingFutureCase;
 import se.sundsvall.casemanagement.service.event.IncomingOtherCase;
 import se.sundsvall.casemanagement.service.event.UpdateByggrCase;
 import se.sundsvall.casemanagement.service.util.Validator;
@@ -53,7 +55,12 @@ public class CaseService {
 			validator.validateEcosErrand(ecosCase);
 			saveCase(ecosCase, municipalityId);
 			handleEcosCase(ecosCase, municipalityId);
+		} else if (dto instanceof final FutureCaseDTO futureCase) {
+			validator.validateFutureErrand(futureCase);
+			saveCase(futureCase, municipalityId);
+			handleFutureCase(futureCase, municipalityId);
 		} else if (dto instanceof final OtherCaseDTO otherCase) {
+			validator.validateAttachments(otherCase);
 			saveCase(otherCase, municipalityId);
 			handleOtherCase(otherCase, municipalityId);
 		}
@@ -73,6 +80,10 @@ public class CaseService {
 
 	private void handleEcosCase(final EcosCaseDTO ecosCaseDTO, final String municipalityId) {
 		eventPublisher.publishEvent(new IncomingEcosCase(this, ecosCaseDTO, municipalityId, RequestId.get()));
+	}
+
+	private void handleFutureCase(final FutureCaseDTO futureCaseDTO, final String municipalityId) {
+		eventPublisher.publishEvent(new IncomingFutureCase(this, futureCaseDTO, municipalityId, RequestId.get()));
 	}
 
 	private void handleOtherCase(final OtherCaseDTO otherCaseDTO, final String municipalityId) {

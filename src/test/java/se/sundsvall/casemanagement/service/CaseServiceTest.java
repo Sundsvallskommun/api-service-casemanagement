@@ -1,6 +1,7 @@
 package se.sundsvall.casemanagement.service;
 
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -13,14 +14,17 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 import se.sundsvall.casemanagement.api.model.AddressDTO;
+import se.sundsvall.casemanagement.api.model.AttachmentDTO;
 import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
 import se.sundsvall.casemanagement.api.model.EcosCaseDTO;
 import se.sundsvall.casemanagement.api.model.FacilityDTO;
+import se.sundsvall.casemanagement.api.model.FutureCaseDTO;
 import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
 import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.integration.db.CaseRepository;
 import se.sundsvall.casemanagement.service.event.IncomingByggrCase;
 import se.sundsvall.casemanagement.service.event.IncomingEcosCase;
+import se.sundsvall.casemanagement.service.event.IncomingFutureCase;
 import se.sundsvall.casemanagement.service.event.IncomingOtherCase;
 import se.sundsvall.casemanagement.service.util.Validator;
 import se.sundsvall.dept44.problem.ThrowableProblem;
@@ -56,6 +60,9 @@ class CaseServiceTest {
 	private ArgumentCaptor<IncomingEcosCase> ecosCaseCaptor;
 
 	@Captor
+	private ArgumentCaptor<IncomingFutureCase> futureCaseCaptor;
+
+	@Captor
 	private ArgumentCaptor<IncomingOtherCase> otherCaseCaptor;
 
 	@Test
@@ -65,6 +72,7 @@ class CaseServiceTest {
 			.withStakeholders(List.of())
 			.withCaseType(CaseType.ANDRING_ANSOKAN_OM_BYGGLOV.toString())
 			.withFacilities(List.of(createFacilityDTO(CaseType.ANDRING_ANSOKAN_OM_BYGGLOV)))
+			.withAttachments(List.of(AttachmentDTO.builder().withCategory("BUILDING_PERMIT_APPLICATION").withFile("dGVzdA==").withName("test.pdf").withExtension(".pdf").withMimeType("application/pdf").build()))
 			.build();
 		// Act
 		caseService.handleCase(byggRCase, MUNICIPALITY_ID);
@@ -99,6 +107,7 @@ class CaseServiceTest {
 			.withStakeholders(List.of())
 			.withFacilities(List.of(facility))
 			.withCaseType(caseType.toString())
+			.withAttachments(List.of(AttachmentDTO.builder().withCategory("BUILDING_PERMIT_APPLICATION").withFile("dGVzdA==").withName("test.pdf").withExtension(".pdf").withMimeType("application/pdf").build()))
 			.build();
 
 		// Act
@@ -134,6 +143,7 @@ class CaseServiceTest {
 			.withStakeholders(List.of())
 			.withFacilities(List.of(facility))
 			.withCaseType(caseType.toString())
+			.withAttachments(List.of(AttachmentDTO.builder().withCategory("BUILDING_PERMIT_APPLICATION").withFile("dGVzdA==").withName("test.pdf").withExtension(".pdf").withMimeType("application/pdf").build()))
 			.build();
 
 		// Act && assert
@@ -153,6 +163,7 @@ class CaseServiceTest {
 			.withStakeholders(List.of())
 			.withCaseType(CaseType.REGISTRERING_AV_LIVSMEDEL.toString())
 			.withFacilities(List.of())
+			.withAttachments(List.of(AttachmentDTO.builder().withCategory("BUILDING_PERMIT_APPLICATION").withFile("dGVzdA==").withName("test.pdf").withExtension(".pdf").withMimeType("application/pdf").build()))
 			.build();
 
 		// Act
@@ -169,16 +180,57 @@ class CaseServiceTest {
 
 	@Test
 	void testHandleOtherCase() {
-		final var otherCaseDTO = OtherCaseDTO.builder().build();
+		final var otherCaseDTO = OtherCaseDTO.builder()
+			.withAttachments(List.of(AttachmentDTO.builder().withCategory("BUILDING_PERMIT_APPLICATION").withFile("dGVzdA==").withName("test.pdf").withExtension(".pdf").withMimeType("application/pdf").build()))
+			.build();
 		// Act
 		caseService.handleCase(otherCaseDTO, MUNICIPALITY_ID);
 		// Assert
+		verify(validator).validateAttachments(otherCaseDTO);
 		verify(eventPublisher).publishEvent(otherCaseCaptor.capture());
 		verify(caseRepository).save(any());
 
 		final var incomingOtherCase = otherCaseCaptor.getValue();
 		assertThat(incomingOtherCase.getSource()).isEqualTo(caseService);
 		assertThat(incomingOtherCase.getPayload()).isEqualTo(otherCaseDTO);
+	}
+
+	@Test
+	void testHandleFutureCase() {
+		// Arrange
+		final var futureCaseDTO = FutureCaseDTO.builder()
+			.withCaseType(CaseType.EXTRA_SACK.toString())
+			.withStakeholders(List.of())
+			.withExtraParameters(Map.of("IdentityNumber", "198001011234", "Address", "Storgatan 1"))
+			.build();
+		// Act
+		caseService.handleCase(futureCaseDTO, MUNICIPALITY_ID);
+		// Assert
+		verify(validator).validateFutureErrand(futureCaseDTO);
+		verify(eventPublisher).publishEvent(futureCaseCaptor.capture());
+		verify(caseRepository).save(any());
+
+		final var incomingFutureCase = futureCaseCaptor.getValue();
+		assertThat(incomingFutureCase.getSource()).isEqualTo(caseService);
+		assertThat(incomingFutureCase.getPayload()).isEqualTo(futureCaseDTO);
+	}
+
+	@Test
+	void testHandleFutureCaseMissingExtraParameters() {
+		// Arrange
+		final var futureCaseDTO = FutureCaseDTO.builder()
+			.withCaseType(CaseType.EXTRA_SACK.toString())
+			.withStakeholders(List.of())
+			.build();
+
+		// Act && assert
+		assertThatExceptionOfType(ThrowableProblem.class)
+			.isThrownBy(() -> caseService.handleCase(futureCaseDTO, MUNICIPALITY_ID))
+			.withMessage("Bad Request: extraParameters must contain non-blank values for keys: IdentityNumber, Address");
+
+		verify(validator).validateFutureErrand(futureCaseDTO);
+		verifyNoInteractions(eventPublisher);
+		verifyNoInteractions(caseRepository);
 	}
 
 }

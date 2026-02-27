@@ -1,0 +1,19 @@
+{
+	"request": {
+		"method": "POST",
+		"url": "/edpfuture",
+		"headers": {
+			"SOAPAction": {
+				"equalTo": "http://tempuri.org/IGetRenhOrderTypesForServiceV1_7/GetRenhOrderTypesForServiceV1_7"
+			}
+		}
+	},
+	"response": {
+		"headers": {
+			"Content-Type": "text/xml; charset=utf-8"
+		},
+		"bodyFileName": "test1_PostFutureCase/response/edpfuture_GetRenhOrderTypesForServiceV1_7.xml",
+		"status": 200
+	},
+	"name": "edpfuture_GetRenhOrderTypesForServiceV1_7"
+}

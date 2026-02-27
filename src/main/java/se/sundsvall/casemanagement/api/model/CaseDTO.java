@@ -13,6 +13,7 @@ import java.util.Map;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import se.sundsvall.casemanagement.api.validation.AttachmentConstraints;
 
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANDRING_ANSOKAN_OM_BYGGLOV;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANDRING_AV_LIVSMEDELSVERKSAMHET;
@@ -36,6 +37,7 @@ import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANSOKAN
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANSOKAN_TILLSTAND_VARMEPUMP;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.BYGGR_ADDITIONAL_DOCUMENTS;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.BYGGR_ADD_CERTIFIED_INSPECTOR;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.EXTRA_SACK;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.INFORMATION_OM_UPPHORANDE_AV_VERKSAMHET;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.INSTALLATION_VA;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.INSTALLATION_VENTILATION;
@@ -210,6 +212,9 @@ import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.UPPSATT
 		MEX_BUY_LAND_FROM_THE_MUNICIPALITY_BUSINESS,
 		MEX_TRAINING_SEMINAR,
 		MEX_LAND_RESERVATION
+	}),
+	@Type(value = FutureCaseDTO.class, names = {
+		EXTRA_SACK
 	})
 })
 @Data
@@ -239,7 +244,7 @@ public abstract class CaseDTO {
 	})
 	private List<StakeholderDTO> stakeholders;
 
-	@NotEmpty
+	@NotEmpty(groups = AttachmentConstraints.class)
 	@Valid
 	@Schema(description = "The attachments in the case")
 	private List<AttachmentDTO> attachments;

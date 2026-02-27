@@ -1,0 +1,39 @@
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+	<s:Body>
+		<GetRenhOrderTypesForServiceV1_7Response xmlns="http://tempuri.org/">
+			<GetRenhOrderTypesForServiceV1_7Result
+			  xmlns:a="http://schemas.datacontract.org/2004/07/Future.Remoting.Web"
+			  xmlns:b="http://schemas.datacontract.org/2004/07/Future.Remoting.Web.Model"
+			  xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+				<a:_errorMessage i:nil="true" />
+				<a:_resultValue>
+					<b:OrderTypeV1_7>
+						<b:_CommentRequired>false</b:_CommentRequired>
+						<b:_Id>501</b:_Id>
+						<b:_Instruction i:nil="true" />
+						<b:_OrderRows>
+							<b:OrderRowV1_4>
+								<b:_AllowQuantity>true</b:_AllowQuantity>
+								<b:_FeeCode>ESK</b:_FeeCode>
+								<b:_FeeText>Extra säck</b:_FeeText>
+								<b:_Id>601</b:_Id>
+								<b:_PricePerUnit>50</b:_PricePerUnit>
+								<b:_Quantity>0</b:_Quantity>
+								<b:_Unit>Piece</b:_Unit>
+								<b:_DefaultValue>1</b:_DefaultValue>
+								<b:_MaxValue>10</b:_MaxValue>
+								<b:_MinValue>0</b:_MinValue>
+							</b:OrderRowV1_4>
+						</b:_OrderRows>
+						<b:_Price>50</b:_Price>
+						<b:_Product>ESK</b:_Product>
+						<b:_Text>Extra säck</b:_Text>
+						<b:_Type>Order</b:_Type>
+						<b:_HideComment>false</b:_HideComment>
+					</b:OrderTypeV1_7>
+				</a:_resultValue>
+				<a:_succeeded>true</a:_succeeded>
+			</GetRenhOrderTypesForServiceV1_7Result>
+		</GetRenhOrderTypesForServiceV1_7Response>
+	</s:Body>
+</s:Envelope>
