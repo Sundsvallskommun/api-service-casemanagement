@@ -9,6 +9,7 @@ import edpfuture.GetRenhOrderTypesForServiceV17Response;
 import edpfuture.GetServicesByBuildingIdForOrder;
 import edpfuture.GetServicesByBuildingIdForOrderResponse;
 import edpfuture.SubmitOrderTypeApplicationV14;
+import edpfuture.SubmitOrderTypeApplicationV14Response;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -47,6 +48,6 @@ public interface EDPFutureClient {
 	@PostMapping(consumes = TEXT_XML_UTF8, headers = {
 		"SOAPAction=http://tempuri.org/ISubmitOrderTypeApplicationV1_4/SubmitOrderTypeApplicationV1_4"
 	})
-	SubmitOrderTypeApplicationV14 submitOrderTypeApplicationV1_4(final SubmitOrderTypeApplicationV14 request);
+	SubmitOrderTypeApplicationV14Response submitOrderTypeApplicationV1_4(final SubmitOrderTypeApplicationV14 request);
 
 }

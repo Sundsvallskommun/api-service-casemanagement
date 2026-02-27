@@ -4,16 +4,21 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;
 import java.text.MessageFormat;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import org.springframework.stereotype.Component;
 import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
+import se.sundsvall.casemanagement.api.model.CaseDTO;
 import se.sundsvall.casemanagement.api.model.EcosCaseDTO;
+import se.sundsvall.casemanagement.api.model.FutureCaseDTO;
 import se.sundsvall.casemanagement.api.model.PersonDTO;
 import se.sundsvall.casemanagement.api.model.StakeholderDTO;
 import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.api.model.enums.FacilityType;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
+import se.sundsvall.casemanagement.api.validation.AttachmentConstraints;
 import se.sundsvall.casemanagement.api.validation.ByggRConstraints;
 import se.sundsvall.casemanagement.api.validation.ByggRFacilityConstraints;
 import se.sundsvall.casemanagement.api.validation.EcosConstraints;
@@ -48,6 +53,12 @@ public class Validator {
 
 			if (!caseViolations.isEmpty()) {
 				throw new ConstraintViolationException(caseViolations);
+			}
+
+			final Set<ConstraintViolation<ByggRCaseDTO>> attachmentViolations = validator.validate(byggRCase, AttachmentConstraints.class);
+
+			if (!attachmentViolations.isEmpty()) {
+				throw new ConstraintViolationException(attachmentViolations);
 			}
 
 			// Validation for person. This is necessary because the role CONTROL_OFFICIAL doesn't have the same validation
@@ -99,6 +110,34 @@ public class Validator {
 		}
 	}
 
+	public void validateAttachments(CaseDTO caseDTO) {
+		try (var factory = Validation.buildDefaultValidatorFactory()) {
+			final var validator = factory.getValidator();
+
+			final Set<ConstraintViolation<CaseDTO>> violations = validator.validate(caseDTO, AttachmentConstraints.class);
+
+			if (!violations.isEmpty()) {
+				throw new ConstraintViolationException(violations);
+			}
+		}
+	}
+
+	public void validateFutureErrand(final FutureCaseDTO futureCase) {
+		if (anyBlank(futureCase.getExtraParameters(), List.of("IdentityNumber", "Address"))) {
+			throw Problem.valueOf(BAD_REQUEST,
+				"extraParameters must contain non-blank values for keys: IdentityNumber, Address");
+		}
+	}
+
+	private boolean anyBlank(final Map<String, String> parameters, final List<String> keys) {
+		if (parameters == null) {
+			return true;
+		}
+		return keys.stream()
+			.map(parameters::get)
+			.anyMatch(value -> value == null || value.isBlank());
+	}
+
 	public void validateEcosErrand(EcosCaseDTO eCase) {
 		try (var factory = Validation.buildDefaultValidatorFactory()) {
 			final var validator = factory.getValidator();
@@ -111,6 +150,12 @@ public class Validator {
 
 			if (!violations.isEmpty()) {
 				throw new ConstraintViolationException(violations);
+			}
+
+			final Set<ConstraintViolation<EcosCaseDTO>> attachmentViolations = validator.validate(eCase, AttachmentConstraints.class);
+
+			if (!attachmentViolations.isEmpty()) {
+				throw new ConstraintViolationException(attachmentViolations);
 			}
 
 			for (final var facilityDTO : eCase.getFacilities()) {

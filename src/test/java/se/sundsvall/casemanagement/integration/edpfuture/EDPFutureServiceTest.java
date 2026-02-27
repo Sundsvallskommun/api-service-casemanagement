@@ -47,7 +47,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.BAD_GATEWAY;
 
 @ExtendWith(MockitoExtension.class)
-class EDPFutureIntegrationTest {
+class EDPFutureServiceTest {
 
 	private static final String IDENTITY_NUMBER = "202601052380";
 	private static final String ADDRESS = "Testgatan 1";
@@ -61,7 +61,7 @@ class EDPFutureIntegrationTest {
 	private EDPFutureClient edpFutureClientMock;
 
 	@InjectMocks
-	private EDPFutureIntegration edpFutureIntegration;
+	private EDPFutureService edpFutureService;
 
 	@Captor
 	private ArgumentCaptor<GetAuthorizedUsers> getAuthorizedUsersCaptor;
@@ -89,7 +89,7 @@ class EDPFutureIntegrationTest {
 		when(edpFutureClientMock.getRenhOrderTypesForServiceV1_7(any()))
 			.thenReturn(createGetOrderTypesResponse(ORDER_TYPE_TEXT, true));
 
-		edpFutureIntegration.sendOrder(IDENTITY_NUMBER, ADDRESS);
+		edpFutureService.sendOrder(IDENTITY_NUMBER, ADDRESS);
 
 		verify(edpFutureClientMock).getAuthorizedUsers(getAuthorizedUsersCaptor.capture());
 		assertThat(getAuthorizedUsersCaptor.getValue().getIdentityNumber()).isEqualTo(IDENTITY_NUMBER);
@@ -122,7 +122,7 @@ class EDPFutureIntegrationTest {
 		when(edpFutureClientMock.getAuthorizedUsers(any()))
 			.thenReturn(createGetAuthorizedUsersResponse(EServiceType.ORDER));
 
-		var result = edpFutureIntegration.getCustomerId(IDENTITY_NUMBER);
+		var result = edpFutureService.getCustomerId(IDENTITY_NUMBER);
 
 		assertThat(result).isEqualTo(CUSTOMER_ID);
 		verify(edpFutureClientMock).getAuthorizedUsers(getAuthorizedUsersCaptor.capture());
@@ -135,7 +135,7 @@ class EDPFutureIntegrationTest {
 		when(edpFutureClientMock.getAuthorizedUsers(any()))
 			.thenReturn(createGetAuthorizedUsersResponse(EServiceType.MY_SERVICES));
 
-		assertThatThrownBy(() -> edpFutureIntegration.getCustomerId(IDENTITY_NUMBER))
+		assertThatThrownBy(() -> edpFutureService.getCustomerId(IDENTITY_NUMBER))
 			.isInstanceOf(Problem.class)
 			.hasMessageContaining(BAD_GATEWAY.getReasonPhrase())
 			.hasMessageContaining("No approved eService of type 'Order' found");
@@ -149,7 +149,7 @@ class EDPFutureIntegrationTest {
 		when(edpFutureClientMock.getBuildingsByAutorizationRoleV1_2(any()))
 			.thenReturn(createGetBuildingsResponse(ADDRESS));
 
-		var result = edpFutureIntegration.getBuildingId(ADDRESS, IDENTITY_NUMBER, CUSTOMER_ID);
+		var result = edpFutureService.getBuildingId(ADDRESS, IDENTITY_NUMBER, CUSTOMER_ID);
 
 		assertThat(result).isEqualTo(BUILDING_ID);
 		verify(edpFutureClientMock).getBuildingsByAutorizationRoleV1_2(getBuildingsCaptor.capture());
@@ -169,7 +169,7 @@ class EDPFutureIntegrationTest {
 
 		when(edpFutureClientMock.getBuildingsByAutorizationRoleV1_2(any())).thenReturn(response);
 
-		assertThatThrownBy(() -> edpFutureIntegration.getBuildingId(ADDRESS, IDENTITY_NUMBER, CUSTOMER_ID))
+		assertThatThrownBy(() -> edpFutureService.getBuildingId(ADDRESS, IDENTITY_NUMBER, CUSTOMER_ID))
 			.isInstanceOf(Problem.class)
 			.hasMessageContaining(BAD_GATEWAY.getReasonPhrase())
 			.hasMessageContaining("No customer building information found");
@@ -183,7 +183,7 @@ class EDPFutureIntegrationTest {
 		when(edpFutureClientMock.getBuildingsByAutorizationRoleV1_2(any()))
 			.thenReturn(createGetBuildingsResponse("Annan Adress 99"));
 
-		assertThatThrownBy(() -> edpFutureIntegration.getBuildingId(ADDRESS, IDENTITY_NUMBER, CUSTOMER_ID))
+		assertThatThrownBy(() -> edpFutureService.getBuildingId(ADDRESS, IDENTITY_NUMBER, CUSTOMER_ID))
 			.isInstanceOf(Problem.class)
 			.hasMessageContaining(BAD_GATEWAY.getReasonPhrase())
 			.hasMessageContaining("No building found for the given address");
@@ -203,7 +203,7 @@ class EDPFutureIntegrationTest {
 		when(edpFutureClientMock.getRenhOrderTypesForServiceV1_7(any()))
 			.thenReturn(createGetOrderTypesResponse(ORDER_TYPE_TEXT, true));
 
-		edpFutureIntegration.sendOrder(IDENTITY_NUMBER, ADDRESS);
+		edpFutureService.sendOrder(IDENTITY_NUMBER, ADDRESS);
 
 		verify(edpFutureClientMock).getRenhOrderTypesForServiceV1_7(getOrderTypesCaptor.capture());
 		assertThat(getOrderTypesCaptor.getValue().getServiceId()).isEqualTo(SERVICE_ID);
@@ -218,7 +218,7 @@ class EDPFutureIntegrationTest {
 		when(edpFutureClientMock.getServicesByBuildingIdForOrder(any()))
 			.thenReturn(createGetServicesResponse("Matavfall"));
 
-		assertThatThrownBy(() -> edpFutureIntegration.sendOrder(IDENTITY_NUMBER, ADDRESS))
+		assertThatThrownBy(() -> edpFutureService.sendOrder(IDENTITY_NUMBER, ADDRESS))
 			.isInstanceOf(Problem.class)
 			.hasMessageContaining(BAD_GATEWAY.getReasonPhrase())
 			.hasMessageContaining("No service found for the given building id");
@@ -229,7 +229,7 @@ class EDPFutureIntegrationTest {
 		when(edpFutureClientMock.getRenhOrderTypesForServiceV1_7(any()))
 			.thenReturn(createGetOrderTypesResponse(ORDER_TYPE_TEXT, true));
 
-		var result = edpFutureIntegration.getOrderType(SERVICE_ID);
+		var result = edpFutureService.getOrderType(SERVICE_ID);
 
 		assertThat(result).isNotNull();
 		assertThat(result.getText()).isEqualTo(ORDER_TYPE_TEXT);
@@ -244,7 +244,7 @@ class EDPFutureIntegrationTest {
 		when(edpFutureClientMock.getRenhOrderTypesForServiceV1_7(any()))
 			.thenReturn(createGetOrderTypesResponse("Annan typ", true));
 
-		assertThatThrownBy(() -> edpFutureIntegration.getOrderType(SERVICE_ID))
+		assertThatThrownBy(() -> edpFutureService.getOrderType(SERVICE_ID))
 			.isInstanceOf(Problem.class)
 			.hasMessageContaining(BAD_GATEWAY.getReasonPhrase())
 			.hasMessageContaining("No order type found with the given name");
@@ -258,7 +258,7 @@ class EDPFutureIntegrationTest {
 		when(edpFutureClientMock.getRenhOrderTypesForServiceV1_7(any()))
 			.thenReturn(createGetOrderTypesResponse(ORDER_TYPE_TEXT, false));
 
-		assertThatThrownBy(() -> edpFutureIntegration.getOrderType(SERVICE_ID))
+		assertThatThrownBy(() -> edpFutureService.getOrderType(SERVICE_ID))
 			.isInstanceOf(Problem.class)
 			.hasMessageContaining(BAD_GATEWAY.getReasonPhrase())
 			.hasMessageContaining("No order rows found for the given order type");
@@ -273,7 +273,7 @@ class EDPFutureIntegrationTest {
 			.withText(ORDER_TYPE_TEXT)
 			.withOrderRows(new ArrayOfOrderRowV14().withOrderRowV14(new OrderRowV14()));
 
-		edpFutureIntegration.submitOrderTypeApplication(CUSTOMER_ID, BUILDING_ID, SERVICE_ID, orderType);
+		edpFutureService.submitOrderTypeApplication(CUSTOMER_ID, BUILDING_ID, SERVICE_ID, orderType);
 
 		verify(edpFutureClientMock).submitOrderTypeApplicationV1_4(submitOrderCaptor.capture());
 		var request = submitOrderCaptor.getValue();
@@ -286,7 +286,7 @@ class EDPFutureIntegrationTest {
 
 	private GetAuthorizedUsersResponse createGetAuthorizedUsersResponse(final EServiceType eServiceType) {
 		var user = new AuthorizedUser()
-			.withCustomerId(EDPFutureIntegrationTest.CUSTOMER_ID)
+			.withCustomerId(EDPFutureServiceTest.CUSTOMER_ID)
 			.withApprovedEservices(new ArrayOfEServiceType().withEServiceType(eServiceType));
 
 		return new GetAuthorizedUsersResponse()
@@ -297,7 +297,7 @@ class EDPFutureIntegrationTest {
 
 	private GetBuildingsByAutorizationRoleV12Response createGetBuildingsResponse(final String address) {
 		var building = new BuildingV12()
-			.withID(EDPFutureIntegrationTest.BUILDING_ID)
+			.withID(EDPFutureServiceTest.BUILDING_ID)
 			.withAddress(address);
 
 		var holder = new CustomerBuildingInformationHolderV12()
@@ -312,8 +312,8 @@ class EDPFutureIntegrationTest {
 
 	private GetServicesByBuildingIdForOrderResponse createGetServicesResponse(final String wasteType) {
 		var service = new RHService()
-			.withID(EDPFutureIntegrationTest.SERVICE_ID)
-			.withBuildingID(EDPFutureIntegrationTest.BUILDING_ID)
+			.withID(EDPFutureServiceTest.SERVICE_ID)
+			.withBuildingID(EDPFutureServiceTest.BUILDING_ID)
 			.withWasteType(wasteType);
 
 		return new GetServicesByBuildingIdForOrderResponse()

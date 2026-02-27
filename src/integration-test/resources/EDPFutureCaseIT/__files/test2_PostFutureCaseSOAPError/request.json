@@ -1,0 +1,18 @@
+{
+	"externalCaseId": "7002",
+	"caseType": "EXTRA_SACK",
+	"stakeholders": [
+		{
+			"type": "PERSON",
+			"firstName": "Test",
+			"lastName": "Test",
+			"roles": [
+				"APPLICANT"
+			]
+		}
+	],
+	"extraParameters": {
+		"IdentityNumber": "202601052380",
+		"Address": "Testgatan 1"
+	}
+}

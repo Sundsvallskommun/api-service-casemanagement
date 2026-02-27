@@ -19,6 +19,7 @@ import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
 import se.sundsvall.casemanagement.api.model.CaseDTO;
 import se.sundsvall.casemanagement.api.model.CaseResourceResponseDTO;
 import se.sundsvall.casemanagement.api.model.EcosCaseDTO;
+import se.sundsvall.casemanagement.api.model.FutureCaseDTO;
 import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
 import se.sundsvall.casemanagement.integration.casedata.CaseDataService;
 import se.sundsvall.casemanagement.service.CaseMappingService;
@@ -60,12 +61,12 @@ class CaseResource {
 
 	@PostMapping(path = "cases", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
 	@Operation(
-		description = "Creates a case in ByggR or Ecos2 based on caseType. Also persists a connection between externalCaseId and the created case.",
+		description = "Creates a case in ByggR, Ecos, CaseData, EDPFuture based on caseType. Also persists a connection between externalCaseId and the created case.",
 		responses = @ApiResponse(responseCode = "200", description = "OK", useReturnTypeSchema = true))
 	ResponseEntity<CaseResourceResponseDTO> postCases(
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
 		@Schema(oneOf = {
-			ByggRCaseDTO.class, EcosCaseDTO.class, OtherCaseDTO.class
+			ByggRCaseDTO.class, EcosCaseDTO.class, OtherCaseDTO.class, FutureCaseDTO.class
 		}, examples = POST_CASES_REQUEST_BODY_EXAMPLE) @RequestBody @Valid final CaseDTO caseDTOInput) {
 
 		// Validates that it doesn't exist any case with the same oep-ID and municipalityId
@@ -83,7 +84,7 @@ class CaseResource {
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
 		@Parameter(name = "externalCaseId", description = "External case id", example = "1234") @PathVariable final String externalCaseId,
 		@Schema(oneOf = {
-			ByggRCaseDTO.class, EcosCaseDTO.class, OtherCaseDTO.class
+			ByggRCaseDTO.class, EcosCaseDTO.class, OtherCaseDTO.class, FutureCaseDTO.class
 		}, examples = POST_CASES_REQUEST_BODY_EXAMPLE) @RequestBody @Valid final CaseDTO caseDTOInput) {
 
 		if (caseDTOInput instanceof final OtherCaseDTO otherCaseDTO) {
