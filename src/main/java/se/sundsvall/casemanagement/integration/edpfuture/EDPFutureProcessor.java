@@ -19,6 +19,8 @@ import se.sundsvall.casemanagement.util.Processor;
 import se.sundsvall.dept44.requestid.RequestId;
 import tools.jackson.databind.ObjectMapper;
 
+import static se.sundsvall.dept44.util.LogUtils.sanitizeForLogging;
+
 @Component
 class EDPFutureProcessor extends Processor {
 
@@ -41,7 +43,7 @@ class EDPFutureProcessor extends Processor {
 	@EventListener(IncomingFutureCase.class)
 	public void handleIncomingErrand(final IncomingFutureCase event) throws SQLException, IOException {
 		RequestId.init(event.getRequestId());
-		LOGGER.info("Received EDPFuture errand with externalCaseId: {} and municipalityId: {}", event.getPayload().getExternalCaseId(), event.getMunicipalityId());
+		LOGGER.info("Received EDPFuture errand with externalCaseId: {} and municipalityId: {}", sanitizeForLogging(event.getPayload().getExternalCaseId()), sanitizeForLogging(event.getMunicipalityId()));
 
 		final var caseEntity = caseRepository.findByIdAndMunicipalityId(event.getPayload().getExternalCaseId(), event.getMunicipalityId()).orElse(null);
 
@@ -61,7 +63,7 @@ class EDPFutureProcessor extends Processor {
 		try {
 			edpFutureService.handleOrder(futureCaseDTO, event.getMunicipalityId());
 		} catch (Exception e) {
-			LOGGER.error("Error while processing EDPFuture errand with externalCaseId: {} and municipalityId: {}. Error: {}", event.getPayload().getExternalCaseId(), event.getMunicipalityId(), e.getMessage());
+			LOGGER.error("Error while processing EDPFuture errand with externalCaseId: {} and municipalityId: {}. Error: {}", sanitizeForLogging(event.getPayload().getExternalCaseId()), sanitizeForLogging(event.getMunicipalityId()), e.getMessage());
 			handleFailedDelivery(e, caseEntity, "EDPFuture", event.getMunicipalityId());
 		}
 	}
