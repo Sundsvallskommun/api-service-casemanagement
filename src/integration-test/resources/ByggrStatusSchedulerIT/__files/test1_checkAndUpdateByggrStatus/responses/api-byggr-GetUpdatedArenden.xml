@@ -6,7 +6,7 @@
 				<BatchStart>2021-08-18T00:00:00</BatchStart>
 				<BatchEnd>2021-08-18T23:59:59</BatchEnd>
 				<Arenden>
-					<arende arendeId="12345" dnr="3522" diarieprefix="BYGG" komkod="2281" enhetkod="SBK" arendegrupp="LOV" arendetyp="BL" arendeslag="A" arendeklass="" namndkod="SBN" kalla="3" checksum="3">
+					<arende arendeId="12345" dnr="BYGG 2021-000200" diarieprefix="BYGG" komkod="2281" enhetkod="SBK" arendegrupp="LOV" arendetyp="BL" arendeslag="A" arendeklass="" namndkod="SBN" kalla="3" checksum="3">
 						<status xmlns="www.tekis.se/arende">Pågående</status>
 						<beskrivning xmlns="www.tekis.se/arende">Bygglov för nybyggnad</beskrivning>
 						<ankomstDatum xmlns="www.tekis.se/arende">2021-08-18</ankomstDatum>

@@ -9,19 +9,19 @@ import se.sundsvall.dept44.scheduling.Dept44Scheduled;
 import se.sundsvall.dept44.scheduling.health.Dept44HealthUtility;
 
 @Component
-public class StatusScheduler {
+public class EcosStatusScheduler {
 
-	private static final Logger LOG = LoggerFactory.getLogger(StatusScheduler.class);
+	private static final Logger LOG = LoggerFactory.getLogger(EcosStatusScheduler.class);
 
-	private final StatusSchedulerWorker worker;
+	private final EcosStatusWorker worker;
 	private final Dept44HealthUtility dept44HealthUtility;
 	private final List<String> municipalityIds;
 	private final String jobName;
 
-	public StatusScheduler(final StatusSchedulerWorker worker,
+	public EcosStatusScheduler(final EcosStatusWorker worker,
 		final Dept44HealthUtility dept44HealthUtility,
-		@Value("${scheduler.status.municipality-ids}") final List<String> municipalityIds,
-		@Value("${scheduler.status.name}") final String jobName) {
+		@Value("${scheduler.ecos-status.municipality-ids}") final List<String> municipalityIds,
+		@Value("${scheduler.ecos-status.name}") final String jobName) {
 		this.worker = worker;
 		this.dept44HealthUtility = dept44HealthUtility;
 		this.municipalityIds = municipalityIds;
@@ -29,16 +29,16 @@ public class StatusScheduler {
 	}
 
 	@Dept44Scheduled(
-		cron = "${scheduler.status.cron}",
-		name = "${scheduler.status.name}",
-		lockAtMostFor = "${scheduler.status.lock-at-most-for}",
-		maximumExecutionTime = "${scheduler.status.maximum-execution-time}")
-	public void checkAndUpdateStatus() {
+		cron = "${scheduler.ecos-status.cron}",
+		name = "${scheduler.ecos-status.name}",
+		lockAtMostFor = "${scheduler.ecos-status.lock-at-most-for}",
+		maximumExecutionTime = "${scheduler.ecos-status.maximum-execution-time}")
+	public void checkAndUpdateEcosStatus() {
 		municipalityIds.forEach(municipalityId -> {
 			try {
 				worker.updateStatuses(municipalityId);
 			} catch (final Exception e) {
-				LOG.error("Status update failed for municipality {}: {}", municipalityId, e.getMessage(), e);
+				LOG.error("ECOS status update failed for municipality {}: {}", municipalityId, e.getMessage(), e);
 				dept44HealthUtility.setHealthIndicatorUnhealthy(jobName, e.getMessage());
 			}
 		});
