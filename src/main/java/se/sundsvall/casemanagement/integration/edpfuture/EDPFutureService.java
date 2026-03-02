@@ -36,16 +36,17 @@ public class EDPFutureService {
 	public void handleOrder(final FutureCaseDTO futureCaseDTO, final String municipalityId) {
 		var identityNumber = futureCaseDTO.getExtraParameters().get("IdentityNumber");
 		var address = futureCaseDTO.getExtraParameters().get("Address");
+		var quantity = futureCaseDTO.getExtraParameters().get("Quantity");
 
-		sendOrder(identityNumber, address);
+		sendOrder(identityNumber, address, quantity);
 		caseMappingService.postCaseMapping(futureCaseDTO, futureCaseDTO.getExternalCaseId(), SystemType.EDPFUTURE, municipalityId);
 	}
 
-	public void sendOrder(final String identityNumber, final String address) {
+	public void sendOrder(final String identityNumber, final String address, final String quantity) {
 		var customerId = getCustomerId(identityNumber);
 		var buildingId = getBuildingId(address, identityNumber, customerId);
 		var serviceId = getServiceId(buildingId);
-		var orderType = getOrderType(serviceId);
+		var orderType = getOrderType(serviceId, quantity);
 		submitOrderTypeApplication(customerId, buildingId, serviceId, orderType);
 	}
 
@@ -180,11 +181,11 @@ public class EDPFutureService {
 	 * @param  serviceId the ID of the service for which the order type is to be retrieved
 	 * @return           the order type corresponding to the specified service ID
 	 */
-	public OrderTypeV14 getOrderType(final int serviceId) {
+	public OrderTypeV14 getOrderType(final int serviceId, final String quantity) {
 		var request = createGetRenhOrderTypesForServiceV17(serviceId);
 		var response = edpFutureClient.getRenhOrderTypesForServiceV1_7(request);
 
-		return getOrderType(response);
+		return getOrderType(response, quantity);
 	}
 
 	/**
@@ -197,7 +198,7 @@ public class EDPFutureService {
 	 *                  serviceId.
 	 * @return          the order type with the name "Extra säck" for the given serviceId.
 	 */
-	private OrderTypeV14 getOrderType(final GetRenhOrderTypesForServiceV17Response response) {
+	private OrderTypeV14 getOrderType(final GetRenhOrderTypesForServiceV17Response response, final String quantity) {
 		var orderType = response.getGetRenhOrderTypesForServiceV17Result().getResultValue().getOrderTypeV17().stream()
 			.filter(service -> "Extra säck".equals(service.getText()))
 			.findFirst()
@@ -206,7 +207,7 @@ public class EDPFutureService {
 		// Sets the number of "Extra säck" to order.
 		orderType.getOrderRows().getOrderRowV14().stream()
 			.findFirst()
-			.ifPresentOrElse(row -> row.setQuantity(1), () -> {
+			.ifPresentOrElse(row -> row.setQuantity(Integer.parseInt(quantity)), () -> {
 				throw Problem.valueOf(BAD_GATEWAY, "Failed to retrieve order type from EDP Future. No order rows found for the given order type.");
 			});
 

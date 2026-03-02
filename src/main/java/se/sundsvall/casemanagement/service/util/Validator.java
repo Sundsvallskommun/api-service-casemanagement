@@ -123,9 +123,9 @@ public class Validator {
 	}
 
 	public void validateFutureErrand(final FutureCaseDTO futureCase) {
-		if (anyBlank(futureCase.getExtraParameters(), List.of("IdentityNumber", "Address"))) {
+		if (anyBlank(futureCase.getExtraParameters(), List.of("IdentityNumber", "Address", "Quantity"))) {
 			throw Problem.valueOf(BAD_REQUEST,
-				"extraParameters must contain non-blank values for keys: IdentityNumber, Address");
+				"extraParameters must contain non-blank values for keys: IdentityNumber, Address, Quantity");
 		}
 	}
 

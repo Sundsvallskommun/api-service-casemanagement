@@ -201,7 +201,7 @@ class CaseServiceTest {
 		final var futureCaseDTO = FutureCaseDTO.builder()
 			.withCaseType(CaseType.EXTRA_SACK.toString())
 			.withStakeholders(List.of())
-			.withExtraParameters(Map.of("IdentityNumber", "198001011234", "Address", "Storgatan 1"))
+			.withExtraParameters(Map.of("IdentityNumber", "198001011234", "Address", "Storgatan 1", "Quantity", "1"))
 			.build();
 		// Act
 		caseService.handleCase(futureCaseDTO, MUNICIPALITY_ID);
@@ -226,7 +226,7 @@ class CaseServiceTest {
 		// Act && assert
 		assertThatExceptionOfType(ThrowableProblem.class)
 			.isThrownBy(() -> caseService.handleCase(futureCaseDTO, MUNICIPALITY_ID))
-			.withMessage("Bad Request: extraParameters must contain non-blank values for keys: IdentityNumber, Address");
+			.withMessage("Bad Request: extraParameters must contain non-blank values for keys: IdentityNumber, Address, Quantity");
 
 		verify(validator).validateFutureErrand(futureCaseDTO);
 		verifyNoInteractions(eventPublisher);

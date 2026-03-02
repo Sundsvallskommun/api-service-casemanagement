@@ -13,6 +13,7 @@
 	],
 	"extraParameters": {
 		"IdentityNumber": "202601052380",
-		"Address": "Testgatan 1"
+		"Address": "Testgatan 1",
+		"Quantity": "1"
 	}
 }

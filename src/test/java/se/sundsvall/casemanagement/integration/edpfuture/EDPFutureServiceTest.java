@@ -54,6 +54,7 @@ class EDPFutureServiceTest {
 	private static final String BUILDING_ID = "BLD-123";
 	private static final String WASTE_TYPE = "Restavfall";
 	private static final String ORDER_TYPE_TEXT = "Extra säck";
+	private static final String QUANTITY = "1";
 	private static final int CUSTOMER_ID = 42;
 	private static final int SERVICE_ID = 99;
 
@@ -89,7 +90,7 @@ class EDPFutureServiceTest {
 		when(edpFutureClientMock.getRenhOrderTypesForServiceV1_7(any()))
 			.thenReturn(createGetOrderTypesResponse(ORDER_TYPE_TEXT, true));
 
-		edpFutureService.sendOrder(IDENTITY_NUMBER, ADDRESS);
+		edpFutureService.sendOrder(IDENTITY_NUMBER, ADDRESS, QUANTITY);
 
 		verify(edpFutureClientMock).getAuthorizedUsers(getAuthorizedUsersCaptor.capture());
 		assertThat(getAuthorizedUsersCaptor.getValue().getIdentityNumber()).isEqualTo(IDENTITY_NUMBER);
@@ -203,7 +204,7 @@ class EDPFutureServiceTest {
 		when(edpFutureClientMock.getRenhOrderTypesForServiceV1_7(any()))
 			.thenReturn(createGetOrderTypesResponse(ORDER_TYPE_TEXT, true));
 
-		edpFutureService.sendOrder(IDENTITY_NUMBER, ADDRESS);
+		edpFutureService.sendOrder(IDENTITY_NUMBER, ADDRESS, QUANTITY);
 
 		verify(edpFutureClientMock).getRenhOrderTypesForServiceV1_7(getOrderTypesCaptor.capture());
 		assertThat(getOrderTypesCaptor.getValue().getServiceId()).isEqualTo(SERVICE_ID);
@@ -218,7 +219,7 @@ class EDPFutureServiceTest {
 		when(edpFutureClientMock.getServicesByBuildingIdForOrder(any()))
 			.thenReturn(createGetServicesResponse("Matavfall"));
 
-		assertThatThrownBy(() -> edpFutureService.sendOrder(IDENTITY_NUMBER, ADDRESS))
+		assertThatThrownBy(() -> edpFutureService.sendOrder(IDENTITY_NUMBER, ADDRESS, QUANTITY))
 			.isInstanceOf(Problem.class)
 			.hasMessageContaining(BAD_GATEWAY.getReasonPhrase())
 			.hasMessageContaining("No service found for the given building id");
@@ -229,7 +230,7 @@ class EDPFutureServiceTest {
 		when(edpFutureClientMock.getRenhOrderTypesForServiceV1_7(any()))
 			.thenReturn(createGetOrderTypesResponse(ORDER_TYPE_TEXT, true));
 
-		var result = edpFutureService.getOrderType(SERVICE_ID);
+		var result = edpFutureService.getOrderType(SERVICE_ID, QUANTITY);
 
 		assertThat(result).isNotNull();
 		assertThat(result.getText()).isEqualTo(ORDER_TYPE_TEXT);
@@ -244,7 +245,7 @@ class EDPFutureServiceTest {
 		when(edpFutureClientMock.getRenhOrderTypesForServiceV1_7(any()))
 			.thenReturn(createGetOrderTypesResponse("Annan typ", true));
 
-		assertThatThrownBy(() -> edpFutureService.getOrderType(SERVICE_ID))
+		assertThatThrownBy(() -> edpFutureService.getOrderType(SERVICE_ID, QUANTITY))
 			.isInstanceOf(Problem.class)
 			.hasMessageContaining(BAD_GATEWAY.getReasonPhrase())
 			.hasMessageContaining("No order type found with the given name");
@@ -258,7 +259,7 @@ class EDPFutureServiceTest {
 		when(edpFutureClientMock.getRenhOrderTypesForServiceV1_7(any()))
 			.thenReturn(createGetOrderTypesResponse(ORDER_TYPE_TEXT, false));
 
-		assertThatThrownBy(() -> edpFutureService.getOrderType(SERVICE_ID))
+		assertThatThrownBy(() -> edpFutureService.getOrderType(SERVICE_ID, QUANTITY))
 			.isInstanceOf(Problem.class)
 			.hasMessageContaining(BAD_GATEWAY.getReasonPhrase())
 			.hasMessageContaining("No order rows found for the given order type");
