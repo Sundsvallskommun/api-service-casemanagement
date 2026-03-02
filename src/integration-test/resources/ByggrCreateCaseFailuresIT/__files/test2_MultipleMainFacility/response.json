@@ -5,7 +5,7 @@
 			"message": "Only one facility can be defined as main facility"
 		}
 	],
-	"type": "about:blank",
+	"type": "https://github.com/Sundsvallskommun/dept44/problems/constraint-violation",
 	"title": "Constraint Violation",
 	"status": 400
 }

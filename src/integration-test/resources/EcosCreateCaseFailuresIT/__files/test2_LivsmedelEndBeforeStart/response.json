@@ -9,7 +9,7 @@
 			"message": "must be a date in the present or in the future"
 		}
 	],
-	"type": "about:blank",
+	"type": "https://github.com/Sundsvallskommun/dept44/problems/constraint-violation",
 	"title": "Constraint Violation",
 	"status": 400
 }
