@@ -81,9 +81,15 @@ integration:
     connect-timeout: 5
     api-key: override
 scheduler:
-  status:
+  byggr-status:
     cron: 0 0 * * * *
-    name: StatusScheduler
+    name: ByggrStatusScheduler
+    lock-at-most-for: PT10M
+    maximum-execution-time: PT10M
+    municipality-ids: 2281
+  ecos-status:
+    cron: 0 0 * * * *
+    name: EcosStatusScheduler
     lock-at-most-for: PT10M
     maximum-execution-time: PT10M
     municipality-ids: 2281

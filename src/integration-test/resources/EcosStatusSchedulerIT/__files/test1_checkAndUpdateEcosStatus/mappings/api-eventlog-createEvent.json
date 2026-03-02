@@ -1,0 +1,10 @@
+{
+	"request": {
+		"method": "POST",
+		"urlPathPattern": "/eventlog/2281/.*"
+	},
+	"response": {
+		"status": 200
+	},
+	"name": "api-eventlog-createEvent"
+}

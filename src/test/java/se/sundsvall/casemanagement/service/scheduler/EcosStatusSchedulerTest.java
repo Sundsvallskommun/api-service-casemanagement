@@ -14,28 +14,28 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 @ExtendWith(MockitoExtension.class)
-class StatusSchedulerTest {
+class EcosStatusSchedulerTest {
 
 	private static final String MUNICIPALITY_ID = "2281";
-	private static final String JOB_NAME = "StatusScheduler";
+	private static final String JOB_NAME = "EcosStatusScheduler";
 
 	@Mock
-	private StatusSchedulerWorker workerMock;
+	private EcosStatusWorker workerMock;
 
 	@Mock
 	private Dept44HealthUtility dept44HealthUtilityMock;
 
-	private StatusScheduler scheduler;
+	private EcosStatusScheduler scheduler;
 
 	@BeforeEach
 	void setUp() {
-		scheduler = new StatusScheduler(workerMock, dept44HealthUtilityMock, List.of(MUNICIPALITY_ID), JOB_NAME);
+		scheduler = new EcosStatusScheduler(workerMock, dept44HealthUtilityMock, List.of(MUNICIPALITY_ID), JOB_NAME);
 	}
 
 	@Test
-	void checkAndUpdateStatus() {
+	void checkAndUpdateEcosStatus() {
 		// Act
-		scheduler.checkAndUpdateStatus();
+		scheduler.checkAndUpdateEcosStatus();
 
 		// Assert
 		verify(workerMock).updateStatuses(MUNICIPALITY_ID);
@@ -44,12 +44,12 @@ class StatusSchedulerTest {
 	}
 
 	@Test
-	void checkAndUpdateStatusWhenWorkerThrows() {
+	void checkAndUpdateEcosStatusWhenWorkerThrows() {
 		// Arrange
 		doThrow(new RuntimeException("Test error")).when(workerMock).updateStatuses(MUNICIPALITY_ID);
 
 		// Act
-		scheduler.checkAndUpdateStatus();
+		scheduler.checkAndUpdateEcosStatus();
 
 		// Assert
 		verify(workerMock).updateStatuses(MUNICIPALITY_ID);

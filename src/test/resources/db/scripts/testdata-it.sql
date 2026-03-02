@@ -67,5 +67,6 @@ VALUES ('BYGG 2021-000200', '3522', 'NYBYGGNAD_ANSOKAN_OM_BYGGLOV',
 
 
 TRUNCATE TABLE execution_information;
-INSERT INTO execution_information (municipality_id, last_successful_execution)
-VALUES ('2281', '2020-01-01 00:00:00.000000');
+INSERT INTO execution_information (municipality_id, job_name, last_successful_execution)
+VALUES ('2281', 'BYGGR_STATUS', '2020-01-01 00:00:00.000000'),
+       ('2281', 'ECOS_STATUS', '2020-01-01 00:00:00.000000');
