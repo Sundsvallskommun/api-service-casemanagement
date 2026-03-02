@@ -34,15 +34,21 @@ class ExecutionInformationEntityTest {
 
 	@Test
 	void testBuilderMethods() {
+		final var id = 1L;
 		final var municipalityId = "2281";
+		final var jobName = "BYGGR_STATUS";
 		final var lastSuccessfulExecution = OffsetDateTime.now();
 
 		final var entity = ExecutionInformationEntity.create()
+			.withId(id)
 			.withMunicipalityId(municipalityId)
+			.withJobName(jobName)
 			.withLastSuccessfulExecution(lastSuccessfulExecution);
 
 		assertThat(entity).isNotNull().hasNoNullFieldsOrProperties();
+		assertThat(entity.getId()).isEqualTo(id);
 		assertThat(entity.getMunicipalityId()).isEqualTo(municipalityId);
+		assertThat(entity.getJobName()).isEqualTo(jobName);
 		assertThat(entity.getLastSuccessfulExecution()).isEqualTo(lastSuccessfulExecution);
 	}
 

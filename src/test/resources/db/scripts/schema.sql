@@ -34,8 +34,10 @@
 
     create table execution_information (
         municipality_id varchar(4) not null,
+        id bigint not null auto_increment,
         last_successful_execution datetime(6),
-        primary key (municipality_id)
+        job_name varchar(50) not null,
+        primary key (id)
     ) engine=InnoDB;
 
     create index case_entity_municipality_id_idx 
@@ -46,3 +48,6 @@
 
     alter table if exists CaseMapping 
        add constraint UK9x4rtmb794uqwa8fwh2jjm5ol unique (externalCaseId);
+
+    alter table if exists execution_information 
+       add constraint uq_execution_information_municipality_job unique (municipality_id, job_name);
