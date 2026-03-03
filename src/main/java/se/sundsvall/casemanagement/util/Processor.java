@@ -65,4 +65,13 @@ public abstract class Processor {
 		messagingIntegration.sendSlack(message, municipalityId);
 		messagingIntegration.sendMail(subject, message, municipalityId);
 	}
+
+	public void handleFailedDelivery(final Exception exception, final CaseEntity caseEntity, final String system, final String municipalityId) {
+		log.info("Something went wrong when handling the request");
+		caseRepository.save(caseEntity.withDeliveryStatus(DeliveryStatus.FAILED));
+
+		final var message = "[%s][%s][%s] Couldn't handle request for externalCaseId '%s'. Exception: %s".formatted(municipalityId, system, environmentUtil.extractEnvironment(), caseEntity.getId(), exception.getMessage());
+
+		messagingIntegration.sendSlack(message, municipalityId);
+	}
 }

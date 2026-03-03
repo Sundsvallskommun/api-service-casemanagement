@@ -1,0 +1,33 @@
+{
+	"request": {
+		"method": "POST",
+		"urlPathPattern": "/messaging/3.1/2281/slack",
+		"bodyPatterns": [
+			{
+				"matchesJsonPath": "$.token"
+			},
+			{
+				"matchesJsonPath": "$.channel"
+			},
+			{
+				"matchesJsonPath": {
+					"expression": "$.message",
+					"contains": "[2281][EDPFuture]"
+				}
+			},
+			{
+				"matchesJsonPath": {
+					"expression": "$.message",
+					"contains": "Couldn't handle request for externalCaseId '7002'"
+				}
+			}
+		]
+	},
+	"response": {
+		"headers": {
+			"Content-Type": "application/json"
+		},
+		"status": 200
+	},
+	"name": "messaging-slack"
+}
