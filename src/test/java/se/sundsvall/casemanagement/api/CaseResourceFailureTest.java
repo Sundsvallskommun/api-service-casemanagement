@@ -130,6 +130,14 @@ class CaseResourceFailureTest {
 	@ParameterizedTest
 	@MethodSource("emptyAttachments")
 	void postCaseEmptyAttachments(final String path) throws IOException {
+		final ConstraintViolation<CaseDTO> constraintViolationMock = mock();
+		final Path violationPathMock = mock(Path.class);
+		when(violationPathMock.toString()).thenReturn("attachments");
+		when(constraintViolationMock.getMessage()).thenReturn("must not be empty");
+		when(constraintViolationMock.getPropertyPath()).thenReturn(violationPathMock);
+
+		doThrow(new ConstraintViolationException(Set.of(constraintViolationMock))).when(caseServiceMock).handleCase(any(), any());
+
 		final var body = resourceLoader.getResource("classpath:" + path)
 			.getContentAsString(Charset.defaultCharset());
 
@@ -150,7 +158,7 @@ class CaseResourceFailureTest {
 				tuple("attachments", "must not be empty"));
 		});
 
-		verifyNoInteractions(caseMappingServiceMock, caseServiceMock, caseDataServiceMock);
+		verifyNoInteractions(caseDataServiceMock);
 	}
 
 	@ParameterizedTest

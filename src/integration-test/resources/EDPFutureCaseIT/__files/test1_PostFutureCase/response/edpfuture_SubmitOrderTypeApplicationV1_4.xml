@@ -1,0 +1,13 @@
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+	<s:Body>
+		<SubmitOrderTypeApplicationV1_4Response xmlns="http://tempuri.org/">
+			<SubmitOrderTypeApplicationV1_4Result
+				xmlns:a="http://schemas.datacontract.org/2004/07/Future.Remoting.Web"
+				xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+				<a:_errorMessage i:nil="true"/>
+				<a:_resultValue>67</a:_resultValue>
+				<a:_succeeded>true</a:_succeeded>
+			</SubmitOrderTypeApplicationV1_4Result>
+		</SubmitOrderTypeApplicationV1_4Response>
+	</s:Body>
+</s:Envelope>

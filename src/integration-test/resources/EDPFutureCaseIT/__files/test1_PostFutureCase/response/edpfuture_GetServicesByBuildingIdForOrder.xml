@@ -1,0 +1,36 @@
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+	<s:Body>
+		<GetServicesByBuildingIdForOrderResponse xmlns="http://tempuri.org/">
+			<GetServicesByBuildingIdForOrderResult
+				xmlns:a="http://schemas.datacontract.org/2004/07/Future.Remoting.Web"
+				xmlns:b="http://schemas.datacontract.org/2004/07/Future.Remoting.Web.Model"
+				xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+				<a:_errorMessage i:nil="true"/>
+				<a:_resultValue>
+					<b:_rhServices>
+						<b:RHService>
+							<b:_ID>134774</b:_ID>
+							<b:_buildingID>9990377</b:_buildingID>
+							<b:_description>Restavfall 190l</b:_description>
+							<b:_isActive>true</b:_isActive>
+							<b:_startDate>2020-01-01T00:00:00</b:_startDate>
+							<b:_stopDate>9999-12-31T00:00:00</b:_stopDate>
+							<b:_binType i:nil="true"/>
+							<b:_fee i:nil="true"/>
+							<b:_nextWastePickup i:nil="true"/>
+							<b:_numberOfBins>1</b:_numberOfBins>
+							<b:_numberOfBinsAntl>0</b:_numberOfBinsAntl>
+							<b:_wastePickupFrequency i:nil="true"/>
+							<b:_wastePickupFrequencyCode i:nil="true"/>
+							<b:_wastePickupsPerYear>0</b:_wastePickupsPerYear>
+							<b:_wasteType>Restavfall</b:_wasteType>
+						</b:RHService>
+					</b:_rhServices>
+					<b:_unspecificServices i:nil="true"/>
+					<b:_vaServices i:nil="true"/>
+				</a:_resultValue>
+				<a:_succeeded>true</a:_succeeded>
+			</GetServicesByBuildingIdForOrderResult>
+		</GetServicesByBuildingIdForOrderResponse>
+	</s:Body>
+</s:Envelope>

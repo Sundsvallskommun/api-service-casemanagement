@@ -1,0 +1,19 @@
+{
+	"request": {
+		"method": "POST",
+		"url": "/edpfuture",
+		"headers": {
+			"SOAPAction": {
+				"equalTo": "http://tempuri.org/IGetAuthorizedUser/GetAuthorizedUsers"
+			}
+		}
+	},
+	"response": {
+		"headers": {
+			"Content-Type": "text/xml; charset=utf-8"
+		},
+		"bodyFileName": "test1_PostFutureCase/response/edpfuture_GetAuthorizedUsers.xml",
+		"status": 200
+	},
+	"name": "edpfuture_GetAuthorizedUsers"
+}

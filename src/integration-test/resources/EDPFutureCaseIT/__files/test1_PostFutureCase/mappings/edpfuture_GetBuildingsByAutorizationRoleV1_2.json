@@ -1,0 +1,19 @@
+{
+	"request": {
+		"method": "POST",
+		"url": "/edpfuture",
+		"headers": {
+			"SOAPAction": {
+				"equalTo": "http://tempuri.org/IGetBuildingsByAutorizationRoleV1_2/GetBuildingsByAutorizationRoleV1_2"
+			}
+		}
+	},
+	"response": {
+		"headers": {
+			"Content-Type": "text/xml; charset=utf-8"
+		},
+		"bodyFileName": "test1_PostFutureCase/response/edpfuture_GetBuildingsByAutorizationRoleV1_2.xml",
+		"status": 200
+	},
+	"name": "edpfuture_GetBuildingsByAutorizationRoleV1_2"
+}

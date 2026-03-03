@@ -1,0 +1,30 @@
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+	<s:Body>
+		<GetAuthorizedUsersResponse xmlns="http://tempuri.org/">
+			<GetAuthorizedUsersResult
+			  xmlns:a="http://schemas.datacontract.org/2004/07/Future.Remoting.Web"
+			  xmlns:b="http://schemas.datacontract.org/2004/07/Future.Remoting.Web.Model"
+			  xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+				<a:_errorMessage i:nil="true" />
+				<a:_resultValue>
+					<b:AuthorizedUser>
+						<b:_ApprovedBuildings i:nil="true" />
+						<b:_ApprovedEservices>
+							<a:EServiceType>Order</a:EServiceType>
+						</b:_ApprovedEservices>
+						<b:_CustomerId>20673</b:_CustomerId>
+						<b:_Email i:nil="true" />
+						<b:_FirstName>Test</b:_FirstName>
+						<b:_LastName>Test</b:_LastName>
+						<b:_MobilePhone i:nil="true" />
+						<b:_NotifyByEmail>false</b:_NotifyByEmail>
+						<b:_NotifyBySms>false</b:_NotifyBySms>
+						<b:_Role>Owner</b:_Role>
+						<b:_TenantId i:nil="true" />
+					</b:AuthorizedUser>
+				</a:_resultValue>
+				<a:_succeeded>true</a:_succeeded>
+			</GetAuthorizedUsersResult>
+		</GetAuthorizedUsersResponse>
+	</s:Body>
+</s:Envelope>

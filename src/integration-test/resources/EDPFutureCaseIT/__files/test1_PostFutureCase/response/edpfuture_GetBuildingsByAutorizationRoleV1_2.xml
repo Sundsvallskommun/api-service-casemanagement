@@ -1,0 +1,28 @@
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+	<s:Body>
+		<GetBuildingsByAutorizationRoleV1_2Response xmlns="http://tempuri.org/">
+			<GetBuildingsByAutorizationRoleV1_2Result
+			  xmlns:a="http://schemas.datacontract.org/2004/07/Future.Remoting.Web"
+			  xmlns:b="http://schemas.datacontract.org/2004/07/Future.Remoting.Web.Model"
+			  xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+				<a:_errorMessage i:nil="true" />
+				<a:_resultValue>
+					<b:CustomerBuildingInformationHolderV1_2>
+						<b:_buildingCollection>
+							<b:BuildingV1_2>
+								<b:_ID>9990377</b:_ID>
+								<b:_address>Testgatan 1</b:_address>
+								<b:_city>Testsvall</b:_city>
+								<b:_designation i:nil="true" />
+								<b:_zipcode>00000</b:_zipcode>
+								<b:_popularName i:nil="true" />
+							</b:BuildingV1_2>
+						</b:_buildingCollection>
+						<b:_customer i:nil="true" />
+					</b:CustomerBuildingInformationHolderV1_2>
+				</a:_resultValue>
+				<a:_succeeded>true</a:_succeeded>
+			</GetBuildingsByAutorizationRoleV1_2Result>
+		</GetBuildingsByAutorizationRoleV1_2Response>
+	</s:Body>
+</s:Envelope>
