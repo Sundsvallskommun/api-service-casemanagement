@@ -16,6 +16,7 @@ public final class Constants {
 
 	// ByggR
 	public static final String NEIGHBORHOOD_NOTIFICATION = "NEIGHBORHOOD_NOTIFICATION";
+	public static final String PROPERTY_OWNER_NOTIFICATION = "PROPERTY_OWNER_NOTIFICATION";
 	public static final String BYGGR_ADD_CERTIFIED_INSPECTOR = "BYGGR_ADD_CERTIFIED_INSPECTOR";
 	public static final String BYGGR_ADDITIONAL_DOCUMENTS = "BYGGR_ADDITIONAL_DOCUMENTS";
 	public static final String HANDELSETYP_ANMALAN = "ANM";

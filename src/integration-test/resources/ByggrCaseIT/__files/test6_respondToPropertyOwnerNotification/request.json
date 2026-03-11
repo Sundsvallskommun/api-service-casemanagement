@@ -1,0 +1,32 @@
+{
+	"externalCaseId": 4565,
+	"attachments": [
+		{
+			"extension": ".pdf",
+			"file": "base64",
+			"name": "16942.pdf",
+			"mimeType": "application/pdf",
+			"category": "KOMFAST"
+		}
+	],
+	"extraParameters": {
+		"oepAction": "PUT",
+		"errandNr": "BYGG 2024-000019",
+		"comment": "Jag har inga synpunkter",
+		"serviceName": "Lämna svar på kommunicering med fastighetsägare - TEST",
+		"property": "Property designation 1:1 [12345]"
+	},
+	"stakeholders": [
+		{
+			"firstName": "o",
+			"lastName": "o",
+			"emailAddress": "o@o.se",
+			"roles": [
+				"APPLICANT"
+			],
+			"personId": "97ed4de2-9f80-427d-b010-5d81267ef96b",
+			"type": "PERSON"
+		}
+	],
+	"caseType": "PROPERTY_OWNER_NOTIFICATION"
+}

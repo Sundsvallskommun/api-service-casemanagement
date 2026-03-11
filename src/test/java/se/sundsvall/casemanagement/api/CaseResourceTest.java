@@ -161,6 +161,21 @@ class CaseResourceTest {
 	}
 
 	@Test
+	void putCasePropertyOwnerNotification(@Load("/case-resource/byggr-property-owner-notification-case.json") final String body) {
+		webTestClient.post()
+			.uri(PATH)
+			.contentType(APPLICATION_JSON)
+			.bodyValue(body)
+			.exchange()
+			.expectStatus().isOk();
+
+		verify(caseMappingService).validateUniqueCase(caseDTOCaptor.capture(), eq(MUNICIPALITY_ID));
+		final var caseDTO = caseDTOCaptor.getValue();
+		assertThat(caseDTO).isInstanceOf(ByggRCaseDTO.class);
+		verify(caseService).handleCase(caseDTO, MUNICIPALITY_ID);
+	}
+
+	@Test
 	void putCaseOtherCase(@Load("/case-resource/put-other-case.json") final String body) {
 		when(caseMappingService.getCaseMapping("externalCaseId", MUNICIPALITY_ID)).thenReturn(CaseMapping.builder()
 			.withCaseId("12345")

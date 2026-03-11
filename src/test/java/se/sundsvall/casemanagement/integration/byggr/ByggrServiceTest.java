@@ -95,6 +95,7 @@ import static se.sundsvall.casemanagement.api.model.enums.CaseType.ANDRING_ANSOK
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.BYGGR_ADDITIONAL_DOCUMENTS;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.BYGGR_ADD_CERTIFIED_INSPECTOR;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.NEIGHBORHOOD_NOTIFICATION;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.PROPERTY_OWNER_NOTIFICATION;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.STRANDSKYDD_ANDRAD_ANVANDNING;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.STRANDSKYDD_ANLAGGANDE;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.STRANDSKYDD_ANORDNANDE;
@@ -381,6 +382,50 @@ class ByggrServiceTest {
 	void updateByggRCaseNeighborHoodNotification2() {
 		final var byggrServiceSpy = Mockito.spy(byggrService);
 		final var byggRCaseDto = createByggRCaseDTO(NEIGHBORHOOD_NOTIFICATION, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		final var subject = "Incident from CaseManagement[JUnit]";
+		final var message = "[%s][BYGGR] Could not update case with externalCaseId: %s. Exception: %s ".formatted(MUNICIPALITY_ID, byggRCaseDto.getExternalCaseId(), null);
+		doThrow(RuntimeException.class).when(byggrServiceSpy).respondToNeighborhoodNotification(byggRCaseDto);
+		when(environmentUtilMock.extractEnvironment()).thenReturn("JUnit");
+		doNothing().when(messagingIntegrationMock).sendSlack(message, MUNICIPALITY_ID);
+		doNothing().when(messagingIntegrationMock).sendMail(subject, message, MUNICIPALITY_ID);
+
+		byggrServiceSpy.updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
+
+		verify(byggrServiceSpy).updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
+		verify(byggrServiceSpy).respondToNeighborhoodNotification(byggRCaseDto);
+		verify(messagingIntegrationMock).sendSlack(message, MUNICIPALITY_ID);
+		verify(messagingIntegrationMock).sendMail(subject, message, MUNICIPALITY_ID);
+		verifyNoMoreInteractions(byggrServiceSpy, messagingIntegrationMock);
+	}
+
+	/**
+	 * Test scenario where a PROPERTY_OWNER_NOTIFICATION case is handled successfully.
+	 */
+	@Test
+	void updateByggRCasePropertyOwnerNotification() {
+		final var byggrServiceSpy = Mockito.spy(byggrService);
+		final var byggRCaseDto = createByggRCaseDTO(PROPERTY_OWNER_NOTIFICATION, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		final var confirmDeliveryRequest = new ConfirmDeliveryRequest().delivered(true).caseId(byggRCaseDto.getExtraParameters().get(ERRAND_NR)).system(BYGGR);
+		doNothing().when(byggrServiceSpy).respondToNeighborhoodNotification(byggRCaseDto);
+		when(caseRepositoryMock.findByIdAndMunicipalityId(byggRCaseDto.getExternalCaseId(), MUNICIPALITY_ID)).thenReturn(Optional.of(CaseEntity.builder().build()));
+
+		byggrServiceSpy.updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
+
+		verify(byggrServiceSpy).updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
+		verify(byggrServiceSpy).respondToNeighborhoodNotification(byggRCaseDto);
+		verify(oepIntegratorClientMock).confirmDelivery(MUNICIPALITY_ID, InstanceType.EXTERNAL, byggRCaseDto.getExternalCaseId(), confirmDeliveryRequest);
+		verify(caseRepositoryMock).findByIdAndMunicipalityId(byggRCaseDto.getExternalCaseId(), MUNICIPALITY_ID);
+		verify(caseRepositoryMock).delete(any());
+		verifyNoMoreInteractions(byggrServiceSpy, oepIntegratorClientMock, caseRepositoryMock);
+	}
+
+	/**
+	 * Test scenario where an exception is thrown when updating a case of type PROPERTY_OWNER_NOTIFICATION.
+	 */
+	@Test
+	void updateByggRCasePropertyOwnerNotificationException() {
+		final var byggrServiceSpy = Mockito.spy(byggrService);
+		final var byggRCaseDto = createByggRCaseDTO(PROPERTY_OWNER_NOTIFICATION, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		final var subject = "Incident from CaseManagement[JUnit]";
 		final var message = "[%s][BYGGR] Could not update case with externalCaseId: %s. Exception: %s ".formatted(MUNICIPALITY_ID, byggRCaseDto.getExternalCaseId(), null);
 		doThrow(RuntimeException.class).when(byggrServiceSpy).respondToNeighborhoodNotification(byggRCaseDto);

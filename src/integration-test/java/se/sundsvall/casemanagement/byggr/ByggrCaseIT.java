@@ -99,6 +99,16 @@ class ByggrCaseIT extends AbstractAppTest {
 	}
 
 	@Test
+	void test6_respondToPropertyOwnerNotification() {
+		setupCall()
+			.withHttpMethod(POST)
+			.withServicePath(PATH)
+			.withRequest(REQUEST)
+			.withExpectedResponseStatus(OK)
+			.sendRequestAndVerifyResponse();
+	}
+
+	@Test
 	void test5_postByggrCaseSundsvallsKommunPropertyOwner() throws ClassNotFoundException {
 
 		final var EXTERNAL_CASE_ID = "5124";
