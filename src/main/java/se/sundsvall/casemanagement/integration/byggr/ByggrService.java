@@ -101,6 +101,7 @@ import static se.sundsvall.casemanagement.util.Constants.EVENT_CATEGORY;
 import static se.sundsvall.casemanagement.util.Constants.NEIGHBORHOOD_NOTIFICATION;
 import static se.sundsvall.casemanagement.util.Constants.OTHER_INFORMATION;
 import static se.sundsvall.casemanagement.util.Constants.PROPERTY;
+import static se.sundsvall.casemanagement.util.Constants.PROPERTY_OWNER_NOTIFICATION;
 import static se.sundsvall.casemanagement.util.Constants.SYSTEM;
 
 @Service
@@ -144,7 +145,7 @@ public class ByggrService {
 		try {
 			byggRCase.setMunicipalityId(municipalityId);
 			switch (byggRCase.getCaseType()) {
-				case NEIGHBORHOOD_NOTIFICATION -> respondToNeighborhoodNotification(byggRCase);
+				case NEIGHBORHOOD_NOTIFICATION, PROPERTY_OWNER_NOTIFICATION -> respondToNeighborhoodNotification(byggRCase);
 				case BYGGR_ADD_CERTIFIED_INSPECTOR -> addCertifiedInspector(byggRCase);
 				case BYGGR_ADDITIONAL_DOCUMENTS -> addAdditionalDocuments(byggRCase);
 				default -> throw Problem.valueOf(BAD_REQUEST, "CaseType %s not supported".formatted(byggRCase.getCaseType()));

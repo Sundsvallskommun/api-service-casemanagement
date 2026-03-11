@@ -1,0 +1,32 @@
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+    <SOAP-ENV:Body>
+        <SaveNewRemissvar xmlns="www.tekis.se/ServiceContract">
+            <message>
+                <RemissId>305903</RemissId>
+                <HandlaggarSign>SYSTEM</HandlaggarSign>
+                <Erinran>false</Erinran>
+                <Meddelande>Intressentens svar</Meddelande>
+                <handling handlingId="">
+                    <typ>STRING</typ>
+                    <status>STRING</status>
+                    <handlingDatum>DATE</handlingDatum>
+                    <anteckning>STRING</anteckning>
+                    <uuid>GUID</uuid>
+                    <arkivStatus>ARKIVERINGSTATUS</arkivStatus>
+                    <makulerad>BOOLEAN</makulerad>
+                    <ejGallandeDatum>DATE</ejGallandeDatum>
+                    <dokument>
+                        <namn>STRING</namn>
+                        <beskrivning>STRING</beskrivning>
+                        <skapadDatum>DATETIME</skapadDatum>
+                        <handlaggare/>
+                        <fil>
+                            <filBuffer>BASE64BINARY</filBuffer>
+                        </fil>
+                    </dokument>
+                    <refTyp>REFERENSTYP</refTyp>
+                </handling>
+            </message>
+        </SaveNewRemissvar>
+    </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>

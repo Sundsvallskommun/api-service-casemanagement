@@ -557,6 +557,8 @@ public final class ByggrMapper {
 		return switch (category) {
 			case "GRASV" -> "GRASV";
 			case "UNDERE" -> "UNDERE";
+			case "KOMFAST" -> "KOMFAST";
+			case "KOMFASVA" -> "KOMFASVA";
 			default -> "BIL";
 		};
 	}

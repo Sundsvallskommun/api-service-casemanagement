@@ -913,7 +913,7 @@ class ByggrMapperTest {
 
 	@ParameterizedTest
 	@ValueSource(strings = {
-		"GRASV", "UNDERE", "BIL"
+		"GRASV", "UNDERE", "KOMFAST", "KOMFASVA", "BIL"
 	})
 	void createNeighborhoodNotificationArrayOfHandling(String category) {
 		var byggRCase = createByggRCaseDTO(CaseType.NEIGHBORHOOD_NOTIFICATION, AttachmentCategory.ATTACHMENT);

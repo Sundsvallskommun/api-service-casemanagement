@@ -101,6 +101,7 @@ import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARATRA
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARATRANSIT_RIAK;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARKING_PERMIT;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARKING_PERMIT_RENEWAL;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PROPERTY_OWNER_NOTIFICATION;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.REGISTRERING_AV_LIVSMEDEL;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.STRANDSKYDD_ANDRAD_ANVANDNING;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.STRANDSKYDD_ANLAGGANDE;
@@ -139,6 +140,7 @@ import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.UPPSATT
 		MARKLOV_OVRIGT,
 		STRANDSKYDD_OVRIGT,
 		NEIGHBORHOOD_NOTIFICATION,
+		PROPERTY_OWNER_NOTIFICATION,
 		BYGGR_ADD_CERTIFIED_INSPECTOR,
 		BYGGR_ADDITIONAL_DOCUMENTS,
 		ANSOKAN_RIVNINGSLOV,

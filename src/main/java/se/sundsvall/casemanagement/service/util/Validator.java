@@ -31,12 +31,13 @@ import static se.sundsvall.casemanagement.api.model.enums.CaseType.NYBYGGNAD_ANS
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.BYGGR_ADDITIONAL_DOCUMENTS;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.BYGGR_ADD_CERTIFIED_INSPECTOR;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.NEIGHBORHOOD_NOTIFICATION;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PROPERTY_OWNER_NOTIFICATION;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.WITH_NULLABLE_FACILITY_TYPE;
 
 @Component
 public class Validator {
 
-	private static final Set<String> NULLABLE_FACILITY_CASE_TYPES = Set.of(NEIGHBORHOOD_NOTIFICATION, BYGGR_ADD_CERTIFIED_INSPECTOR, BYGGR_ADDITIONAL_DOCUMENTS);
+	private static final Set<String> NULLABLE_FACILITY_CASE_TYPES = Set.of(NEIGHBORHOOD_NOTIFICATION, PROPERTY_OWNER_NOTIFICATION, BYGGR_ADD_CERTIFIED_INSPECTOR, BYGGR_ADDITIONAL_DOCUMENTS);
 
 	public void validateByggrErrand(ByggRCaseDTO byggRCase) {
 		try (var factory = Validation.buildDefaultValidatorFactory()) {
