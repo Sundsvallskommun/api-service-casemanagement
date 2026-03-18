@@ -22,6 +22,7 @@ import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANDRING
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANDRING_PLANLOSNING;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANDRING_VA;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANDRING_VENTILATION;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANDRING_VINDKRAFTVERK;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_ANDRING_AVLOPPSANLAGGNING;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_ANDRING_AVLOPPSANORDNING;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_ATTEFALL;
@@ -85,6 +86,7 @@ import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_UNA
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.NEIGHBORHOOD_NOTIFICATION;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.NYBYGGNAD_ANSOKAN_OM_BYGGLOV;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.NYBYGGNAD_FORHANDSBESKED;
+import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.NYBYGGNAD_VINDKRAFTVERK;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARATRANSIT;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARATRANSIT_BUS_CARD;
 import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARATRANSIT_CHANGE;
@@ -144,7 +146,9 @@ import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.UPPSATT
 		BYGGR_ADD_CERTIFIED_INSPECTOR,
 		BYGGR_ADDITIONAL_DOCUMENTS,
 		ANSOKAN_RIVNINGSLOV,
-		ANMALAN_RIVNING
+		ANMALAN_RIVNING,
+		ANDRING_VINDKRAFTVERK,
+		NYBYGGNAD_VINDKRAFTVERK
 	}),
 	@Type(value = EcosCaseDTO.class, names = {
 		REGISTRERING_AV_LIVSMEDEL,
