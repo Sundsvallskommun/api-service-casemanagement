@@ -1,17 +1,15 @@
 package se.sundsvall.casemanagement.service;
 
-import java.util.List;
 import org.springframework.stereotype.Component;
 import se.sundsvall.casemanagement.integration.db.ByggrStatusMappingRepository;
-import se.sundsvall.casemanagement.integration.db.model.ByggrStatusMappingEntity;
 
 @Component
 public class ByggrSystemConfigProvider {
 
-	private final List<ByggrStatusMappingEntity> statusMappings;
+	private final ByggrStatusMappingRepository statusMappingRepository;
 
 	public ByggrSystemConfigProvider(final ByggrStatusMappingRepository statusMappingRepository) {
-		this.statusMappings = statusMappingRepository.findAll();
+		this.statusMappingRepository = statusMappingRepository;
 	}
 
 	/**
@@ -22,7 +20,7 @@ public class ByggrSystemConfigProvider {
 	 * @return the matched status value, or null if no rule matches (event is not status-relevant)
 	 */
 	public String resolveHandelseStatus(final String handelsetyp, final String handelseslag, final String handelseutfall) {
-		return statusMappings.stream()
+		return statusMappingRepository.findAll().stream()
 			.filter(rule -> matches(rule.getHandelseTyp(), handelsetyp))
 			.filter(rule -> matches(rule.getHandelseSlag(), handelseslag))
 			.filter(rule -> matches(rule.getHandelseUtfall(), handelseutfall))
