@@ -1,7 +1,7 @@
 {
 	"request": {
 		"method": "POST",
-		"urlPathPattern": "/case-data/2281/SBK_PARKING_PERMIT/errands/24/attachments",
+		"urlPathPattern": "/case-data/2281/NAMESPACE_1/errands/24/attachments",
 		"bodyPatterns": [
 			{
 				"equalToJson": {

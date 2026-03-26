@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.test.context.jdbc.Sql;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import se.sundsvall.casemanagement.api.model.CaseStatusDTO;
-import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
 import se.sundsvall.dept44.test.AbstractAppTest;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
@@ -43,7 +42,7 @@ class CaseStatusIT extends AbstractAppTest {
 			.andReturnBody(CaseStatusDTO.class);
 
 		assertThat(result.getSystem()).isEqualTo(SystemType.ECOS);
-		assertThat(result.getCaseType()).isEqualTo(CaseType.REGISTRERING_AV_LIVSMEDEL.toString());
+		assertThat(result.getCaseType()).isEqualTo("REGISTRERING_AV_LIVSMEDEL");
 		assertThat(result.getExternalCaseId()).isEqualTo("2223");
 		assertThat(result.getCaseId()).isEqualTo(caseId);
 		assertThat(result.getErrandNumber()).isEqualTo(errandNumber);
@@ -66,7 +65,7 @@ class CaseStatusIT extends AbstractAppTest {
 			.andReturnBody(CaseStatusDTO.class);
 
 		assertThat(result.getSystem()).isEqualTo(SystemType.BYGGR);
-		assertThat(result.getCaseType()).isEqualTo(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV.toString());
+		assertThat(result.getCaseType()).isEqualTo("NYBYGGNAD_ANSOKAN_OM_BYGGLOV");
 		assertThat(result.getExternalCaseId()).isEqualTo(externalCaseId);
 		assertThat(result.getCaseId()).isEqualTo(dnr);
 		assertThat(result.getErrandNumber()).isEqualTo(errandNumber);
@@ -86,7 +85,7 @@ class CaseStatusIT extends AbstractAppTest {
 			.andReturnBody(CaseStatusDTO.class);
 
 		assertThat(result.getSystem()).isEqualTo(SystemType.CASE_DATA);
-		assertThat(result.getCaseType()).isEqualTo(CaseType.PARKING_PERMIT.toString());
+		assertThat(result.getCaseType()).isEqualTo("PARKING_PERMIT");
 		assertThat(result.getExternalCaseId()).isEqualTo("231");
 		assertThat(result.getCaseId()).isEqualTo("24");
 		assertThat(result.getStatus()).isEqualTo("Ärende inkommit");

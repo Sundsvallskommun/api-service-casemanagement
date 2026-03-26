@@ -5,7 +5,6 @@ import java.util.Random;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
 
 import static com.google.code.beanmatchers.BeanMatchers.hasValidBeanConstructor;
@@ -40,7 +39,7 @@ class CaseMappingTest {
 		final var caseId = "123";
 		final var externalCaseId = "456";
 		final var systemType = SystemType.BYGGR;
-		final var caseType = CaseType.MEX_LAND_RIGHT.toString();
+		final var caseType = "MEX_LAND_RIGHT";
 		final var serviceName = "SomeServicename";
 		final var timestamp = LocalDateTime.now();
 		final var municipalityId = "2281";

@@ -15,10 +15,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.sundsvall.casemanagement.api.model.AddressDTO;
 import se.sundsvall.casemanagement.api.model.AttachmentDTO;
 import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
@@ -28,12 +31,12 @@ import se.sundsvall.casemanagement.api.model.PersonDTO;
 import se.sundsvall.casemanagement.api.model.StakeholderDTO;
 import se.sundsvall.casemanagement.api.model.enums.AddressCategory;
 import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
-import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.api.model.enums.FacilityType;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderType;
+import se.sundsvall.casemanagement.integration.db.model.ByggrCaseTypeConfigEntity;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
-import se.sundsvall.casemanagement.integration.db.model.CaseTypeData;
+import se.sundsvall.casemanagement.service.ByggrSystemConfigProvider;
 import se.sundsvall.dept44.problem.ThrowableProblem;
 
 import static java.time.LocalDateTime.now;
@@ -41,42 +44,27 @@ import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.within;
+import static org.mockito.Mockito.when;
 import static se.sundsvall.casemanagement.TestUtil.createByggRCaseDTO;
 import static se.sundsvall.casemanagement.TestUtil.createHandelseIntressent;
 import static se.sundsvall.casemanagement.TestUtil.createStakeholderDTO;
 import static se.sundsvall.casemanagement.api.model.enums.AddressCategory.INVOICE_ADDRESS;
 import static se.sundsvall.casemanagement.api.model.enums.AddressCategory.POSTAL_ADDRESS;
 import static se.sundsvall.casemanagement.api.model.enums.FacilityType.BUSINESS_PREMISES;
-import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSESLAG_ATOM_KVITTENS;
-import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSESLAG_ELDSTAD;
-import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSESLAG_ELDSTAD_ROKKANAL;
-import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSESLAG_KOMPLETTERANDE_BYGGLOVHANDLINGAR;
-import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSESLAG_KOMPLETTERING_TILL_ADMIN;
-import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSESLAG_MANUELL_HANTERING_KRAVS;
-import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSESLAG_MED_KRAV_PA_SVAR;
-import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSESLAG_SLUTBESKED;
-import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSESLAG_UTSKICK_AV_REMISS;
-import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSETYP_ATOMHANDELSE;
-import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSETYP_BESLUT;
-import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSETYP_HANDLING;
-import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSETYP_REMISS;
-import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSETYP_STATUS;
-import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSEUTFALL_ATOM_KVITTENS_HL_BYTE;
-import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSE_ANTECKNING;
-import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSE_RIKTNING_IN;
-import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSE_RUBRIK_ELDSTAD;
-import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSE_RUBRIK_ELDSTAD_ROKKANAL;
-import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSE_RUBRIK_KOMPLETTERING_TILL_ADMIN;
 import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSE_RUBRIK_MANUELL_HANTERING;
-import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDLING_STATUS_INKOMMEN;
-import static se.sundsvall.casemanagement.util.Constants.BYGGR_KOMTYP_EPOST;
-import static se.sundsvall.casemanagement.util.Constants.BYGGR_KOMTYP_HEMTELEFON;
-import static se.sundsvall.casemanagement.util.Constants.BYGGR_KOMTYP_MOBIL;
-import static se.sundsvall.casemanagement.util.Constants.BYGGR_STATUS_AVSLUTAT;
-import static se.sundsvall.casemanagement.util.Constants.BYGGR_SYSTEM_HANDLAGGARE_SIGN;
-import static se.sundsvall.casemanagement.util.Constants.HANDELSETYP_ANMALAN;
 
+@ExtendWith(MockitoExtension.class)
 class ByggrMapperTest {
+
+	@Mock
+	private ByggrSystemConfigProvider byggrSystemConfigProvider;
+
+	private static Stream<Arguments> addAdditionalDocumentsHandelseArgumentProvider() {
+		return Stream.of(
+			Arguments.of("GRASV", "Kompletterande handlingar"),
+			Arguments.of("KOMPBYGG", "Kompletterande bygglovshandlingar"),
+			Arguments.of("KOMPTEK", "Kompletterande tekniska handlingar"));
+	}
 
 	@Test
 	void setStakeholderFieldsOrg() {
@@ -115,13 +103,13 @@ class ByggrMapperTest {
 		// Assert
 		assertThat(result).isNotNull().hasNoNullFieldsOrProperties();
 		assertThat(result.getMessage().getDnr()).isEqualTo("SomeDnr");
-		assertThat(result.getMessage().getHandlaggarSign()).isEqualTo(BYGGR_SYSTEM_HANDLAGGARE_SIGN);
+		assertThat(result.getMessage().getHandlaggarSign()).isEqualTo("SYSTEM");
 		assertThat(result.getMessage().getHandelse()).satisfies(handelse -> {
 			assertThat(handelse.getAnteckning()).isEqualTo("SomeNote");
-			assertThat(handelse.getRubrik()).isEqualTo(BYGGR_HANDELSE_RUBRIK_MANUELL_HANTERING);
-			assertThat(handelse.getRiktning()).isEqualTo(BYGGR_HANDELSE_RIKTNING_IN);
-			assertThat(handelse.getHandelsetyp()).isEqualTo(BYGGR_HANDELSETYP_STATUS);
-			assertThat(handelse.getHandelseslag()).isEqualTo(BYGGR_HANDELSESLAG_MANUELL_HANTERING_KRAVS);
+			assertThat(handelse.getRubrik()).isEqualTo("Manuell hantering");
+			assertThat(handelse.getRiktning()).isEqualTo("In");
+			assertThat(handelse.getHandelsetyp()).isEqualTo("STATUS");
+			assertThat(handelse.getHandelseslag()).isEqualTo("MANHANT");
 			assertThat(handelse.getStartDatum()).isCloseTo(now(), within(2, SECONDS));
 		});
 
@@ -129,9 +117,10 @@ class ByggrMapperTest {
 
 	@Test
 	void toHandelse() {
+		// Arrange
 		final var dto = new ByggRCaseDTO();
 		dto.setFacilities(List.of(new FacilityDTO()));
-		final var caseType = CaseTypeData.builder()
+		final var caseType = ByggrCaseTypeConfigEntity.builder()
 			.withHandelseRubrik("someHandelseRubrik")
 			.withHandelseSlag("SomeHandelseslag")
 			.withHandelseTyp("SomeHandelseTyp")
@@ -140,7 +129,7 @@ class ByggrMapperTest {
 
 		assertThat(result).isNotNull();
 		assertThat(result.getStartDatum()).isCloseTo(now(), within(2, SECONDS));
-		assertThat(result.getRiktning()).isEqualTo(BYGGR_HANDELSE_RIKTNING_IN);
+		assertThat(result.getRiktning()).isEqualTo("In");
 		assertThat(result.getRubrik()).isEqualTo(caseType.getHandelseRubrik());
 		assertThat(result.getHandelsetyp()).isEqualTo(caseType.getHandelseTyp());
 		assertThat(result.getHandelseslag()).isEqualTo(caseType.getHandelseSlag());
@@ -153,7 +142,7 @@ class ByggrMapperTest {
 		final var facility = new FacilityDTO();
 		facility.setFacilityType(FacilityType.FIREPLACE.toString());
 		dto.setFacilities(List.of(facility));
-		final var caseType = CaseTypeData.builder()
+		final var caseType = ByggrCaseTypeConfigEntity.builder()
 			.withHandelseRubrik("someHandelseRubrik")
 			.withHandelseSlag("SomeHandelseslag")
 			.withHandelseTyp("SomeHandelseTyp")
@@ -164,10 +153,10 @@ class ByggrMapperTest {
 		// Assert
 		assertThat(result).isNotNull();
 		assertThat(result.getStartDatum()).isCloseTo(now(), within(2, SECONDS));
-		assertThat(result.getRiktning()).isEqualTo(BYGGR_HANDELSE_RIKTNING_IN);
-		assertThat(result.getRubrik()).isEqualTo(BYGGR_HANDELSE_RUBRIK_ELDSTAD);
+		assertThat(result.getRiktning()).isEqualTo("In");
+		assertThat(result.getRubrik()).isEqualTo("Eldstad");
 		assertThat(result.getHandelsetyp()).isEqualTo(caseType.getHandelseTyp());
-		assertThat(result.getHandelseslag()).isEqualTo(BYGGR_HANDELSESLAG_ELDSTAD);
+		assertThat(result.getHandelseslag()).isEqualTo("ELD1");
 	}
 
 	@Test
@@ -177,7 +166,7 @@ class ByggrMapperTest {
 		final var facility = new FacilityDTO();
 		facility.setFacilityType(FacilityType.FIREPLACE_SMOKECHANNEL.toString());
 		dto.setFacilities(List.of(facility));
-		final var caseType = CaseTypeData.builder()
+		final var caseType = ByggrCaseTypeConfigEntity.builder()
 			.withHandelseRubrik("someHandelseRubrik")
 			.withHandelseSlag("SomeHandelseslag")
 			.withHandelseTyp("SomeHandelseTyp")
@@ -188,10 +177,10 @@ class ByggrMapperTest {
 		// Assert
 		assertThat(result).isNotNull();
 		assertThat(result.getStartDatum()).isCloseTo(now(), within(2, SECONDS));
-		assertThat(result.getRiktning()).isEqualTo(BYGGR_HANDELSE_RIKTNING_IN);
-		assertThat(result.getRubrik()).isEqualTo(BYGGR_HANDELSE_RUBRIK_ELDSTAD_ROKKANAL);
+		assertThat(result.getRiktning()).isEqualTo("In");
+		assertThat(result.getRubrik()).isEqualTo("Eldstad/Rökkanal");
 		assertThat(result.getHandelsetyp()).isEqualTo(caseType.getHandelseTyp());
-		assertThat(result.getHandelseslag()).isEqualTo(BYGGR_HANDELSESLAG_ELDSTAD_ROKKANAL);
+		assertThat(result.getHandelseslag()).isEqualTo("ELD");
 	}
 
 	@Test
@@ -216,7 +205,7 @@ class ByggrMapperTest {
 			handling -> {
 
 				assertThat(handling.getAnteckning()).isEqualTo("someFileName");
-				assertThat(handling.getStatus()).isEqualTo(BYGGR_HANDLING_STATUS_INKOMMEN);
+				assertThat(handling.getStatus()).isEqualTo("Inkommen");
 				assertThat(handling.getTyp()).isEqualTo("someCategory");
 				assertThat(handling.getDokument().getFil().getFilBuffer()).isEqualTo(Base64.getDecoder().decode(attachmentDTO.getFile().getBytes()));
 				assertThat(handling.getDokument().getFil().getFilAndelse()).isEqualTo(attachmentDTO.getExtension().toLowerCase());
@@ -240,7 +229,7 @@ class ByggrMapperTest {
 		// Assert
 		assertThat(result).isNotNull();
 		assertThat(result.getAnteckning()).isEqualTo("someFileName");
-		assertThat(result.getStatus()).isEqualTo(BYGGR_HANDLING_STATUS_INKOMMEN);
+		assertThat(result.getStatus()).isEqualTo("Inkommen");
 		assertThat(result.getTyp()).isEqualTo("someCategory");
 		assertThat(result.getDokument().getFil().getFilBuffer()).isEqualTo(Base64.getDecoder().decode(attachmentDTO.getFile().getBytes()));
 		assertThat(result.getDokument().getFil().getFilAndelse()).isEqualTo(attachmentDTO.getExtension().toLowerCase());
@@ -255,7 +244,7 @@ class ByggrMapperTest {
 		final var facility = new FacilityDTO();
 		facility.setFacilityType(FacilityType.FIREPLACE_SMOKECHANNEL.toString());
 		dto.setFacilities(List.of(facility));
-		final var caseType = CaseTypeData.builder()
+		final var caseType = ByggrCaseTypeConfigEntity.builder()
 			.withHandelseRubrik("someHandelseRubrik")
 			.withHandelseSlag("SomeHandelseslag")
 			.withHandelseTyp("SomeHandelseTyp")
@@ -269,7 +258,7 @@ class ByggrMapperTest {
 				assertThat(saveNewArendeMessage.isAnkomststamplaHandlingar()).isTrue();
 				assertThat(saveNewArendeMessage.getHandelse()).isNotNull();
 				assertThat(saveNewArendeMessage.getHandlingar()).isNotNull();
-				assertThat(saveNewArendeMessage.getHandlaggarSign()).isEqualTo(BYGGR_SYSTEM_HANDLAGGARE_SIGN);
+				assertThat(saveNewArendeMessage.getHandlaggarSign()).isEqualTo("SYSTEM");
 			});
 	}
 
@@ -287,16 +276,15 @@ class ByggrMapperTest {
 		// Act
 		final var result = ByggrMapper.toSaveNewHandelseMessage("someDnr", attachmentDTOS);
 		// Assert
-		// Assert
 		assertThat(result).isNotNull().hasNoNullFieldsOrPropertiesExcept("besvaradHandelseId");
 		assertThat(result.getDnr()).isEqualTo("someDnr");
-		assertThat(result.getHandlaggarSign()).isEqualTo(BYGGR_SYSTEM_HANDLAGGARE_SIGN);
+		assertThat(result.getHandlaggarSign()).isEqualTo("SYSTEM");
 		assertThat(result.getHandelse()).satisfies(handelse -> {
-			assertThat(handelse.getAnteckning()).isEqualTo(BYGGR_HANDELSE_ANTECKNING);
-			assertThat(handelse.getRubrik()).isEqualTo(BYGGR_HANDELSE_RUBRIK_KOMPLETTERING_TILL_ADMIN);
-			assertThat(handelse.getRiktning()).isEqualTo(BYGGR_HANDELSE_RIKTNING_IN);
-			assertThat(handelse.getHandelsetyp()).isEqualTo(BYGGR_HANDELSETYP_HANDLING);
-			assertThat(handelse.getHandelseslag()).isEqualTo(BYGGR_HANDELSESLAG_KOMPLETTERING_TILL_ADMIN);
+			assertThat(handelse.getAnteckning()).isEqualTo("Inkomna kompletteringar via e-tjänst.");
+			assertThat(handelse.getRubrik()).isEqualTo("Komplettering till Admin");
+			assertThat(handelse.getRiktning()).isEqualTo("In");
+			assertThat(handelse.getHandelsetyp()).isEqualTo("HANDLING");
+			assertThat(handelse.getHandelseslag()).isEqualTo("KOMPADM");
 			assertThat(handelse.getStartDatum()).isCloseTo(now(), within(2, SECONDS));
 		});
 
@@ -554,7 +542,7 @@ class ByggrMapperTest {
 			kommunikations -> kommunikations.forEach(
 				kommunikation -> {
 					assertThat(kommunikation.getAttention()).isEqualTo(intressentAttention);
-					assertThat(kommunikation.getKomtyp()).isIn(BYGGR_KOMTYP_MOBIL, BYGGR_KOMTYP_HEMTELEFON, BYGGR_KOMTYP_EPOST);
+					assertThat(kommunikation.getKomtyp()).isIn("MOB", "HEM", "Epost");
 					assertThat(kommunikation.isArAktiv()).isTrue();
 					assertThat(kommunikation.getBeskrivning()).isIn("someCellphoneNumber", "somePhoneNumber", "someEmailAddress");
 				}));
@@ -743,12 +731,15 @@ class ByggrMapperTest {
 	void toByggrStatus() {
 
 		// Arrange
+		when(byggrSystemConfigProvider.resolveHandelseStatus("BESLUT", "KOMPBYGG", null))
+			.thenReturn("KOMPBYGG");
+
 		final var arende = new Arende();
 		arende.setDnr("someDnr");
 		arende.setArendeId(123456);
 		arende.setHandelseLista(new ArrayOfHandelse().withHandelse(new Handelse()
-			.withHandelseslag(BYGGR_HANDELSESLAG_KOMPLETTERANDE_BYGGLOVHANDLINGAR)
-			.withHandelsetyp(BYGGR_HANDELSETYP_BESLUT)
+			.withHandelseslag("KOMPBYGG")
+			.withHandelsetyp("BESLUT")
 			.withStartDatum(LocalDateTime.now())
 
 		));
@@ -760,7 +751,7 @@ class ByggrMapperTest {
 				.build());
 
 		// Act
-		final var result = ByggrMapper.toByggrStatus(arende, "someCaseId", caseMappings);
+		final var result = ByggrMapper.toByggrStatus(arende, "someCaseId", caseMappings, byggrSystemConfigProvider);
 		// Assert
 		assertThat(result).isNotNull().hasNoNullFieldsOrPropertiesExcept("timestamp", "namespace");
 		assertThat(result.getStatus()).isEqualTo("KOMPBYGG");
@@ -783,7 +774,7 @@ class ByggrMapperTest {
 				.build());
 
 		// Act && Assert
-		var caseStatusDTO = ByggrMapper.toByggrStatus(arende, "someCaseId", caseMappings);
+		final var caseStatusDTO = ByggrMapper.toByggrStatus(arende, "someCaseId", caseMappings, byggrSystemConfigProvider);
 		assertThat(caseStatusDTO).isNotNull().hasNoNullFieldsOrPropertiesExcept("timestamp", "namespace");
 		assertThat(caseStatusDTO.getStatus()).isEqualTo("Okänt");
 		assertThat(caseStatusDTO.getTimestamp()).isEqualTo(LocalDate.now().atStartOfDay());
@@ -796,11 +787,11 @@ class ByggrMapperTest {
 		final var arende = new Arende();
 		arende.setDnr("someDnr");
 		arende.setArendeId(123456);
-		arende.setStatus(BYGGR_STATUS_AVSLUTAT);
+		arende.setStatus("Avslutat");
 		arende.setAnkomstDatum(LocalDate.now());
 		arende.setHandelseLista(new ArrayOfHandelse().withHandelse(new Handelse()
-			.withHandelseslag(BYGGR_HANDELSESLAG_KOMPLETTERANDE_BYGGLOVHANDLINGAR)
-			.withHandelsetyp(BYGGR_HANDELSETYP_BESLUT)
+			.withHandelseslag("KOMPBYGG")
+			.withHandelsetyp("BESLUT")
 
 		));
 		final var caseMappings = List.of(
@@ -811,7 +802,7 @@ class ByggrMapperTest {
 				.build());
 
 		// Act
-		final var result = ByggrMapper.toByggrStatus(arende, "someCaseId", caseMappings);
+		final var result = ByggrMapper.toByggrStatus(arende, "someCaseId", caseMappings, byggrSystemConfigProvider);
 		// Assert
 		assertThat(result).isNotNull().hasNoNullFieldsOrPropertiesExcept("timestamp", "namespace");
 		assertThat(result.getStatus()).isEqualTo("Avslutat");
@@ -826,8 +817,8 @@ class ByggrMapperTest {
 		arende.setDnr("someDnr");
 		arende.setArendeId(12345);
 		arende.setHandelseLista(new ArrayOfHandelse().withHandelse(new Handelse()
-			.withHandelseslag(BYGGR_HANDELSESLAG_KOMPLETTERANDE_BYGGLOVHANDLINGAR)
-			.withHandelsetyp(BYGGR_HANDELSETYP_BESLUT)
+			.withHandelseslag("KOMPBYGG")
+			.withHandelsetyp("BESLUT")
 
 		));
 		final var caseMappings = List.of(
@@ -850,79 +841,19 @@ class ByggrMapperTest {
 
 	}
 
-	@Test
-	void testGetHandelseStatusInskickat() {
-		// Arrange
-		final String handelseTyp = HANDELSETYP_ANMALAN;
-
-		// Act
-		final String result = ByggrMapper.getHandelseStatus(handelseTyp, BYGGR_HANDELSESLAG_MED_KRAV_PA_SVAR, null);
-
-		// Assert
-		assertThat(result).isEqualTo(handelseTyp);
-	}
-
-	@Test
-	void testGetHandelseStatusUnderBehandling() {
-		// Arrange
-		final String handelseslag = BYGGR_HANDELSESLAG_SLUTBESKED;
-		// Act
-		final String result = ByggrMapper.getHandelseStatus(BYGGR_HANDELSETYP_BESLUT, handelseslag, null);
-
-		// Assert
-		assertThat(result).isEqualTo(handelseslag);
-	}
-
-	@Test
-	void testGetHandelseStatusUtskick() {
-		// Arrange
-		final String handelseslag = BYGGR_HANDELSESLAG_UTSKICK_AV_REMISS;
-
-		// Act
-		final String result = ByggrMapper.getHandelseStatus(BYGGR_HANDELSETYP_REMISS, handelseslag, null);
-
-		// Assert
-		assertThat(result).isEqualTo(handelseslag);
-	}
-
-	@Test
-	void testGetHandelseStatusKompletterad() {
-		// Arrange
-		final String handelseUtfall = BYGGR_HANDELSEUTFALL_ATOM_KVITTENS_HL_BYTE;
-
-		// Act
-		final String result = ByggrMapper.getHandelseStatus(BYGGR_HANDELSETYP_ATOMHANDELSE, BYGGR_HANDELSESLAG_ATOM_KVITTENS, handelseUtfall);
-
-		// Assert
-		assertThat(result).isEqualTo(handelseUtfall);
-	}
-
-	@Test
-	void testGetHandelseStatusNull() {
-		// Arrange
-		final String handelseTyp = "unknown";
-		final String handelseSlag = "unknown";
-		final String handelseUtfall = "unknown";
-
-		// Act
-		final String result = ByggrMapper.getHandelseStatus(handelseTyp, handelseSlag, handelseUtfall);
-
-		// Assert
-		assertThat(result).isNull();
-	}
-
 	@ParameterizedTest
 	@ValueSource(strings = {
 		"GRASV", "UNDERE", "KOMFAST", "KOMFASVA", "BIL"
 	})
-	void createNeighborhoodNotificationArrayOfHandling(String category) {
-		var byggRCase = createByggRCaseDTO(CaseType.NEIGHBORHOOD_NOTIFICATION, AttachmentCategory.ATTACHMENT);
-		for (var attachment : byggRCase.getAttachments()) {
+	void createNeighborhoodNotificationArrayOfHandling(final String category) {
+		// Arrange
+		final var byggRCase = createByggRCaseDTO("NEIGHBORHOOD_NOTIFICATION", AttachmentCategory.ATTACHMENT);
+		for (final var attachment : byggRCase.getAttachments()) {
 			attachment.setCategory(category);
 		}
-		var attachment = byggRCase.getAttachments().getFirst();
+		final var attachment = byggRCase.getAttachments().getFirst();
 
-		var result = ByggrMapper.createNeighborhoodNotificationArrayOfHandling(byggRCase);
+		final var result = ByggrMapper.createNeighborhoodNotificationArrayOfHandling(byggRCase);
 
 		assertThat(result.getHandling()).hasSize(1);
 		assertThat(result.getHandling().getFirst().getTyp()).isEqualTo(category);
@@ -932,11 +863,11 @@ class ByggrMapperTest {
 
 	@ParameterizedTest
 	@MethodSource("addAdditionalDocumentsHandelseArgumentProvider")
-	void createAddAdditionalDocumentsHandelse(String handelseslag, String rubrik) {
-		var handelseIntressent = new HandelseIntressent();
-		var errandInformation = "errandInformation";
+	void createAddAdditionalDocumentsHandelse(final String handelseslag, final String rubrik) {
+		final var handelseIntressent = new HandelseIntressent();
+		final var errandInformation = "errandInformation";
 
-		var result = ByggrMapper.createAddAdditionalDocumentsHandelse(errandInformation, handelseIntressent, handelseslag);
+		final var result = ByggrMapper.createAddAdditionalDocumentsHandelse(errandInformation, handelseIntressent, handelseslag);
 
 		assertThat(result).isNotNull().satisfies(handelse -> {
 			assertThat(handelse.getRiktning()).isEqualTo("In");
@@ -949,20 +880,14 @@ class ByggrMapperTest {
 		});
 	}
 
-	private static Stream<Arguments> addAdditionalDocumentsHandelseArgumentProvider() {
-		return Stream.of(
-			Arguments.of("GRASV", "Kompletterande handlingar"),
-			Arguments.of("KOMPBYGG", "Kompletterande bygglovshandlingar"),
-			Arguments.of("KOMPTEK", "Kompletterande tekniska handlingar"));
-	}
-
 	@Test
 	void createAddCertifiedInspectorHandelseIntressent1() {
-		var stakeholder = createStakeholderDTO(StakeholderType.PERSON, List.of(StakeholderRole.APPLICANT.name()));
-		var extraParameters = Map.of("certificateAuthType", "certificateAuthType", "certificateNumber", "certificateNumber",
+		// Arrange
+		final var stakeholder = createStakeholderDTO(StakeholderType.PERSON, List.of(StakeholderRole.APPLICANT.name()));
+		final var extraParameters = Map.of("certificateAuthType", "certificateAuthType", "certificateNumber", "certificateNumber",
 			"certificateIssuer", "certificateIssuer", "certificateValidDate", "2020-01-01");
 
-		var result = ByggrMapper.createAddCertifiedInspectorHandelseIntressent(stakeholder, "stakeholderId", extraParameters);
+		final var result = ByggrMapper.createAddCertifiedInspectorHandelseIntressent(stakeholder, "stakeholderId", extraParameters);
 
 		assertThat(result.getPersOrgNr()).isEqualTo("stakeholderId");
 		assertThat(result.getAdress()).isEqualTo(stakeholder.getAddresses().getFirst().getStreet());
@@ -979,11 +904,12 @@ class ByggrMapperTest {
 
 	@Test
 	void createAddCertifiedInspectorHandelseIntressent2() {
-		var stakeholder = createStakeholderDTO(StakeholderType.ORGANIZATION, List.of(StakeholderRole.APPLICANT.name()));
-		var extraParameters = Map.of("certificateAuthType", "certificateAuthType", "certificateNumber", "certificateNumber",
+		// Arrange
+		final var stakeholder = createStakeholderDTO(StakeholderType.ORGANIZATION, List.of(StakeholderRole.APPLICANT.name()));
+		final var extraParameters = Map.of("certificateAuthType", "certificateAuthType", "certificateNumber", "certificateNumber",
 			"certificateIssuer", "certificateIssuer", "certificateValidDate", "2020-01-01");
 
-		var result = ByggrMapper.createAddCertifiedInspectorHandelseIntressent(stakeholder, "stakeholderId", extraParameters);
+		final var result = ByggrMapper.createAddCertifiedInspectorHandelseIntressent(stakeholder, "stakeholderId", extraParameters);
 
 		assertThat(result.getPersOrgNr()).isEqualTo("stakeholderId");
 		assertThat(result.getAdress()).isEqualTo(stakeholder.getAddresses().getFirst().getStreet());
@@ -1000,10 +926,10 @@ class ByggrMapperTest {
 
 	@Test
 	void createAddCertifiedInspectorHandelse() {
-		var errandInformation = "errandInformation";
-		var handelseIntressent = createHandelseIntressent();
+		final var errandInformation = "errandInformation";
+		final var handelseIntressent = createHandelseIntressent();
 
-		var result = ByggrMapper.createAddCertifiedInspectorHandelse(errandInformation, handelseIntressent);
+		final var result = ByggrMapper.createAddCertifiedInspectorHandelse(errandInformation, handelseIntressent);
 
 		assertThat(result.getRiktning()).isEqualTo("In");
 		assertThat(result.getRubrik()).isEqualTo("Anmälan KA");
@@ -1016,28 +942,26 @@ class ByggrMapperTest {
 
 	@Test
 	void createAlertCaseManagerEvent() {
-		var dnr = "dnr";
+		final var dnr = "dnr";
 
-		var result = ByggrMapper.createAlertCaseManagerEvent(dnr);
+		final var result = ByggrMapper.createAlertCaseManagerEvent(dnr);
 
-		assertThat(result).isNotNull().isInstanceOf(SaveNewHandelse.class).satisfies(saveNewHandelse -> {
-			assertThat(saveNewHandelse.getMessage()).satisfies(message -> {
-				assertThat(message.getDnr()).isEqualTo(dnr);
-				assertThat(message.getHandlaggarSign()).isEqualTo("SYSTEM");
-				assertThat(message.isAnkomststamplaHandlingar()).isFalse();
-				assertThat(message.isAutoGenereraBeslutNr()).isFalse();
+		assertThat(result).isNotNull().isInstanceOf(SaveNewHandelse.class).satisfies(saveNewHandelse -> assertThat(saveNewHandelse.getMessage()).satisfies(message -> {
+			assertThat(message.getDnr()).isEqualTo(dnr);
+			assertThat(message.getHandlaggarSign()).isEqualTo("SYSTEM");
+			assertThat(message.isAnkomststamplaHandlingar()).isFalse();
+			assertThat(message.isAutoGenereraBeslutNr()).isFalse();
 
-				assertThat(message.getHandelse()).satisfies(handelse -> {
-					assertThat(handelse.getRiktning()).isEqualTo("In");
-					assertThat(handelse.getRubrik()).isEqualTo("Manuell hantering krävs");
-					assertThat(handelse.getStartDatum()).isCloseTo(LocalDateTime.now(), within(2, SECONDS));
-					assertThat(handelse.getHandelseslag()).isEqualTo("MANHANT");
-					assertThat(handelse.getHandelsetyp()).isEqualTo("STATUS");
-					assertThat(handelse.isSekretess()).isFalse();
-					assertThat(handelse.isMakulerad()).isFalse();
-					assertThat(handelse.isArbetsmaterial()).isFalse();
-				});
+			assertThat(message.getHandelse()).satisfies(handelse -> {
+				assertThat(handelse.getRiktning()).isEqualTo("In");
+				assertThat(handelse.getRubrik()).isEqualTo(BYGGR_HANDELSE_RUBRIK_MANUELL_HANTERING);
+				assertThat(handelse.getStartDatum()).isCloseTo(LocalDateTime.now(), within(2, SECONDS));
+				assertThat(handelse.getHandelseslag()).isEqualTo("MANHANT");
+				assertThat(handelse.getHandelsetyp()).isEqualTo("STATUS");
+				assertThat(handelse.isSekretess()).isFalse();
+				assertThat(handelse.isMakulerad()).isFalse();
+				assertThat(handelse.isArbetsmaterial()).isFalse();
 			});
-		});
+		}));
 	}
 }

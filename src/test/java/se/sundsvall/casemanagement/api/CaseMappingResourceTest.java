@@ -8,7 +8,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
-import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.service.CaseMappingService;
 import se.sundsvall.dept44.problem.Problem;
@@ -38,7 +37,7 @@ class CaseMappingResourceTest {
 		when(caseMappingService.getCaseMapping(any(String.class), eq(MUNICIPALITY_ID))).thenReturn(CaseMapping.builder()
 			.withCaseId("caseId")
 			.withExternalCaseId("externalCaseId")
-			.withCaseType(CaseType.REGISTRERING_AV_LIVSMEDEL.toString())
+			.withCaseType("REGISTRERING_AV_LIVSMEDEL")
 			.withServiceName("serviceName")
 			.withTimestamp(LocalDateTime.now())
 			.build());
@@ -53,7 +52,7 @@ class CaseMappingResourceTest {
 		assertThat(result.getBody()).hasSize(1);
 		assertThat(result.getBody().getFirst().getCaseId()).isEqualTo("caseId");
 		assertThat(result.getBody().getFirst().getExternalCaseId()).isEqualTo("externalCaseId");
-		assertThat(result.getBody().getFirst().getCaseType()).isEqualTo(CaseType.REGISTRERING_AV_LIVSMEDEL.toString());
+		assertThat(result.getBody().getFirst().getCaseType()).isEqualTo("REGISTRERING_AV_LIVSMEDEL");
 		assertThat(result.getBody().getFirst().getServiceName()).isEqualTo("serviceName");
 		assertThat(result.getBody().getFirst().getTimestamp()).isNotNull();
 		assertThat(result.getBody().getFirst().getTimestamp()).isBeforeOrEqualTo(LocalDateTime.now());
@@ -65,14 +64,14 @@ class CaseMappingResourceTest {
 		when(caseMappingService.getAllCaseMappings()).thenReturn(List.of(CaseMapping.builder()
 			.withCaseId("caseId")
 			.withExternalCaseId("externalCaseId")
-			.withCaseType(CaseType.REGISTRERING_AV_LIVSMEDEL.toString())
+			.withCaseType("REGISTRERING_AV_LIVSMEDEL")
 			.withServiceName("serviceName")
 			.withTimestamp(LocalDateTime.now())
 			.build(),
 			CaseMapping.builder()
 				.withCaseId("caseId2")
 				.withExternalCaseId("externalCaseId2")
-				.withCaseType(CaseType.LOST_PARKING_PERMIT.toString())
+				.withCaseType("LOST_PARKING_PERMIT")
 				.withServiceName("serviceName2")
 				.withTimestamp(LocalDateTime.now())
 				.build()));
@@ -87,13 +86,13 @@ class CaseMappingResourceTest {
 		assertThat(result.getBody()).hasSize(2);
 		assertThat(result.getBody().getFirst().getCaseId()).isEqualTo("caseId");
 		assertThat(result.getBody().getFirst().getExternalCaseId()).isEqualTo("externalCaseId");
-		assertThat(result.getBody().getFirst().getCaseType()).isEqualTo(CaseType.REGISTRERING_AV_LIVSMEDEL.toString());
+		assertThat(result.getBody().getFirst().getCaseType()).isEqualTo("REGISTRERING_AV_LIVSMEDEL");
 		assertThat(result.getBody().getFirst().getServiceName()).isEqualTo("serviceName");
 		assertThat(result.getBody().getFirst().getTimestamp()).isNotNull();
 		assertThat(result.getBody().getFirst().getTimestamp()).isBeforeOrEqualTo(LocalDateTime.now());
 		assertThat(result.getBody().get(1).getCaseId()).isEqualTo("caseId2");
 		assertThat(result.getBody().get(1).getExternalCaseId()).isEqualTo("externalCaseId2");
-		assertThat(result.getBody().get(1).getCaseType()).isEqualTo(CaseType.LOST_PARKING_PERMIT.toString());
+		assertThat(result.getBody().get(1).getCaseType()).isEqualTo("LOST_PARKING_PERMIT");
 		assertThat(result.getBody().get(1).getServiceName()).isEqualTo("serviceName2");
 		assertThat(result.getBody().get(1).getTimestamp()).isNotNull();
 		assertThat(result.getBody().get(1).getTimestamp()).isBeforeOrEqualTo(LocalDateTime.now());

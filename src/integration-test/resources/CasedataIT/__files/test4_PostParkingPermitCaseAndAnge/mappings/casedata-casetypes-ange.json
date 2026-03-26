@@ -1,0 +1,13 @@
+{
+	"request": {
+		"method": "GET",
+		"urlPath": "/case-data/2260/ANGE_PARKING_PERMIT/metadata/casetypes"
+	},
+	"response": {
+		"headers": {
+			"Content-Type": "application/json"
+		},
+		"body": "[{\"type\":\"PARKING_PERMIT\",\"displayName\":\"Parkeringstillstånd\",\"startProcess\":true}]",
+		"status": 200
+	}
+}

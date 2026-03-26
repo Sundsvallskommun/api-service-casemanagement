@@ -31,11 +31,23 @@ import se.sundsvall.casemanagement.api.model.StakeholderDTO;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
 import se.sundsvall.casemanagement.integration.party.PartyIntegration;
 import se.sundsvall.casemanagement.util.CaseUtil;
-import se.sundsvall.casemanagement.util.Constants;
 import se.sundsvall.dept44.problem.Problem;
 
 import static generated.client.party.PartyType.PRIVATE;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static se.sundsvall.casemanagement.util.Constants.ECOS_ADDRESS_TYPE_ID_BESOKSADRESS;
+import static se.sundsvall.casemanagement.util.Constants.ECOS_ADDRESS_TYPE_ID_FAKTURAADRESS;
+import static se.sundsvall.casemanagement.util.Constants.ECOS_ADDRESS_TYPE_ID_POSTADRESS;
+import static se.sundsvall.casemanagement.util.Constants.ECOS_CONTACT_DETAIL_TYPE_ID_EPOST;
+import static se.sundsvall.casemanagement.util.Constants.ECOS_CONTACT_DETAIL_TYPE_ID_HUVUDNUMMER;
+import static se.sundsvall.casemanagement.util.Constants.ECOS_CONTACT_DETAIL_TYPE_ID_MOBIL;
+import static se.sundsvall.casemanagement.util.Constants.ECOS_CONTACT_DETAIL_TYPE_ID_OVRIGT;
+import static se.sundsvall.casemanagement.util.Constants.ECOS_CONTACT_DETAIL_TYPE_ID_TELEFON;
+import static se.sundsvall.casemanagement.util.Constants.ECOS_ROLE_ID_FAKTURAMOTTAGARE;
+import static se.sundsvall.casemanagement.util.Constants.ECOS_ROLE_ID_INSTALLATOR;
+import static se.sundsvall.casemanagement.util.Constants.ECOS_ROLE_ID_KONTAKTPERSON;
+import static se.sundsvall.casemanagement.util.Constants.ECOS_ROLE_ID_SOKANDE;
+import static se.sundsvall.casemanagement.util.Constants.ECOS_ROLE_ID_VERKSAMHETSUTOVARE;
 
 @Service
 public class PartyService {
@@ -158,11 +170,11 @@ public class PartyService {
 				.map(roleString -> {
 					final var role = StakeholderRole.valueOf(roleString);
 					return switch (role) {
-						case INVOICE_RECIPIENT -> Constants.ECOS_ROLE_ID_FAKTURAMOTTAGARE;
-						case OPERATOR -> Constants.ECOS_ROLE_ID_VERKSAMHETSUTOVARE;
-						case CONTACT_PERSON -> Constants.ECOS_ROLE_ID_KONTAKTPERSON;
-						case APPLICANT -> Constants.ECOS_ROLE_ID_SOKANDE;
-						case INSTALLER -> Constants.ECOS_ROLE_ID_INSTALLATOR;
+						case INVOICE_RECIPIENT -> ECOS_ROLE_ID_FAKTURAMOTTAGARE;
+						case OPERATOR -> ECOS_ROLE_ID_VERKSAMHETSUTOVARE;
+						case CONTACT_PERSON -> ECOS_ROLE_ID_KONTAKTPERSON;
+						case APPLICANT -> ECOS_ROLE_ID_SOKANDE;
+						case INSTALLER -> ECOS_ROLE_ID_INSTALLATOR;
 						default -> throw Problem.valueOf(INTERNAL_SERVER_ERROR, "The request contained a stakeholder role that was not expected. This should be discovered in the validation of the input. Something in the validation is wrong.");
 					};
 				})
@@ -200,8 +212,8 @@ public class PartyService {
 		if (s.getEmailAddress() != null) {
 			final var item = new ContactInfoItemSvcDto();
 
-			item.setContactDetailTypeId(Constants.ECOS_CONTACT_DETAIL_TYPE_ID_OVRIGT);
-			item.setContactPathId(Constants.ECOS_CONTACT_DETAIL_TYPE_ID_EPOST);
+			item.setContactDetailTypeId(ECOS_CONTACT_DETAIL_TYPE_ID_OVRIGT);
+			item.setContactPathId(ECOS_CONTACT_DETAIL_TYPE_ID_EPOST);
 			item.setValue(s.getEmailAddress());
 
 			arrayOfContactInfoItemSvcDto.getContactInfoItemSvcDto().add(item);
@@ -209,8 +221,8 @@ public class PartyService {
 		if (s.getCellphoneNumber() != null) {
 			final var item = new ContactInfoItemSvcDto();
 
-			item.setContactDetailTypeId(Constants.ECOS_CONTACT_DETAIL_TYPE_ID_MOBIL);
-			item.setContactPathId(Constants.ECOS_CONTACT_DETAIL_TYPE_ID_TELEFON);
+			item.setContactDetailTypeId(ECOS_CONTACT_DETAIL_TYPE_ID_MOBIL);
+			item.setContactPathId(ECOS_CONTACT_DETAIL_TYPE_ID_TELEFON);
 			item.setValue(s.getCellphoneNumber());
 
 			arrayOfContactInfoItemSvcDto.getContactInfoItemSvcDto().add(item);
@@ -219,8 +231,8 @@ public class PartyService {
 		if (s.getPhoneNumber() != null) {
 			final var item = new ContactInfoItemSvcDto();
 
-			item.setContactDetailTypeId(Constants.ECOS_CONTACT_DETAIL_TYPE_ID_HUVUDNUMMER);
-			item.setContactPathId(Constants.ECOS_CONTACT_DETAIL_TYPE_ID_TELEFON);
+			item.setContactDetailTypeId(ECOS_CONTACT_DETAIL_TYPE_ID_HUVUDNUMMER);
+			item.setContactPathId(ECOS_CONTACT_DETAIL_TYPE_ID_TELEFON);
 			item.setValue(s.getPhoneNumber());
 
 			arrayOfContactInfoItemSvcDto.getContactInfoItemSvcDto().add(item);
@@ -260,9 +272,9 @@ public class PartyService {
 										.withId(
 											switch (adressType)
 											{
-												case INVOICE_ADDRESS -> Constants.ECOS_ADDRESS_TYPE_ID_FAKTURAADRESS;
-												case POSTAL_ADDRESS -> Constants.ECOS_ADDRESS_TYPE_ID_POSTADRESS;
-												case VISITING_ADDRESS -> Constants.ECOS_ADDRESS_TYPE_ID_BESOKSADRESS;
+												case INVOICE_ADDRESS -> ECOS_ADDRESS_TYPE_ID_FAKTURAADRESS;
+												case POSTAL_ADDRESS -> ECOS_ADDRESS_TYPE_ID_POSTADRESS;
+												case VISITING_ADDRESS -> ECOS_ADDRESS_TYPE_ID_BESOKSADRESS;
 											}))
 									.toList())))
 					.toList());

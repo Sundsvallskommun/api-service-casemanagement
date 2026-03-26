@@ -14,7 +14,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.sundsvall.casemanagement.TestUtil;
 import se.sundsvall.casemanagement.api.model.CaseDTO;
 import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
-import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.integration.db.model.DeliveryStatus;
 import tools.jackson.databind.ObjectMapper;
 
@@ -30,8 +29,8 @@ class CaseMapperTest {
 
 	private static Stream<Arguments> toCaseEntityArguments() {
 		return Stream.of(
-			Arguments.of(TestUtil.createEcosCaseDTO(CaseType.REGISTRERING_AV_LIVSMEDEL, UNDERLAG_RISKKLASSNING), "2281"),
-			Arguments.of(TestUtil.createByggRCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION), "2281"),
+			Arguments.of(TestUtil.createEcosCaseDTO("REGISTRERING_AV_LIVSMEDEL", UNDERLAG_RISKKLASSNING), "2281"),
+			Arguments.of(TestUtil.createByggRCaseDTO("NYBYGGNAD_ANSOKAN_OM_BYGGLOV", AttachmentCategory.BUILDING_PERMIT_APPLICATION), "2281"),
 			Arguments.of(TestUtil.createOtherCaseDTO(), "2281"));
 	}
 
@@ -63,7 +62,7 @@ class CaseMapperTest {
 
 	private String toString(final Reader reader) throws IOException {
 		final var bf = new BufferedReader(reader);
-		String line = null;
+		String line;
 		final var builder = new StringBuilder();
 		while (nonNull(line = bf.readLine())) {
 			builder.append(line);

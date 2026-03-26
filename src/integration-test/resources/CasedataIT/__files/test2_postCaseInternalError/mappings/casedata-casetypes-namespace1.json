@@ -1,0 +1,13 @@
+{
+	"request": {
+		"method": "GET",
+		"urlPathPattern": "/case-data/2281/(.+)/metadata/casetypes"
+	},
+	"response": {
+		"headers": {
+			"Content-Type": "application/json"
+		},
+		"body": "[{\"type\":\"PARKING_PERMIT\",\"displayName\":\"Parkeringstillstånd\",\"startProcess\":true},{\"type\":\"PARKING_PERMIT_RENEWAL\",\"displayName\":\"Förnyelse parkeringstillstånd\",\"startProcess\":true}]",
+		"status": 200
+	}
+}

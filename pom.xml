@@ -22,6 +22,15 @@
 		<jaxb-plugins.version>4.0.12</jaxb-plugins.version>
 	</properties>
 	<dependencies>
+		<!-- Caching -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-cache</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.github.ben-manes.caffeine</groupId>
+			<artifactId>caffeine</artifactId>
+		</dependency>
 		<!-- Database-->
 		<dependency>
 			<groupId>se.sundsvall.dept44</groupId>

@@ -1,5 +1,6 @@
 package se.sundsvall.casemanagement.integration.casedata;
 
+import generated.client.casedata.Address.AddressCategoryEnum;
 import generated.client.casedata.ContactInformation;
 import generated.client.casedata.Errand;
 import generated.client.casedata.PatchErrand;
@@ -13,7 +14,6 @@ import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
 import se.sundsvall.casemanagement.api.model.PersonDTO;
 import se.sundsvall.casemanagement.api.model.enums.AddressCategory;
 import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
-import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderType;
 
 import static generated.client.casedata.Stakeholder.TypeEnum.ORGANIZATION;
@@ -60,7 +60,7 @@ class CaseDataMapperTest {
 		final var otherCase = new OtherCaseDTO();
 		final var attachmentDTO = createAttachmentDTO(AttachmentCategory.ANMALAN_VARMEPUMP);
 		final PersonDTO stakeholderDTO = (PersonDTO) createStakeholderDTO(StakeholderType.PERSON, List.of("someRole"));
-		final var facilityDTO = createFacilityDTO(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP);
+		final var facilityDTO = createFacilityDTO("ANSOKAN_TILLSTAND_VARMEPUMP");
 
 		otherCase.setAttachments(List.of(attachmentDTO));
 		otherCase.setStakeholders(List.of(stakeholderDTO));
@@ -87,7 +87,7 @@ class CaseDataMapperTest {
 
 	@Test
 	void toFacilities() {
-		final var facilities = List.of(createFacilityDTO(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP), createFacilityDTO(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP));
+		final var facilities = List.of(createFacilityDTO("ANSOKAN_TILLSTAND_VARMEPUMP"), createFacilityDTO("ANSOKAN_TILLSTAND_VARMEPUMP"));
 
 		final var result = CaseDataMapper.toFacilities(facilities);
 
@@ -100,7 +100,7 @@ class CaseDataMapperTest {
 
 	@Test
 	void toFacility() {
-		final var facilityDTO = createFacilityDTO(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP);
+		final var facilityDTO = createFacilityDTO("ANSOKAN_TILLSTAND_VARMEPUMP");
 
 		final var result = CaseDataMapper.toFacility(facilityDTO);
 
@@ -220,7 +220,7 @@ class CaseDataMapperTest {
 			assertThat(address.getLocation()).isEqualTo(CaseDataMapper.toCoordinates(addressDTO.getLocation()));
 			assertThat(address.getIsZoningPlanArea()).isEqualTo(addressDTO.getIsZoningPlanArea());
 			assertThat(address.getInvoiceMarking()).isEqualTo(addressDTO.getInvoiceMarking());
-			assertThat(address.getAddressCategory()).isEqualTo(generated.client.casedata.Address.AddressCategoryEnum.VISITING_ADDRESS);
+			assertThat(address.getAddressCategory()).isEqualTo(AddressCategoryEnum.VISITING_ADDRESS);
 		});
 	}
 
@@ -232,7 +232,7 @@ class CaseDataMapperTest {
 
 		assertThat(result).hasSize(3);
 		for (final var dto : result) {
-			assertThat(dto.getAddressCategory()).isInstanceOf(generated.client.casedata.Address.AddressCategoryEnum.class);
+			assertThat(dto.getAddressCategory()).isInstanceOf(AddressCategoryEnum.class);
 			assertThat(dto.getStreet()).isEqualTo(address.getStreet());
 			assertThat(dto.getHouseNumber()).isEqualTo(address.getHouseNumber());
 			assertThat(dto.getApartmentNumber()).isEqualTo(address.getAppartmentNumber());

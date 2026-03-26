@@ -7,7 +7,6 @@ import org.springframework.test.context.jdbc.Sql;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import se.sundsvall.casemanagement.Application;
 import se.sundsvall.casemanagement.api.model.CaseResourceResponseDTO;
-import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
 import se.sundsvall.casemanagement.integration.db.CaseMappingRepository;
 import se.sundsvall.casemanagement.integration.db.CaseRepository;
@@ -64,7 +63,7 @@ class ByggrCaseIT extends AbstractAppTest {
 		assertThat(caseMapping).isNotNull();
 		assertThat(caseMapping.getExternalCaseId()).isEqualTo(EXTERNAL_CASE_ID);
 		assertThat(caseMapping.getCaseId()).isEqualTo("BYGG 2021-000200");
-		assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV.toString());
+		assertThat(caseMapping.getCaseType()).isEqualTo("NYBYGGNAD_ANSOKAN_OM_BYGGLOV");
 		assertThat(caseMapping.getSystem()).isEqualTo(SystemType.BYGGR);
 	}
 
@@ -131,7 +130,7 @@ class ByggrCaseIT extends AbstractAppTest {
 		assertThat(caseMapping).isNotNull();
 		assertThat(caseMapping.getExternalCaseId()).isEqualTo(EXTERNAL_CASE_ID);
 		assertThat(caseMapping.getCaseId()).isEqualTo("BYGG 2021-000200");
-		assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV.toString());
+		assertThat(caseMapping.getCaseType()).isEqualTo("NYBYGGNAD_ANSOKAN_OM_BYGGLOV");
 		assertThat(caseMapping.getSystem()).isEqualTo(SystemType.BYGGR);
 
 	}

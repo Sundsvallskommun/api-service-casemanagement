@@ -29,6 +29,8 @@ integration:
       2281:
         - "NAMESPACE_1"
         - "NAMESPACE_2"
+      2260:
+        - "ANGE_PARKING_PERMIT"
       2282:
         - "NAMESPACE_3"
         - "NAMESPACE_4"

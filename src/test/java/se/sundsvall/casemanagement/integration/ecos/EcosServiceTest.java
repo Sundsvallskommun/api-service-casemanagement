@@ -8,6 +8,7 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
@@ -62,29 +63,52 @@ import se.sundsvall.casemanagement.api.model.FacilityDTO;
 import se.sundsvall.casemanagement.api.model.OrganizationDTO;
 import se.sundsvall.casemanagement.api.model.PersonDTO;
 import se.sundsvall.casemanagement.api.model.enums.AddressCategory;
-import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
-import se.sundsvall.casemanagement.api.model.enums.CaseType;
-import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderType;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
+import se.sundsvall.casemanagement.integration.db.CaseTypeRepository;
+import se.sundsvall.casemanagement.integration.db.EcosCaseTypeConfigRepository;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
+import se.sundsvall.casemanagement.integration.db.model.CaseTypeEntity;
+import se.sundsvall.casemanagement.integration.db.model.EcosCaseTypeConfigEntity;
+import se.sundsvall.casemanagement.integration.db.model.EcosFacilityHandler;
 import se.sundsvall.casemanagement.integration.party.PartyIntegration;
 import se.sundsvall.casemanagement.service.CaseMappingService;
 import se.sundsvall.casemanagement.service.FbService;
 import se.sundsvall.casemanagement.util.CaseUtil;
-import se.sundsvall.casemanagement.util.Constants;
 import se.sundsvall.dept44.problem.Problem;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static se.sundsvall.casemanagement.TestUtil.ADRESSPLATS_ID;
 import static se.sundsvall.casemanagement.TestUtil.FNR;
+import static se.sundsvall.casemanagement.api.model.enums.AttachmentCategory.ANMALAN_HALSOSKYDDSVERKSAMHET;
+import static se.sundsvall.casemanagement.api.model.enums.AttachmentCategory.ANMALAN_LIVSMEDELSANLAGGNING;
+import static se.sundsvall.casemanagement.api.model.enums.AttachmentCategory.ANSOKAN_ENSKILT_AVLOPP;
+import static se.sundsvall.casemanagement.api.model.enums.AttachmentCategory.ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW;
+import static se.sundsvall.casemanagement.api.model.enums.AttachmentCategory.fromCode;
+import static se.sundsvall.casemanagement.api.model.enums.StakeholderRole.APPLICANT;
+import static se.sundsvall.casemanagement.api.model.enums.StakeholderRole.CONTACT_PERSON;
+import static se.sundsvall.casemanagement.api.model.enums.StakeholderRole.INVOICE_RECIPIENT;
+import static se.sundsvall.casemanagement.api.model.enums.StakeholderRole.OPERATOR;
+import static se.sundsvall.casemanagement.integration.db.model.EcosFacilityHandler.FOOD;
+import static se.sundsvall.casemanagement.integration.db.model.EcosFacilityHandler.HEALTH_PROTECTION;
+import static se.sundsvall.casemanagement.integration.db.model.EcosFacilityHandler.HEAT_PUMP;
+import static se.sundsvall.casemanagement.integration.db.model.EcosFacilityHandler.INDIVIDUAL_SEWAGE;
+import static se.sundsvall.casemanagement.integration.db.model.EcosFacilityHandler.RISK_CLASS_UPDATE;
+import static se.sundsvall.casemanagement.util.Constants.ECOS_DOCUMENT_STATUS_INKOMMEN;
+import static se.sundsvall.casemanagement.util.Constants.ECOS_FACILITY_STATUS_ID_ANMALD_ANSOKT;
+import static se.sundsvall.casemanagement.util.Constants.ECOS_HANDLING_OFFICER_GROUP_ID_EXPEDITIONEN;
+import static se.sundsvall.casemanagement.util.Constants.ECOS_OCCURRENCE_TEXT_MOBIL_ANLAGGNING;
+import static se.sundsvall.casemanagement.util.Constants.ECOS_OCCURRENCE_TYPE_ID_ANMALAN;
+import static se.sundsvall.casemanagement.util.Constants.ECOS_OCCURRENCE_TYPE_ID_INFO_FRAN_ETJANST;
+import static se.sundsvall.casemanagement.util.Constants.ECOS_OCCURRENCE_TYPE_ID_KOMPLETTERING;
 
 @ExtendWith(MockitoExtension.class)
 class EcosServiceTest {
@@ -111,6 +135,12 @@ class EcosServiceTest {
 
 	@Mock
 	private PartyService partyServiceMock;
+
+	@Mock
+	private EcosCaseTypeConfigRepository ecosCaseTypeConfigRepositoryMock;
+
+	@Mock
+	private CaseTypeRepository caseTypeRepositoryMock;
 
 	private static Map<String, String> getGeoExtraParametersMap() {
 		final Map<String, String> extraParameters = new HashMap<>();
@@ -161,14 +191,37 @@ class EcosServiceTest {
 		TestUtil.standardMockCitizen(partyIntegrationMock);
 		TestUtil.standardMockMinutMiljo(minutMiljoClientMock);
 		TestUtil.standardMockPartyService(partyServiceMock);
+
+		// Mock ecos case type configs for all case types used in tests
+		setupEcosConfig("REGISTRERING_AV_LIVSMEDEL", "diary-plan-food", "process-type-food", FOOD);
+		setupEcosConfig("ANSOKAN_TILLSTAND_VARMEPUMP", "diary-plan-heat", "process-type-heat-permit", HEAT_PUMP);
+		setupEcosConfig("ANMALAN_HALSOSKYDDSVERKSAMHET", "diary-plan-health", "process-type-health", HEALTH_PROTECTION);
+		setupEcosConfig("ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP", "diary-plan-sewage", "process-type-sewage", INDIVIDUAL_SEWAGE);
+		setupEcosConfig("ANMALAN_INSTALLATION_VARMEPUMP", "diary-plan-heat", "process-type-heat-install", HEAT_PUMP);
+		setupEcosConfig("UPPDATERING_RISKKLASSNING", "diary-plan-risk", "process-type-risk", RISK_CLASS_UPDATE);
+	}
+
+	private void setupEcosConfig(final String caseType, final String diaryPlanId, final String processTypeId, final EcosFacilityHandler handler) {
+		final var config = EcosCaseTypeConfigEntity.builder()
+			.withCaseTypeName(caseType)
+			.withDiaryPlanId(diaryPlanId)
+			.withProcessTypeId(processTypeId)
+			.withFacilityHandler(handler)
+			.build();
+		final var caseTypeEntity = CaseTypeEntity.builder()
+			.withName(caseType)
+			.withSystemType(SystemType.ECOS)
+			.build();
+		lenient().when(ecosCaseTypeConfigRepositoryMock.findById(caseType)).thenReturn(Optional.of(config));
+		lenient().when(caseTypeRepositoryMock.findById(caseType)).thenReturn(Optional.of(caseTypeEntity));
 	}
 
 	@Test
 	void testFoodFacilityCase() {
 		// Arrange
-		final var eCase = TestUtil.createEcosCaseDTO(CaseType.REGISTRERING_AV_LIVSMEDEL, AttachmentCategory.ANMALAN_LIVSMEDELSANLAGGNING);
-		final var organization = (OrganizationDTO) TestUtil.createStakeholderDTO(StakeholderType.ORGANIZATION, List.of(StakeholderRole.APPLICANT.toString(), StakeholderRole.OPERATOR.toString()));
-		final var person = (PersonDTO) TestUtil.createStakeholderDTO(StakeholderType.PERSON, List.of(StakeholderRole.CONTACT_PERSON.toString()));
+		final var eCase = TestUtil.createEcosCaseDTO("REGISTRERING_AV_LIVSMEDEL", ANMALAN_LIVSMEDELSANLAGGNING);
+		final var organization = (OrganizationDTO) TestUtil.createStakeholderDTO(StakeholderType.ORGANIZATION, List.of(APPLICANT.toString(), OPERATOR.toString()));
+		final var person = (PersonDTO) TestUtil.createStakeholderDTO(StakeholderType.PERSON, List.of(CONTACT_PERSON.toString()));
 		eCase.setStakeholders(List.of(organization, person));
 
 		final var createFoodFacilityArgumentCaptor = ArgumentCaptor.forClass(CreateFoodFacility.class);
@@ -193,10 +246,10 @@ class EcosServiceTest {
 		final RegisterDocumentCaseSvcDtoV2 registerDocumentCaseSvcDtoV2 = registerDocumentArgumentCaptor.getValue().getRegisterDocumentCaseSvcDto();
 
 		assertThat(registerDocumentCaseSvcDtoV2.getCaseSubtitleFree()).isEqualTo(eCase.getFacilities().getFirst().getFacilityCollectionName() + ", " + eCase.getFacilities().getFirst().getAddress().getPropertyDesignation().toUpperCase());
-		assertThat(registerDocumentCaseSvcDtoV2.getOccurrenceTypeId()).isEqualTo(Constants.ECOS_OCCURRENCE_TYPE_ID_ANMALAN);
-		assertThat(registerDocumentCaseSvcDtoV2.getHandlingOfficerGroupId()).isEqualTo(Constants.ECOS_HANDLING_OFFICER_GROUP_ID_EXPEDITIONEN);
-		assertThat(registerDocumentCaseSvcDtoV2.getDiaryPlanId()).isEqualTo(Constants.ECOS_DIARY_PLAN_LIVSMEDEL);
-		assertThat(registerDocumentCaseSvcDtoV2.getProcessTypeId()).isEqualTo(Constants.ECOS_PROCESS_TYPE_ID_REGISTRERING_AV_LIVSMEDEL);
+		assertThat(registerDocumentCaseSvcDtoV2.getOccurrenceTypeId()).isEqualTo(ECOS_OCCURRENCE_TYPE_ID_ANMALAN);
+		assertThat(registerDocumentCaseSvcDtoV2.getHandlingOfficerGroupId()).isEqualTo(ECOS_HANDLING_OFFICER_GROUP_ID_EXPEDITIONEN);
+		assertThat(registerDocumentCaseSvcDtoV2.getDiaryPlanId()).isEqualTo("diary-plan-food");
+		assertThat(registerDocumentCaseSvcDtoV2.getProcessTypeId()).isEqualTo("process-type-food");
 
 		verify(caseMappingServiceMock).postCaseMapping(any(CaseDTO.class), any(String.class), any(SystemType.class), eq(MUNICIPALITY_ID));
 	}
@@ -206,7 +259,7 @@ class EcosServiceTest {
 		// Arrange
 		final var eCase = new EcosCaseDTO();
 		final var attachment = new AttachmentDTO();
-		attachment.setCategory(AttachmentCategory.ANMALAN_LIVSMEDELSANLAGGNING.toString());
+		attachment.setCategory(ANMALAN_LIVSMEDELSANLAGGNING.toString());
 		attachment.setExtension(".pdf");
 		attachment.setName("Document Name");
 		attachment.setFile("dGVzdA==");
@@ -214,13 +267,13 @@ class EcosServiceTest {
 
 		final var organization = new OrganizationDTO();
 		organization.setType(StakeholderType.ORGANIZATION);
-		organization.setRoles(List.of(StakeholderRole.OPERATOR.toString()));
+		organization.setRoles(List.of(OPERATOR.toString()));
 		organization.setOrganizationName("organizationName");
 		organization.setOrganizationNumber("123456-1234");
 
 		final var person = new PersonDTO();
 		person.setType(StakeholderType.PERSON);
-		person.setRoles(List.of(StakeholderRole.INVOICE_RECIPIENT.toString()));
+		person.setRoles(List.of(INVOICE_RECIPIENT.toString()));
 		person.setFirstName("Förnamn");
 		person.setLastName("Efternamn");
 		eCase.setStakeholders(List.of(organization, person));
@@ -233,7 +286,7 @@ class EcosServiceTest {
 		facility.setAddress(facilityAddress);
 		eCase.setFacilities(List.of(facility));
 
-		eCase.setCaseType(CaseType.REGISTRERING_AV_LIVSMEDEL.toString());
+		eCase.setCaseType("REGISTRERING_AV_LIVSMEDEL");
 		eCase.setExternalCaseId(String.valueOf(RANDOM.nextLong()));
 		// Act
 		ecosService.postCase(eCase, MUNICIPALITY_ID);
@@ -247,9 +300,9 @@ class EcosServiceTest {
 	@Test
 	void testCreateHeatPumpFacilityCase() {
 		// Arrange
-		final var eCase = TestUtil.createEcosCaseDTO(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP, AttachmentCategory.ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
-		final var organization = (OrganizationDTO) TestUtil.createStakeholderDTO(StakeholderType.ORGANIZATION, List.of(StakeholderRole.APPLICANT.toString(), StakeholderRole.OPERATOR.toString()));
-		final var person = (PersonDTO) TestUtil.createStakeholderDTO(StakeholderType.PERSON, List.of(StakeholderRole.CONTACT_PERSON.toString()));
+		final var eCase = TestUtil.createEcosCaseDTO("ANSOKAN_TILLSTAND_VARMEPUMP", ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
+		final var organization = (OrganizationDTO) TestUtil.createStakeholderDTO(StakeholderType.ORGANIZATION, List.of(APPLICANT.toString(), OPERATOR.toString()));
+		final var person = (PersonDTO) TestUtil.createStakeholderDTO(StakeholderType.PERSON, List.of(CONTACT_PERSON.toString()));
 		eCase.setStakeholders(List.of(organization, person));
 
 		final var createHeatPumpFacilityArgumentCaptor = ArgumentCaptor.forClass(CreateHeatPumpFacility.class);
@@ -263,7 +316,7 @@ class EcosServiceTest {
 		final var createSoilHeatingFacilitySvcDto = (CreateSoilHeatingFacilitySvcDto) createHeatPumpFacilityArgumentCaptor.getValue().getCreateIndividualSewageSvcDto();
 
 		assertThat(createSoilHeatingFacilitySvcDto.getAddress().getAdressPlatsId()).isEqualTo(ADRESSPLATS_ID);
-		assertThat(createSoilHeatingFacilitySvcDto.getFacilityStatusId()).isEqualTo(Constants.ECOS_FACILITY_STATUS_ID_ANMALD_ANSOKT);
+		assertThat(createSoilHeatingFacilitySvcDto.getFacilityStatusId()).isEqualTo(ECOS_FACILITY_STATUS_ID_ANMALD_ANSOKT);
 		assertThat(createSoilHeatingFacilitySvcDto.getCreatedFromCaseId()).isEqualTo(result.getCaseId());
 		assertThat(createSoilHeatingFacilitySvcDto.getEstate().getFnr()).isEqualTo(FNR);
 		assertThat(createSoilHeatingFacilitySvcDto.getManufacturer()).isNotNull();
@@ -275,7 +328,7 @@ class EcosServiceTest {
 	@Test
 	void testAirHeating() {
 		// Arrange
-		final EcosCaseDTO eCase = TestUtil.createEcosCaseDTO(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP, AttachmentCategory.ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
+		final EcosCaseDTO eCase = TestUtil.createEcosCaseDTO("ANSOKAN_TILLSTAND_VARMEPUMP", ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
 		final Map<String, String> extraParameters = new HashMap<>();
 		extraParameters.put("CreateAirHeatingFacilitySvcDto_Manufacturer", "Mitsubishi");
 		extraParameters.put("CreateAirHeatingFacilitySvcDto_Model", "SuperHeater 2000");
@@ -294,7 +347,7 @@ class EcosServiceTest {
 
 	@Test
 	void testGeothermalHeating() {
-		final EcosCaseDTO eCase = TestUtil.createEcosCaseDTO(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP, AttachmentCategory.ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
+		final EcosCaseDTO eCase = TestUtil.createEcosCaseDTO("ANSOKAN_TILLSTAND_VARMEPUMP", ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
 		final var extraParameters = getGeoExtraParametersMap();
 		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
 
@@ -309,7 +362,7 @@ class EcosServiceTest {
 
 	@Test
 	void testSoilHeating() {
-		final EcosCaseDTO eCase = TestUtil.createEcosCaseDTO(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP, AttachmentCategory.ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
+		final EcosCaseDTO eCase = TestUtil.createEcosCaseDTO("ANSOKAN_TILLSTAND_VARMEPUMP", ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
 		final var extraParameters = getSoilExtraParametersMap();
 		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
 
@@ -324,7 +377,7 @@ class EcosServiceTest {
 
 	@Test
 	void testExtraParamsNull() {
-		final EcosCaseDTO eCase = TestUtil.createEcosCaseDTO(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP, AttachmentCategory.ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
+		final EcosCaseDTO eCase = TestUtil.createEcosCaseDTO("ANSOKAN_TILLSTAND_VARMEPUMP", ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
 		eCase.getFacilities().getFirst().setExtraParameters(null);
 
 		ecosService.postCase(eCase, MUNICIPALITY_ID);
@@ -335,7 +388,7 @@ class EcosServiceTest {
 
 	@Test
 	void testExtraParamsEmpty() {
-		final EcosCaseDTO eCase = TestUtil.createEcosCaseDTO(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP, AttachmentCategory.ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
+		final EcosCaseDTO eCase = TestUtil.createEcosCaseDTO("ANSOKAN_TILLSTAND_VARMEPUMP", ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
 		final Map<String, String> extraParameters = new HashMap<>();
 		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
 
@@ -347,7 +400,7 @@ class EcosServiceTest {
 
 	@Test
 	void testMarineHeating() {
-		final EcosCaseDTO eCase = TestUtil.createEcosCaseDTO(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP, AttachmentCategory.ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
+		final EcosCaseDTO eCase = TestUtil.createEcosCaseDTO("ANSOKAN_TILLSTAND_VARMEPUMP", ANSOKAN_TILLSTAND_VARMEPUMP_MINDRE_AN_100KW);
 		final var extraParameters = getMarineExtraParameters();
 		eCase.getFacilities().getFirst().setExtraParameters(extraParameters);
 
@@ -382,7 +435,7 @@ class EcosServiceTest {
 	@Test
 	void healthProtectionTest() {
 		// Arrange
-		final var eCase = TestUtil.createEcosCaseDTO(CaseType.ANMALAN_HALSOSKYDDSVERKSAMHET, AttachmentCategory.ANMALAN_HALSOSKYDDSVERKSAMHET);
+		final var eCase = TestUtil.createEcosCaseDTO("ANMALAN_HALSOSKYDDSVERKSAMHET", ANMALAN_HALSOSKYDDSVERKSAMHET);
 		final var createHealthProtectionFacilityArgumentCaptor = ArgumentCaptor.forClass(CreateHealthProtectionFacility.class);
 
 		// Act
@@ -406,7 +459,7 @@ class EcosServiceTest {
 	@Test
 	void individualSewageSepticTank() {
 		// Arrange
-		final var eCase = TestUtil.createEcosCaseDTO(CaseType.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, AttachmentCategory.ANSOKAN_ENSKILT_AVLOPP);
+		final var eCase = TestUtil.createEcosCaseDTO("ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP", ANSOKAN_ENSKILT_AVLOPP);
 		final var extraParameters = new HashMap<String, String>();
 		final var prefix = "SepticTankSvcDto_";
 		TestUtil.setSewageStandardExtraParams(extraParameters, prefix);
@@ -435,7 +488,7 @@ class EcosServiceTest {
 	@Test
 	void individualSewageInfiltration() {
 		// Arrange
-		final var eCase = TestUtil.createEcosCaseDTO(CaseType.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, AttachmentCategory.ANSOKAN_ENSKILT_AVLOPP);
+		final var eCase = TestUtil.createEcosCaseDTO("ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP", ANSOKAN_ENSKILT_AVLOPP);
 		final var extraParameters = new HashMap<String, String>();
 		final var prefix = "InfiltrationPlantSvcDto_";
 		TestUtil.setSewageStandardExtraParams(extraParameters, prefix);
@@ -467,7 +520,7 @@ class EcosServiceTest {
 	@Test
 	void individualSewageClosedTank() {
 		// Arrange
-		final var eCase = TestUtil.createEcosCaseDTO(CaseType.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, AttachmentCategory.ANSOKAN_ENSKILT_AVLOPP);
+		final var eCase = TestUtil.createEcosCaseDTO("ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP", ANSOKAN_ENSKILT_AVLOPP);
 		final var extraParameters = new HashMap<String, String>();
 		final var prefix = "ClosedTankSvcDto_";
 		TestUtil.setSewageStandardExtraParams(extraParameters, prefix);
@@ -495,7 +548,7 @@ class EcosServiceTest {
 	@Test
 	void individualSewageDrySolution() {
 		// Arrange
-		final var eCase = TestUtil.createEcosCaseDTO(CaseType.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, AttachmentCategory.ANSOKAN_ENSKILT_AVLOPP);
+		final var eCase = TestUtil.createEcosCaseDTO("ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP", ANSOKAN_ENSKILT_AVLOPP);
 		final var extraParameters = new HashMap<String, String>();
 		final var prefix = "DrySolutionSvcDto_";
 		TestUtil.setSewageStandardExtraParams(extraParameters, prefix);
@@ -532,7 +585,7 @@ class EcosServiceTest {
 	@Test
 	void individualSewageMiniSewage() {
 		// Arrange
-		final var eCase = TestUtil.createEcosCaseDTO(CaseType.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, AttachmentCategory.ANSOKAN_ENSKILT_AVLOPP);
+		final var eCase = TestUtil.createEcosCaseDTO("ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP", ANSOKAN_ENSKILT_AVLOPP);
 		final var extraParameters = new HashMap<String, String>();
 		final var prefix = "MiniSewageSvcDto_";
 		TestUtil.setSewageStandardExtraParams(extraParameters, prefix);
@@ -560,7 +613,7 @@ class EcosServiceTest {
 	@Test
 	void individualSewageFilterBed() {
 		// Arrange
-		final var eCase = TestUtil.createEcosCaseDTO(CaseType.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, AttachmentCategory.ANSOKAN_ENSKILT_AVLOPP);
+		final var eCase = TestUtil.createEcosCaseDTO("ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP", ANSOKAN_ENSKILT_AVLOPP);
 		final var extraParameters = new HashMap<String, String>();
 		final var prefix = "FilterBedSvcDto_";
 		TestUtil.setSewageStandardExtraParams(extraParameters, prefix);
@@ -583,7 +636,7 @@ class EcosServiceTest {
 	@Test
 	void individualSewageSandFilter() {
 		// Arrange
-		final var eCase = TestUtil.createEcosCaseDTO(CaseType.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, AttachmentCategory.ANSOKAN_ENSKILT_AVLOPP);
+		final var eCase = TestUtil.createEcosCaseDTO("ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP", ANSOKAN_ENSKILT_AVLOPP);
 		final var extraParameters = new HashMap<String, String>();
 		final var prefix = "SandFilterSvcDto_";
 		TestUtil.setSewageStandardExtraParams(extraParameters, prefix);
@@ -609,7 +662,7 @@ class EcosServiceTest {
 	@Test
 	void individualSewageBiologicalStep() {
 		// Arrange
-		final var eCase = TestUtil.createEcosCaseDTO(CaseType.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, AttachmentCategory.ANSOKAN_ENSKILT_AVLOPP);
+		final var eCase = TestUtil.createEcosCaseDTO("ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP", ANSOKAN_ENSKILT_AVLOPP);
 		final var extraParameters = new HashMap<String, String>();
 		final var prefix = "BiologicalStepSvcDto_";
 		TestUtil.setSewageStandardExtraParams(extraParameters, prefix);
@@ -633,7 +686,7 @@ class EcosServiceTest {
 
 	@Test
 	void individualSewagePhosphorusTrap() {
-		final var eCase = TestUtil.createEcosCaseDTO(CaseType.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, AttachmentCategory.ANSOKAN_ENSKILT_AVLOPP);
+		final var eCase = TestUtil.createEcosCaseDTO("ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP", ANSOKAN_ENSKILT_AVLOPP);
 		final var extraParameters = new HashMap<String, String>();
 		final var prefix = "PhosphorusTrapSvcDto_";
 		TestUtil.setSewageStandardExtraParams(extraParameters, prefix);
@@ -648,7 +701,7 @@ class EcosServiceTest {
 
 	@Test
 	void individualSewageChemicalPretreatment() {
-		final var eCase = TestUtil.createEcosCaseDTO(CaseType.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, AttachmentCategory.ANSOKAN_ENSKILT_AVLOPP);
+		final var eCase = TestUtil.createEcosCaseDTO("ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP", ANSOKAN_ENSKILT_AVLOPP);
 		final var extraParameters = new HashMap<String, String>();
 		final var prefix = "ChemicalPretreatmentSvcDto_";
 		TestUtil.setSewageStandardExtraParams(extraParameters, prefix);
@@ -680,14 +733,14 @@ class EcosServiceTest {
 		assertThat(purificationStepSvcDto.getInstallationDate()).isEqualTo(CaseUtil.parseLocalDateTime(extraParameters.entrySet().stream().filter(e -> e.getKey().contains(prefix + "InstallationDate")).findFirst().orElseThrow().getValue()));
 		assertThat(purificationStepSvcDto.getLifeTime()).isEqualTo(CaseUtil.parseInteger(extraParameters.entrySet().stream().filter(e -> e.getKey().contains(prefix + "LifeTime")).findFirst().orElseThrow().getValue()));
 		assertThat(purificationStepSvcDto.getPersonCapacity()).isEqualTo(CaseUtil.parseInteger(extraParameters.entrySet().stream().filter(e -> e.getKey().contains(prefix + "PersonCapacity")).findFirst().orElseThrow().getValue()));
-		assertThat(purificationStepSvcDto.getPurificationStepFacilityStatusId()).isEqualTo(Constants.ECOS_FACILITY_STATUS_ID_ANMALD_ANSOKT);
+		assertThat(purificationStepSvcDto.getPurificationStepFacilityStatusId()).isEqualTo(ECOS_FACILITY_STATUS_ID_ANMALD_ANSOKT);
 		assertThat(purificationStepSvcDto.getStepNumber()).isEqualTo(CaseUtil.parseInteger(extraParameters.entrySet().stream().filter(e -> e.getKey().contains(prefix + "StepNumber")).findFirst().orElseThrow().getValue()));
 	}
 
 	@Test
 	void testMissingFacilityAddress() {
 		// Arrange
-		final var eCase = TestUtil.createEcosCaseDTO(CaseType.REGISTRERING_AV_LIVSMEDEL, AttachmentCategory.ANMALAN_LIVSMEDELSANLAGGNING);
+		final var eCase = TestUtil.createEcosCaseDTO("REGISTRERING_AV_LIVSMEDEL", ANMALAN_LIVSMEDELSANLAGGNING);
 		eCase.getFacilities().getFirst().setAddress(null);
 
 		// Act
@@ -699,8 +752,8 @@ class EcosServiceTest {
 		verify(partyServiceMock, times(1)).findAndAddPartyToCase(any(EcosCaseDTO.class), any(String.class), eq(MUNICIPALITY_ID));
 		assertThat(result.getCaseId()).isEqualTo(createOccurrenceOnCaseArgumentCaptor.getValue().getCreateOccurrenceOnCaseSvcDto().getCaseId());
 		assertThat(createOccurrenceOnCaseArgumentCaptor.getValue().getCreateOccurrenceOnCaseSvcDto().getOccurrenceDate()).isNotNull();
-		assertThat(createOccurrenceOnCaseArgumentCaptor.getValue().getCreateOccurrenceOnCaseSvcDto().getOccurrenceTypeId()).isEqualTo(Constants.ECOS_OCCURRENCE_TYPE_ID_INFO_FRAN_ETJANST);
-		assertThat(createOccurrenceOnCaseArgumentCaptor.getValue().getCreateOccurrenceOnCaseSvcDto().getNote()).isEqualTo(Constants.ECOS_OCCURRENCE_TEXT_MOBIL_ANLAGGNING);
+		assertThat(createOccurrenceOnCaseArgumentCaptor.getValue().getCreateOccurrenceOnCaseSvcDto().getOccurrenceTypeId()).isEqualTo(ECOS_OCCURRENCE_TYPE_ID_INFO_FRAN_ETJANST);
+		assertThat(createOccurrenceOnCaseArgumentCaptor.getValue().getCreateOccurrenceOnCaseSvcDto().getNote()).isEqualTo(ECOS_OCCURRENCE_TEXT_MOBIL_ANLAGGNING);
 
 		// If facility doesn't have any address, we should not register any facility and therefore not add any stakeholder to
 		// facility.
@@ -720,7 +773,7 @@ class EcosServiceTest {
 		final var caseMapping = CaseMapping.builder()
 			.withExternalCaseId(externalCaseID)
 			.withCaseId(caseId)
-			.withCaseType(CaseType.REGISTRERING_AV_LIVSMEDEL.toString())
+			.withCaseType("REGISTRERING_AV_LIVSMEDEL")
 			.withSystem(SystemType.ECOS)
 			.withServiceName(RandomStringUtils.secure().next(10, true, false))
 			.withTimestamp(LocalDateTime.now())
@@ -803,7 +856,7 @@ class EcosServiceTest {
 		final var caseMapping = CaseMapping.builder()
 			.withExternalCaseId(externalCaseID)
 			.withCaseId(caseId)
-			.withCaseType(CaseType.REGISTRERING_AV_LIVSMEDEL.toString())
+			.withCaseType("REGISTRERING_AV_LIVSMEDEL")
 			.withSystem(SystemType.ECOS)
 			.withServiceName(RandomStringUtils.secure().next(10, true, false))
 			.withTimestamp(LocalDateTime.now())
@@ -856,7 +909,7 @@ class EcosServiceTest {
 	@Test
 	void testAddDocumentsToCase() {
 		// Arrange
-		final var category = AttachmentCategory.ANSOKAN_ENSKILT_AVLOPP.getCode();
+		final var category = ANSOKAN_ENSKILT_AVLOPP.getCode();
 		final var extension = ".pdf";
 		final var mimeType = "application/pdf";
 		final var fileName = "someFileName";
@@ -880,14 +933,14 @@ class EcosServiceTest {
 		assertThat(addDocumentsToCaseArgumentCaptor.getValue().getAddDocumentToCaseSvcDto())
 			.satisfies(addDocumentToCaseSvcDto -> {
 				assertThat(addDocumentToCaseSvcDto.getCaseId()).isEqualTo(caseId);
-				assertThat(addDocumentToCaseSvcDto.getOccurrenceTypeId()).isEqualTo(Constants.ECOS_OCCURRENCE_TYPE_ID_KOMPLETTERING);
-				assertThat(addDocumentToCaseSvcDto.getDocumentStatusId()).isEqualTo(Constants.ECOS_DOCUMENT_STATUS_INKOMMEN);
+				assertThat(addDocumentToCaseSvcDto.getOccurrenceTypeId()).isEqualTo(ECOS_OCCURRENCE_TYPE_ID_KOMPLETTERING);
+				assertThat(addDocumentToCaseSvcDto.getDocumentStatusId()).isEqualTo(ECOS_DOCUMENT_STATUS_INKOMMEN);
 				assertThat(addDocumentToCaseSvcDto.getDocuments().getDocumentSvcDto().getFirst())
 					.satisfies(document -> {
 						assertThat(document.getFilename()).isEqualTo(fileName + extension);
 						assertThat(document.getContentType()).isEqualTo(mimeType);
 						assertThat(document.getData()).isEqualTo(Base64.getDecoder().decode(file.getBytes(StandardCharsets.UTF_8)));
-						assertThat(document.getDocumentTypeId()).contains(AttachmentCategory.fromCode(category).getDescription());
+						assertThat(document.getDocumentTypeId()).contains(fromCode(category).getDescription());
 						assertThat(document.getNote()).isEqualTo(note);
 					});
 			});

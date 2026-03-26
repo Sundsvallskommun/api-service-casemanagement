@@ -8,21 +8,23 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import se.sundsvall.casemanagement.TestUtil;
 import se.sundsvall.casemanagement.api.model.CaseDTO;
-import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
-import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static se.sundsvall.casemanagement.api.model.enums.AttachmentCategory.BUILDING_PERMIT_APPLICATION;
 import static se.sundsvall.casemanagement.api.model.enums.AttachmentCategory.UNDERLAG_RISKKLASSNING;
+import static se.sundsvall.casemanagement.api.model.enums.SystemType.BYGGR;
+import static se.sundsvall.casemanagement.api.model.enums.SystemType.CASE_DATA;
+import static se.sundsvall.casemanagement.api.model.enums.SystemType.ECOS;
 import static se.sundsvall.casemanagement.util.Constants.SERVICE_NAME;
 
 class CaseMappingMapperTest {
 
 	private static Stream<Arguments> toCaseMappingArguments() {
 		return Stream.of(
-			Arguments.of(TestUtil.createEcosCaseDTO(CaseType.REGISTRERING_AV_LIVSMEDEL, UNDERLAG_RISKKLASSNING), UUID.randomUUID().toString(), SystemType.ECOS, "SomeSystem", "2281"),
-			Arguments.of(TestUtil.createByggRCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION), UUID.randomUUID().toString(), SystemType.BYGGR, null, "2281"),
-			Arguments.of(TestUtil.createOtherCaseDTO(), UUID.randomUUID().toString(), SystemType.CASE_DATA, "SomeOtherSystem", "2281"));
+			Arguments.of(TestUtil.createEcosCaseDTO("REGISTRERING_AV_LIVSMEDEL", UNDERLAG_RISKKLASSNING), UUID.randomUUID().toString(), ECOS, "SomeSystem", "2281"),
+			Arguments.of(TestUtil.createByggRCaseDTO("NYBYGGNAD_ANSOKAN_OM_BYGGLOV", BUILDING_PERMIT_APPLICATION), UUID.randomUUID().toString(), BYGGR, null, "2281"),
+			Arguments.of(TestUtil.createOtherCaseDTO(), UUID.randomUUID().toString(), CASE_DATA, "SomeOtherSystem", "2281"));
 	}
 
 	@ParameterizedTest

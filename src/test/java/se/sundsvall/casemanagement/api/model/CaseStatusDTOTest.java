@@ -5,7 +5,6 @@ import java.util.Random;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
 
 import static com.google.code.beanmatchers.BeanMatchers.hasValidBeanConstructor;
@@ -43,7 +42,7 @@ class CaseStatusDTOTest {
 		final String serviceName = "SomeServiceName";
 		final String errandNumber = "SomeErrandNumber";
 		final String namespace = "SomeNamespace";
-		final String caseType = CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV.toString();
+		final String caseType = "NYBYGGNAD_ANSOKAN_OM_BYGGLOV";
 		final SystemType system = SystemType.BYGGR;
 		final LocalDateTime timestamp = LocalDateTime.now();
 

@@ -8,7 +8,6 @@ import java.util.Random;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import se.sundsvall.casemanagement.api.model.enums.CaseType;
 
 import static com.google.code.beanmatchers.BeanMatchers.hasValidBeanConstructor;
 import static com.google.code.beanmatchers.BeanMatchers.hasValidBeanEquals;
@@ -43,7 +42,7 @@ class ByggRCaseDTOTest {
 		final var attachments = List.of(new AttachmentDTO());
 		final var stakeholders = List.of(new PersonDTO(), new OrganizationDTO());
 		final var facilities = List.of(new FacilityDTO());
-		final var caseType = CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV.toString();
+		final var caseType = "NYBYGGNAD_ANSOKAN_OM_BYGGLOV";
 		final var caseTitleAddition = "SomeCaseTitleAddition";
 		final var description = "SomeDescription";
 		final var externalCaseId = "SomeExternalCaseId";

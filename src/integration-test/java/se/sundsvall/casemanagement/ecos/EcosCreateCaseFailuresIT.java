@@ -11,7 +11,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import se.sundsvall.dept44.problem.violations.ConstraintViolationProblem;
 import se.sundsvall.casemanagement.Application;
 import se.sundsvall.casemanagement.api.model.CaseResourceResponseDTO;
-import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
 import se.sundsvall.casemanagement.integration.db.CaseMappingRepository;
 import se.sundsvall.casemanagement.integration.db.CaseRepository;
@@ -67,7 +66,7 @@ public class EcosCreateCaseFailuresIT extends AbstractAppTest {
 		final var caseMapping = caseMappingRepository.findByExternalCaseIdAndMunicipalityId("1256239125", MUNICIPALITY_ID);
 		assertThat(caseMapping).isNotNull();
 		assertThat(caseMapping.getExternalCaseId()).isEqualTo("1256239125");
-		assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.REGISTRERING_AV_LIVSMEDEL.toString());
+		assertThat(caseMapping.getCaseType()).isEqualTo("REGISTRERING_AV_LIVSMEDEL");
 		assertThat(caseMapping.getCaseId()).isEqualTo(ECOS_CASE_ID);
 		assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
 		caseMappingRepository.delete(caseMapping);
