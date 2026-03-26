@@ -152,10 +152,9 @@ public class CaseDataService {
 
 		final var errandDTO = getErrand(Long.valueOf(caseMapping.getCaseId()), municipalityId, namespace);
 
-		final var latestStatus = Optional.ofNullable(Optional.ofNullable(errandDTO)
-			.orElse(new Errand())
-			.getStatuses())
-			.orElse(List.of())
+		final var latestStatus = Optional.ofNullable(errandDTO)
+			.map(Errand::getStatuses)
+			.orElse(emptyList())
 			.stream()
 			.max(comparing(Status::getCreated, nullsFirst(naturalOrder())))
 			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, Constants.ERR_MSG_STATUS_NOT_FOUND));
