@@ -73,7 +73,7 @@
        on case_mapping (municipalityId);
 
     alter table if exists case_mapping 
-       add constraint UKqfce0ayqm3nkmeteyrwmadgxe unique (externalCaseId);
+       add constraint uq_case_mapping_external_case_id unique (externalCaseId);
 
     alter table if exists execution_information 
        add constraint uq_execution_information_municipality_job unique (municipality_id, job_name);

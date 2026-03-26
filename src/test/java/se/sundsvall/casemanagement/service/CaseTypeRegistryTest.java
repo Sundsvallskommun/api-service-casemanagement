@@ -2,6 +2,7 @@ package se.sundsvall.casemanagement.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,6 +13,7 @@ import se.sundsvall.casemanagement.integration.db.CaseTypeRepository;
 import se.sundsvall.casemanagement.integration.db.model.CaseTypeEntity;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -40,10 +42,13 @@ class CaseTypeRegistryTest {
 
 	@BeforeEach
 	void setUp() {
-		when(caseTypeRepository.findAll()).thenReturn(List.of(
-			CaseTypeEntity.builder().withName("NYBYGGNAD_ANSOKAN_OM_BYGGLOV").withSystemType(BYGGR).build(),
-			CaseTypeEntity.builder().withName("REGISTRERING_AV_LIVSMEDEL").withSystemType(ECOS).build(),
-			CaseTypeEntity.builder().withName("EXTRA_SACK").withSystemType(EDPFUTURE).build()));
+		lenient().when(caseTypeRepository.findById("NYBYGGNAD_ANSOKAN_OM_BYGGLOV"))
+			.thenReturn(Optional.of(CaseTypeEntity.builder().withName("NYBYGGNAD_ANSOKAN_OM_BYGGLOV").withSystemType(BYGGR).build()));
+		lenient().when(caseTypeRepository.findById("REGISTRERING_AV_LIVSMEDEL"))
+			.thenReturn(Optional.of(CaseTypeEntity.builder().withName("REGISTRERING_AV_LIVSMEDEL").withSystemType(ECOS).build()));
+		lenient().when(caseTypeRepository.findById("EXTRA_SACK"))
+			.thenReturn(Optional.of(CaseTypeEntity.builder().withName("EXTRA_SACK").withSystemType(EDPFUTURE).build()));
+
 		caseTypeRegistry = new CaseTypeRegistry(caseTypeRepository, caseDataCaseTypeProvider, caseDataProperties);
 	}
 

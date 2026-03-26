@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Builder(setterPrefix = "with")
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ByggrStatusMappingEntity {
+public class ByggrStatusMappingRuleEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

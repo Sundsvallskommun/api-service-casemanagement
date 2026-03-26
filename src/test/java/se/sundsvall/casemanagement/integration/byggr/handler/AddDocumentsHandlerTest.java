@@ -107,7 +107,6 @@ class AddDocumentsHandlerTest {
 			.isInstanceOf(ThrowableProblem.class)
 			.hasMessageContaining("No stakeholder found");
 
-		verifyNoInteractions(arendeExportClient);
-		verifyNoInteractions(oepIntegratorClient);
+		verifyNoInteractions(arendeExportClient, oepIntegratorClient);
 	}
 }

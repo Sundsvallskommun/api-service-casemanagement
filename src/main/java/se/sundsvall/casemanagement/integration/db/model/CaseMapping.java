@@ -10,6 +10,7 @@ import jakarta.persistence.Index;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -25,13 +26,17 @@ import se.sundsvall.casemanagement.api.model.enums.SystemType;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(setterPrefix = "with")
-@Table(name = "case_mapping", indexes = {
-	@Index(name = "case_mapping_municipality_id_idx", columnList = "municipalityId"),
-})
+@Table(name = "case_mapping",
+	indexes = {
+		@Index(name = "case_mapping_municipality_id_idx", columnList = "municipalityId")
+	},
+	uniqueConstraints = {
+		@UniqueConstraint(name = "uq_case_mapping_external_case_id", columnNames = "externalCaseId")
+	})
 public class CaseMapping {
 
 	@Id
-	@Column(unique = true, name = "externalCaseId")
+	@Column(name = "externalCaseId")
 	private String externalCaseId;
 
 	@Id

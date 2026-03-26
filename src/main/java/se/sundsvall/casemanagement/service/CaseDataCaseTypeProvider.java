@@ -1,7 +1,9 @@
 package se.sundsvall.casemanagement.service;
 
+import generated.client.casedata.CaseType;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
@@ -37,11 +39,8 @@ public class CaseDataCaseTypeProvider {
 		LOG.debug("Fetching case types from CaseData for municipalityId: {}, namespace: {}", safeMunicipalityId, safeNamespace);
 		try {
 			final var types = caseDataClient.getCaseTypes(municipalityId, namespace);
-			final var result = new HashMap<String, String>();
-			for (final var type : types) {
-				result.put(type.getType(), type.getDisplayName());
-			}
-			return Map.copyOf(result);
+			return types.stream()
+				.collect(Collectors.toMap(CaseType::getType, CaseType::getDisplayName, (a, b) -> b, HashMap::new));
 		} catch (final Exception e) {
 			LOG.warn("Failed to fetch case types from CaseData for {}/{}: {}", safeMunicipalityId, safeNamespace, e.getMessage());
 			return Map.of();
