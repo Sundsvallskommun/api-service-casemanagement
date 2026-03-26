@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.sundsvall.casemanagement.integration.casedata.CaseDataClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -50,13 +51,12 @@ class CaseDataCaseTypeProviderTest {
 	}
 
 	@Test
-	void getCaseDataTypesByNamespace_whenClientThrows_returnsEmptyMap() {
+	void getCaseDataTypesByNamespace_whenClientThrows_propagatesException() {
 		when(caseDataClient.getCaseTypes(MUNICIPALITY_ID, NAMESPACE)).thenThrow(new RuntimeException("Connection refused"));
 
-		final var result = caseDataCaseTypeProvider.getCaseDataTypesByNamespace(MUNICIPALITY_ID, NAMESPACE);
-
-		assertThat(result).isEmpty();
-		verify(caseDataClient).getCaseTypes(MUNICIPALITY_ID, NAMESPACE);
+		assertThatThrownBy(() -> caseDataCaseTypeProvider.getCaseDataTypesByNamespace(MUNICIPALITY_ID, NAMESPACE))
+			.isInstanceOf(RuntimeException.class)
+			.hasMessage("Connection refused");
 	}
 
 }

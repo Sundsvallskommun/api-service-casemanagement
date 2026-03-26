@@ -33,18 +33,12 @@ public class CaseDataCaseTypeProvider {
 	 */
 	@Cacheable(value = "caseDataCaseTypes", key = "#municipalityId + ':' + #namespace")
 	public Map<String, String> getCaseDataTypesByNamespace(final String municipalityId, final String namespace) {
-		final var safeMunicipalityId = sanitizeForLogging(municipalityId);
-		final var safeNamespace = sanitizeForLogging(namespace);
+		LOG.debug("Fetching case types from CaseData for municipalityId: {}, namespace: {}",
+			sanitizeForLogging(municipalityId), sanitizeForLogging(namespace));
 
-		LOG.debug("Fetching case types from CaseData for municipalityId: {}, namespace: {}", safeMunicipalityId, safeNamespace);
-		try {
-			final var types = caseDataClient.getCaseTypes(municipalityId, namespace);
-			return types.stream()
-				.collect(Collectors.toMap(CaseType::getType, CaseType::getDisplayName, (a, b) -> b, HashMap::new));
-		} catch (final Exception e) {
-			LOG.warn("Failed to fetch case types from CaseData for {}/{}: {}", safeMunicipalityId, safeNamespace, e.getMessage());
-			return Map.of();
-		}
+		final var types = caseDataClient.getCaseTypes(municipalityId, namespace);
+		return types.stream()
+			.collect(Collectors.toMap(CaseType::getType, CaseType::getDisplayName, (a, b) -> b, HashMap::new));
 	}
 
 }
