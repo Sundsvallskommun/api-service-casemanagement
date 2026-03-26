@@ -18,7 +18,7 @@ import static se.sundsvall.casemanagement.util.Constants.ERRAND_NR;
 import static se.sundsvall.casemanagement.util.Constants.OTHER_INFORMATION;
 import static se.sundsvall.casemanagement.util.Constants.SYSTEM;
 
-@Component("ADD_INSPECTOR")
+@Component("addInspector")
 public class AddInspectorHandler implements ByggrUpdateHandler {
 
 	private final ArendeExportClient arendeExportClient;

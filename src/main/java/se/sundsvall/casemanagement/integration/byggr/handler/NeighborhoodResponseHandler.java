@@ -17,7 +17,7 @@ import static se.sundsvall.casemanagement.util.Constants.ERRAND_INFORMATION;
 import static se.sundsvall.casemanagement.util.Constants.PROPERTY;
 import static se.sundsvall.casemanagement.util.Constants.SYSTEM;
 
-@Component("NEIGHBORHOOD_RESPONSE")
+@Component("neighborhoodResponse")
 public class NeighborhoodResponseHandler implements ByggrUpdateHandler {
 
 	private final ArendeExportClient arendeExportClient;

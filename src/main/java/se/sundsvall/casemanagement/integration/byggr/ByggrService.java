@@ -130,8 +130,10 @@ public class ByggrService {
 				.map(ByggrCaseTypeConfigEntity::getUpdateHandler)
 				.orElseThrow(() -> Problem.valueOf(BAD_REQUEST, "CaseType %s not supported for update".formatted(byggRCase.getCaseType())));
 
+			LOG.info("Routing update for caseType: {} to handler: {}", byggRCase.getCaseType(), updateHandlerName);
+
 			final var handler = Optional.ofNullable(updateHandlers.get(updateHandlerName))
-				.orElseThrow(() -> Problem.valueOf(BAD_REQUEST, "No handler for: " + updateHandlerName));
+				.orElseThrow(() -> Problem.valueOf(BAD_REQUEST, "No handler found for: " + updateHandlerName));
 			handler.handle(byggRCase);
 
 			LOG.info("Successfully updated case with externalCaseId: {}, and municipalityId: {}, and caseType: {}", byggRCase.getExternalCaseId(), municipalityId, byggRCase.getCaseType());

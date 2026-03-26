@@ -78,10 +78,10 @@ INSERT INTO byggr_case_type_config (case_type_name, arende_slag, arende_grupp, a
 
 -- ByggR update case types (with update_handler)
 INSERT INTO byggr_case_type_config (case_type_name, update_handler) VALUES
-    ('NEIGHBORHOOD_NOTIFICATION', 'NEIGHBORHOOD_RESPONSE'),
-    ('PROPERTY_OWNER_NOTIFICATION', 'NEIGHBORHOOD_RESPONSE'),
-    ('BYGGR_ADD_CERTIFIED_INSPECTOR', 'ADD_INSPECTOR'),
-    ('BYGGR_ADDITIONAL_DOCUMENTS', 'ADD_DOCUMENTS');
+    ('NEIGHBORHOOD_NOTIFICATION', 'neighborhoodResponse'),
+    ('PROPERTY_OWNER_NOTIFICATION', 'neighborhoodResponse'),
+    ('BYGGR_ADD_CERTIFIED_INSPECTOR', 'addInspector'),
+    ('BYGGR_ADDITIONAL_DOCUMENTS', 'addDocuments');
 
 -- Ecos case type config
 INSERT INTO ecos_case_type_config (case_type_name, diary_plan_id, process_type_id, facility_handler) VALUES

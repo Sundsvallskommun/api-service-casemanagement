@@ -8,6 +8,8 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import se.sundsvall.casemanagement.integration.casedata.CaseDataClient;
 
+import static se.sundsvall.dept44.util.LogUtils.sanitizeForLogging;
+
 /**
  * Provides cached access to CaseData case types. Separated from CaseTypeRegistry to avoid Spring @Cacheable
  * self-invocation issues.
@@ -29,7 +31,10 @@ public class CaseDataCaseTypeProvider {
 	 */
 	@Cacheable(value = "caseDataCaseTypes", key = "#municipalityId + ':' + #namespace")
 	public Map<String, String> getCaseDataTypesByNamespace(final String municipalityId, final String namespace) {
-		LOG.debug("Fetching case types from CaseData for municipalityId: {}, namespace: {}", municipalityId, namespace);
+		final var safeMunicipalityId = sanitizeForLogging(municipalityId);
+		final var safeNamespace = sanitizeForLogging(namespace);
+
+		LOG.debug("Fetching case types from CaseData for municipalityId: {}, namespace: {}", safeMunicipalityId, safeNamespace);
 		try {
 			final var types = caseDataClient.getCaseTypes(municipalityId, namespace);
 			final var result = new HashMap<String, String>();
@@ -38,7 +43,7 @@ public class CaseDataCaseTypeProvider {
 			}
 			return Map.copyOf(result);
 		} catch (final Exception e) {
-			LOG.warn("Failed to fetch case types from CaseData for {}/{}: {}", municipalityId, namespace, e.getMessage());
+			LOG.warn("Failed to fetch case types from CaseData for {}/{}: {}", safeMunicipalityId, safeNamespace, e.getMessage());
 			return Map.of();
 		}
 	}

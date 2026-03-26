@@ -118,10 +118,10 @@ ALTER TABLE ecos_case_type_config
 
 -- Step 10: Populate update handlers for ByggR update case types
 INSERT INTO byggr_case_type_config (case_type_name, update_handler) VALUES
-    ('NEIGHBORHOOD_NOTIFICATION', 'NEIGHBORHOOD_RESPONSE'),
-    ('PROPERTY_OWNER_NOTIFICATION', 'NEIGHBORHOOD_RESPONSE'),
-    ('BYGGR_ADD_CERTIFIED_INSPECTOR', 'ADD_INSPECTOR'),
-    ('BYGGR_ADDITIONAL_DOCUMENTS', 'ADD_DOCUMENTS');
+    ('NEIGHBORHOOD_NOTIFICATION', 'neighborhoodResponse'),
+    ('PROPERTY_OWNER_NOTIFICATION', 'neighborhoodResponse'),
+    ('BYGGR_ADD_CERTIFIED_INSPECTOR', 'addInspector'),
+    ('BYGGR_ADDITIONAL_DOCUMENTS', 'addDocuments');
 
 -- Step 11: Create byggr_status_mapping table for data-driven status resolution
 CREATE TABLE byggr_status_mapping (

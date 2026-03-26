@@ -38,6 +38,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -265,9 +266,9 @@ class ByggrServiceTest {
 		lenient().when(byggrSystemConfigProvider.resolveHandelseStatus("HANDLING", "KOMPL", null)).thenReturn("KOMPL");
 
 		updateHandlersMock = new HashMap<>();
-		updateHandlersMock.put("NEIGHBORHOOD_RESPONSE", mock(ByggrUpdateHandler.class));
-		updateHandlersMock.put("ADD_INSPECTOR", mock(ByggrUpdateHandler.class));
-		updateHandlersMock.put("ADD_DOCUMENTS", mock(ByggrUpdateHandler.class));
+		updateHandlersMock.put("neighborhoodResponse", mock(ByggrUpdateHandler.class));
+		updateHandlersMock.put("addInspector", mock(ByggrUpdateHandler.class));
+		updateHandlersMock.put("addDocuments", mock(ByggrUpdateHandler.class));
 		byggrService = new ByggrService(
 			fbServiceMock,
 			partyIntegrationMock,
@@ -286,13 +287,13 @@ class ByggrServiceTest {
 
 		// Stub update_handler lookups for update case types
 		lenient().when(byggrCaseTypeConfigRepository.findById("NEIGHBORHOOD_NOTIFICATION"))
-			.thenReturn(Optional.of(ByggrCaseTypeConfigEntity.builder().withCaseTypeName("NEIGHBORHOOD_NOTIFICATION").withUpdateHandler("NEIGHBORHOOD_RESPONSE").build()));
+			.thenReturn(Optional.of(ByggrCaseTypeConfigEntity.builder().withCaseTypeName("NEIGHBORHOOD_NOTIFICATION").withUpdateHandler("neighborhoodResponse").build()));
 		lenient().when(byggrCaseTypeConfigRepository.findById("PROPERTY_OWNER_NOTIFICATION"))
-			.thenReturn(Optional.of(ByggrCaseTypeConfigEntity.builder().withCaseTypeName("PROPERTY_OWNER_NOTIFICATION").withUpdateHandler("NEIGHBORHOOD_RESPONSE").build()));
+			.thenReturn(Optional.of(ByggrCaseTypeConfigEntity.builder().withCaseTypeName("PROPERTY_OWNER_NOTIFICATION").withUpdateHandler("neighborhoodResponse").build()));
 		lenient().when(byggrCaseTypeConfigRepository.findById("BYGGR_ADD_CERTIFIED_INSPECTOR"))
-			.thenReturn(Optional.of(ByggrCaseTypeConfigEntity.builder().withCaseTypeName("BYGGR_ADD_CERTIFIED_INSPECTOR").withUpdateHandler("ADD_INSPECTOR").build()));
+			.thenReturn(Optional.of(ByggrCaseTypeConfigEntity.builder().withCaseTypeName("BYGGR_ADD_CERTIFIED_INSPECTOR").withUpdateHandler("addInspector").build()));
 		lenient().when(byggrCaseTypeConfigRepository.findById("BYGGR_ADDITIONAL_DOCUMENTS"))
-			.thenReturn(Optional.of(ByggrCaseTypeConfigEntity.builder().withCaseTypeName("BYGGR_ADDITIONAL_DOCUMENTS").withUpdateHandler("ADD_DOCUMENTS").build()));
+			.thenReturn(Optional.of(ByggrCaseTypeConfigEntity.builder().withCaseTypeName("BYGGR_ADDITIONAL_DOCUMENTS").withUpdateHandler("addDocuments").build()));
 
 		TestUtil.standardMockFb(fbServiceMock);
 		TestUtil.standardMockArendeExport(arendeExportClientMock);
@@ -366,142 +367,43 @@ class ByggrServiceTest {
 		assertThat(handelse.getHandelseslag()).isEqualTo("Strand");
 	}
 
-	/**
-	 * Test scenario where a case is handled successfully.
-	 */
-	@Test
-	void updateByggRCaseNeighborHoodNotification1() {
-		final var byggRCaseDto = createByggRCaseDTO("NEIGHBORHOOD_NOTIFICATION", AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+	@ParameterizedTest
+	@CsvSource({
+		"NEIGHBORHOOD_NOTIFICATION, neighborhoodResponse",
+		"PROPERTY_OWNER_NOTIFICATION, neighborhoodResponse",
+		"BYGGR_ADD_CERTIFIED_INSPECTOR, addInspector",
+		"BYGGR_ADDITIONAL_DOCUMENTS, addDocuments"
+	})
+	void updateByggRCaseSuccess(final String caseType, final String handlerName) {
+		final var byggRCaseDto = createByggRCaseDTO(caseType, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		final var confirmDeliveryRequest = new ConfirmDeliveryRequest().delivered(true).caseId(byggRCaseDto.getExtraParameters().get(ERRAND_NR)).system(BYGGR);
 		when(caseRepositoryMock.findByIdAndMunicipalityId(byggRCaseDto.getExternalCaseId(), MUNICIPALITY_ID)).thenReturn(Optional.of(CaseEntity.builder().build()));
 
 		byggrService.updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
 
-		verify(updateHandlersMock.get("NEIGHBORHOOD_RESPONSE")).handle(byggRCaseDto);
+		verify(updateHandlersMock.get(handlerName)).handle(byggRCaseDto);
 		verify(oepIntegratorClientMock).confirmDelivery(MUNICIPALITY_ID, InstanceType.EXTERNAL, byggRCaseDto.getExternalCaseId(), confirmDeliveryRequest);
 		verify(caseRepositoryMock).findByIdAndMunicipalityId(byggRCaseDto.getExternalCaseId(), MUNICIPALITY_ID);
 		verify(caseRepositoryMock).delete(any());
 	}
 
-	/**
-	 * Test scenario where an exception is thrown when updating a case of type "NEIGHBORHOOD_NOTIFICATION".
-	 */
-	@Test
-	void updateByggRCaseNeighborHoodNotification2() {
-		final var byggRCaseDto = createByggRCaseDTO("NEIGHBORHOOD_NOTIFICATION", AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+	@ParameterizedTest
+	@CsvSource({
+		"NEIGHBORHOOD_NOTIFICATION, neighborhoodResponse",
+		"PROPERTY_OWNER_NOTIFICATION, neighborhoodResponse",
+		"BYGGR_ADD_CERTIFIED_INSPECTOR, addInspector",
+		"BYGGR_ADDITIONAL_DOCUMENTS, addDocuments"
+	})
+	void updateByggRCaseException(final String caseType, final String handlerName) {
+		final var byggRCaseDto = createByggRCaseDTO(caseType, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		final var subject = "Incident from CaseManagement[JUnit]";
 		final var message = "[%s][BYGGR] Could not update case with externalCaseId: %s. Exception: %s ".formatted(MUNICIPALITY_ID, byggRCaseDto.getExternalCaseId(), null);
-		doThrow(RuntimeException.class).when(updateHandlersMock.get("NEIGHBORHOOD_RESPONSE")).handle(byggRCaseDto);
+		doThrow(RuntimeException.class).when(updateHandlersMock.get(handlerName)).handle(byggRCaseDto);
 		when(environmentUtilMock.extractEnvironment()).thenReturn("JUnit");
 
 		byggrService.updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
 
-		verify(updateHandlersMock.get("NEIGHBORHOOD_RESPONSE")).handle(byggRCaseDto);
-		verify(messagingIntegrationMock).sendSlack(message, MUNICIPALITY_ID);
-		verify(messagingIntegrationMock).sendMail(subject, message, MUNICIPALITY_ID);
-	}
-
-	/**
-	 * Test scenario where a "PROPERTY_OWNER_NOTIFICATION" case is handled successfully.
-	 */
-	@Test
-	void updateByggRCasePropertyOwnerNotification() {
-		final var byggRCaseDto = createByggRCaseDTO("PROPERTY_OWNER_NOTIFICATION", AttachmentCategory.BUILDING_PERMIT_APPLICATION);
-		final var confirmDeliveryRequest = new ConfirmDeliveryRequest().delivered(true).caseId(byggRCaseDto.getExtraParameters().get(ERRAND_NR)).system(BYGGR);
-		when(caseRepositoryMock.findByIdAndMunicipalityId(byggRCaseDto.getExternalCaseId(), MUNICIPALITY_ID)).thenReturn(Optional.of(CaseEntity.builder().build()));
-
-		byggrService.updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
-
-		verify(updateHandlersMock.get("NEIGHBORHOOD_RESPONSE")).handle(byggRCaseDto);
-		verify(oepIntegratorClientMock).confirmDelivery(MUNICIPALITY_ID, InstanceType.EXTERNAL, byggRCaseDto.getExternalCaseId(), confirmDeliveryRequest);
-		verify(caseRepositoryMock).findByIdAndMunicipalityId(byggRCaseDto.getExternalCaseId(), MUNICIPALITY_ID);
-		verify(caseRepositoryMock).delete(any());
-	}
-
-	/**
-	 * Test scenario where an exception is thrown when updating a case of type "PROPERTY_OWNER_NOTIFICATION".
-	 */
-	@Test
-	void updateByggRCasePropertyOwnerNotificationException() {
-		final var byggRCaseDto = createByggRCaseDTO("PROPERTY_OWNER_NOTIFICATION", AttachmentCategory.BUILDING_PERMIT_APPLICATION);
-		final var subject = "Incident from CaseManagement[JUnit]";
-		final var message = "[%s][BYGGR] Could not update case with externalCaseId: %s. Exception: %s ".formatted(MUNICIPALITY_ID, byggRCaseDto.getExternalCaseId(), null);
-		doThrow(RuntimeException.class).when(updateHandlersMock.get("NEIGHBORHOOD_RESPONSE")).handle(byggRCaseDto);
-		when(environmentUtilMock.extractEnvironment()).thenReturn("JUnit");
-
-		byggrService.updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
-
-		verify(updateHandlersMock.get("NEIGHBORHOOD_RESPONSE")).handle(byggRCaseDto);
-		verify(messagingIntegrationMock).sendSlack(message, MUNICIPALITY_ID);
-		verify(messagingIntegrationMock).sendMail(subject, message, MUNICIPALITY_ID);
-	}
-
-	/**
-	 * Test scenario where a case is handled successfully.
-	 */
-	@Test
-	void updateByggRCaseByggrAddCertifiedInspector1() {
-		final var byggRCaseDto = createByggRCaseDTO("BYGGR_ADD_CERTIFIED_INSPECTOR", AttachmentCategory.BUILDING_PERMIT_APPLICATION);
-		final var confirmDeliveryRequest = new ConfirmDeliveryRequest().delivered(true).caseId(byggRCaseDto.getExtraParameters().get(ERRAND_NR)).system(BYGGR);
-		when(caseRepositoryMock.findByIdAndMunicipalityId(byggRCaseDto.getExternalCaseId(), MUNICIPALITY_ID)).thenReturn(Optional.of(CaseEntity.builder().build()));
-
-		byggrService.updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
-
-		verify(updateHandlersMock.get("ADD_INSPECTOR")).handle(byggRCaseDto);
-		verify(oepIntegratorClientMock).confirmDelivery(MUNICIPALITY_ID, InstanceType.EXTERNAL, byggRCaseDto.getExternalCaseId(), confirmDeliveryRequest);
-		verify(caseRepositoryMock).findByIdAndMunicipalityId(byggRCaseDto.getExternalCaseId(), MUNICIPALITY_ID);
-		verify(caseRepositoryMock).delete(any());
-	}
-
-	/**
-	 * Test scenario where an exception is thrown when updating a case of type "BYGGR_ADD_CERTIFIED_INSPECTOR".
-	 */
-	@Test
-	void updateByggRCaseByggrAddCertifiedInspector2() {
-		final var byggRCaseDto = createByggRCaseDTO("BYGGR_ADD_CERTIFIED_INSPECTOR", AttachmentCategory.BUILDING_PERMIT_APPLICATION);
-		final var subject = "Incident from CaseManagement[JUnit]";
-		final var message = "[%s][BYGGR] Could not update case with externalCaseId: %s. Exception: %s ".formatted(MUNICIPALITY_ID, byggRCaseDto.getExternalCaseId(), null);
-		doThrow(RuntimeException.class).when(updateHandlersMock.get("ADD_INSPECTOR")).handle(byggRCaseDto);
-		when(environmentUtilMock.extractEnvironment()).thenReturn("JUnit");
-
-		byggrService.updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
-
-		verify(updateHandlersMock.get("ADD_INSPECTOR")).handle(byggRCaseDto);
-		verify(messagingIntegrationMock).sendSlack(message, MUNICIPALITY_ID);
-		verify(messagingIntegrationMock).sendMail(subject, message, MUNICIPALITY_ID);
-	}
-
-	/**
-	 * Test scenario where a case is handled successfully.
-	 */
-	@Test
-	void updateByggRCaseByggrAdditionalDocuments1() {
-		final var byggRCaseDto = createByggRCaseDTO("BYGGR_ADDITIONAL_DOCUMENTS", AttachmentCategory.BUILDING_PERMIT_APPLICATION);
-		final var confirmDeliveryRequest = new ConfirmDeliveryRequest().delivered(true).caseId(byggRCaseDto.getExtraParameters().get(ERRAND_NR)).system(BYGGR);
-		when(caseRepositoryMock.findByIdAndMunicipalityId(byggRCaseDto.getExternalCaseId(), MUNICIPALITY_ID)).thenReturn(Optional.of(CaseEntity.builder().build()));
-
-		byggrService.updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
-
-		verify(updateHandlersMock.get("ADD_DOCUMENTS")).handle(byggRCaseDto);
-		verify(oepIntegratorClientMock).confirmDelivery(MUNICIPALITY_ID, InstanceType.EXTERNAL, byggRCaseDto.getExternalCaseId(), confirmDeliveryRequest);
-		verify(caseRepositoryMock).findByIdAndMunicipalityId(byggRCaseDto.getExternalCaseId(), MUNICIPALITY_ID);
-		verify(caseRepositoryMock).delete(any());
-	}
-
-	/**
-	 * Test scenario where an exception is thrown when updating a case of type "BYGGR_ADDITIONAL_DOCUMENTS".
-	 */
-	@Test
-	void updateByggRCaseByggrAdditionalDocuments2() {
-		final var byggRCaseDto = createByggRCaseDTO("BYGGR_ADDITIONAL_DOCUMENTS", AttachmentCategory.BUILDING_PERMIT_APPLICATION);
-		final var subject = "Incident from CaseManagement[JUnit]";
-		final var message = "[%s][BYGGR] Could not update case with externalCaseId: %s. Exception: %s ".formatted(MUNICIPALITY_ID, byggRCaseDto.getExternalCaseId(), null);
-		doThrow(RuntimeException.class).when(updateHandlersMock.get("ADD_DOCUMENTS")).handle(byggRCaseDto);
-		when(environmentUtilMock.extractEnvironment()).thenReturn("JUnit");
-
-		byggrService.updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
-
-		verify(updateHandlersMock.get("ADD_DOCUMENTS")).handle(byggRCaseDto);
+		verify(updateHandlersMock.get(handlerName)).handle(byggRCaseDto);
 		verify(messagingIntegrationMock).sendSlack(message, MUNICIPALITY_ID);
 		verify(messagingIntegrationMock).sendMail(subject, message, MUNICIPALITY_ID);
 	}

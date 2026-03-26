@@ -23,7 +23,7 @@ import static se.sundsvall.casemanagement.util.Constants.EVENT_CATEGORY;
 import static se.sundsvall.casemanagement.util.Constants.OTHER_INFORMATION;
 import static se.sundsvall.casemanagement.util.Constants.SYSTEM;
 
-@Component("ADD_DOCUMENTS")
+@Component("addDocuments")
 public class AddDocumentsHandler implements ByggrUpdateHandler {
 
 	private final ArendeExportClient arendeExportClient;
