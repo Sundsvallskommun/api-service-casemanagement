@@ -13,7 +13,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.sundsvall.casemanagement.TestUtil;
-import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.integration.party.PartyIntegration;
 
 import static generated.client.party.PartyType.PRIVATE;
@@ -46,7 +45,7 @@ class PartyServiceTest {
 		when(minutMiljoClientMock.createOrganizationParty(any(CreateOrganizationParty.class)))
 			.thenReturn(new CreateOrganizationPartyResponse().withCreateOrganizationPartyResult(createdOrganizationPartyID));
 
-		final var result = partyService.findAndAddPartyToCase(TestUtil.createEcosCaseDTO(CaseType.REGISTRERING_AV_LIVSMEDEL, UNDERLAG_RISKKLASSNING), "someCaseId", "someMunicipalityId");
+		final var result = partyService.findAndAddPartyToCase(TestUtil.createEcosCaseDTO("REGISTRERING_AV_LIVSMEDEL", UNDERLAG_RISKKLASSNING), "someCaseId", "someMunicipalityId");
 
 		assertThat(result).isNotNull().isNotEmpty();
 		assertThat(result.getFirst().get(createdOrganizationPartyID)).isNotNull().satisfies(party -> assertThat(party.getGuid()).isNotEmpty());
@@ -65,7 +64,7 @@ class PartyServiceTest {
 		final var createdPersonPartyID = UUID.randomUUID().toString();
 		final var municipalityId = "someMunicipalityId";
 
-		final var caseDTO = TestUtil.createEcosCaseDTO(CaseType.REGISTRERING_AV_LIVSMEDEL, UNDERLAG_RISKKLASSNING);
+		final var caseDTO = TestUtil.createEcosCaseDTO("REGISTRERING_AV_LIVSMEDEL", UNDERLAG_RISKKLASSNING);
 		caseDTO.getStakeholders().removeFirst();
 
 		when(partyIntegrationMock.getLegalIdByPartyId(eq(municipalityId), any(String.class))).thenReturn(Map.of(PRIVATE, "19800101-1234"));

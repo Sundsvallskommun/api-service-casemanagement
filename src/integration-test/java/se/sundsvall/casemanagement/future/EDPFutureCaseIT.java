@@ -13,7 +13,6 @@ import org.springframework.test.context.jdbc.Sql;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import se.sundsvall.casemanagement.Application;
 import se.sundsvall.casemanagement.api.model.CaseResourceResponseDTO;
-import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
 import se.sundsvall.casemanagement.integration.db.CaseMappingRepository;
 import se.sundsvall.casemanagement.integration.db.CaseRepository;
@@ -68,7 +67,7 @@ class EDPFutureCaseIT extends AbstractAppTest {
 		final var caseMapping = caseMappingRepository.findByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID);
 		assertThat(caseMapping.getExternalCaseId()).isEqualTo(EXTERNAL_CASE_ID);
 		assertThat(caseMapping.getCaseId()).isEqualTo(EXTERNAL_CASE_ID);
-		assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.EXTRA_SACK.toString());
+		assertThat(caseMapping.getCaseType()).isEqualTo("EXTRA_SACK");
 		assertThat(caseMapping.getSystem()).isEqualTo(SystemType.EDPFUTURE);
 	}
 

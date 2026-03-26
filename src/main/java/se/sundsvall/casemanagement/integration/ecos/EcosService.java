@@ -84,13 +84,14 @@ import se.sundsvall.casemanagement.api.model.EcosCaseDTO;
 import se.sundsvall.casemanagement.api.model.FacilityDTO;
 import se.sundsvall.casemanagement.api.model.OrganizationDTO;
 import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
-import se.sundsvall.casemanagement.api.model.enums.CaseType;
+import se.sundsvall.casemanagement.integration.db.CaseTypeRepository;
+import se.sundsvall.casemanagement.integration.db.EcosCaseTypeConfigRepository;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
+import se.sundsvall.casemanagement.integration.db.model.EcosFacilityHandler;
 import se.sundsvall.casemanagement.integration.fb.model.FbPropertyInfo;
 import se.sundsvall.casemanagement.service.CaseMappingService;
 import se.sundsvall.casemanagement.service.FbService;
 import se.sundsvall.casemanagement.util.CaseUtil;
-import se.sundsvall.casemanagement.util.Constants;
 import se.sundsvall.dept44.problem.Problem;
 import se.sundsvall.dept44.problem.ThrowableProblem;
 
@@ -98,18 +99,6 @@ import static java.util.Collections.emptyList;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANDRING_AV_LIVSMEDELSVERKSAMHET;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_ANDRING_AVLOPPSANLAGGNING;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_ANDRING_AVLOPPSANORDNING;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_AVHJALPANDEATGARD_FORORENING;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_HALSOSKYDDSVERKSAMHET;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_INSTALLATION_VARMEPUMP;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANMALAN_KOMPOSTERING;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.ANSOKAN_TILLSTAND_VARMEPUMP;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.INFORMATION_OM_UPPHORANDE_AV_VERKSAMHET;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.REGISTRERING_AV_LIVSMEDEL;
 import static se.sundsvall.casemanagement.api.model.enums.SystemType.ECOS;
 import static se.sundsvall.casemanagement.integration.ecos.RiskClassMapper.mapActivities;
 import static se.sundsvall.casemanagement.integration.ecos.RiskClassMapper.mapProductGroups;
@@ -123,8 +112,16 @@ import static se.sundsvall.casemanagement.util.Constants.CREATE_GEOTHERMAL_HEATI
 import static se.sundsvall.casemanagement.util.Constants.CREATE_MARINE_HEATING_FACILITY_SVC_DTO_PREFIX;
 import static se.sundsvall.casemanagement.util.Constants.CREATE_SOIL_HEATING_FACILITY_SVC_DTO_PREFIX;
 import static se.sundsvall.casemanagement.util.Constants.DRY_SOLUTION_SVC_DTO;
+import static se.sundsvall.casemanagement.util.Constants.ECOS_DOCUMENT_STATUS_INKOMMEN;
+import static se.sundsvall.casemanagement.util.Constants.ECOS_FACILITY_STATUS_ID_ANMALD_ANSOKT;
+import static se.sundsvall.casemanagement.util.Constants.ECOS_HANDLING_OFFICER_GROUP_ID_EXPEDITIONEN;
+import static se.sundsvall.casemanagement.util.Constants.ECOS_OCCURRENCE_TEXT_MOBIL_ANLAGGNING;
+import static se.sundsvall.casemanagement.util.Constants.ECOS_OCCURRENCE_TYPE_ID_ANMALAN;
+import static se.sundsvall.casemanagement.util.Constants.ECOS_OCCURRENCE_TYPE_ID_INFO_FRAN_ETJANST;
+import static se.sundsvall.casemanagement.util.Constants.ECOS_OCCURRENCE_TYPE_ID_KOMPLETTERING;
+import static se.sundsvall.casemanagement.util.Constants.ECOS_ROLE_ID_VERKSAMHETSUTOVARE;
+import static se.sundsvall.casemanagement.util.Constants.ERR_MSG_STATUS_NOT_FOUND;
 import static se.sundsvall.casemanagement.util.Constants.FACILITY_STATUS_ID_ACTIVE;
-import static se.sundsvall.casemanagement.util.Constants.FACILITY_STATUS_ID_APPLIED;
 import static se.sundsvall.casemanagement.util.Constants.FACILITY_STATUS_ID_DISCARDED;
 import static se.sundsvall.casemanagement.util.Constants.FACILITY_STATUS_ID_GRANTED;
 import static se.sundsvall.casemanagement.util.Constants.FACILITY_STATUS_ID_INACTIVE;
@@ -152,6 +149,8 @@ public class EcosService {
 	private final CaseMappingService caseMappingService;
 	private final PartyService partyService;
 	private final FbService fbService;
+	private final EcosCaseTypeConfigRepository ecosCaseTypeConfigRepository;
+	private final CaseTypeRepository caseTypeRepository;
 
 	private final MinutMiljoClient minutMiljoClient;
 
@@ -159,11 +158,15 @@ public class EcosService {
 		final CaseMappingService caseMappingService,
 		final PartyService partyService,
 		final MinutMiljoClient minutMiljoClient,
-		final FbService fbService) {
+		final FbService fbService,
+		final EcosCaseTypeConfigRepository ecosCaseTypeConfigRepository,
+		final CaseTypeRepository caseTypeRepository) {
 		this.caseMappingService = caseMappingService;
 		this.partyService = partyService;
 		this.minutMiljoClient = minutMiljoClient;
 		this.fbService = fbService;
+		this.ecosCaseTypeConfigRepository = ecosCaseTypeConfigRepository;
+		this.caseTypeRepository = caseTypeRepository;
 	}
 
 	@NotNull
@@ -194,29 +197,35 @@ public class EcosService {
 			mapped = partyService.findAndAddPartyToCase(caseInput, registerDocumentResult.getCaseId(), municipalityId);
 		}
 		if (propertyInfo != null) {
-			final String facilityGuid = switch (caseInput.getCaseType()) {
-				case REGISTRERING_AV_LIVSMEDEL -> createFoodFacility(caseInput, propertyInfo, registerDocumentResult);
-				case ANMALAN_INSTALLATION_VARMEPUMP, ANSOKAN_TILLSTAND_VARMEPUMP -> createHeatPumpFacility(eFacility.getExtraParameters(), propertyInfo, registerDocumentResult);
-				case ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP,
-					ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC,
-					ANMALAN_ANDRING_AVLOPPSANLAGGNING, ANMALAN_ANDRING_AVLOPPSANORDNING -> createIndividualSewage(eFacility, propertyInfo, registerDocumentResult);
-				case ANMALAN_HALSOSKYDDSVERKSAMHET -> createHealthProtectionFacility(eFacility, propertyInfo, registerDocumentResult);
-				case ANMALAN_KOMPOSTERING, ANMALAN_AVHJALPANDEATGARD_FORORENING -> "";
-				case ANDRING_AV_LIVSMEDELSVERKSAMHET, INFORMATION_OM_UPPHORANDE_AV_VERKSAMHET -> {
+			final var ecosConfig = ecosCaseTypeConfigRepository.findById(caseInput.getCaseType())
+				.orElseThrow(() -> Problem.valueOf(INTERNAL_SERVER_ERROR, "No ecos config found for CaseType: " + caseInput.getCaseType()));
+			final var caseTypeEntity = caseTypeRepository.findById(caseInput.getCaseType())
+				.orElseThrow(() -> Problem.valueOf(INTERNAL_SERVER_ERROR, "Unknown CaseType: " + caseInput.getCaseType()));
+
+			final String facilityGuid = switch (ecosConfig.getFacilityHandler()) {
+				case FOOD -> createFoodFacility(caseInput, propertyInfo, registerDocumentResult);
+				case HEAT_PUMP -> createHeatPumpFacility(eFacility.getExtraParameters(), propertyInfo, registerDocumentResult);
+				case INDIVIDUAL_SEWAGE -> createIndividualSewage(eFacility, propertyInfo, registerDocumentResult);
+				case HEALTH_PROTECTION -> createHealthProtectionFacility(eFacility, propertyInfo, registerDocumentResult);
+				case NONE -> "";
+				case EXISTING_FACILITY -> {
 					final var facilityId = searchFacility(extractOrgNr(caseInput), caseInput.getFacilities().getFirst().getFacilityCollectionName());
 					addFacilityToCase(facilityId, registerDocumentResult.getCaseId());
 					yield facilityId;
 				}
-				default -> throw Problem.valueOf(INTERNAL_SERVER_ERROR, "CaseType: " + caseInput.getCaseType() + " is not valid. There is a problem in the API validation.");
+				case RISK_CLASS_UPDATE -> throw Problem.valueOf(INTERNAL_SERVER_ERROR, "RISK_CLASS_UPDATE should not reach facility creation");
 			};
 
 			// -----> AddPartyToFacility
-			if ((facilityGuid != null) && !CaseType.WITH_NULLABLE_FACILITY_TYPE.contains(caseInput.getCaseType())) {
+			if ((facilityGuid != null) && !caseTypeEntity.isNullableFacilityType()) {
 				mapped.forEach(o -> addPartyToFacility(facilityGuid, o));
 			}
 
 		} else {
-			if (CaseType.UPPDATERING_RISKKLASSNING.toString().equals(caseInput.getCaseType())) {
+			final var ecosConfig = ecosCaseTypeConfigRepository.findById(caseInput.getCaseType())
+				.orElseThrow(() -> Problem.valueOf(INTERNAL_SERVER_ERROR, "No ecos config found for CaseType: " + caseInput.getCaseType()));
+
+			if (ecosConfig.getFacilityHandler() == EcosFacilityHandler.RISK_CLASS_UPDATE) {
 				try {
 					updateRiskClass(caseInput, registerDocumentResult.getCaseId());
 				} catch (final Exception e) {
@@ -288,7 +297,7 @@ public class EcosService {
 
 	private FacilityFacilityStatusIdsFilterSvcDto createFacilityStatusFilter() {
 		return new FacilityFacilityStatusIdsFilterSvcDto()
-			.withFacilityStatusIds(new ArrayOfguid().withGuid(FACILITY_STATUS_ID_APPLIED,
+			.withFacilityStatusIds(new ArrayOfguid().withGuid(ECOS_FACILITY_STATUS_ID_ANMALD_ANSOKT,
 				FACILITY_STATUS_ID_INACTIVE,
 				FACILITY_STATUS_ID_ACTIVE,
 				FACILITY_STATUS_ID_GRANTED));
@@ -490,7 +499,7 @@ public class EcosService {
 
 	private void setHeatPumpStandardParams(final Map<String, String> extraParameters, final FbPropertyInfo propertyInfo, final RegisterDocumentCaseResultSvcDto registerDocumentResult, final CreateHeatPumpFacilitySvcDto svcDto, final String prefix) {
 		svcDto.setAddress(getAddress(propertyInfo));
-		svcDto.setFacilityStatusId(Constants.ECOS_FACILITY_STATUS_ID_ANMALD_ANSOKT);
+		svcDto.setFacilityStatusId(ECOS_FACILITY_STATUS_ID_ANMALD_ANSOKT);
 		svcDto.setCreatedFromCaseId(registerDocumentResult.getCaseId());
 		svcDto.setEstate(new EstateSvcDto().withFnr(propertyInfo.getFnr()));
 
@@ -507,7 +516,7 @@ public class EcosService {
 
 		createIndividualSewageFacilitySvcDto.setAddress(getAddress(propertyInfo));
 
-		createIndividualSewageFacilitySvcDto.setFacilityStatusId(Constants.ECOS_FACILITY_STATUS_ID_ANMALD_ANSOKT);
+		createIndividualSewageFacilitySvcDto.setFacilityStatusId(ECOS_FACILITY_STATUS_ID_ANMALD_ANSOKT);
 		createIndividualSewageFacilitySvcDto.setCreatedFromCaseId(registerDocumentResult.getCaseId());
 		createIndividualSewageFacilitySvcDto.setEstate(new EstateSvcDto().withFnr(propertyInfo.getFnr()));
 
@@ -581,12 +590,12 @@ public class EcosService {
 	private SepticTankSvcDto getSepticTankSvcDto(final Map<String, String> extraParameters) {
 		final SepticTankSvcDto svcDto = new SepticTankSvcDto();
 
-		setStandardParams(extraParameters, Constants.SEPTIC_TANK_SVC_DTO, svcDto);
+		setStandardParams(extraParameters, SEPTIC_TANK_SVC_DTO, svcDto);
 
-		svcDto.setEmptyingInterval(CaseUtil.parseInteger(extraParameters.get(Constants.SEPTIC_TANK_SVC_DTO + "EmptyingInterval")));
-		svcDto.setHasCeMarking(CaseUtil.parseBoolean(extraParameters.get(Constants.SEPTIC_TANK_SVC_DTO + "HasCeMarking")));
-		svcDto.setHasTPipe(CaseUtil.parseBoolean(extraParameters.get(Constants.SEPTIC_TANK_SVC_DTO + "HasTPipe")));
-		svcDto.setVolume(CaseUtil.parseDouble(extraParameters.get(Constants.SEPTIC_TANK_SVC_DTO + VOLUME)));
+		svcDto.setEmptyingInterval(CaseUtil.parseInteger(extraParameters.get(SEPTIC_TANK_SVC_DTO + "EmptyingInterval")));
+		svcDto.setHasCeMarking(CaseUtil.parseBoolean(extraParameters.get(SEPTIC_TANK_SVC_DTO + "HasCeMarking")));
+		svcDto.setHasTPipe(CaseUtil.parseBoolean(extraParameters.get(SEPTIC_TANK_SVC_DTO + "HasTPipe")));
+		svcDto.setVolume(CaseUtil.parseDouble(extraParameters.get(SEPTIC_TANK_SVC_DTO + VOLUME)));
 
 		return svcDto;
 	}
@@ -690,7 +699,7 @@ public class EcosService {
 	}
 
 	private void setStandardParams(final Map<String, String> extraParameters, final String prefix, final PurificationStepSvcDto svcDto) {
-		svcDto.setPurificationStepFacilityStatusId(Constants.ECOS_FACILITY_STATUS_ID_ANMALD_ANSOKT);
+		svcDto.setPurificationStepFacilityStatusId(ECOS_FACILITY_STATUS_ID_ANMALD_ANSOKT);
 		svcDto.setInstallationDate(CaseUtil.parseLocalDateTime(extraParameters.get(prefix + "InstallationDate")));
 		svcDto.setHasOverflowAlarm(CaseUtil.parseBoolean(extraParameters.get(prefix + "HasOverflowAlarm")));
 		svcDto.setLifeTime(CaseUtil.parseInteger(extraParameters.get(prefix + "LifeTime")));
@@ -702,8 +711,8 @@ public class EcosService {
 	public RegisterDocumentCaseResultSvcDto registerDocument(final EcosCaseDTO eCase) {
 		final var registerDocumentCaseSvcDtoV2 = new RegisterDocumentCaseSvcDtoV2();
 		final var registerDocument = new RegisterDocument();
-		registerDocumentCaseSvcDtoV2.setOccurrenceTypeId(Constants.ECOS_OCCURRENCE_TYPE_ID_ANMALAN);
-		registerDocumentCaseSvcDtoV2.setHandlingOfficerGroupId(Constants.ECOS_HANDLING_OFFICER_GROUP_ID_EXPEDITIONEN);
+		registerDocumentCaseSvcDtoV2.setOccurrenceTypeId(ECOS_OCCURRENCE_TYPE_ID_ANMALAN);
+		registerDocumentCaseSvcDtoV2.setHandlingOfficerGroupId(ECOS_HANDLING_OFFICER_GROUP_ID_EXPEDITIONEN);
 		registerDocumentCaseSvcDtoV2.setDiaryPlanId(getDiaryPlanId(eCase.getCaseType()));
 		registerDocumentCaseSvcDtoV2.setProcessTypeId(getProcessTypeId(eCase.getCaseType()));
 		registerDocumentCaseSvcDtoV2.setDocuments(getArrayOfDocumentSvcDtoV2(eCase.getAttachments()));
@@ -745,36 +754,15 @@ public class EcosService {
 	}
 
 	private String getDiaryPlanId(final String caseType) {
-		return switch (CaseType.valueOf(caseType)) {
-			case REGISTRERING_AV_LIVSMEDEL, UPPDATERING_RISKKLASSNING,
-				ANDRING_AV_LIVSMEDELSVERKSAMHET, INFORMATION_OM_UPPHORANDE_AV_VERKSAMHET -> Constants.ECOS_DIARY_PLAN_LIVSMEDEL;
-			case ANMALAN_ANDRING_AVLOPPSANLAGGNING, ANMALAN_ANDRING_AVLOPPSANORDNING,
-				ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC,
-				ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP, ANMALAN_INSTALLATION_VARMEPUMP,
-				ANSOKAN_TILLSTAND_VARMEPUMP,
-				ANMALAN_KOMPOSTERING, ANMALAN_AVHJALPANDEATGARD_FORORENING -> Constants.ECOS_DIARY_PLAN_AVLOPP;
-			case ANMALAN_HALSOSKYDDSVERKSAMHET -> Constants.ECOS_DIARY_PLAN_HALSOSKYDD;
-			default -> null;
-		};
+		return ecosCaseTypeConfigRepository.findById(caseType)
+			.map(config -> config.getDiaryPlanId())
+			.orElse(null);
 	}
 
 	private String getProcessTypeId(final String caseType) {
-		return switch (CaseType.valueOf(caseType)) {
-			case REGISTRERING_AV_LIVSMEDEL -> Constants.ECOS_PROCESS_TYPE_ID_REGISTRERING_AV_LIVSMEDEL;
-			case ANMALAN_INSTALLATION_VARMEPUMP -> Constants.ECOS_PROCESS_TYPE_ID_ANMALAN_INSTALLATION_VARMEPUMP;
-			case ANSOKAN_TILLSTAND_VARMEPUMP -> Constants.ECOS_PROCESS_TYPE_ID_ANSOKAN_TILLSTAND_VARMEPUMP;
-			case ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP -> Constants.ECOS_PROCESS_TYPE_ID_ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP;
-			case ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC -> Constants.ECOS_PROCESS_TYPE_ID_ANMALAN_INSTALLATION_ENSKILT_AVLOPP_UTAN_WC;
-			case ANMALAN_ANDRING_AVLOPPSANLAGGNING -> Constants.ECOS_PROCESS_TYPE_ID_ANMALAN_ANDRING_AVLOPPSANLAGGNING;
-			case ANMALAN_ANDRING_AVLOPPSANORDNING -> Constants.ECOS_PROCESS_TYPE_ID_ANMALAN_ANDRING_AVLOPPSANORDNING;
-			case ANMALAN_HALSOSKYDDSVERKSAMHET -> Constants.ECOS_PROCESS_TYPE_ID_ANMALAN_HALSOSKYDDSVERKSAMHET;
-			case UPPDATERING_RISKKLASSNING -> Constants.ECOS_PROCESS_TYPE_ID_UPPDATERING_RISKKLASS;
-			case ANMALAN_KOMPOSTERING -> Constants.ECOS_PROCESS_TYPE_ID_ANMALAN_KOMPOSTERING;
-			case ANMALAN_AVHJALPANDEATGARD_FORORENING -> Constants.ECOS_PROCESS_TYPE_ID_ANMALAN_AVHJALPANDEATGARD_FORORENING;
-			case ANDRING_AV_LIVSMEDELSVERKSAMHET -> Constants.ECOS_PROCESS_TYPE_ID_ANDRING_AV_LIVSMEDELSVERKSAMHET;
-			case INFORMATION_OM_UPPHORANDE_AV_VERKSAMHET -> Constants.ECOS_PROCESS_TYPE_ID_INFORMATION_OM_UPPHORANDE_AV_VERKSAMHET;
-			default -> throw Problem.valueOf(INTERNAL_SERVER_ERROR, "CaseType: " + caseType + " is not valid...");
-		};
+		return ecosCaseTypeConfigRepository.findById(caseType)
+			.map(config -> config.getProcessTypeId())
+			.orElseThrow(() -> Problem.valueOf(INTERNAL_SERVER_ERROR, "CaseType: " + caseType + " is not valid..."));
 	}
 
 	private ArrayOfDocumentSvcDto getArrayOfDocumentSvcDto(final List<AttachmentDTO> attachmentDTOList) {
@@ -813,8 +801,8 @@ public class EcosService {
 		final CreateOccurrenceOnCaseSvcDto createOccurrenceOnCaseSvcDto = new CreateOccurrenceOnCaseSvcDto();
 		createOccurrenceOnCaseSvcDto.setCaseId(caseId);
 		createOccurrenceOnCaseSvcDto.setOccurrenceDate(LocalDateTime.now());
-		createOccurrenceOnCaseSvcDto.setOccurrenceTypeId(Constants.ECOS_OCCURRENCE_TYPE_ID_INFO_FRAN_ETJANST);
-		createOccurrenceOnCaseSvcDto.setNote(Constants.ECOS_OCCURRENCE_TEXT_MOBIL_ANLAGGNING);
+		createOccurrenceOnCaseSvcDto.setOccurrenceTypeId(ECOS_OCCURRENCE_TYPE_ID_INFO_FRAN_ETJANST);
+		createOccurrenceOnCaseSvcDto.setNote(ECOS_OCCURRENCE_TEXT_MOBIL_ANLAGGNING);
 		createOccurrenceOnCase.setCreateOccurrenceOnCaseSvcDto(createOccurrenceOnCaseSvcDto);
 
 		minutMiljoClient.createOccurrenceOnCase(createOccurrenceOnCase);
@@ -866,7 +854,7 @@ public class EcosService {
 					.build();
 			}
 		}
-		throw Problem.valueOf(NOT_FOUND, Constants.ERR_MSG_STATUS_NOT_FOUND);
+		throw Problem.valueOf(NOT_FOUND, ERR_MSG_STATUS_NOT_FOUND);
 	}
 
 	@Async
@@ -904,8 +892,8 @@ public class EcosService {
 		final AddDocumentsToCaseSvcDto message = new AddDocumentsToCaseSvcDto();
 		message.setCaseId(caseId);
 		message.setDocuments(getArrayOfDocumentSvcDto(attachmentDTOList));
-		message.setOccurrenceTypeId(Constants.ECOS_OCCURRENCE_TYPE_ID_KOMPLETTERING);
-		message.setDocumentStatusId(Constants.ECOS_DOCUMENT_STATUS_INKOMMEN);
+		message.setOccurrenceTypeId(ECOS_OCCURRENCE_TYPE_ID_KOMPLETTERING);
+		message.setDocumentStatusId(ECOS_DOCUMENT_STATUS_INKOMMEN);
 		addDocumentsToCase.setAddDocumentToCaseSvcDto(message);
 
 		minutMiljoClient.addDocumentsToCase(addDocumentsToCase);
@@ -918,7 +906,7 @@ public class EcosService {
 		final SinglePartyRoleFilterSvcDto filter = new SinglePartyRoleFilterSvcDto();
 
 		filter.setPartyId(partyId);
-		filter.setRoleId(Constants.ECOS_ROLE_ID_VERKSAMHETSUTOVARE);
+		filter.setRoleId(ECOS_ROLE_ID_VERKSAMHETSUTOVARE);
 		arrayOfFilterSvcDto.getFilterSvcDto().add(filter);
 		searchCaseSvcDto.setFilters(arrayOfFilterSvcDto);
 

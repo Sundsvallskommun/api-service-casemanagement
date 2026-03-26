@@ -1,5 +1,7 @@
 package se.sundsvall.casemanagement.api;
 
+import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -19,6 +21,7 @@ import se.sundsvall.casemanagement.api.model.EcosCaseDTO;
 import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
 import se.sundsvall.casemanagement.integration.casedata.CaseDataService;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
+import se.sundsvall.casemanagement.service.CaseDataCaseTypeProvider;
 import se.sundsvall.casemanagement.service.CaseMappingService;
 import se.sundsvall.casemanagement.service.CaseService;
 import se.sundsvall.dept44.problem.violations.ConstraintViolationProblem;
@@ -58,11 +61,22 @@ class CaseResourceTest {
 	@MockitoBean
 	private CaseDataService caseDataService;
 
+	@MockitoBean
+	private CaseDataCaseTypeProvider caseDataCaseTypeProvider;
+
 	@Captor
 	private ArgumentCaptor<CaseDTO> caseDTOCaptor;
 
 	@Autowired
 	private WebTestClient webTestClient;
+
+	@BeforeEach
+	void setUp() {
+		when(caseDataCaseTypeProvider.getCaseDataTypesByNamespace(any(), any())).thenReturn(Map.of(
+			"PARKING_PERMIT", "Parking Permit",
+			"PARKING_PERMIT_RENEWAL", "Parking Permit Renewal",
+			"LOST_PARKING_PERMIT", "Lost Parking Permit"));
+	}
 
 	@Test
 	void postCaseEcos(@Load("/case-resource/ecos-case.json") final String body) {

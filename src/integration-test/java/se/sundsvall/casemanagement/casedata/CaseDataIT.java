@@ -9,7 +9,6 @@ import org.springframework.test.context.jdbc.Sql;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import se.sundsvall.casemanagement.Application;
 import se.sundsvall.casemanagement.api.model.CaseResourceResponseDTO;
-import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
 import se.sundsvall.casemanagement.integration.db.CaseMappingRepository;
 import se.sundsvall.casemanagement.integration.db.CaseRepository;
@@ -66,7 +65,7 @@ class CaseDataIT extends AbstractAppTest {
 		assertThat(caseMapping).isNotNull();
 		assertThat(caseMapping.getExternalCaseId()).isEqualTo(EXTERNAL_CASE_ID);
 		assertThat(caseMapping.getCaseId()).isEqualTo(CASE_DATA_ID);
-		assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.PARKING_PERMIT.toString());
+		assertThat(caseMapping.getCaseType()).isEqualTo("PARKING_PERMIT");
 		assertThat(caseMapping.getSystem()).isEqualTo(SystemType.CASE_DATA);
 	}
 
@@ -124,7 +123,7 @@ class CaseDataIT extends AbstractAppTest {
 		assertThat(caseMapping).isNotNull();
 		assertThat(caseMapping.getExternalCaseId()).isEqualTo(EXTERNAL_CASE_ID);
 		assertThat(caseMapping.getCaseId()).isEqualTo(CASE_DATA_ID);
-		assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.PARKING_PERMIT.toString());
+		assertThat(caseMapping.getCaseType()).isEqualTo("PARKING_PERMIT");
 		assertThat(caseMapping.getSystem()).isEqualTo(SystemType.CASE_DATA);
 	}
 }

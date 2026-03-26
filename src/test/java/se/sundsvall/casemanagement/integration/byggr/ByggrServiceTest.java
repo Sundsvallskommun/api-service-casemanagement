@@ -38,11 +38,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.sundsvall.casemanagement.TestUtil;
 import se.sundsvall.casemanagement.api.model.AttachmentDTO;
@@ -54,18 +52,20 @@ import se.sundsvall.casemanagement.api.model.PersonDTO;
 import se.sundsvall.casemanagement.api.model.StakeholderDTO;
 import se.sundsvall.casemanagement.api.model.enums.AddressCategory;
 import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
-import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.api.model.enums.FacilityType;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderType;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
+import se.sundsvall.casemanagement.integration.db.ByggrCaseTypeConfigRepository;
 import se.sundsvall.casemanagement.integration.db.CaseRepository;
-import se.sundsvall.casemanagement.integration.db.CaseTypeDataRepository;
+import se.sundsvall.casemanagement.integration.db.CaseTypeRepository;
+import se.sundsvall.casemanagement.integration.db.model.ByggrCaseTypeConfigEntity;
 import se.sundsvall.casemanagement.integration.db.model.CaseEntity;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.integration.messaging.MessagingIntegration;
 import se.sundsvall.casemanagement.integration.oepintegrator.OepIntegratorClient;
 import se.sundsvall.casemanagement.integration.party.PartyIntegration;
+import se.sundsvall.casemanagement.service.ByggrSystemConfigProvider;
 import se.sundsvall.casemanagement.service.CaseMappingService;
 import se.sundsvall.casemanagement.service.FbService;
 import se.sundsvall.casemanagement.util.Constants;
@@ -77,50 +77,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static se.sundsvall.casemanagement.TestUtil.FNR;
 import static se.sundsvall.casemanagement.TestUtil.createByggRCaseDTO;
 import static se.sundsvall.casemanagement.TestUtil.createStakeholderDTO;
 import static se.sundsvall.casemanagement.TestUtil.setUpCaseTypes;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.ANDRING_ANSOKAN_OM_BYGGLOV;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.BYGGR_ADDITIONAL_DOCUMENTS;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.BYGGR_ADD_CERTIFIED_INSPECTOR;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.NEIGHBORHOOD_NOTIFICATION;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.PROPERTY_OWNER_NOTIFICATION;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.STRANDSKYDD_ANDRAD_ANVANDNING;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.STRANDSKYDD_ANLAGGANDE;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.STRANDSKYDD_ANORDNANDE;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.STRANDSKYDD_NYBYGGNAD;
-import static se.sundsvall.casemanagement.util.Constants.ATTEFALL;
-import static se.sundsvall.casemanagement.util.Constants.BYGGLOV_FOR;
 import static se.sundsvall.casemanagement.util.Constants.BYGGR;
-import static se.sundsvall.casemanagement.util.Constants.BYGGR_ARENDEMENING_STRANDSKYDD_FOR_ANDRAD_ANVANDNING;
-import static se.sundsvall.casemanagement.util.Constants.BYGGR_ARENDEMENING_STRANDSKYDD_FOR_ANLAGGANDE;
-import static se.sundsvall.casemanagement.util.Constants.BYGGR_ARENDEMENING_STRANDSKYDD_FOR_ANORDNANDE;
-import static se.sundsvall.casemanagement.util.Constants.BYGGR_ARENDEMENING_STRANDSKYDD_FOR_NYBYGGNAD;
-import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSESLAG_KOMPLETTERANDE_HANDLINGAR;
-import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSESLAG_SLUTBESKED;
-import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSETYP_BESLUT;
-import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSETYP_HANDLING;
 import static se.sundsvall.casemanagement.util.Constants.ERRAND_NR;
-import static se.sundsvall.casemanagement.util.Constants.HANDELSESLAG_ANMALAN_ATTEFALL;
-import static se.sundsvall.casemanagement.util.Constants.HANDELSESLAG_BYGGLOV;
-import static se.sundsvall.casemanagement.util.Constants.HANDELSESLAG_STRANDSKYDD;
-import static se.sundsvall.casemanagement.util.Constants.HANDELSETYP_ANMALAN;
-import static se.sundsvall.casemanagement.util.Constants.HANDELSETYP_ANSOKAN;
-import static se.sundsvall.casemanagement.util.Constants.RUBRIK_ANMALAN_ATTEFALL;
-import static se.sundsvall.casemanagement.util.Constants.RUBRIK_BYGGLOV;
-import static se.sundsvall.casemanagement.util.Constants.RUBRIK_STRANDSKYDD;
-import static se.sundsvall.casemanagement.util.Constants.STRANDSKYDD;
 
 @ExtendWith(MockitoExtension.class)
 class ByggrServiceTest {
@@ -130,9 +100,11 @@ class ByggrServiceTest {
 	private static final String MUNICIPALITY_ID = "2281";
 
 	@Mock
-	private CaseTypeDataRepository caseTypeDataRepository;
+	private ByggrCaseTypeConfigRepository byggrCaseTypeConfigRepository;
 
-	@InjectMocks
+	@Mock
+	private CaseTypeRepository caseTypeRepositoryMock;
+
 	private ByggrService byggrService;
 
 	@Mock
@@ -159,12 +131,17 @@ class ByggrServiceTest {
 	@Mock
 	private EnvironmentUtil environmentUtilMock;
 
-	private static void assertCaseStatus(final String dnr, final String caseId, final String externalCaseID, final CaseType caseType, final String serviceName, final String status, final LocalDateTime dateTime, final CaseStatusDTO getStatusResult) {
+	@Mock
+	private ByggrSystemConfigProvider byggrSystemConfigProvider;
+
+	private Map<String, ByggrUpdateHandler> updateHandlersMock;
+
+	private static void assertCaseStatus(final String dnr, final String caseId, final String externalCaseID, final String caseType, final String serviceName, final String status, final LocalDateTime dateTime, final CaseStatusDTO getStatusResult) {
 		assertThat(getStatusResult.getCaseId()).isEqualTo(dnr);
 		assertThat(getStatusResult.getErrandNumber()).isEqualTo(caseId);
 		assertThat(getStatusResult.getExternalCaseId()).isEqualTo(externalCaseID);
 		assertThat(getStatusResult.getSystem()).isEqualTo(SystemType.BYGGR);
-		assertThat(getStatusResult.getCaseType()).isEqualTo(caseType.toString());
+		assertThat(getStatusResult.getCaseType()).isEqualTo(caseType);
 		assertThat(getStatusResult.getServiceName()).isEqualTo(serviceName);
 		assertThat(getStatusResult.getStatus()).isEqualTo(status);
 		assertThat(getStatusResult.getTimestamp()).isEqualTo(dateTime);
@@ -173,9 +150,9 @@ class ByggrServiceTest {
 	private static void assertHandelse(final String dnr, final SaveNewHandelseMessage saveNewHandelseMessage, final List<String> notesToContain, final String handelseRubrik, final String handelstyp, final String handelseslag,
 		final List<AttachmentDTO> attachments) {
 		assertThat(saveNewHandelseMessage.getDnr()).isEqualTo(dnr);
-		assertThat(saveNewHandelseMessage.getHandlaggarSign()).isEqualTo(Constants.BYGGR_SYSTEM_HANDLAGGARE_SIGN);
+		assertThat(saveNewHandelseMessage.getHandlaggarSign()).isEqualTo("SYSTEM");
 		assertThat(saveNewHandelseMessage.getHandelse().getRubrik()).isEqualTo(handelseRubrik);
-		assertThat(saveNewHandelseMessage.getHandelse().getRiktning()).isEqualTo(Constants.BYGGR_HANDELSE_RIKTNING_IN);
+		assertThat(saveNewHandelseMessage.getHandelse().getRiktning()).isEqualTo("In");
 		assertThat(saveNewHandelseMessage.getHandelse().getHandelsetyp()).isEqualTo(handelstyp);
 		assertThat(saveNewHandelseMessage.getHandelse().getHandelseslag()).isEqualTo(handelseslag);
 		assertThat(saveNewHandelseMessage.getHandelse().getStartDatum()).isNotNull();
@@ -199,7 +176,7 @@ class ByggrServiceTest {
 
 		handlingList.forEach(handling -> {
 			assertThat(handling.getDokument().getFil().getFilBuffer()).isNotNull();
-			assertThat(handling.getStatus()).isEqualTo(Constants.BYGGR_HANDLING_STATUS_INKOMMEN);
+			assertThat(handling.getStatus()).isEqualTo("Inkommen");
 		});
 	}
 
@@ -253,15 +230,15 @@ class ByggrServiceTest {
 	private static void assertThatArendeIsEqual(final Arende2 arende, final String arendeTyp, final FacilityDTO inputFacility) {
 		assertThat(arende.getArendetyp()).isEqualTo(arendeTyp);
 
-		if (STRANDSKYDD.equals(arendeTyp)) {
-			assertThat(arende.getArendegrupp()).isEqualTo(Constants.BYGGR_ARENDEGRUPP_STRANDSKYDD);
+		if ("DI".equals(arendeTyp)) {
+			assertThat(arende.getArendegrupp()).isEqualTo("STRA");
 		} else {
-			assertThat(arende.getArendegrupp()).isEqualTo(Constants.BYGGR_ARENDEGRUPP_LOV_ANMALNINGSARENDE);
+			assertThat(arende.getArendegrupp()).isEqualTo("LOV");
 		}
-		assertThat(arende.getNamndkod()).isEqualTo(Constants.BYGGR_NAMNDKOD_STADSBYGGNADSNAMNDEN);
-		assertThat(arende.getEnhetkod()).isEqualTo(Constants.BYGGR_ENHETKOD_STADSBYGGNADSKONTORET);
-		assertThat(arende.getKommun()).isEqualTo(Constants.BYGGR_KOMMUNKOD_SUNDSVALL_KOMMUN);
-		assertThat(arende.getHandlaggare().getSignatur()).isEqualTo(Constants.BYGGR_SYSTEM_HANDLAGGARE_SIGN);
+		assertThat(arende.getNamndkod()).isEqualTo("SBN");
+		assertThat(arende.getEnhetkod()).isEqualTo("SBK");
+		assertThat(arende.getKommun()).isEqualTo("2281");
+		assertThat(arende.getHandlaggare().getSignatur()).isEqualTo("SYSTEM");
 		assertThat(arende.isArInomplan()).isEqualTo(inputFacility.getAddress().getIsZoningPlanArea());
 		assertThat(arende.getAnkomstDatum()).isNotNull();
 	}
@@ -274,14 +251,49 @@ class ByggrServiceTest {
 			assertThat(handling.getDokument().getFil().getFilAndelse()).isEqualTo(inputAttachment.getExtension().toLowerCase());
 			assertThat(handling.getDokument().getNamn()).isEqualTo(inputAttachment.getName());
 			assertThat(handling.getDokument().getBeskrivning()).isEqualTo(inputAttachment.getNote());
-			assertThat(handling.getStatus()).isEqualTo(Constants.BYGGR_HANDLING_STATUS_INKOMMEN);
+			assertThat(handling.getStatus()).isEqualTo("Inkommen");
 			assertThat(handling.getTyp()).isEqualTo(inputAttachment.getCategory());
 		});
 	}
 
 	@BeforeEach
 	void setup() {
-		lenient().when(caseTypeDataRepository.findAll()).thenReturn(setUpCaseTypes());
+		// Status mapping stubs for toByggrStatus tests
+		lenient().when(byggrSystemConfigProvider.resolveHandelseStatus("BESLUT", "SLU", "Handelsutfall 2")).thenReturn("SLU");
+		lenient().when(byggrSystemConfigProvider.resolveHandelseStatus("BESLUT", "SLU", "Handelsutfall 1")).thenReturn("SLU");
+		lenient().when(byggrSystemConfigProvider.resolveHandelseStatus("BESLUT", "SLU", null)).thenReturn("SLU");
+		lenient().when(byggrSystemConfigProvider.resolveHandelseStatus("HANDLING", "KOMPL", null)).thenReturn("KOMPL");
+
+		updateHandlersMock = new HashMap<>();
+		updateHandlersMock.put("NEIGHBORHOOD_RESPONSE", mock(ByggrUpdateHandler.class));
+		updateHandlersMock.put("ADD_INSPECTOR", mock(ByggrUpdateHandler.class));
+		updateHandlersMock.put("ADD_DOCUMENTS", mock(ByggrUpdateHandler.class));
+		byggrService = new ByggrService(
+			fbServiceMock,
+			partyIntegrationMock,
+			caseMappingServiceMock,
+			environmentUtilMock,
+			arendeExportClientMock,
+			oepIntegratorClientMock,
+			byggrCaseTypeConfigRepository,
+			caseTypeRepositoryMock,
+			caseRepositoryMock,
+			messagingIntegrationMock,
+			byggrSystemConfigProvider,
+			updateHandlersMock);
+
+		lenient().when(byggrCaseTypeConfigRepository.findAll()).thenReturn(setUpCaseTypes());
+
+		// Stub update_handler lookups for update case types
+		lenient().when(byggrCaseTypeConfigRepository.findById("NEIGHBORHOOD_NOTIFICATION"))
+			.thenReturn(Optional.of(ByggrCaseTypeConfigEntity.builder().withCaseTypeName("NEIGHBORHOOD_NOTIFICATION").withUpdateHandler("NEIGHBORHOOD_RESPONSE").build()));
+		lenient().when(byggrCaseTypeConfigRepository.findById("PROPERTY_OWNER_NOTIFICATION"))
+			.thenReturn(Optional.of(ByggrCaseTypeConfigEntity.builder().withCaseTypeName("PROPERTY_OWNER_NOTIFICATION").withUpdateHandler("NEIGHBORHOOD_RESPONSE").build()));
+		lenient().when(byggrCaseTypeConfigRepository.findById("BYGGR_ADD_CERTIFIED_INSPECTOR"))
+			.thenReturn(Optional.of(ByggrCaseTypeConfigEntity.builder().withCaseTypeName("BYGGR_ADD_CERTIFIED_INSPECTOR").withUpdateHandler("ADD_INSPECTOR").build()));
+		lenient().when(byggrCaseTypeConfigRepository.findById("BYGGR_ADDITIONAL_DOCUMENTS"))
+			.thenReturn(Optional.of(ByggrCaseTypeConfigEntity.builder().withCaseTypeName("BYGGR_ADDITIONAL_DOCUMENTS").withUpdateHandler("ADD_DOCUMENTS").build()));
+
 		TestUtil.standardMockFb(fbServiceMock);
 		TestUtil.standardMockArendeExport(arendeExportClientMock);
 		TestUtil.standardMockCitizen(partyIntegrationMock);
@@ -289,17 +301,17 @@ class ByggrServiceTest {
 
 	// ANSOKAN_OM_BYGGLOV
 	@ParameterizedTest
-	@EnumSource(value = CaseType.class, names = {
+	@ValueSource(strings = {
 		"STRANDSKYDD_NYBYGGNAD",
 		"STRANDSKYDD_ANLAGGANDE", "STRANDSKYDD_ANORDNANDE",
 		"STRANDSKYDD_ANDRAD_ANVANDNING"
 	})
-	void testStrandskyddCaseType(final CaseType caseType) {
+	void testStrandskyddCaseType(final String caseType) {
 		final var caseTypes = Map.of(
-			STRANDSKYDD_NYBYGGNAD, BYGGR_ARENDEMENING_STRANDSKYDD_FOR_NYBYGGNAD,
-			STRANDSKYDD_ANLAGGANDE, BYGGR_ARENDEMENING_STRANDSKYDD_FOR_ANLAGGANDE,
-			STRANDSKYDD_ANORDNANDE, BYGGR_ARENDEMENING_STRANDSKYDD_FOR_ANORDNANDE,
-			STRANDSKYDD_ANDRAD_ANVANDNING, BYGGR_ARENDEMENING_STRANDSKYDD_FOR_ANDRAD_ANVANDNING);
+			"STRANDSKYDD_NYBYGGNAD", "Strandskyddsdispens för nybyggnad av",
+			"STRANDSKYDD_ANLAGGANDE", "Strandskyddsdispens för anläggande av",
+			"STRANDSKYDD_ANORDNANDE", "Strandskyddsdispens för anordnare av",
+			"STRANDSKYDD_ANDRAD_ANVANDNING", "Strandskyddsdispens för ändrad användning av");
 
 		final var input = createByggRCaseDTO(caseType, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		final var inputFacility = input.getFacilities().getFirst();
@@ -317,10 +329,10 @@ class ByggrServiceTest {
 		final var handlingar = saveNewArendeMessage.getHandlingar();
 
 		// SaveNewArendeMessage
-		assertThat(saveNewArendeMessage.getHandlaggarSign()).isEqualTo(Constants.BYGGR_SYSTEM_HANDLAGGARE_SIGN);
+		assertThat(saveNewArendeMessage.getHandlaggarSign()).isEqualTo("SYSTEM");
 
 		// Arende
-		assertThatArendeIsEqual(arende, STRANDSKYDD, inputFacility);
+		assertThatArendeIsEqual(arende, "DI", inputFacility);
 		assertThat(arende.getArendeklass()).isEqualTo(FacilityType.valueOf(inputFacility.getFacilityType()).getValue());
 		assertThat(arende.getBeskrivning()).isEqualTo("%s %s samt %s".formatted(caseTypes.get(caseType), FacilityType.valueOf(inputFacility.getFacilityType()).getDescription(), input.getCaseTitleAddition().trim().toLowerCase()));
 		assertThat(arende.getProjektnr()).isEqualTo(input.getStakeholders().getFirst().getAddresses().getFirst().getInvoiceMarking());
@@ -343,15 +355,15 @@ class ByggrServiceTest {
 		assertThat(handling.getDokument().getFil().getFilAndelse()).isEqualTo(inputAttachment.getExtension().toLowerCase());
 		assertThat(handling.getDokument().getNamn()).isEqualTo(inputAttachment.getName());
 		assertThat(handling.getDokument().getBeskrivning()).isEqualTo(inputAttachment.getNote());
-		assertThat(handling.getStatus()).isEqualTo(Constants.BYGGR_HANDLING_STATUS_INKOMMEN);
+		assertThat(handling.getStatus()).isEqualTo("Inkommen");
 		assertThat(handling.getTyp()).isEqualTo(inputAttachment.getCategory());
 
 		// Handelser
 		assertThat(handelse.getStartDatum()).isNotNull();
-		assertThat(handelse.getRiktning()).isEqualTo(Constants.BYGGR_HANDELSE_RIKTNING_IN);
-		assertThat(handelse.getRubrik()).isEqualTo(RUBRIK_STRANDSKYDD);
-		assertThat(handelse.getHandelsetyp()).isEqualTo(HANDELSETYP_ANSOKAN);
-		assertThat(handelse.getHandelseslag()).isEqualTo(HANDELSESLAG_STRANDSKYDD);
+		assertThat(handelse.getRiktning()).isEqualTo("In");
+		assertThat(handelse.getRubrik()).isEqualTo("Strandskyddsdispens");
+		assertThat(handelse.getHandelsetyp()).isEqualTo("ANSÖKAN");
+		assertThat(handelse.getHandelseslag()).isEqualTo("Strand");
 	}
 
 	/**
@@ -359,87 +371,69 @@ class ByggrServiceTest {
 	 */
 	@Test
 	void updateByggRCaseNeighborHoodNotification1() {
-		final var byggrServiceSpy = Mockito.spy(byggrService);
-		final var byggRCaseDto = createByggRCaseDTO(NEIGHBORHOOD_NOTIFICATION, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		final var byggRCaseDto = createByggRCaseDTO("NEIGHBORHOOD_NOTIFICATION", AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		final var confirmDeliveryRequest = new ConfirmDeliveryRequest().delivered(true).caseId(byggRCaseDto.getExtraParameters().get(ERRAND_NR)).system(BYGGR);
-		doNothing().when(byggrServiceSpy).respondToNeighborhoodNotification(byggRCaseDto);
 		when(caseRepositoryMock.findByIdAndMunicipalityId(byggRCaseDto.getExternalCaseId(), MUNICIPALITY_ID)).thenReturn(Optional.of(CaseEntity.builder().build()));
 
-		byggrServiceSpy.updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
+		byggrService.updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
 
-		verify(byggrServiceSpy).updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
-		verify(byggrServiceSpy).respondToNeighborhoodNotification(byggRCaseDto);
+		verify(updateHandlersMock.get("NEIGHBORHOOD_RESPONSE")).handle(byggRCaseDto);
 		verify(oepIntegratorClientMock).confirmDelivery(MUNICIPALITY_ID, InstanceType.EXTERNAL, byggRCaseDto.getExternalCaseId(), confirmDeliveryRequest);
 		verify(caseRepositoryMock).findByIdAndMunicipalityId(byggRCaseDto.getExternalCaseId(), MUNICIPALITY_ID);
 		verify(caseRepositoryMock).delete(any());
-		verifyNoMoreInteractions(byggrServiceSpy, oepIntegratorClientMock, caseRepositoryMock);
 	}
 
 	/**
-	 * Test scenario where an exception is thrown when updating a case of type NEIGHBORHOOD_NOTIFICATION.
+	 * Test scenario where an exception is thrown when updating a case of type "NEIGHBORHOOD_NOTIFICATION".
 	 */
 	@Test
 	void updateByggRCaseNeighborHoodNotification2() {
-		final var byggrServiceSpy = Mockito.spy(byggrService);
-		final var byggRCaseDto = createByggRCaseDTO(NEIGHBORHOOD_NOTIFICATION, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		final var byggRCaseDto = createByggRCaseDTO("NEIGHBORHOOD_NOTIFICATION", AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		final var subject = "Incident from CaseManagement[JUnit]";
 		final var message = "[%s][BYGGR] Could not update case with externalCaseId: %s. Exception: %s ".formatted(MUNICIPALITY_ID, byggRCaseDto.getExternalCaseId(), null);
-		doThrow(RuntimeException.class).when(byggrServiceSpy).respondToNeighborhoodNotification(byggRCaseDto);
+		doThrow(RuntimeException.class).when(updateHandlersMock.get("NEIGHBORHOOD_RESPONSE")).handle(byggRCaseDto);
 		when(environmentUtilMock.extractEnvironment()).thenReturn("JUnit");
-		doNothing().when(messagingIntegrationMock).sendSlack(message, MUNICIPALITY_ID);
-		doNothing().when(messagingIntegrationMock).sendMail(subject, message, MUNICIPALITY_ID);
 
-		byggrServiceSpy.updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
+		byggrService.updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
 
-		verify(byggrServiceSpy).updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
-		verify(byggrServiceSpy).respondToNeighborhoodNotification(byggRCaseDto);
+		verify(updateHandlersMock.get("NEIGHBORHOOD_RESPONSE")).handle(byggRCaseDto);
 		verify(messagingIntegrationMock).sendSlack(message, MUNICIPALITY_ID);
 		verify(messagingIntegrationMock).sendMail(subject, message, MUNICIPALITY_ID);
-		verifyNoMoreInteractions(byggrServiceSpy, messagingIntegrationMock);
 	}
 
 	/**
-	 * Test scenario where a PROPERTY_OWNER_NOTIFICATION case is handled successfully.
+	 * Test scenario where a "PROPERTY_OWNER_NOTIFICATION" case is handled successfully.
 	 */
 	@Test
 	void updateByggRCasePropertyOwnerNotification() {
-		final var byggrServiceSpy = Mockito.spy(byggrService);
-		final var byggRCaseDto = createByggRCaseDTO(PROPERTY_OWNER_NOTIFICATION, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		final var byggRCaseDto = createByggRCaseDTO("PROPERTY_OWNER_NOTIFICATION", AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		final var confirmDeliveryRequest = new ConfirmDeliveryRequest().delivered(true).caseId(byggRCaseDto.getExtraParameters().get(ERRAND_NR)).system(BYGGR);
-		doNothing().when(byggrServiceSpy).respondToNeighborhoodNotification(byggRCaseDto);
 		when(caseRepositoryMock.findByIdAndMunicipalityId(byggRCaseDto.getExternalCaseId(), MUNICIPALITY_ID)).thenReturn(Optional.of(CaseEntity.builder().build()));
 
-		byggrServiceSpy.updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
+		byggrService.updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
 
-		verify(byggrServiceSpy).updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
-		verify(byggrServiceSpy).respondToNeighborhoodNotification(byggRCaseDto);
+		verify(updateHandlersMock.get("NEIGHBORHOOD_RESPONSE")).handle(byggRCaseDto);
 		verify(oepIntegratorClientMock).confirmDelivery(MUNICIPALITY_ID, InstanceType.EXTERNAL, byggRCaseDto.getExternalCaseId(), confirmDeliveryRequest);
 		verify(caseRepositoryMock).findByIdAndMunicipalityId(byggRCaseDto.getExternalCaseId(), MUNICIPALITY_ID);
 		verify(caseRepositoryMock).delete(any());
-		verifyNoMoreInteractions(byggrServiceSpy, oepIntegratorClientMock, caseRepositoryMock);
 	}
 
 	/**
-	 * Test scenario where an exception is thrown when updating a case of type PROPERTY_OWNER_NOTIFICATION.
+	 * Test scenario where an exception is thrown when updating a case of type "PROPERTY_OWNER_NOTIFICATION".
 	 */
 	@Test
 	void updateByggRCasePropertyOwnerNotificationException() {
-		final var byggrServiceSpy = Mockito.spy(byggrService);
-		final var byggRCaseDto = createByggRCaseDTO(PROPERTY_OWNER_NOTIFICATION, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		final var byggRCaseDto = createByggRCaseDTO("PROPERTY_OWNER_NOTIFICATION", AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		final var subject = "Incident from CaseManagement[JUnit]";
 		final var message = "[%s][BYGGR] Could not update case with externalCaseId: %s. Exception: %s ".formatted(MUNICIPALITY_ID, byggRCaseDto.getExternalCaseId(), null);
-		doThrow(RuntimeException.class).when(byggrServiceSpy).respondToNeighborhoodNotification(byggRCaseDto);
+		doThrow(RuntimeException.class).when(updateHandlersMock.get("NEIGHBORHOOD_RESPONSE")).handle(byggRCaseDto);
 		when(environmentUtilMock.extractEnvironment()).thenReturn("JUnit");
-		doNothing().when(messagingIntegrationMock).sendSlack(message, MUNICIPALITY_ID);
-		doNothing().when(messagingIntegrationMock).sendMail(subject, message, MUNICIPALITY_ID);
 
-		byggrServiceSpy.updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
+		byggrService.updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
 
-		verify(byggrServiceSpy).updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
-		verify(byggrServiceSpy).respondToNeighborhoodNotification(byggRCaseDto);
+		verify(updateHandlersMock.get("NEIGHBORHOOD_RESPONSE")).handle(byggRCaseDto);
 		verify(messagingIntegrationMock).sendSlack(message, MUNICIPALITY_ID);
 		verify(messagingIntegrationMock).sendMail(subject, message, MUNICIPALITY_ID);
-		verifyNoMoreInteractions(byggrServiceSpy, messagingIntegrationMock);
 	}
 
 	/**
@@ -447,45 +441,34 @@ class ByggrServiceTest {
 	 */
 	@Test
 	void updateByggRCaseByggrAddCertifiedInspector1() {
-		final var byggrServiceSpy = Mockito.spy(byggrService);
-		final var byggRCaseDto = createByggRCaseDTO(BYGGR_ADD_CERTIFIED_INSPECTOR, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		final var byggRCaseDto = createByggRCaseDTO("BYGGR_ADD_CERTIFIED_INSPECTOR", AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		final var confirmDeliveryRequest = new ConfirmDeliveryRequest().delivered(true).caseId(byggRCaseDto.getExtraParameters().get(ERRAND_NR)).system(BYGGR);
-		doNothing().when(byggrServiceSpy).addCertifiedInspector(byggRCaseDto);
 		when(caseRepositoryMock.findByIdAndMunicipalityId(byggRCaseDto.getExternalCaseId(), MUNICIPALITY_ID)).thenReturn(Optional.of(CaseEntity.builder().build()));
 
-		byggrServiceSpy.updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
+		byggrService.updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
 
-		verify(byggrServiceSpy).updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
-		verify(byggrServiceSpy).addCertifiedInspector(byggRCaseDto);
-
+		verify(updateHandlersMock.get("ADD_INSPECTOR")).handle(byggRCaseDto);
 		verify(oepIntegratorClientMock).confirmDelivery(MUNICIPALITY_ID, InstanceType.EXTERNAL, byggRCaseDto.getExternalCaseId(), confirmDeliveryRequest);
-
 		verify(caseRepositoryMock).findByIdAndMunicipalityId(byggRCaseDto.getExternalCaseId(), MUNICIPALITY_ID);
 		verify(caseRepositoryMock).delete(any());
-		verifyNoMoreInteractions(byggrServiceSpy, oepIntegratorClientMock, caseRepositoryMock);
 	}
 
 	/**
-	 * Test scenario where an exception is thrown when updating a case of type BYGGR_ADD_CERTIFIED_INSPECTOR.
+	 * Test scenario where an exception is thrown when updating a case of type "BYGGR_ADD_CERTIFIED_INSPECTOR".
 	 */
 	@Test
 	void updateByggRCaseByggrAddCertifiedInspector2() {
-		final var byggrServiceSpy = Mockito.spy(byggrService);
-		final var byggRCaseDto = createByggRCaseDTO(BYGGR_ADD_CERTIFIED_INSPECTOR, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		final var byggRCaseDto = createByggRCaseDTO("BYGGR_ADD_CERTIFIED_INSPECTOR", AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		final var subject = "Incident from CaseManagement[JUnit]";
 		final var message = "[%s][BYGGR] Could not update case with externalCaseId: %s. Exception: %s ".formatted(MUNICIPALITY_ID, byggRCaseDto.getExternalCaseId(), null);
-		doThrow(RuntimeException.class).when(byggrServiceSpy).addCertifiedInspector(byggRCaseDto);
+		doThrow(RuntimeException.class).when(updateHandlersMock.get("ADD_INSPECTOR")).handle(byggRCaseDto);
 		when(environmentUtilMock.extractEnvironment()).thenReturn("JUnit");
-		doNothing().when(messagingIntegrationMock).sendSlack(message, MUNICIPALITY_ID);
-		doNothing().when(messagingIntegrationMock).sendMail(subject, message, MUNICIPALITY_ID);
 
-		byggrServiceSpy.updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
+		byggrService.updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
 
-		verify(byggrServiceSpy).updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
-		verify(byggrServiceSpy).addCertifiedInspector(byggRCaseDto);
+		verify(updateHandlersMock.get("ADD_INSPECTOR")).handle(byggRCaseDto);
 		verify(messagingIntegrationMock).sendSlack(message, MUNICIPALITY_ID);
 		verify(messagingIntegrationMock).sendMail(subject, message, MUNICIPALITY_ID);
-		verifyNoMoreInteractions(byggrServiceSpy, messagingIntegrationMock);
 	}
 
 	/**
@@ -493,52 +476,43 @@ class ByggrServiceTest {
 	 */
 	@Test
 	void updateByggRCaseByggrAdditionalDocuments1() {
-		final var byggrServiceSpy = Mockito.spy(byggrService);
-		final var byggRCaseDto = createByggRCaseDTO(BYGGR_ADDITIONAL_DOCUMENTS, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		final var byggRCaseDto = createByggRCaseDTO("BYGGR_ADDITIONAL_DOCUMENTS", AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		final var confirmDeliveryRequest = new ConfirmDeliveryRequest().delivered(true).caseId(byggRCaseDto.getExtraParameters().get(ERRAND_NR)).system(BYGGR);
-		doNothing().when(byggrServiceSpy).addAdditionalDocuments(byggRCaseDto);
 		when(caseRepositoryMock.findByIdAndMunicipalityId(byggRCaseDto.getExternalCaseId(), MUNICIPALITY_ID)).thenReturn(Optional.of(CaseEntity.builder().build()));
 
-		byggrServiceSpy.updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
+		byggrService.updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
 
-		verify(byggrServiceSpy).updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
-		verify(byggrServiceSpy).addAdditionalDocuments(byggRCaseDto);
+		verify(updateHandlersMock.get("ADD_DOCUMENTS")).handle(byggRCaseDto);
 		verify(oepIntegratorClientMock).confirmDelivery(MUNICIPALITY_ID, InstanceType.EXTERNAL, byggRCaseDto.getExternalCaseId(), confirmDeliveryRequest);
 		verify(caseRepositoryMock).findByIdAndMunicipalityId(byggRCaseDto.getExternalCaseId(), MUNICIPALITY_ID);
 		verify(caseRepositoryMock).delete(any());
-		verifyNoMoreInteractions(byggrServiceSpy, oepIntegratorClientMock, caseRepositoryMock);
 	}
 
 	/**
-	 * Test scenario where an exception is thrown when updating a case of type BYGGR_ADD_CERTIFIED_INSPECTOR.
+	 * Test scenario where an exception is thrown when updating a case of type "BYGGR_ADDITIONAL_DOCUMENTS".
 	 */
 	@Test
 	void updateByggRCaseByggrAdditionalDocuments2() {
-		final var byggrServiceSpy = Mockito.spy(byggrService);
-		final var byggRCaseDto = createByggRCaseDTO(BYGGR_ADDITIONAL_DOCUMENTS, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		final var byggRCaseDto = createByggRCaseDTO("BYGGR_ADDITIONAL_DOCUMENTS", AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		final var subject = "Incident from CaseManagement[JUnit]";
 		final var message = "[%s][BYGGR] Could not update case with externalCaseId: %s. Exception: %s ".formatted(MUNICIPALITY_ID, byggRCaseDto.getExternalCaseId(), null);
-		doThrow(RuntimeException.class).when(byggrServiceSpy).addAdditionalDocuments(byggRCaseDto);
+		doThrow(RuntimeException.class).when(updateHandlersMock.get("ADD_DOCUMENTS")).handle(byggRCaseDto);
 		when(environmentUtilMock.extractEnvironment()).thenReturn("JUnit");
-		doNothing().when(messagingIntegrationMock).sendSlack(message, MUNICIPALITY_ID);
-		doNothing().when(messagingIntegrationMock).sendMail(subject, message, MUNICIPALITY_ID);
 
-		byggrServiceSpy.updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
+		byggrService.updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
 
-		verify(byggrServiceSpy).updateByggRCase(byggRCaseDto, MUNICIPALITY_ID);
-		verify(byggrServiceSpy).addAdditionalDocuments(byggRCaseDto);
+		verify(updateHandlersMock.get("ADD_DOCUMENTS")).handle(byggRCaseDto);
 		verify(messagingIntegrationMock).sendSlack(message, MUNICIPALITY_ID);
 		verify(messagingIntegrationMock).sendMail(subject, message, MUNICIPALITY_ID);
-		verifyNoMoreInteractions(byggrServiceSpy, messagingIntegrationMock);
 	}
 
 	// ANSOKAN_OM_BYGGLOV
 	@ParameterizedTest
-	@EnumSource(value = CaseType.class, names = {
+	@ValueSource(strings = {
 		"NYBYGGNAD_ANSOKAN_OM_BYGGLOV",
 		"ANDRING_ANSOKAN_OM_BYGGLOV", "TILLBYGGNAD_ANSOKAN_OM_BYGGLOV"
 	})
-	void testPostNybyggnad(final CaseType caseType) {
+	void testPostNybyggnad(final String caseType) {
 		// Arrange
 		final var input = createByggRCaseDTO(caseType, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		final var inputFacility = input.getFacilities().getFirst();
@@ -559,17 +533,17 @@ class ByggrServiceTest {
 		final var handlingar = saveNewArendeMessage.getHandlingar();
 
 		// SaveNewArendeMessage
-		assertThat(saveNewArendeMessage.getHandlaggarSign()).isEqualTo(Constants.BYGGR_SYSTEM_HANDLAGGARE_SIGN);
+		assertThat(saveNewArendeMessage.getHandlaggarSign()).isEqualTo("SYSTEM");
 
 		// Arende
 
-		if (!ANDRING_ANSOKAN_OM_BYGGLOV.equals(caseType)) {
+		if (!"ANDRING_ANSOKAN_OM_BYGGLOV".equals(caseType)) {
 			assertThat(arende.getArendeklass()).isEqualTo(FacilityType.valueOf(inputFacility.getFacilityType()).getValue());
 		} else {
 			assertThat(arende.getArendeslag()).isEqualTo(FacilityType.valueOf(inputFacility.getFacilityType()).getValue());
 		}
 
-		assertThatArendeIsEqual(arende, BYGGLOV_FOR, inputFacility);
+		assertThatArendeIsEqual(arende, "BL", inputFacility);
 
 		// Intressenter
 		assertThat(arende.getIntressentLista().getIntressent()).hasSize(3);
@@ -589,17 +563,17 @@ class ByggrServiceTest {
 
 		// Handelser
 		assertThat(handelse.getStartDatum()).isNotNull();
-		assertThat(handelse.getRiktning()).isEqualTo(Constants.BYGGR_HANDELSE_RIKTNING_IN);
-		assertThat(handelse.getRubrik()).isEqualTo(RUBRIK_BYGGLOV);
-		assertThat(handelse.getHandelsetyp()).isEqualTo(HANDELSETYP_ANSOKAN);
-		assertThat(handelse.getHandelseslag()).isEqualTo(HANDELSESLAG_BYGGLOV);
+		assertThat(handelse.getRiktning()).isEqualTo("In");
+		assertThat(handelse.getRubrik()).isEqualTo("Bygglov");
+		assertThat(handelse.getHandelsetyp()).isEqualTo("ANSÖKAN");
+		assertThat(handelse.getHandelseslag()).isEqualTo("Bygglov");
 	}
 
 	// ANMALAN_ATTEFALL
 	@Test
 	void testPostAttefall() {
 
-		final ByggRCaseDTO input = createByggRCaseDTO(CaseType.ANMALAN_ATTEFALL, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		final ByggRCaseDTO input = createByggRCaseDTO("ANMALAN_ATTEFALL", AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		// Set facilityType to a compatible value
 		input.getFacilities().getFirst().setFacilityType(FacilityType.EXTENSION.toString());
 		// Set addressCategory to not be INVOICE_ADDRESS, so we can test projektnummer to be propertyDesignation
@@ -618,10 +592,10 @@ class ByggrServiceTest {
 		final ArrayOfHandling handlingar = saveNewArendeMessage.getHandlingar();
 
 		// SaveNewArendeMessage
-		assertThat(saveNewArendeMessage.getHandlaggarSign()).isEqualTo(Constants.BYGGR_SYSTEM_HANDLAGGARE_SIGN);
+		assertThat(saveNewArendeMessage.getHandlaggarSign()).isEqualTo("SYSTEM");
 
 		// Arende
-		assertThatArendeIsEqual(arende, ATTEFALL, inputFacility);
+		assertThatArendeIsEqual(arende, "ATTANM", inputFacility);
 		assertThat(arende.getArendeslag()).isEqualTo(FacilityType.valueOf(inputFacility.getFacilityType()).getValue());
 		assertThat(arende.getArendeklass()).isNull();
 		// Intressenter
@@ -638,17 +612,17 @@ class ByggrServiceTest {
 
 		// Handelser
 		assertThat(handelse.getStartDatum()).isNotNull();
-		assertThat(handelse.getRiktning()).isEqualTo(Constants.BYGGR_HANDELSE_RIKTNING_IN);
-		assertThat(handelse.getRubrik()).isEqualTo(RUBRIK_ANMALAN_ATTEFALL);
-		assertThat(handelse.getHandelsetyp()).isEqualTo(HANDELSETYP_ANMALAN);
-		assertThat(handelse.getHandelseslag()).isEqualTo(HANDELSESLAG_ANMALAN_ATTEFALL);
+		assertThat(handelse.getRiktning()).isEqualTo("In");
+		assertThat(handelse.getRubrik()).isEqualTo("Anmälan Attefall");
+		assertThat(handelse.getHandelsetyp()).isEqualTo("ANM");
+		assertThat(handelse.getHandelseslag()).isEqualTo("ANMATT");
 	}
 
 	// ANMALAN_ELDSTAD
 	@Test
 	void testPostEldstad() {
 
-		final ByggRCaseDTO input = createByggRCaseDTO(CaseType.ANMALAN_ELDSTAD,
+		final ByggRCaseDTO input = createByggRCaseDTO("ANMALAN_ELDSTAD",
 			AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		// Set facilityType to a compatible value
 		input.getFacilities().getFirst().setFacilityType(FacilityType.FIREPLACE.toString());
@@ -668,10 +642,10 @@ class ByggrServiceTest {
 		final ArrayOfHandling handlingar = saveNewArendeMessage.getHandlingar();
 
 		// SaveNewArendeMessage
-		assertThat(saveNewArendeMessage.getHandlaggarSign()).isEqualTo(Constants.BYGGR_SYSTEM_HANDLAGGARE_SIGN);
+		assertThat(saveNewArendeMessage.getHandlaggarSign()).isEqualTo("SYSTEM");
 
 		// Arende
-		assertThatArendeIsEqual(arende, HANDELSETYP_ANMALAN, inputFacility);
+		assertThatArendeIsEqual(arende, "ANM", inputFacility);
 		assertThat(arende.getArendeslag()).isEqualTo(FacilityType.valueOf(inputFacility.getFacilityType()).getValue());
 		assertThat(arende.getArendeklass()).isNull();
 
@@ -689,10 +663,10 @@ class ByggrServiceTest {
 
 		// Handelser
 		assertThat(handelse.getStartDatum()).isNotNull();
-		assertThat(handelse.getRiktning()).isEqualTo(Constants.BYGGR_HANDELSE_RIKTNING_IN);
-		assertThat(handelse.getRubrik()).isEqualTo(Constants.BYGGR_HANDELSE_RUBRIK_ELDSTAD);
-		assertThat(handelse.getHandelsetyp()).isEqualTo(HANDELSETYP_ANMALAN);
-		assertThat(handelse.getHandelseslag()).isEqualTo(Constants.BYGGR_HANDELSESLAG_ELDSTAD);
+		assertThat(handelse.getRiktning()).isEqualTo("In");
+		assertThat(handelse.getRubrik()).isEqualTo("Eldstad");
+		assertThat(handelse.getHandelsetyp()).isEqualTo("ANM");
+		assertThat(handelse.getHandelseslag()).isEqualTo("ELD1");
 	}
 
 	// ANMALAN_ELDSTAD_SMOKE
@@ -700,7 +674,7 @@ class ByggrServiceTest {
 	void testPostEldstadRokkanal() {
 
 		// Arrange
-		final var input = createByggRCaseDTO(CaseType.ANMALAN_ELDSTAD, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		final var input = createByggRCaseDTO("ANMALAN_ELDSTAD", AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		// Set facilityType to a compatible value
 		input.getFacilities().getFirst().setFacilityType(FacilityType.FIREPLACE_SMOKECHANNEL.toString());
 		// Set addressCategory to not be INVOICE_ADDRESS, so we can test projektnummer to be propertyDesignation
@@ -721,10 +695,10 @@ class ByggrServiceTest {
 		final var handelse = saveNewArendeMessage.getHandelse();
 
 		// SaveNewArendeMessage
-		assertThat(saveNewArendeMessage.getHandlaggarSign()).isEqualTo(Constants.BYGGR_SYSTEM_HANDLAGGARE_SIGN);
+		assertThat(saveNewArendeMessage.getHandlaggarSign()).isEqualTo("SYSTEM");
 
 		// Arende
-		assertThatArendeIsEqual(arende, HANDELSETYP_ANMALAN, inputFacility);
+		assertThatArendeIsEqual(arende, "ANM", inputFacility);
 		assertThat(arende.getArendeslag()).isEqualTo(FacilityType.valueOf(inputFacility.getFacilityType()).getValue());
 		assertThat(arende.getArendeklass()).isNull();
 
@@ -742,15 +716,15 @@ class ByggrServiceTest {
 
 		// Handelser
 		assertThat(handelse.getStartDatum()).isNotNull();
-		assertThat(handelse.getRiktning()).isEqualTo(Constants.BYGGR_HANDELSE_RIKTNING_IN);
-		assertThat(handelse.getRubrik()).isEqualTo(Constants.BYGGR_HANDELSE_RUBRIK_ELDSTAD_ROKKANAL);
-		assertThat(handelse.getHandelsetyp()).isEqualTo(HANDELSETYP_ANMALAN);
-		assertThat(handelse.getHandelseslag()).isEqualTo(Constants.BYGGR_HANDELSESLAG_ELDSTAD_ROKKANAL);
+		assertThat(handelse.getRiktning()).isEqualTo("In");
+		assertThat(handelse.getRubrik()).isEqualTo("Eldstad/Rökkanal");
+		assertThat(handelse.getHandelsetyp()).isEqualTo("ANM");
+		assertThat(handelse.getHandelseslag()).isEqualTo("ELD");
 	}
 
 	@Test
 	void testCallToCaseMapping() {
-		final ByggRCaseDTO input = createByggRCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		final ByggRCaseDTO input = createByggRCaseDTO("NYBYGGNAD_ANSOKAN_OM_BYGGLOV", AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		input.getExtraParameters().put(Constants.SERVICE_NAME, "Test service name");
 		final PersonDTO applicant = (PersonDTO) TestUtil.createStakeholderDTO(StakeholderType.PERSON, List.of(StakeholderRole.APPLICANT.toString()));
 		input.setStakeholders(List.of(applicant));
@@ -763,7 +737,7 @@ class ByggrServiceTest {
 	// Test no duplicates of arendeFastighet
 	@Test
 	void testNoDuplicateFacilities() {
-		final ByggRCaseDTO input = createByggRCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		final ByggRCaseDTO input = createByggRCaseDTO("NYBYGGNAD_ANSOKAN_OM_BYGGLOV", AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 
 		final String propertyDesignation = "Sundsvall test 123:123";
 		final var facility1 = TestUtil.createFacilityDTO(true);
@@ -789,7 +763,7 @@ class ByggrServiceTest {
 	// Test getMainOrTheOnlyFacility
 	@Test
 	void testGetMainOrTheOnlyFacility() {
-		final ByggRCaseDTO input = createByggRCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		final ByggRCaseDTO input = createByggRCaseDTO("NYBYGGNAD_ANSOKAN_OM_BYGGLOV", AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		// Set addressCategory to not be INVOICE_ADDRESS, so we can test projektnummer to be propertyDesignation
 		input.getStakeholders().getFirst().getAddresses().getFirst().setAddressCategories(List.of(AddressCategory.POSTAL_ADDRESS));
 
@@ -823,7 +797,7 @@ class ByggrServiceTest {
 
 	@Test
 	void testSetPersonInvoiceAddressError() {
-		final ByggRCaseDTO input = createByggRCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		final ByggRCaseDTO input = createByggRCaseDTO("NYBYGGNAD_ANSOKAN_OM_BYGGLOV", AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		final PersonDTO applicant = (PersonDTO) TestUtil.createStakeholderDTO(StakeholderType.PERSON, List.of(StakeholderRole.APPLICANT.toString()));
 		applicant.setAddresses(List.of(TestUtil.createAddressDTO(List.of(AddressCategory.INVOICE_ADDRESS))));
 		input.setStakeholders(List.of(applicant));
@@ -839,7 +813,7 @@ class ByggrServiceTest {
 	void testSetPersonFields() {
 
 		// Arrange
-		final ByggRCaseDTO input = createByggRCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		final ByggRCaseDTO input = createByggRCaseDTO("NYBYGGNAD_ANSOKAN_OM_BYGGLOV", AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		final PersonDTO applicant = (PersonDTO) TestUtil.createStakeholderDTO(StakeholderType.PERSON, List.of(StakeholderRole.APPLICANT.toString()));
 		input.setStakeholders(List.of(applicant));
 
@@ -863,7 +837,7 @@ class ByggrServiceTest {
 
 	@Test
 	void testSetOrganisationFields() {
-		final ByggRCaseDTO input = createByggRCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		final ByggRCaseDTO input = createByggRCaseDTO("NYBYGGNAD_ANSOKAN_OM_BYGGLOV", AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		final OrganizationDTO applicant = (OrganizationDTO) TestUtil.createStakeholderDTO(StakeholderType.ORGANIZATION, List.of(StakeholderRole.APPLICANT.toString()));
 		input.setStakeholders(List.of(applicant));
 
@@ -884,7 +858,7 @@ class ByggrServiceTest {
 	// 1 applicant and 1 propertyOwner
 	@Test
 	void testPopulateStakeholderListWithPropertyOwners1() {
-		final ByggRCaseDTO input = createByggRCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		final ByggRCaseDTO input = createByggRCaseDTO("NYBYGGNAD_ANSOKAN_OM_BYGGLOV", AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		final PersonDTO applicant = (PersonDTO) TestUtil.createStakeholderDTO(StakeholderType.PERSON, List.of(StakeholderRole.APPLICANT.toString()));
 		final PersonDTO propertyOwner = (PersonDTO) TestUtil.createStakeholderDTO(StakeholderType.PERSON, List.of(StakeholderRole.PROPERTY_OWNER.toString()));
 		input.setStakeholders(List.of(applicant));
@@ -913,7 +887,7 @@ class ByggrServiceTest {
 	// same as testPopulateStakeholderListWithPropertyOwners1 but for organization
 	@Test
 	void testPopulateStakeholderListWithPropertyOwners11() {
-		final ByggRCaseDTO input = createByggRCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		final ByggRCaseDTO input = createByggRCaseDTO("NYBYGGNAD_ANSOKAN_OM_BYGGLOV", AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		final OrganizationDTO applicant = (OrganizationDTO) TestUtil.createStakeholderDTO(StakeholderType.ORGANIZATION, List.of(StakeholderRole.APPLICANT.toString()));
 		final OrganizationDTO propertyOwner = (OrganizationDTO) TestUtil.createStakeholderDTO(StakeholderType.ORGANIZATION, List.of(StakeholderRole.PROPERTY_OWNER.toString()));
 		input.setStakeholders(List.of(applicant));
@@ -942,7 +916,7 @@ class ByggrServiceTest {
 	// 1 applicant that is also a propertyOwner + 1 more propertyOwner
 	@Test
 	void testPopulateStakeholderListWithPropertyOwners2() {
-		final var input = createByggRCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		final var input = createByggRCaseDTO("NYBYGGNAD_ANSOKAN_OM_BYGGLOV", AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		final var applicant = (PersonDTO) TestUtil.createStakeholderDTO(StakeholderType.PERSON, List.of(StakeholderRole.APPLICANT.toString()));
 		input.setStakeholders(List.of(applicant));
 
@@ -970,7 +944,7 @@ class ByggrServiceTest {
 	// Case does not contain PropertyOwner
 	@Test
 	void testContainsPropertyOwner() {
-		final ByggRCaseDTO input = createByggRCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		final ByggRCaseDTO input = createByggRCaseDTO("NYBYGGNAD_ANSOKAN_OM_BYGGLOV", AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		final PersonDTO applicant = (PersonDTO) TestUtil.createStakeholderDTO(StakeholderType.PERSON, List.of(StakeholderRole.APPLICANT.toString()));
 		input.setStakeholders(List.of(applicant));
 
@@ -990,17 +964,17 @@ class ByggrServiceTest {
 
 		assertHandelse(postResult.getDnr(),
 			saveNewHandelseRequestCaptor.getValue().getMessage(),
-			List.of(Constants.BYGGR_HANDELSE_ANTECKNING_FASTIGHETSAGARE,
-				Constants.BYGGR_HANDELSE_ANTECKNING_DU_MASTE_REGISTRERA_DETTA_MANUELLT),
-			Constants.BYGGR_HANDELSE_RUBRIK_MANUELL_HANTERING,
-			Constants.BYGGR_HANDELSETYP_STATUS,
-			Constants.BYGGR_HANDELSESLAG_MANUELL_HANTERING_KRAVS,
+			List.of("- Fastighetsägare kunde inte registreras maskinellt.",
+				"Du måste registrera ovanstående punkter manuellt. Det inkomna ärendet hittar du i handlingen \"Ansökan om bygglov\"."),
+			"Manuell hantering",
+			"STATUS",
+			"MANHANT",
 			null);
 	}
 
 	@Test
 	void testControlOfficial() {
-		final ByggRCaseDTO input = createByggRCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		final ByggRCaseDTO input = createByggRCaseDTO("NYBYGGNAD_ANSOKAN_OM_BYGGLOV", AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		final PersonDTO controlOfficial = (PersonDTO) TestUtil.createStakeholderDTO(StakeholderType.PERSON, List.of(StakeholderRole.CONTROL_OFFICIAL.toString()));
 		final PersonDTO applicant = (PersonDTO) TestUtil.createStakeholderDTO(StakeholderType.PERSON, List.of(StakeholderRole.APPLICANT.toString()));
 		input.setStakeholders(List.of(applicant, controlOfficial));
@@ -1021,11 +995,11 @@ class ByggrServiceTest {
 
 		assertHandelse(postResult.getDnr(),
 			saveNewHandelseRequestCaptor.getValue().getMessage(),
-			List.of(Constants.BYGGR_HANDELSE_ANTECKNING_KONTROLLANSVARIG,
-				Constants.BYGGR_HANDELSE_ANTECKNING_DU_MASTE_REGISTRERA_DETTA_MANUELLT),
-			Constants.BYGGR_HANDELSE_RUBRIK_MANUELL_HANTERING,
-			Constants.BYGGR_HANDELSETYP_STATUS,
-			Constants.BYGGR_HANDELSESLAG_MANUELL_HANTERING_KRAVS,
+			List.of("- Det finns uppgifter om kontrollansvarig i den inkomna ansökan. Detta går inte att registrera maskinellt.",
+				"Du måste registrera ovanstående punkter manuellt. Det inkomna ärendet hittar du i handlingen \"Ansökan om bygglov\"."),
+			"Manuell hantering",
+			"STATUS",
+			"MANHANT",
 			null);
 	}
 
@@ -1033,7 +1007,7 @@ class ByggrServiceTest {
 	@Test
 	void testDoublePersonId() {
 		final String personId = UUID.randomUUID().toString();
-		final ByggRCaseDTO input = createByggRCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		final ByggRCaseDTO input = createByggRCaseDTO("NYBYGGNAD_ANSOKAN_OM_BYGGLOV", AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		final PersonDTO paymentPerson = (PersonDTO) TestUtil.createStakeholderDTO(StakeholderType.PERSON, List.of(StakeholderRole.PAYMENT_PERSON.toString()));
 		paymentPerson.setPersonId(personId);
 		final PersonDTO applicant = (PersonDTO) TestUtil.createStakeholderDTO(StakeholderType.PERSON, List.of(StakeholderRole.APPLICANT.toString()));
@@ -1056,10 +1030,10 @@ class ByggrServiceTest {
 
 		assertHandelse(postResult.getDnr(),
 			saveNewHandelseRequestCaptor.getValue().getMessage(),
-			List.of(Constants.BYGGR_HANDELSE_ANTECKNING_INTRESSENT_KUNDE_INTE_REGISTRERAS,
-				Constants.BYGGR_HANDELSE_ANTECKNING_DU_MASTE_REGISTRERA_DETTA_MANUELLT),
-			Constants.BYGGR_HANDELSE_RUBRIK_MANUELL_HANTERING,
-			Constants.BYGGR_HANDELSETYP_STATUS, Constants.BYGGR_HANDELSESLAG_MANUELL_HANTERING_KRAVS,
+			List.of("- Det finns flera intressenter med samma personnummer i den inkomna ansökan. Detta går inte att registrera maskinellt.",
+				"Du måste registrera ovanstående punkter manuellt. Det inkomna ärendet hittar du i handlingen \"Ansökan om bygglov\"."),
+			"Manuell hantering",
+			"STATUS", "MANHANT",
 			null);
 	}
 
@@ -1076,10 +1050,10 @@ class ByggrServiceTest {
 		assertHandelse(
 			dnr,
 			saveNewHandelseRequestCaptor.getValue().getMessage(),
-			List.of(Constants.BYGGR_HANDELSE_ANTECKNING),
-			Constants.BYGGR_HANDELSE_RUBRIK_KOMPLETTERING_TILL_ADMIN,
-			BYGGR_HANDELSETYP_HANDLING,
-			Constants.BYGGR_HANDELSESLAG_KOMPLETTERING_TILL_ADMIN,
+			List.of("Inkomna kompletteringar via e-tjänst."),
+			"Komplettering till Admin",
+			"HANDLING",
+			"KOMPADM",
 			attachments);
 	}
 
@@ -1097,7 +1071,7 @@ class ByggrServiceTest {
 			.withExternalCaseId(externalCaseID)
 			.withCaseId(caseId)
 			.withSystem(SystemType.BYGGR)
-			.withCaseType(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV.toString())
+			.withCaseType("NYBYGGNAD_ANSOKAN_OM_BYGGLOV")
 			.withServiceName("Test service")
 			.build());
 
@@ -1115,8 +1089,8 @@ class ByggrServiceTest {
 		handelse1.setHandelseutfall("Handelsutfall 1");
 		final Handelse handelse2 = new Handelse();
 		handelse2.setStartDatum(LocalDateTime.now().minusDays(2));
-		handelse2.setHandelsetyp(BYGGR_HANDELSETYP_BESLUT);
-		handelse2.setHandelseslag(BYGGR_HANDELSESLAG_SLUTBESKED);
+		handelse2.setHandelsetyp("BESLUT");
+		handelse2.setHandelseslag("SLU");
 		handelse2.setHandelseutfall("Handelsutfall 2");
 		final Handelse handelse3 = new Handelse();
 		handelse3.setStartDatum(LocalDateTime.now().minusDays(10));
@@ -1133,7 +1107,7 @@ class ByggrServiceTest {
 		// Act
 		final var getStatusResult = byggrService.toByggrStatus(caseMappingList.getFirst());
 
-		assertCaseStatus(caseId, caseId, externalCaseID, CaseType.valueOf(caseMappingList.getFirst().getCaseType()), caseMappingList.getFirst().getServiceName(), handelse2.getHandelseslag(), handelse2.getStartDatum(), getStatusResult);
+		assertCaseStatus(caseId, caseId, externalCaseID, caseMappingList.getFirst().getCaseType(), caseMappingList.getFirst().getServiceName(), handelse2.getHandelseslag(), handelse2.getStartDatum(), getStatusResult);
 
 		final ArgumentCaptor<GetArende> getArendeRequestCaptor = ArgumentCaptor.forClass(GetArende.class);
 		verify(arendeExportClientMock, times(1)).getArende(getArendeRequestCaptor.capture());
@@ -1157,7 +1131,7 @@ class ByggrServiceTest {
 			.withExternalCaseId(externalCaseID1)
 			.withCaseId(caseId1)
 			.withSystem(SystemType.BYGGR)
-			.withCaseType(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV.toString())
+			.withCaseType("NYBYGGNAD_ANSOKAN_OM_BYGGLOV")
 			.withServiceName("Test service")
 			.build());
 
@@ -1170,7 +1144,7 @@ class ByggrServiceTest {
 			.withExternalCaseId(externalCaseID2)
 			.withCaseId(caseId2)
 			.withSystem(SystemType.BYGGR)
-			.withCaseType(CaseType.ANMALAN_ATTEFALL.toString())
+			.withCaseType("ANMALAN_ATTEFALL")
 			.withServiceName("Test service 2")
 			.build());
 
@@ -1187,12 +1161,12 @@ class ByggrServiceTest {
 		final ArrayOfHandelse arrayOfHandelse1 = new ArrayOfHandelse();
 		final Handelse handelse1 = new Handelse();
 		handelse1.setStartDatum(LocalDateTime.now().minusDays(5));
-		handelse1.setHandelsetyp(BYGGR_HANDELSETYP_HANDLING);
-		handelse1.setHandelseslag(BYGGR_HANDELSESLAG_KOMPLETTERANDE_HANDLINGAR);
+		handelse1.setHandelsetyp("HANDLING");
+		handelse1.setHandelseslag("KOMPL");
 		final Handelse handelse2 = new Handelse();
 		handelse2.setStartDatum(LocalDateTime.now().minusDays(2));
-		handelse2.setHandelsetyp(BYGGR_HANDELSETYP_BESLUT);
-		handelse2.setHandelseslag(BYGGR_HANDELSESLAG_SLUTBESKED);
+		handelse2.setHandelsetyp("BESLUT");
+		handelse2.setHandelseslag("SLU");
 		arrayOfHandelse1.getHandelse().add(handelse1);
 		arrayOfHandelse1.getHandelse().add(handelse2);
 		arende1.setHandelseLista(arrayOfHandelse1);
@@ -1205,12 +1179,12 @@ class ByggrServiceTest {
 		final ArrayOfHandelse arrayOfHandelse2 = new ArrayOfHandelse();
 		final Handelse handelse21 = new Handelse();
 		handelse21.setStartDatum(LocalDateTime.now().minusDays(5));
-		handelse21.setHandelsetyp(BYGGR_HANDELSETYP_HANDLING);
-		handelse21.setHandelseslag(BYGGR_HANDELSESLAG_KOMPLETTERANDE_HANDLINGAR);
+		handelse21.setHandelsetyp("HANDLING");
+		handelse21.setHandelseslag("KOMPL");
 		final Handelse handelse22 = new Handelse();
 		handelse22.setStartDatum(LocalDateTime.now().minusDays(10));
-		handelse22.setHandelsetyp(BYGGR_HANDELSETYP_BESLUT);
-		handelse22.setHandelseslag(BYGGR_HANDELSESLAG_SLUTBESKED);
+		handelse22.setHandelsetyp("BESLUT");
+		handelse22.setHandelseslag("SLU");
 		arrayOfHandelse2.getHandelse().add(handelse21);
 		arrayOfHandelse2.getHandelse().add(handelse22);
 		arende2.setHandelseLista(arrayOfHandelse2);
@@ -1222,59 +1196,14 @@ class ByggrServiceTest {
 		final var getStatusResult = byggrService.getByggrStatusByLegalId(orgnr, PartyType.ENTERPRISE, MUNICIPALITY_ID).get();
 
 		assertThat(getStatusResult).hasSize(2);
-		assertCaseStatus(caseId1, caseId1, externalCaseID1, CaseType.valueOf(caseMappingList1.getFirst().getCaseType()), caseMappingList1.getFirst().getServiceName(), handelse2.getHandelseslag(), handelse2.getStartDatum(), getStatusResult.getFirst());
-		assertCaseStatus(caseId2, caseId2, externalCaseID2, CaseType.valueOf(caseMappingList2.getFirst().getCaseType()), caseMappingList2.getFirst().getServiceName(), handelse21.getHandelseslag(), handelse21.getStartDatum(), getStatusResult.get(1));
+		assertCaseStatus(caseId1, caseId1, externalCaseID1, caseMappingList1.getFirst().getCaseType(), caseMappingList1.getFirst().getServiceName(), handelse2.getHandelseslag(), handelse2.getStartDatum(), getStatusResult.getFirst());
+		assertCaseStatus(caseId2, caseId2, externalCaseID2, caseMappingList2.getFirst().getCaseType(), caseMappingList2.getFirst().getServiceName(), handelse21.getHandelseslag(), handelse21.getStartDatum(), getStatusResult.get(1));
 
 		final ArgumentCaptor<GetRelateradeArendenByPersOrgNrAndRole> getRelateradeArendenByPersOrgNrAndRoleRequestCaptor = ArgumentCaptor.forClass(GetRelateradeArendenByPersOrgNrAndRole.class);
 		verify(arendeExportClientMock).getRelateradeArendenByPersOrgNrAndRole(getRelateradeArendenByPersOrgNrAndRoleRequestCaptor.capture());
 		assertThat(getRelateradeArendenByPersOrgNrAndRoleRequestCaptor.getValue().getPersOrgNr()).isEqualTo(orgnr);
 		assertThat(getRelateradeArendenByPersOrgNrAndRoleRequestCaptor.getValue().getArendeIntressentRoller().getString()).contains(StakeholderRole.APPLICANT.getText());
 		assertThat(getRelateradeArendenByPersOrgNrAndRoleRequestCaptor.getValue().getHandelseIntressentRoller().getString()).contains(StakeholderRole.APPLICANT.getText());
-	}
-
-	@Test
-	void respondToNeighborhoodNotification() {
-		final var property = "Property Designation 1:1 [123456]";
-		final var comment = "comment";
-		final var errandInformation = "errandInformation";
-
-		final var byggRCaseDTO = mock(ByggRCaseDTO.class);
-
-		final HashMap<String, String> extraParameterMap = mock();
-
-		when(byggRCaseDTO.getExtraParameters()).thenReturn(extraParameterMap);
-		when(extraParameterMap.get(comment)).thenReturn(comment);
-		when(extraParameterMap.get(errandInformation)).thenReturn(errandInformation);
-		when(extraParameterMap.get("property")).thenReturn(property);
-
-		byggrService.respondToNeighborhoodNotification(byggRCaseDTO);
-
-		verify(oepIntegratorClientMock).setStatus(any(), any(), any(), any());
-		verify(arendeExportClientMock).saveNewRemissvar(any());
-	}
-
-	@Test
-	void addCertifiedInspectorTest() {
-		final var stakeholders = List.of(createStakeholderDTO(StakeholderType.ORGANIZATION, List.of("role")));
-		final var errandNr = "some-dnr [123]";
-		final var otherInformation = "otherInformation";
-		final var byggRCaseDTO = mock(ByggRCaseDTO.class);
-
-		final HashMap<String, String> extraParameterMap = mock();
-
-		when(byggRCaseDTO.getStakeholders()).thenReturn(stakeholders);
-		when(byggRCaseDTO.getExtraParameters()).thenReturn(extraParameterMap);
-		when(extraParameterMap.get("errandNr")).thenReturn(errandNr);
-		when(extraParameterMap.get("otherInformation")).thenReturn(otherInformation);
-		when(extraParameterMap.get("certificateValidDate")).thenReturn("2001-01-01");
-		when(extraParameterMap.get("certificateAuthType")).thenReturn("NIVA");
-		when(extraParameterMap.get("certificateIssuer")).thenReturn("issuer");
-		when(extraParameterMap.get("certificateNumber")).thenReturn("123456");
-
-		byggrService.addCertifiedInspector(byggRCaseDTO);
-
-		verify(arendeExportClientMock, times(2)).saveNewHandelse(any());
-		verify(oepIntegratorClientMock).setStatus(any(), any(), any(), any());
 	}
 
 	/**
@@ -1334,12 +1263,12 @@ class ByggrServiceTest {
 	@Test
 	void getByggrIntressenter_withSundsvallsKommunAsPropertyOwner() {
 		// Arrange
-		final var byggRCase = TestUtil.createByggRCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		final var byggRCase = TestUtil.createByggRCaseDTO("NYBYGGNAD_ANSOKAN_OM_BYGGLOV", AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 
 		// Create a property owner organization that is Sundsvalls kommun
 		final var sundsvallsKommunPropertyOwner = new OrganizationDTO();
 		sundsvallsKommunPropertyOwner.setOrganizationName("Sundsvalls kommun");
-		sundsvallsKommunPropertyOwner.setOrganizationNumber(Constants.SUNDSVALLS_KOMMUN_ORGNR_10);
+		sundsvallsKommunPropertyOwner.setOrganizationNumber("212000-2411");
 		sundsvallsKommunPropertyOwner.setRoles(List.of(StakeholderRole.PROPERTY_OWNER.toString()));
 
 		byggRCase.getStakeholders().add(sundsvallsKommunPropertyOwner);
@@ -1382,12 +1311,12 @@ class ByggrServiceTest {
 	@Test
 	void getByggrIntressenter_withSundsvallsKommunAsPropertyOwner_fallbackWhenGetIntressentFails() {
 		// Arrange
-		final var byggRCase = TestUtil.createByggRCaseDTO(CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		final var byggRCase = TestUtil.createByggRCaseDTO("NYBYGGNAD_ANSOKAN_OM_BYGGLOV", AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 
 		// Create a property owner organization that is Sundsvalls kommun
 		final var sundsvallsKommunPropertyOwner = new OrganizationDTO();
 		sundsvallsKommunPropertyOwner.setOrganizationName("Sundsvalls kommun");
-		sundsvallsKommunPropertyOwner.setOrganizationNumber(Constants.SUNDSVALLS_KOMMUN_ORGNR_12);
+		sundsvallsKommunPropertyOwner.setOrganizationNumber("16212000-2411");
 		sundsvallsKommunPropertyOwner.setRoles(List.of(StakeholderRole.PROPERTY_OWNER.toString()));
 
 		byggRCase.getStakeholders().add(sundsvallsKommunPropertyOwner);
@@ -1405,11 +1334,11 @@ class ByggrServiceTest {
 
 		// Find the Sundsvalls kommun intressent in the result
 		final var sundsvallsKommunIntressent = result.getIntressent().stream()
-			.filter(i -> Constants.SUNDSVALLS_KOMMUN_ORGNR_12.equals(i.getPersOrgNr()))
+			.filter(i -> "16212000-2411".equals(i.getPersOrgNr()))
 			.findFirst();
 
 		assertThat(sundsvallsKommunIntressent).isPresent();
-		assertThat(sundsvallsKommunIntressent.get().getPersOrgNr()).isEqualTo(Constants.SUNDSVALLS_KOMMUN_ORGNR_12);
+		assertThat(sundsvallsKommunIntressent.get().getPersOrgNr()).isEqualTo("16212000-2411");
 
 		// Verify that GetIntressent was called
 		verify(arendeExportClientMock).getIntressent(any(arendeexport.GetIntressent.class));

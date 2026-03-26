@@ -15,16 +15,11 @@ import arendeexport.HandlaggareBas;
 import arendeexport.SaveNewArende;
 import arendeexport.SaveNewArendeResponse2;
 import arendeexport.SaveNewHandelse;
-import arendeexport.SaveNewHandelseMessage;
-import arendeexport.SaveNewRemissvar;
-import arendeexport.SaveNewRemissvarMessage;
-import generated.client.oep_integrator.CaseStatusChangeRequest;
 import generated.client.oep_integrator.ConfirmDeliveryRequest;
 import generated.client.oep_integrator.InstanceType;
 import generated.client.party.PartyType;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,18 +38,18 @@ import se.sundsvall.casemanagement.api.model.PersonDTO;
 import se.sundsvall.casemanagement.api.model.StakeholderDTO;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
+import se.sundsvall.casemanagement.integration.db.ByggrCaseTypeConfigRepository;
 import se.sundsvall.casemanagement.integration.db.CaseRepository;
-import se.sundsvall.casemanagement.integration.db.CaseTypeDataRepository;
+import se.sundsvall.casemanagement.integration.db.CaseTypeRepository;
+import se.sundsvall.casemanagement.integration.db.model.ByggrCaseTypeConfigEntity;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
-import se.sundsvall.casemanagement.integration.db.model.CaseTypeData;
 import se.sundsvall.casemanagement.integration.messaging.MessagingIntegration;
 import se.sundsvall.casemanagement.integration.oepintegrator.OepIntegratorClient;
 import se.sundsvall.casemanagement.integration.party.PartyIntegration;
+import se.sundsvall.casemanagement.service.ByggrSystemConfigProvider;
 import se.sundsvall.casemanagement.service.CaseMappingService;
 import se.sundsvall.casemanagement.service.FbService;
-import se.sundsvall.casemanagement.service.util.LegalIdUtility;
 import se.sundsvall.casemanagement.util.CaseUtil;
-import se.sundsvall.casemanagement.util.Constants;
 import se.sundsvall.casemanagement.util.EnvironmentUtil;
 import se.sundsvall.dept44.problem.Problem;
 
@@ -62,28 +57,6 @@ import static generated.client.party.PartyType.ENTERPRISE;
 import static generated.client.party.PartyType.PRIVATE;
 import static java.util.Collections.emptyList;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.WITH_NULLABLE_FACILITY_TYPE;
-import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.createAddAdditionalDocumentsHandelse;
-import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.createAddAdditionalDocumentsHandelseIntressent;
-import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.createAddCertifiedInspectorHandelse;
-import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.createAddCertifiedInspectorHandelseIntressent;
-import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.createAlertCaseManagerEvent;
-import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.createArrayOfHandling;
-import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.createNeighborhoodNotificationArrayOfHandling;
-import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.filterPersonId;
-import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.getArendeBeskrivning;
-import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.getArendeKlass;
-import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.getInvoiceMarking;
-import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.getMainOrOnlyArendeslag;
-import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.populateStakeholderListWithPropertyOwnerOrganizations;
-import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.populateStakeholderListWithPropertyOwnerPersons;
-import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.setStakeholderFields;
-import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.toAdressDTos;
-import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.toArrayOfRoles;
-import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.toByggrContactInfo;
-import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.toSaveNewArende;
-import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.toSaveNewHandelseMessage;
-import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.toSaveNewManuellHanteringHandelse;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrUtil.containsControlOfficial;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrUtil.containsPersonDuplicates;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrUtil.containsPropertyOwner;
@@ -91,18 +64,18 @@ import static se.sundsvall.casemanagement.integration.byggr.ByggrUtil.isWithinPl
 import static se.sundsvall.casemanagement.integration.byggr.ByggrUtil.parsePropertyDesignation;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrUtil.writeEventNote;
 import static se.sundsvall.casemanagement.util.Constants.BYGGR;
-import static se.sundsvall.casemanagement.util.Constants.BYGGR_ADDITIONAL_DOCUMENTS;
-import static se.sundsvall.casemanagement.util.Constants.BYGGR_ADD_CERTIFIED_INSPECTOR;
-import static se.sundsvall.casemanagement.util.Constants.COMMENT;
-import static se.sundsvall.casemanagement.util.Constants.DONE;
-import static se.sundsvall.casemanagement.util.Constants.ERRAND_INFORMATION;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR_ENHETKOD_STADSBYGGNADSKONTORET;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSE_ANTECKNING_DU_MASTE_REGISTRERA_DETTA_MANUELLT;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSE_ANTECKNING_FASTIGHETSAGARE;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSE_ANTECKNING_INTRESSENT_KUNDE_INTE_REGISTRERAS;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSE_ANTECKNING_KONTROLLANSVARIG;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR_KOMMUNKOD_SUNDSVALL_KOMMUN;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR_NAMNDKOD_STADSBYGGNADSNAMNDEN;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR_SYSTEM_HANDLAGGARE_SIGN;
 import static se.sundsvall.casemanagement.util.Constants.ERRAND_NR;
-import static se.sundsvall.casemanagement.util.Constants.EVENT_CATEGORY;
-import static se.sundsvall.casemanagement.util.Constants.NEIGHBORHOOD_NOTIFICATION;
-import static se.sundsvall.casemanagement.util.Constants.OTHER_INFORMATION;
-import static se.sundsvall.casemanagement.util.Constants.PROPERTY;
-import static se.sundsvall.casemanagement.util.Constants.PROPERTY_OWNER_NOTIFICATION;
-import static se.sundsvall.casemanagement.util.Constants.SYSTEM;
+import static se.sundsvall.casemanagement.util.Constants.SUNDSVALLS_KOMMUN_BYGGR_KUNDNR;
+import static se.sundsvall.casemanagement.util.Constants.SUNDSVALLS_KOMMUN_ORGNR_10;
+import static se.sundsvall.casemanagement.util.Constants.SUNDSVALLS_KOMMUN_ORGNR_12;
 
 @Service
 public class ByggrService {
@@ -117,9 +90,12 @@ public class ByggrService {
 	private final ArendeExportClient arendeExportClient;
 	private final OepIntegratorClient oepIntegratorClient;
 
-	private final CaseTypeDataRepository caseTypeDataRepository;
+	private final ByggrCaseTypeConfigRepository byggrCaseTypeConfigRepository;
+	private final CaseTypeRepository caseTypeRepository;
 	private final CaseRepository caseRepository;
 	private final MessagingIntegration messagingIntegration;
+	private final ByggrSystemConfigProvider byggrSystemConfigProvider;
+	private final Map<String, ByggrUpdateHandler> updateHandlers;
 
 	public ByggrService(final FbService fbService,
 		final PartyIntegration partyIntegration,
@@ -127,29 +103,37 @@ public class ByggrService {
 		final EnvironmentUtil environmentUtil,
 		final ArendeExportClient arendeExportClient,
 		final OepIntegratorClient oepIntegratorClient,
-		final CaseTypeDataRepository caseTypeDataRepository,
+		final ByggrCaseTypeConfigRepository byggrCaseTypeConfigRepository,
+		final CaseTypeRepository caseTypeRepository,
 		final CaseRepository caseRepository,
-		final MessagingIntegration messagingIntegration) {
+		final MessagingIntegration messagingIntegration,
+		final ByggrSystemConfigProvider byggrSystemConfigProvider,
+		final Map<String, ByggrUpdateHandler> updateHandlers) {
 		this.fbService = fbService;
 		this.partyIntegration = partyIntegration;
 		this.caseMappingService = caseMappingService;
 		this.environmentUtil = environmentUtil;
 		this.arendeExportClient = arendeExportClient;
 		this.oepIntegratorClient = oepIntegratorClient;
-		this.caseTypeDataRepository = caseTypeDataRepository;
+		this.byggrCaseTypeConfigRepository = byggrCaseTypeConfigRepository;
+		this.caseTypeRepository = caseTypeRepository;
 		this.caseRepository = caseRepository;
 		this.messagingIntegration = messagingIntegration;
+		this.byggrSystemConfigProvider = byggrSystemConfigProvider;
+		this.updateHandlers = updateHandlers;
 	}
 
 	public void updateByggRCase(final ByggRCaseDTO byggRCase, final String municipalityId) {
 		try {
 			byggRCase.setMunicipalityId(municipalityId);
-			switch (byggRCase.getCaseType()) {
-				case NEIGHBORHOOD_NOTIFICATION, PROPERTY_OWNER_NOTIFICATION -> respondToNeighborhoodNotification(byggRCase);
-				case BYGGR_ADD_CERTIFIED_INSPECTOR -> addCertifiedInspector(byggRCase);
-				case BYGGR_ADDITIONAL_DOCUMENTS -> addAdditionalDocuments(byggRCase);
-				default -> throw Problem.valueOf(BAD_REQUEST, "CaseType %s not supported".formatted(byggRCase.getCaseType()));
-			}
+			final var updateHandlerName = byggrCaseTypeConfigRepository.findById(byggRCase.getCaseType())
+				.map(ByggrCaseTypeConfigEntity::getUpdateHandler)
+				.orElseThrow(() -> Problem.valueOf(BAD_REQUEST, "CaseType %s not supported for update".formatted(byggRCase.getCaseType())));
+
+			final var handler = Optional.ofNullable(updateHandlers.get(updateHandlerName))
+				.orElseThrow(() -> Problem.valueOf(BAD_REQUEST, "No handler for: " + updateHandlerName));
+			handler.handle(byggRCase);
+
 			LOG.info("Successfully updated case with externalCaseId: {}, and municipalityId: {}, and caseType: {}", byggRCase.getExternalCaseId(), municipalityId, byggRCase.getCaseType());
 
 			final var confirmDeliveryRequest = new ConfirmDeliveryRequest().caseId(byggRCase.getExtraParameters().get(ERRAND_NR)).delivered(true).system(BYGGR);
@@ -165,116 +149,16 @@ public class ByggrService {
 		}
 	}
 
-	public void addAdditionalDocuments(final ByggRCaseDTO byggRCase) {
-		final var stakeholder = byggRCase.getStakeholders().stream()
-			.max(Comparator.comparing(StakeholderDTO::getType))
-			.orElseThrow(() -> Problem.valueOf(BAD_REQUEST, "No stakeholder found in the incoming request."));
-		final var stakeholderId = extractStakeholderId(byggRCase.getStakeholders(), byggRCase.getMunicipalityId());
-		final var otherInformation = byggRCase.getExtraParameters().get(OTHER_INFORMATION);
-		final var errandNr = byggRCase.getExtraParameters().get(ERRAND_NR);
-		final var handelseslag = byggRCase.getExtraParameters().get(EVENT_CATEGORY);
-
-		final var handelseIntressent = createAddAdditionalDocumentsHandelseIntressent(stakeholder, stakeholderId);
-		final var newHandelse = createAddAdditionalDocumentsHandelse(otherInformation, handelseIntressent, handelseslag);
-		final var arrayOfHandling = createArrayOfHandling(byggRCase);
-
-		final var saveNewHandelse = new SaveNewHandelse()
-			.withMessage(new SaveNewHandelseMessage()
-				.withDnr(errandNr)
-				.withHandlaggarSign(SYSTEM)
-				.withHandelse(newHandelse)
-				.withHandlingar(arrayOfHandling)
-				.withAnkomststamplaHandlingar(false)
-				.withAutoGenereraBeslutNr(false)
-				.withAnkomststamplaHandlingar(true));
-
-		arendeExportClient.saveNewHandelse(saveNewHandelse);
-
-		oepIntegratorClient.setStatus(byggRCase.getMunicipalityId(), InstanceType.EXTERNAL, byggRCase.getExternalCaseId(), new CaseStatusChangeRequest().name(DONE));
-	}
-
-	public void addCertifiedInspector(final ByggRCaseDTO byggRCase) {
-		final var stakeholder = byggRCase.getStakeholders().getFirst();
-		final var stakeholderId = extractStakeholderId(byggRCase.getStakeholders(), byggRCase.getMunicipalityId());
-		final var errandNr = byggRCase.getExtraParameters().get(ERRAND_NR);
-		final var otherInformation = byggRCase.getExtraParameters().get(OTHER_INFORMATION);
-		final var arrayOfHandling = createArrayOfHandling(byggRCase);
-
-		final var handelseIntressent = createAddCertifiedInspectorHandelseIntressent(stakeholder, stakeholderId, byggRCase.getExtraParameters());
-		final var newHandelse = createAddCertifiedInspectorHandelse(otherInformation, handelseIntressent);
-
-		final var saveNewHandelse = new SaveNewHandelse()
-			.withMessage(new SaveNewHandelseMessage()
-				.withDnr(errandNr)
-				.withHandlaggarSign(SYSTEM)
-				.withHandelse(newHandelse)
-				.withHandlingar(arrayOfHandling)
-				.withAnkomststamplaHandlingar(false)
-				.withAutoGenereraBeslutNr(false)
-				.withAnkomststamplaHandlingar(true));
-
-		arendeExportClient.saveNewHandelse(saveNewHandelse);
-		arendeExportClient.saveNewHandelse(createAlertCaseManagerEvent(errandNr));
-		oepIntegratorClient.setStatus(byggRCase.getMunicipalityId(), InstanceType.EXTERNAL, byggRCase.getExternalCaseId(), new CaseStatusChangeRequest().name(DONE));
-	}
-
-	public void respondToNeighborhoodNotification(final ByggRCaseDTO byggRCase) {
-
-		final var comment = byggRCase.getExtraParameters().get(COMMENT);
-		final var property = byggRCase.getExtraParameters().get(PROPERTY);
-		final var errandInformation = byggRCase.getExtraParameters().get(ERRAND_INFORMATION);
-		// Extracts the remiss id placed within [] in the property string
-		final var remissId = Integer.parseInt(property.replaceAll("^[^\\[]*\\[([^]]+)].*", "$1"));
-
-		final var saveNewRemissvar = new SaveNewRemissvar()
-			.withMessage(new SaveNewRemissvarMessage()
-				.withHandlaggarSign(SYSTEM)
-				.withErinran(comment.equals("Jag har synpunkter"))
-				.withMeddelande(errandInformation)
-				.withRemissId(remissId)
-				.withHandlingar(createNeighborhoodNotificationArrayOfHandling(byggRCase)));
-
-		arendeExportClient.saveNewRemissvar(saveNewRemissvar);
-		oepIntegratorClient.setStatus(byggRCase.getMunicipalityId(), InstanceType.EXTERNAL, byggRCase.getExternalCaseId(), new CaseStatusChangeRequest().name(DONE));
-	}
-
-	/**
-	 * The incoming request might have one or two stakeholders. If any stakeholder is of type Organization, we should use
-	 * the organization number as stakeholderId. If no organization is found, we should use the personId to fetch a personal
-	 * number from
-	 * partyIntegration and use this personal number as the stakeholder id.
-	 *
-	 * @param  stakeholders List of stakeholders
-	 * @return              String, organization number, or personal number of the stakeholder.
-	 */
 	public String extractStakeholderId(final List<StakeholderDTO> stakeholders, final String municipalityId) {
-		final var organizationId = stakeholders.stream()
-			.filter(OrganizationDTO.class::isInstance)
-			.findFirst()
-			.map(stakeholder -> ((OrganizationDTO) stakeholder).getOrganizationNumber())
-			.map(LegalIdUtility::prefixOrgNr)
-			.map(LegalIdUtility::addHyphen)
-			.orElse(null);
-
-		if (organizationId != null) {
-			return organizationId;
-		}
-
-		return stakeholders.stream()
-			.filter(PersonDTO.class::isInstance)
-			.findFirst()
-			.map(stakeholder -> ((PersonDTO) stakeholder).getPersonId())
-			.map((String personId) -> partyIntegration.getLegalIdByPartyId(municipalityId, personId).get(PRIVATE))
-			.map(LegalIdUtility::addHyphen)
-			.orElseThrow(() -> Problem.valueOf(BAD_REQUEST, "No stakeholder found in the incoming request."));
+		return ByggrUtil.extractStakeholderId(stakeholders, municipalityId, partyIntegration);
 	}
 
 	public SaveNewArendeResponse2 saveNewCase(final ByggRCaseDTO byggRCase, final String municipalityId) {
 		byggRCase.setMunicipalityId(municipalityId);
-		final Map<String, CaseTypeData> caseTypeMap = new HashMap<>();
-		caseTypeDataRepository.findAll().forEach(caseTypeData -> caseTypeMap.put(caseTypeData.getValue(), caseTypeData));
+		final Map<String, ByggrCaseTypeConfigEntity> caseTypeMap = new HashMap<>();
+		byggrCaseTypeConfigRepository.findAll().forEach(config -> caseTypeMap.put(config.getCaseTypeName(), config));
 
-		final var saveNewArende = toSaveNewArende(byggRCase, caseTypeMap.get(byggRCase.getCaseType()));
+		final var saveNewArende = ByggrMapper.toSaveNewArende(byggRCase, caseTypeMap.get(byggRCase.getCaseType()));
 		saveNewArende.getMessage().setArende(toArende2(byggRCase, caseTypeMap.get(byggRCase.getCaseType())));
 
 		final var response = arendeExportClient.saveNewArende(saveNewArende).getSaveNewArendeResult();
@@ -288,34 +172,34 @@ public class ByggrService {
 		final var byggrAdminMessageSb = new StringBuilder();
 		// If it's something that we should inform the administrator about, we create a new occurrence in the case.
 		if (containsControlOfficial(caseInput.getStakeholders())) {
-			writeEventNote(Constants.BYGGR_HANDELSE_ANTECKNING_KONTROLLANSVARIG, byggrAdminMessageSb);
+			writeEventNote(BYGGR_HANDELSE_ANTECKNING_KONTROLLANSVARIG, byggrAdminMessageSb);
 		}
 		if (containsPersonDuplicates(caseInput.getStakeholders())) {
-			writeEventNote(Constants.BYGGR_HANDELSE_ANTECKNING_INTRESSENT_KUNDE_INTE_REGISTRERAS, byggrAdminMessageSb);
+			writeEventNote(BYGGR_HANDELSE_ANTECKNING_INTRESSENT_KUNDE_INTE_REGISTRERAS, byggrAdminMessageSb);
 		}
 		if (!containsPropertyOwner(saveNewArende.getMessage().getArende().getIntressentLista().getIntressent())) {
-			writeEventNote(Constants.BYGGR_HANDELSE_ANTECKNING_FASTIGHETSAGARE, byggrAdminMessageSb);
+			writeEventNote(BYGGR_HANDELSE_ANTECKNING_FASTIGHETSAGARE, byggrAdminMessageSb);
 		}
 		if (!byggrAdminMessageSb.isEmpty()) {
-			writeEventNote(Constants.BYGGR_HANDELSE_ANTECKNING_DU_MASTE_REGISTRERA_DETTA_MANUELLT, byggrAdminMessageSb);
-			arendeExportClient.saveNewHandelse(toSaveNewManuellHanteringHandelse(response.getDnr(), byggrAdminMessageSb.toString()));
+			writeEventNote(BYGGR_HANDELSE_ANTECKNING_DU_MASTE_REGISTRERA_DETTA_MANUELLT, byggrAdminMessageSb);
+			arendeExportClient.saveNewHandelse(ByggrMapper.toSaveNewManuellHanteringHandelse(response.getDnr(), byggrAdminMessageSb.toString()));
 		}
 	}
 
 	public void saveNewIncomingAttachmentHandelse(final String dnr, final List<AttachmentDTO> attachmentDTOList) {
 		final var saveNewHandelse = new SaveNewHandelse()
-			.withMessage(toSaveNewHandelseMessage(dnr, attachmentDTOList));
+			.withMessage(ByggrMapper.toSaveNewHandelseMessage(dnr, attachmentDTOList));
 		arendeExportClient.saveNewHandelse(saveNewHandelse);
 	}
 
 	public CaseStatusDTO toByggrStatus(final CaseMapping caseMapping) {
 		final var getArendeResponse = arendeExportClient.getArende(new GetArende().withDnr(caseMapping.getCaseId()));
-		return ByggrMapper.toByggrStatus(getArendeResponse.getGetArendeResult(), caseMapping.getExternalCaseId(), List.of(caseMapping));
+		return ByggrMapper.toByggrStatus(getArendeResponse.getGetArendeResult(), caseMapping.getExternalCaseId(), List.of(caseMapping), byggrSystemConfigProvider);
 	}
 
 	public CaseStatusDTO toByggrStatus(final Arende arende, final String externalCaseId, final String municipalityId) {
 		final var caseMappingList = caseMappingService.getCaseMapping(externalCaseId, arende.getDnr(), municipalityId);
-		return ByggrMapper.toByggrStatus(arende, externalCaseId, caseMappingList);
+		return ByggrMapper.toByggrStatus(arende, externalCaseId, caseMappingList, byggrSystemConfigProvider);
 	}
 
 	@Async
@@ -354,7 +238,7 @@ public class ByggrService {
 		// Add all stakeholders from a case to the list
 		final var stakeholders = new ArrayList<>(byggRCase.getStakeholders());
 		populateStakeholderListWithPropertyOwners(byggRCase, stakeholders);
-		final var personIds = filterPersonId(stakeholders);
+		final var personIds = ByggrMapper.filterPersonId(stakeholders);
 
 		return new ArrayOfArendeIntressent2().withIntressent(stakeholders.stream().filter(dto -> !dto.getRoles().contains(StakeholderRole.CONTROL_OFFICIAL.toString()))
 			.map(stakeholderDTO -> {
@@ -366,14 +250,14 @@ public class ByggrService {
 					// Use intressentId and intressentVersionId from ByggR instead of persOrgNr
 					setSundsvallsKommunIntressentFields(intressent, stakeholderDTO);
 				} else {
-					setStakeholderFields(stakeholderDTO, personIds, intressent);
+					ByggrMapper.setStakeholderFields(stakeholderDTO, personIds, intressent);
 					if (stakeholderDTO.getAddresses() != null) {
-						toAdressDTos(stakeholderDTO, intressent);
+						ByggrMapper.toAdressDTos(stakeholderDTO, intressent);
 					}
-					intressent.withIntressentKommunikationLista(toByggrContactInfo(stakeholderDTO, intressent.getAttention()));
+					intressent.withIntressentKommunikationLista(ByggrMapper.toByggrContactInfo(stakeholderDTO, intressent.getAttention()));
 				}
 
-				intressent.withRollLista(toArrayOfRoles(stakeholderDTO));
+				intressent.withRollLista(ByggrMapper.toArrayOfRoles(stakeholderDTO));
 				return intressent;
 			})
 			.filter(intressent -> StringUtils.isNotBlank(intressent.getPersOrgNr()) || (intressent.getIntressentId() != null && intressent.getIntressentVersionId() != null))
@@ -403,8 +287,8 @@ public class ByggrService {
 		// Loop through each facility and get the property owners for each one
 		byggRCase.getFacilities().forEach(facility -> {
 			final var propertyOwners = fbService.getPropertyOwnerByPropertyDesignation(facility.getAddress().getPropertyDesignation());
-			populateStakeholderListWithPropertyOwnerPersons(persons, stakeholders, propertyOwners);
-			populateStakeholderListWithPropertyOwnerOrganizations(organizations, stakeholders, propertyOwners);
+			ByggrMapper.populateStakeholderListWithPropertyOwnerPersons(persons, stakeholders, propertyOwners);
+			ByggrMapper.populateStakeholderListWithPropertyOwnerOrganizations(organizations, stakeholders, propertyOwners);
 		});
 	}
 
@@ -424,8 +308,8 @@ public class ByggrService {
 		}
 
 		final var orgNr = orgDto.getOrganizationNumber();
-		return Constants.SUNDSVALLS_KOMMUN_ORGNR_10.equals(orgNr) ||
-			Constants.SUNDSVALLS_KOMMUN_ORGNR_12.equals(orgNr);
+		return SUNDSVALLS_KOMMUN_ORGNR_10.equals(orgNr) ||
+			SUNDSVALLS_KOMMUN_ORGNR_12.equals(orgNr);
 	}
 
 	/**
@@ -468,8 +352,8 @@ public class ByggrService {
 	private arendeexport.Intressent getSundsvallsKommunIntressentFromByggr() {
 		final var getIntressent = new arendeexport.GetIntressent()
 			.withMessage(new arendeexport.GetIntressentMessage()
-				.withHandlaggarSign(Constants.SYSTEM)
-				.withKundNr(Constants.SUNDSVALLS_KOMMUN_BYGGR_KUNDNR)
+				.withHandlaggarSign(BYGGR_SYSTEM_HANDLAGGARE_SIGN)
+				.withKundNr(SUNDSVALLS_KOMMUN_BYGGR_KUNDNR)
 				.withStatusFilter(arendeexport.StatusFilter.AKTIV));
 
 		final var response = arendeExportClient.getIntressent(getIntressent);
@@ -516,7 +400,7 @@ public class ByggrService {
 		return arendeObjektLista;
 	}
 
-	Arende2 toArende2(final ByggRCaseDTO byggRCase, final CaseTypeData caseTypeData) {
+	Arende2 toArende2(final ByggRCaseDTO byggRCase, final ByggrCaseTypeConfigEntity caseTypeData) {
 		final var arende = new Arende2();
 
 		if ((byggRCase.getFacilities() == null) || (byggRCase.getFacilities().getFirst() == null)) {
@@ -524,27 +408,27 @@ public class ByggrService {
 
 		} else if (caseTypeData.getArendeSlag() != null) {
 			arende.withArendeslag(caseTypeData.getArendeSlag());
-			if (!WITH_NULLABLE_FACILITY_TYPE.contains(byggRCase.getCaseType())) {
-				arende.withArendeklass(getArendeKlass(byggRCase.getFacilities()));
+			if (!caseTypeRepository.findById(byggRCase.getCaseType()).map(ct -> ct.isNullableFacilityType()).orElse(false)) {
+				arende.withArendeklass(ByggrMapper.getArendeKlass(byggRCase.getFacilities()));
 			}
 		} else {
-			arende.withArendeslag(getMainOrOnlyArendeslag(byggRCase.getFacilities()));
+			arende.withArendeslag(ByggrMapper.getMainOrOnlyArendeslag(byggRCase.getFacilities()));
 		}
 
 		return arende
 			.withArendegrupp(caseTypeData.getArendeGrupp())
 			.withArendetyp(caseTypeData.getArendeTyp())
-			.withNamndkod(Constants.BYGGR_NAMNDKOD_STADSBYGGNADSNAMNDEN)
-			.withEnhetkod(Constants.BYGGR_ENHETKOD_STADSBYGGNADSKONTORET)
-			.withKommun(Constants.BYGGR_KOMMUNKOD_SUNDSVALL_KOMMUN)
-			.withHandlaggare(new HandlaggareBas().withSignatur(Constants.BYGGR_SYSTEM_HANDLAGGARE_SIGN))
+			.withNamndkod(BYGGR_NAMNDKOD_STADSBYGGNADSNAMNDEN)
+			.withEnhetkod(BYGGR_ENHETKOD_STADSBYGGNADSKONTORET)
+			.withKommun(BYGGR_KOMMUNKOD_SUNDSVALL_KOMMUN)
+			.withHandlaggare(new HandlaggareBas().withSignatur(BYGGR_SYSTEM_HANDLAGGARE_SIGN))
 			.withArInomplan(isWithinPlan(byggRCase.getFacilities()))
-			.withBeskrivning(getArendeBeskrivning(byggRCase, caseTypeData.getArendeMening()))
+			.withBeskrivning(ByggrMapper.getArendeBeskrivning(byggRCase, caseTypeData.getArendeMening()))
 			.withIntressentLista(getByggrIntressenter(byggRCase))
 			.withObjektLista(getByggrArendeObjektLista(byggRCase))
 			.withAnkomstDatum(LocalDate.now())
 			// ProjektNummer/FakturaId in ByggR.
-			.withProjektnr(Optional.ofNullable(getInvoiceMarking(byggRCase))
+			.withProjektnr(Optional.ofNullable(ByggrMapper.getInvoiceMarking(byggRCase))
 				.orElse(parsePropertyDesignation(byggRCase.getFacilities())));
 	}
 

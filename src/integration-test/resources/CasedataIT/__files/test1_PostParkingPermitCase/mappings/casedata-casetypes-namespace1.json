@@ -1,0 +1,13 @@
+{
+	"request": {
+		"method": "GET",
+		"urlPath": "/case-data/2281/NAMESPACE_1/metadata/casetypes"
+	},
+	"response": {
+		"headers": {
+			"Content-Type": "application/json"
+		},
+		"body": "[{\"type\":\"PARKING_PERMIT\",\"displayName\":\"Parkeringstillstånd\",\"startProcess\":true}]",
+		"status": 200
+	}
+}

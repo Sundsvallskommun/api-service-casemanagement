@@ -6,16 +6,15 @@ import jakarta.validation.Validation;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import org.springframework.stereotype.Component;
 import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
 import se.sundsvall.casemanagement.api.model.CaseDTO;
 import se.sundsvall.casemanagement.api.model.EcosCaseDTO;
 import se.sundsvall.casemanagement.api.model.FutureCaseDTO;
+import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
 import se.sundsvall.casemanagement.api.model.PersonDTO;
 import se.sundsvall.casemanagement.api.model.StakeholderDTO;
-import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.api.model.enums.FacilityType;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
 import se.sundsvall.casemanagement.api.validation.AttachmentConstraints;
@@ -23,27 +22,36 @@ import se.sundsvall.casemanagement.api.validation.ByggRConstraints;
 import se.sundsvall.casemanagement.api.validation.ByggRFacilityConstraints;
 import se.sundsvall.casemanagement.api.validation.EcosConstraints;
 import se.sundsvall.casemanagement.api.validation.PersonConstraints;
+import se.sundsvall.casemanagement.integration.db.CaseTypeRepository;
+import se.sundsvall.casemanagement.integration.db.EcosCaseTypeConfigRepository;
+import se.sundsvall.casemanagement.integration.db.model.CaseTypeEntity;
+import se.sundsvall.casemanagement.integration.db.model.EcosFacilityHandler;
+import se.sundsvall.casemanagement.service.CaseTypeRegistry;
 import se.sundsvall.dept44.problem.Problem;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.ANMALAN_ATTEFALL;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.NYBYGGNAD_ANSOKAN_OM_BYGGLOV;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.BYGGR_ADDITIONAL_DOCUMENTS;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.BYGGR_ADD_CERTIFIED_INSPECTOR;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.NEIGHBORHOOD_NOTIFICATION;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PROPERTY_OWNER_NOTIFICATION;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.WITH_NULLABLE_FACILITY_TYPE;
 
 @Component
 public class Validator {
 
-	private static final Set<String> NULLABLE_FACILITY_CASE_TYPES = Set.of(NEIGHBORHOOD_NOTIFICATION, PROPERTY_OWNER_NOTIFICATION, BYGGR_ADD_CERTIFIED_INSPECTOR, BYGGR_ADDITIONAL_DOCUMENTS);
+	private final CaseTypeRepository caseTypeRepository;
+	private final EcosCaseTypeConfigRepository ecosCaseTypeConfigRepository;
+	private final CaseTypeRegistry caseTypeRegistry;
 
-	public void validateByggrErrand(ByggRCaseDTO byggRCase) {
-		try (var factory = Validation.buildDefaultValidatorFactory()) {
+	public Validator(final CaseTypeRepository caseTypeRepository, final EcosCaseTypeConfigRepository ecosCaseTypeConfigRepository, final CaseTypeRegistry caseTypeRegistry) {
+		this.caseTypeRepository = caseTypeRepository;
+		this.ecosCaseTypeConfigRepository = ecosCaseTypeConfigRepository;
+		this.caseTypeRegistry = caseTypeRegistry;
+	}
+
+	public void validateByggrErrand(final ByggRCaseDTO byggRCase) {
+		final CaseTypeEntity caseTypeEntity = caseTypeRepository.findById(byggRCase.getCaseType())
+			.orElseThrow(() -> Problem.valueOf(BAD_REQUEST, MessageFormat.format("CaseType {0} not found", byggRCase.getCaseType())));
+
+		try (final var factory = Validation.buildDefaultValidatorFactory()) {
 			final jakarta.validation.Validator validator = factory.getValidator();
 
-			if (!NULLABLE_FACILITY_CASE_TYPES.contains(byggRCase.getCaseType())) {
+			if (!caseTypeEntity.isNullableFacility()) {
 				final Set<ConstraintViolation<ByggRCaseDTO>> facilityViolations = validator.validate(byggRCase, ByggRFacilityConstraints.class);
 				if (!facilityViolations.isEmpty()) {
 					throw new ConstraintViolationException(facilityViolations);
@@ -77,14 +85,14 @@ public class Validator {
 		}
 		// Validates that FacilityTypes is compatible with the CaseType
 		if (byggRCase.getFacilities() != null) {
-			validateFacilityTypes(byggRCase);
+			validateFacilityTypes(byggRCase, caseTypeEntity);
 		}
 	}
 
 	/**
 	 * Validates that the FacilityTypes are compatible with the CaseType.
 	 */
-	private void validateFacilityTypes(ByggRCaseDTO byggRCase) {
+	private void validateFacilityTypes(final ByggRCaseDTO byggRCase, final CaseTypeEntity caseType) {
 		boolean attefallFacilityType = false;
 		String facilityType = null;
 
@@ -92,7 +100,7 @@ public class Validator {
 
 			facilityType = facility.getFacilityType();
 
-			if ((facilityType == null) && WITH_NULLABLE_FACILITY_TYPE.contains(byggRCase.getCaseType())) {
+			if ((facilityType == null) && caseType.isNullableFacilityType()) {
 				return;
 			}
 			if (facilityType == null) {
@@ -106,13 +114,20 @@ public class Validator {
 			};
 		}
 
-		if (((Objects.equals(byggRCase.getCaseType(), ANMALAN_ATTEFALL.toString())) && !attefallFacilityType) || ((Objects.equals(byggRCase.getCaseType(), NYBYGGNAD_ANSOKAN_OM_BYGGLOV.toString())) && attefallFacilityType)) {
+		final var rule = caseType.getFacilityTypeRule();
+		if (("ATTEFALL_REQUIRED".equals(rule) && !attefallFacilityType) || ("ATTEFALL_REJECTED".equals(rule) && attefallFacilityType)) {
 			throw Problem.valueOf(BAD_REQUEST, MessageFormat.format("FacilityType {0} is not compatible with CaseType {1}", facilityType, byggRCase.getCaseType()));
 		}
 	}
 
-	public void validateAttachments(CaseDTO caseDTO) {
-		try (var factory = Validation.buildDefaultValidatorFactory()) {
+	public void validateCaseDataErrand(final OtherCaseDTO otherCase, final String municipalityId) {
+		if (!caseTypeRegistry.isCaseDataType(otherCase.getCaseType(), municipalityId)) {
+			throw Problem.valueOf(BAD_REQUEST, MessageFormat.format("CaseType {0} is not a valid CaseData type for municipality {1}", otherCase.getCaseType(), municipalityId));
+		}
+	}
+
+	public void validateAttachments(final CaseDTO caseDTO) {
+		try (final var factory = Validation.buildDefaultValidatorFactory()) {
 			final var validator = factory.getValidator();
 
 			final Set<ConstraintViolation<CaseDTO>> violations = validator.validate(caseDTO, AttachmentConstraints.class);
@@ -139,13 +154,18 @@ public class Validator {
 			.anyMatch(value -> value == null || value.isBlank());
 	}
 
-	public void validateEcosErrand(EcosCaseDTO eCase) {
-		try (var factory = Validation.buildDefaultValidatorFactory()) {
-			final var validator = factory.getValidator();
+	public void validateEcosErrand(final EcosCaseDTO eCase) {
+		final CaseTypeEntity caseTypeEntity = caseTypeRepository.findById(eCase.getCaseType())
+			.orElseThrow(() -> Problem.valueOf(BAD_REQUEST, MessageFormat.format("CaseType {0} not found", eCase.getCaseType())));
 
-			if (CaseType.UPPDATERING_RISKKLASSNING.toString().equals(eCase.getCaseType())) {
-				return;
-			}
+		final var ecosConfig = ecosCaseTypeConfigRepository.findById(eCase.getCaseType());
+
+		if (ecosConfig.isPresent() && ecosConfig.get().getFacilityHandler() == EcosFacilityHandler.RISK_CLASS_UPDATE) {
+			return;
+		}
+
+		try (final var factory = Validation.buildDefaultValidatorFactory()) {
+			final var validator = factory.getValidator();
 
 			final Set<ConstraintViolation<EcosCaseDTO>> violations = validator.validate(eCase, EcosConstraints.class);
 
@@ -160,7 +180,7 @@ public class Validator {
 			}
 
 			for (final var facilityDTO : eCase.getFacilities()) {
-				if ((facilityDTO.getFacilityCollectionName() == null) && !WITH_NULLABLE_FACILITY_TYPE.contains(eCase.getCaseType())) {
+				if ((facilityDTO.getFacilityCollectionName() == null) && !caseTypeEntity.isNullableFacilityType()) {
 					throw Problem.valueOf(BAD_REQUEST, MessageFormat.format("FacilityType is not allowed to be null for CaseType {0}", eCase.getCaseType()));
 				}
 			}

@@ -6,10 +6,10 @@ import generated.client.casedata.Stakeholder;
 import generated.client.casedata.Status;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import org.springframework.http.HttpHeaders;
 import org.springframework.scheduling.annotation.Async;
@@ -17,10 +17,10 @@ import org.springframework.stereotype.Service;
 import se.sundsvall.casemanagement.api.model.AttachmentDTO;
 import se.sundsvall.casemanagement.api.model.CaseStatusDTO;
 import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
-import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.integration.casedata.configuration.CaseDataProperties;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.service.CaseMappingService;
+import se.sundsvall.casemanagement.service.CaseTypeRegistry;
 import se.sundsvall.casemanagement.util.Constants;
 import se.sundsvall.dept44.problem.Problem;
 import se.sundsvall.dept44.problem.ThrowableProblem;
@@ -29,15 +29,10 @@ import static generated.client.casedata.Errand.ChannelEnum.ESERVICE;
 import static generated.client.casedata.Stakeholder.TypeEnum.PERSON;
 import static java.time.OffsetDateTime.now;
 import static java.util.Collections.emptyList;
+import static java.util.Comparator.comparing;
+import static java.util.Comparator.naturalOrder;
+import static java.util.Comparator.nullsFirst;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.LOST_PARKING_PERMIT;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.MEX_CASE_TYPES;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.PARKING_PERMIT;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.PARKING_PERMIT_RENEWAL;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.PRH_CASE_TYPES;
-import static se.sundsvall.casemanagement.api.model.enums.Namespace.ANGE_PARKING_PERMIT;
-import static se.sundsvall.casemanagement.api.model.enums.Namespace.SBK_MEX;
-import static se.sundsvall.casemanagement.api.model.enums.Namespace.SBK_PARKING_PERMIT;
 import static se.sundsvall.casemanagement.api.model.enums.SystemType.CASE_DATA;
 import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toAttachment;
 import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toErrand;
@@ -71,13 +66,16 @@ public class CaseDataService {
 	private final CaseMappingService caseMappingService;
 	private final CaseDataProperties caseDataProperties;
 	private final CaseDataClient caseDataClient;
+	private final CaseTypeRegistry caseTypeRegistry;
 
 	public CaseDataService(final CaseMappingService caseMappingService,
 		final CaseDataProperties caseDataProperties,
-		final CaseDataClient caseDataClient) {
+		final CaseDataClient caseDataClient,
+		final CaseTypeRegistry caseTypeRegistry) {
 		this.caseMappingService = caseMappingService;
 		this.caseDataProperties = caseDataProperties;
 		this.caseDataClient = caseDataClient;
+		this.caseTypeRegistry = caseTypeRegistry;
 	}
 
 	/**
@@ -159,7 +157,7 @@ public class CaseDataService {
 			.getStatuses())
 			.orElse(List.of())
 			.stream()
-			.max(Comparator.comparing(Status::getCreated))
+			.max(comparing(Status::getCreated, nullsFirst(naturalOrder())))
 			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, Constants.ERR_MSG_STATUS_NOT_FOUND));
 
 		return CaseStatusDTO.builder()
@@ -170,7 +168,7 @@ public class CaseDataService {
 			.withStatus(latestStatus.getStatusType())
 			.withServiceName(caseMapping.getServiceName())
 			.withTimestamp(
-				Optional.ofNullable(latestStatus)
+				Optional.of(latestStatus)
 					.map(Status::getCreated)
 					.map(t -> t.atZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime())
 					.orElse(null))
@@ -209,24 +207,7 @@ public class CaseDataService {
 	}
 
 	public String mapNamespace(final String caseType, final String municipalityId) {
-		if (caseType == null) {
-			return "OTHER";
-		}
-		final var enumValue = CaseType.valueOf(caseType);
-		if (MEX_CASE_TYPES.contains(enumValue)) {
-			return SBK_MEX.name();
-		}
-		if (PRH_CASE_TYPES.contains(enumValue) && !MUNICIPALITY_ID_ANGE.equals(municipalityId)) {
-			return SBK_PARKING_PERMIT.name();
-		}
-
-		if ((PARKING_PERMIT.equals(enumValue) ||
-			PARKING_PERMIT_RENEWAL.equals(enumValue) ||
-			LOST_PARKING_PERMIT.equals(enumValue)) && MUNICIPALITY_ID_ANGE.equals(municipalityId)) {
-			return ANGE_PARKING_PERMIT.name();
-		}
-
-		return "OTHER";
+		return caseTypeRegistry.resolveNamespace(caseType, municipalityId);
 	}
 
 	public List<Errand> getErrands(final String municipalityId, final String namespace, final String filter) {
@@ -237,7 +218,10 @@ public class CaseDataService {
 	@Async
 	public CompletableFuture<List<CaseStatusDTO>> getStatusesByFilter(final String filter, final String municipalityId) {
 		final List<CaseStatusDTO> caseStatuses = new ArrayList<>();
-		for (final var namespace : caseDataProperties.namespaces().get(municipalityId)) {
+		final var namespaces = Optional.ofNullable(caseDataProperties.namespaces())
+			.map(ns -> ns.get(municipalityId))
+			.orElse(List.of());
+		for (final var namespace : namespaces) {
 			final var errands = getErrands(municipalityId, namespace, filter);
 			errands.forEach(errand -> caseStatuses.add(toCaseStatusDTO(errand)));
 		}
@@ -245,8 +229,10 @@ public class CaseDataService {
 	}
 
 	CaseStatusDTO toCaseStatusDTO(final Errand errand) {
-		final var latestStatus = errand.getStatuses().stream()
-			.max(Comparator.comparing(Status::getCreated))
+		final var latestStatus = Optional.ofNullable(errand.getStatuses())
+			.orElse(List.of())
+			.stream()
+			.max(comparing(Status::getCreated, nullsFirst(naturalOrder())))
 			.orElse(null);
 
 		return CaseStatusDTO.builder()
@@ -261,7 +247,9 @@ public class CaseDataService {
 				.map(Status::getCreated)
 				.map(dateTime -> dateTime.atZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime())
 				.orElse(null))
-			.withServiceName(errand.getExtraParameters().stream()
+			.withServiceName(Optional.ofNullable(errand.getExtraParameters())
+				.orElse(List.of())
+				.stream()
 				.filter(extraParameter -> SERVICE_NAME.equals(extraParameter.getKey()))
 				.findFirst()
 				.map(ExtraParameter::getValues)
@@ -273,11 +261,9 @@ public class CaseDataService {
 	}
 
 	private boolean isAutomatic(final Errand errand, final String municipalityId, final String namespace) {
-		final var caseType = CaseType.valueOf(errand.getCaseType());
-		return (PARKING_PERMIT.equals(caseType) ||
-			PARKING_PERMIT_RENEWAL.equals(caseType) ||
-			LOST_PARKING_PERMIT.equals(caseType)) &&
-			ANGE_PARKING_PERMIT.name().equals(namespace) &&
+		final var caseType = errand.getCaseType();
+		return Set.of("PARKING_PERMIT", "PARKING_PERMIT_RENEWAL", "LOST_PARKING_PERMIT").contains(caseType) &&
+			"ANGE_PARKING_PERMIT".equals(namespace) &&
 			MUNICIPALITY_ID_ANGE.equals(municipalityId) &&
 			ESERVICE.equals(errand.getChannel());
 	}

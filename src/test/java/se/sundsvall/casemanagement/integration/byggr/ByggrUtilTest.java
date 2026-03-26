@@ -14,7 +14,6 @@ import se.sundsvall.casemanagement.api.model.StakeholderDTO;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static se.sundsvall.casemanagement.api.model.enums.StakeholderRole.CONTROL_OFFICIAL;
-import static se.sundsvall.casemanagement.util.Constants.BYGGR_STATUS_AVSLUTAT;
 
 class ByggrUtilTest {
 
@@ -228,7 +227,7 @@ class ByggrUtilTest {
 		final var arende = new Arende();
 		arende.setStatus("SomeStatus");
 		// Act
-		final var result = ByggrUtil.isCaseClosed(arende);
+		final var result = ByggrUtil.isCaseClosed(arende, "Avslutat");
 		// Assert
 		assertThat(result).isFalse();
 	}
@@ -237,9 +236,9 @@ class ByggrUtilTest {
 	void isCaseClosedExpectTrue() {
 		// Arrange
 		final var arende = new Arende();
-		arende.setStatus(BYGGR_STATUS_AVSLUTAT);
+		arende.setStatus("Avslutat");
 		// Act
-		final var result = ByggrUtil.isCaseClosed(arende);
+		final var result = ByggrUtil.isCaseClosed(arende, "Avslutat");
 		// Assert
 		assertThat(result).isTrue();
 	}

@@ -31,6 +31,12 @@ import static se.sundsvall.casemanagement.integration.casedata.configuration.Cas
 @CircuitBreaker(name = CLIENT_ID)
 public interface CaseDataClient {
 
+	@CircuitBreaker(name = "caseDataMetadata")
+	@GetMapping(path = "/{municipalityId}/{namespace}/metadata/casetypes")
+	List<generated.client.casedata.CaseType> getCaseTypes(
+		@PathVariable final String municipalityId,
+		@PathVariable final String namespace);
+
 	@PostMapping(path = "/{municipalityId}/{namespace}/errands")
 	ResponseEntity<Void> postErrands(
 		@PathVariable final String municipalityId,

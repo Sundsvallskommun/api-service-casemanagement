@@ -25,7 +25,7 @@ import se.sundsvall.casemanagement.api.model.enums.SystemType;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(setterPrefix = "with")
-@Table(name = "CaseMapping", indexes = {
+@Table(name = "case_mapping", indexes = {
 	@Index(name = "case_mapping_municipality_id_idx", columnList = "municipalityId"),
 })
 public class CaseMapping {

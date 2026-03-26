@@ -48,8 +48,9 @@ import se.sundsvall.casemanagement.api.model.StakeholderDTO;
 import se.sundsvall.casemanagement.api.model.enums.AddressCategory;
 import se.sundsvall.casemanagement.api.model.enums.FacilityType;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
+import se.sundsvall.casemanagement.integration.db.model.ByggrCaseTypeConfigEntity;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
-import se.sundsvall.casemanagement.integration.db.model.CaseTypeData;
+import se.sundsvall.casemanagement.service.ByggrSystemConfigProvider;
 import se.sundsvall.casemanagement.util.Constants;
 import se.sundsvall.dept44.problem.Problem;
 
@@ -59,13 +60,26 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static se.sundsvall.casemanagement.api.model.enums.SystemType.BYGGR;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrUtil.hasHandelseList;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrUtil.isCaseClosed;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSESLAG_ELDSTAD;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSESLAG_ELDSTAD_ROKKANAL;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSESLAG_KOMPLETTERANDE_HANDLINGAR;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSESLAG_KOMPLETTERING_TILL_ADMIN;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSESLAG_MANUELL_HANTERING_KRAVS;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSETYP_HANDLING;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSETYP_STATUS;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSE_ANTECKNING;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSE_RIKTNING_IN;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSE_RUBRIK_ELDSTAD;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSE_RUBRIK_ELDSTAD_ROKKANAL;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSE_RUBRIK_KOMPLETTERING_TILL_ADMIN;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDELSE_RUBRIK_MANUELL_HANTERING;
 import static se.sundsvall.casemanagement.util.Constants.BYGGR_HANDLING_STATUS_INKOMMEN;
 import static se.sundsvall.casemanagement.util.Constants.BYGGR_KOMTYP_EPOST;
 import static se.sundsvall.casemanagement.util.Constants.BYGGR_KOMTYP_HEMTELEFON;
 import static se.sundsvall.casemanagement.util.Constants.BYGGR_KOMTYP_MOBIL;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR_STATUS_AVSLUTAT;
 import static se.sundsvall.casemanagement.util.Constants.BYGGR_STATUS_OKANT;
-import static se.sundsvall.casemanagement.util.Constants.HANDELSETYP_ANMALAN;
-import static se.sundsvall.casemanagement.util.Constants.HANDELSETYP_ANSOKAN;
+import static se.sundsvall.casemanagement.util.Constants.BYGGR_SYSTEM_HANDLAGGARE_SIGN;
 
 public final class ByggrMapper {
 
@@ -74,6 +88,15 @@ public final class ByggrMapper {
 	private static final String REGEX_LAST_COMMA = ",(?=[^,]*$)";
 
 	private ByggrMapper() {}
+
+	static List<String> filterPersonId(final List<StakeholderDTO> stakeholderDTOList) {
+		return stakeholderDTOList.stream()
+			.filter(PersonDTO.class::isInstance)
+			.map(PersonDTO.class::cast)
+			.map(PersonDTO::getPersonId)
+			.filter(Objects::nonNull)
+			.toList();
+	}
 
 	static void setStakeholderFields(final StakeholderDTO stakeholderDTO, final List<String> personIds, final ArendeIntressent intressent) {
 		switch (stakeholderDTO) {
@@ -94,20 +117,20 @@ public final class ByggrMapper {
 		return new SaveNewHandelse()
 			.withMessage(new SaveNewHandelseMessage()
 				.withDnr(dnr)
-				.withHandlaggarSign(Constants.BYGGR_SYSTEM_HANDLAGGARE_SIGN)
+				.withHandlaggarSign(BYGGR_SYSTEM_HANDLAGGARE_SIGN)
 				.withHandelse(new Handelse()
-					.withRubrik(Constants.BYGGR_HANDELSE_RUBRIK_MANUELL_HANTERING)
-					.withRiktning(Constants.BYGGR_HANDELSE_RIKTNING_IN)
-					.withHandelsetyp(Constants.BYGGR_HANDELSETYP_STATUS)
-					.withHandelseslag(Constants.BYGGR_HANDELSESLAG_MANUELL_HANTERING_KRAVS)
+					.withRubrik(BYGGR_HANDELSE_RUBRIK_MANUELL_HANTERING)
+					.withRiktning(BYGGR_HANDELSE_RIKTNING_IN)
+					.withHandelsetyp(BYGGR_HANDELSETYP_STATUS)
+					.withHandelseslag(BYGGR_HANDELSESLAG_MANUELL_HANTERING_KRAVS)
 					.withStartDatum(LocalDateTime.now())
 					.withAnteckning(note)));
 	}
 
-	static Handelse toHandelse(final ByggRCaseDTO dto, final CaseTypeData caseType) {
+	static Handelse toHandelse(final ByggRCaseDTO dto, final ByggrCaseTypeConfigEntity caseType) {
 		final var handelse = new Handelse()
 			.withStartDatum(LocalDateTime.now())
-			.withRiktning(Constants.BYGGR_HANDELSE_RIKTNING_IN)
+			.withRiktning(BYGGR_HANDELSE_RIKTNING_IN)
 			.withRubrik(caseType.getHandelseRubrik())
 			.withHandelsetyp(caseType.getHandelseTyp())
 			.withHandelseslag(caseType.getHandelseSlag());
@@ -117,13 +140,13 @@ public final class ByggrMapper {
 			.ifPresent(facilityType -> {
 				switch (facilityType) {
 					case FIREPLACE -> handelse
-						.withRubrik(Constants.BYGGR_HANDELSE_RUBRIK_ELDSTAD)
-						.withHandelseslag(Constants.BYGGR_HANDELSESLAG_ELDSTAD);
+						.withRubrik(BYGGR_HANDELSE_RUBRIK_ELDSTAD)
+						.withHandelseslag(BYGGR_HANDELSESLAG_ELDSTAD);
 					case FIREPLACE_SMOKECHANNEL -> handelse
-						.withRubrik(Constants.BYGGR_HANDELSE_RUBRIK_ELDSTAD_ROKKANAL)
-						.withHandelseslag(Constants.BYGGR_HANDELSESLAG_ELDSTAD_ROKKANAL);
+						.withRubrik(BYGGR_HANDELSE_RUBRIK_ELDSTAD_ROKKANAL)
+						.withHandelseslag(BYGGR_HANDELSESLAG_ELDSTAD_ROKKANAL);
 					default -> {
-						// Do nothing
+						// No override
 					}
 				}
 			});
@@ -147,32 +170,32 @@ public final class ByggrMapper {
 					.withFilAndelse(attachment.getExtension().toLowerCase()))
 				.withNamn(attachment.getName())
 				.withBeskrivning(attachment.getNote()))
-			.withStatus(Constants.BYGGR_HANDLING_STATUS_INKOMMEN)
+			.withStatus(BYGGR_HANDLING_STATUS_INKOMMEN)
 			.withTyp(attachment.getCategory());
 	}
 
-	static SaveNewArende toSaveNewArende(final ByggRCaseDTO byggRCase, final CaseTypeData caseType) {
+	static SaveNewArende toSaveNewArende(final ByggRCaseDTO byggRCase, final ByggrCaseTypeConfigEntity caseType) {
 		return new SaveNewArende()
 			.withMessage(new SaveNewArendeMessage()
 				.withAnkomststamplaHandlingar(true)
 				.withHandlingar(toArrayOfHandling(byggRCase.getAttachments()))
 				.withHandelse(toHandelse(byggRCase, caseType))
-				.withHandlaggarSign(Constants.BYGGR_SYSTEM_HANDLAGGARE_SIGN));
+				.withHandlaggarSign(BYGGR_SYSTEM_HANDLAGGARE_SIGN));
 	}
 
 	static SaveNewHandelseMessage toSaveNewHandelseMessage(final String dnr, final List<AttachmentDTO> attachmentDTOList) {
 		return new SaveNewHandelseMessage()
 			.withDnr(dnr)
-			.withHandlaggarSign(Constants.BYGGR_SYSTEM_HANDLAGGARE_SIGN)
+			.withHandlaggarSign(BYGGR_SYSTEM_HANDLAGGARE_SIGN)
 			.withHandlingar(toArrayOfHandling(attachmentDTOList))
 			.withAnkomststamplaHandlingar(true)
 			.withHandelse(new Handelse()
-				.withRiktning(Constants.BYGGR_HANDELSE_RIKTNING_IN)
-				.withRubrik(Constants.BYGGR_HANDELSE_RUBRIK_KOMPLETTERING_TILL_ADMIN)
-				.withHandelsetyp(Constants.BYGGR_HANDELSETYP_HANDLING)
-				.withHandelseslag(Constants.BYGGR_HANDELSESLAG_KOMPLETTERING_TILL_ADMIN)
+				.withRiktning(BYGGR_HANDELSE_RIKTNING_IN)
+				.withRubrik(BYGGR_HANDELSE_RUBRIK_KOMPLETTERING_TILL_ADMIN)
+				.withHandelsetyp(BYGGR_HANDELSETYP_HANDLING)
+				.withHandelseslag(BYGGR_HANDELSESLAG_KOMPLETTERING_TILL_ADMIN)
 				.withStartDatum(LocalDateTime.now(ZoneId.systemDefault()))
-				.withAnteckning(Constants.BYGGR_HANDELSE_ANTECKNING));
+				.withAnteckning(BYGGR_HANDELSE_ANTECKNING));
 	}
 
 	static String getInvoiceMarking(final ByggRCaseDTO pCase) {
@@ -365,15 +388,6 @@ public final class ByggrMapper {
 		return MessageFormat.format("{0} {1}{2}", caseDescription, descriptions, caseDescriptionAddition);
 	}
 
-	static List<String> filterPersonId(final List<StakeholderDTO> stakeholderDTOList) {
-		return stakeholderDTOList.stream()
-			.filter(PersonDTO.class::isInstance)
-			.map(PersonDTO.class::cast)
-			.map(PersonDTO::getPersonId)
-			.filter(Objects::nonNull)
-			.toList();
-	}
-
 	static void toAdressCategory(final StakeholderDTO stakeholderDTO, final AddressDTO addressDTO, final AddressCategory addressCategory, final ArendeIntressent intressent) {
 		if (AddressCategory.POSTAL_ADDRESS.equals(addressCategory)) {
 
@@ -405,12 +419,12 @@ public final class ByggrMapper {
 			.forEach(addressDTO -> toAdressCategories(stakeholderDTO, addressDTO, intressent));
 	}
 
-	static CaseStatusDTO toByggrStatus(final Arende arende, final String externalCaseId, final List<CaseMapping> caseMappingList) {
+	static CaseStatusDTO toByggrStatus(final Arende arende, final String externalCaseId, final List<CaseMapping> caseMappingList, final ByggrSystemConfigProvider byggrSystemConfigProvider) {
 		final var caseStatusDTO = buildCaseStatusDTO(arende, externalCaseId, caseMappingList);
 		final var ankomstDatum = Optional.ofNullable(arende.getAnkomstDatum()).map(LocalDate::atStartOfDay).orElse(null);
 		// Timestamp is set to ankomstdatum as default, but will be updated if a relevant handelse is found.
 		caseStatusDTO.setTimestamp(ankomstDatum);
-		if (isCaseClosed(arende)) {
+		if (isCaseClosed(arende, BYGGR_STATUS_AVSLUTAT)) {
 			caseStatusDTO.setStatus(arende.getStatus());
 			return caseStatusDTO;
 		}
@@ -419,7 +433,7 @@ public final class ByggrMapper {
 			handelseLista.sort(Comparator.comparing(Handelse::getStartDatum).reversed());
 
 			for (final var handelse : handelseLista) {
-				caseStatusDTO.setStatus(getHandelseStatus(handelse.getHandelsetyp(), handelse.getHandelseslag(), handelse.getHandelseutfall()));
+				caseStatusDTO.setStatus(byggrSystemConfigProvider.resolveHandelseStatus(handelse.getHandelsetyp(), handelse.getHandelseslag(), handelse.getHandelseutfall()));
 
 				if (caseStatusDTO.getStatus() != null) {
 					caseStatusDTO.setTimestamp(Optional.ofNullable(handelse.getStartDatum()).orElse(ankomstDatum));
@@ -444,48 +458,8 @@ public final class ByggrMapper {
 			.build();
 	}
 
-	static String getHandelseStatus(final String handelsetyp, final String handelseslag, final String handelseutfall) {
-
-		// OEP-status = Inskickat
-		// UNDER
-		// OEP-status = Väntar på komplettering
-		// KOMP, KOMP1
-		if (HANDELSETYP_ANMALAN.equals(handelsetyp)
-			|| HANDELSETYP_ANSOKAN.equals(handelsetyp)
-			|| Constants.BYGGR_HANDELSETYP_UNDERRATTELSE.equals(handelsetyp) && (Constants.BYGGR_HANDELSESLAG_MED_KRAV_PA_SVAR.equals(handelseslag)
-				|| Constants.BYGGR_HANDELSESLAG_UTAN_KRAV_PA_SVAR.equals(handelseslag))
-			|| Constants.BYGGR_HANDELSETYP_KOMPLETTERINGSFORELAGGANDE.equals(handelsetyp)
-			|| Constants.BYGGR_HANDELSETYP_KOMPLETTERINGSFORELAGGANDE_PAMINNELSE.equals(handelsetyp)) {
-			// ANM, ANSÖKAN
-			return handelsetyp;
-		}
-		// OEP-status = Under behandling
-		if (Constants.BYGGR_HANDELSETYP_BESLUT.equals(handelsetyp) && (Constants.BYGGR_HANDELSESLAG_SLUTBESKED.equals(handelseslag)
-			|| Constants.BYGGR_HANDELSESLAG_AVSKRIVNING.equals(handelseslag))
-			|| ((Constants.BYGGR_HANDELSETYP_HANDLING.equals(handelsetyp) && Constants.BYGGR_HANDELSESLAG_KOMPLETTERANDE_HANDLINGAR.equals(handelseslag))
-				|| Constants.BYGGR_HANDELSESLAG_KOMPLETTERANDE_BYGGLOVHANDLINGAR.equals(handelseslag)
-				|| Constants.BYGGR_HANDELSESLAG_KOMPLETTERANDE_TEKNISKA_HANDLINGAR.equals(handelseslag)
-				|| Constants.BYGGR_HANDELSESLAG_REVIDERADE_HANDLINGAR.equals(handelseslag))) {
-			// SLU, UAB
-			return handelseslag;
-		} else if (Constants.BYGGR_HANDELSETYP_REMISS.equals(handelsetyp)
-			&& Constants.BYGGR_HANDELSESLAG_UTSKICK_AV_REMISS.equals(handelseslag)) {
-			// UTSKICK
-			return handelseslag;
-		}
-		// OEP-status = Kompletterad
-		else if (Constants.BYGGR_HANDELSETYP_ATOMHANDELSE.equals(handelsetyp)
-			&& Constants.BYGGR_HANDELSESLAG_ATOM_KVITTENS.equals(handelseslag)
-			&& Constants.BYGGR_HANDELSEUTFALL_ATOM_KVITTENS_HL_BYTE.equals(handelseutfall)) {
-			// Kv2
-			return handelseutfall;
-		}
-
-		return null;
-	}
-
-	static ArrayOfIntressentKommunikation createArrayOfIntressentKommunikation(StakeholderDTO stakeholder) {
-		List<IntressentKommunikation> intressentKommunikationList = new ArrayList<>();
+	static ArrayOfIntressentKommunikation createArrayOfIntressentKommunikation(final StakeholderDTO stakeholder) {
+		final List<IntressentKommunikation> intressentKommunikationList = new ArrayList<>();
 
 		if (stakeholder.getPhoneNumber() != null) {
 			intressentKommunikationList.add(new IntressentKommunikation()
@@ -512,10 +486,10 @@ public final class ByggrMapper {
 			.withIntressentKommunikation(intressentKommunikationList);
 	}
 
-	static ArrayOfHandling createArrayOfHandling(final ByggRCaseDTO byggRCase) {
-		List<HandelseHandling> handelseHandlingar = new ArrayList<>();
-		for (var attachment : byggRCase.getAttachments()) {
-			var handelseHandling = new HandelseHandling()
+	public static ArrayOfHandling createArrayOfHandling(final ByggRCaseDTO byggRCase) {
+		final List<HandelseHandling> handelseHandlingar = new ArrayList<>();
+		for (final var attachment : byggRCase.getAttachments()) {
+			final var handelseHandling = new HandelseHandling()
 				.withAnteckning(attachment.getName())
 				.withStatus(BYGGR_HANDLING_STATUS_INKOMMEN)
 				.withTyp(attachment.getCategory())
@@ -537,11 +511,11 @@ public final class ByggrMapper {
 	 * @param  byggRCase The incoming request from OpenE
 	 * @return           ArrayOfHandelseHandling, a list of attachments that the stakeholder sends with the response
 	 */
-	static ArrayOfHandling createNeighborhoodNotificationArrayOfHandling(final ByggRCaseDTO byggRCase) {
-		var handlingar = byggRCase.getAttachments().stream()
+	public static ArrayOfHandling createNeighborhoodNotificationArrayOfHandling(final ByggRCaseDTO byggRCase) {
+		final var handlingar = byggRCase.getAttachments().stream()
 			.map(attachment -> new HandelseHandling()
 				.withAnteckning(attachment.getName())
-				.withStatus(Constants.BYGGR_HANDLING_STATUS_INKOMMEN)
+				.withStatus(BYGGR_HANDLING_STATUS_INKOMMEN)
 				.withTyp(mapCategoryToTyp(attachment.getCategory()))
 				.withDokument(new Dokument()
 					.withNamn(attachment.getName())
@@ -563,20 +537,20 @@ public final class ByggrMapper {
 		};
 	}
 
-	static HandelseIntressent createAddAdditionalDocumentsHandelseIntressent(final StakeholderDTO stakeholder, final String stakeholderId) {
-		var handelseIntressent = new HandelseIntressent()
+	public static HandelseIntressent createAddAdditionalDocumentsHandelseIntressent(final StakeholderDTO stakeholder, final String stakeholderId) {
+		final var handelseIntressent = new HandelseIntressent()
 			.withPersOrgNr(stakeholderId)
 			.withAdress(Optional.ofNullable(stakeholder.getAddresses()).map(List::getFirst).map(AddressDTO::getStreet).orElse(null))
 			.withPostNr(Optional.ofNullable(stakeholder.getAddresses()).map(List::getFirst).map(AddressDTO::getPostalCode).orElse(null))
 			.withOrt(Optional.ofNullable(stakeholder.getAddresses()).map(List::getFirst).map(AddressDTO::getCity).orElse(null))
 			.withIntressentKommunikationLista(createArrayOfIntressentKommunikation(stakeholder));
 
-		if (stakeholder instanceof OrganizationDTO organization) {
+		if (stakeholder instanceof final OrganizationDTO organization) {
 			handelseIntressent
 				.withArForetag(true)
 				.withNamn(organization.getOrganizationName());
 		}
-		if (stakeholder instanceof PersonDTO person) {
+		if (stakeholder instanceof final PersonDTO person) {
 			handelseIntressent
 				.withArForetag(false)
 				.withFornamn(person.getFirstName())
@@ -586,8 +560,8 @@ public final class ByggrMapper {
 		return handelseIntressent;
 	}
 
-	static HandelseIntressent createAddCertifiedInspectorHandelseIntressent(final StakeholderDTO stakeholder, final String stakeholderId, final Map<String, String> extraParameters) {
-		var handelseIntressent = new HandelseIntressent()
+	public static HandelseIntressent createAddCertifiedInspectorHandelseIntressent(final StakeholderDTO stakeholder, final String stakeholderId, final Map<String, String> extraParameters) {
+		final var handelseIntressent = new HandelseIntressent()
 			.withPersOrgNr(stakeholderId)
 			.withAdress(Optional.ofNullable(stakeholder.getAddresses()).map(List::getFirst).map(AddressDTO::getStreet).orElse(null))
 			.withPostNr(Optional.ofNullable(stakeholder.getAddresses()).map(List::getFirst).map(AddressDTO::getPostalCode).orElse(null))
@@ -596,12 +570,12 @@ public final class ByggrMapper {
 			.withAktorbehorighetLista(createAddCertifiedInspectorArrayOfAktorbehorighet(extraParameters))
 			.withRollLista(new ArrayOfString2().withRoll("KOA"));
 
-		if (stakeholder instanceof OrganizationDTO organization) {
+		if (stakeholder instanceof final OrganizationDTO organization) {
 			handelseIntressent
 				.withArForetag(true)
 				.withNamn(organization.getOrganizationName());
 		}
-		if (stakeholder instanceof PersonDTO person) {
+		if (stakeholder instanceof final PersonDTO person) {
 			handelseIntressent
 				.withArForetag(false)
 				.withFornamn(person.getFirstName())
@@ -610,13 +584,13 @@ public final class ByggrMapper {
 		return handelseIntressent;
 	}
 
-	static Handelse createAddAdditionalDocumentsHandelse(final String errandInformation, final HandelseIntressent handelseIntressent, final String handelseslag) {
+	public static Handelse createAddAdditionalDocumentsHandelse(final String errandInformation, final HandelseIntressent handelseIntressent, final String handelseslag) {
 		return new Handelse()
-			.withRiktning("In")
+			.withRiktning(BYGGR_HANDELSE_RIKTNING_IN)
 			.withRubrik(mapHandelseslagToRubrik(handelseslag))
 			.withStartDatum(LocalDateTime.now())
 			.withAnteckning(errandInformation)
-			.withHandelsetyp("HANDLING")
+			.withHandelsetyp(BYGGR_HANDELSETYP_HANDLING)
 			.withHandelseslag(handelseslag)
 			.withSekretess(false)
 			.withMakulerad(false)
@@ -631,14 +605,14 @@ public final class ByggrMapper {
 		};
 	}
 
-	static Handelse createAddCertifiedInspectorHandelse(final String errandInformation, final HandelseIntressent handelseIntressent) {
+	public static Handelse createAddCertifiedInspectorHandelse(final String errandInformation, final HandelseIntressent handelseIntressent) {
 		return new Handelse()
-			.withRiktning("In")
+			.withRiktning(BYGGR_HANDELSE_RIKTNING_IN)
 			.withRubrik("Anmälan KA")
 			.withStartDatum(LocalDateTime.now())
 			.withAnteckning(errandInformation)
-			.withHandelseslag("KOMPL")
-			.withHandelsetyp("HANDLING")
+			.withHandelseslag(BYGGR_HANDELSESLAG_KOMPLETTERANDE_HANDLINGAR)
+			.withHandelsetyp(BYGGR_HANDELSETYP_HANDLING)
 			.withSekretess(false)
 			.withMakulerad(false)
 			.withIntressentLista(new ArrayOfHandelseIntressent2().withIntressent(handelseIntressent));
@@ -654,13 +628,13 @@ public final class ByggrMapper {
 				.withCertifieradTillDatum(LocalDate.parse(extraParameters.get("certificateValidDate"))));
 	}
 
-	static SaveNewHandelse createAlertCaseManagerEvent(final String dnr) {
-		var alertCaseManagerEvent = new Handelse()
-			.withRiktning("In")
-			.withRubrik("Manuell hantering krävs")
+	public static SaveNewHandelse createAlertCaseManagerEvent(final String dnr) {
+		final var alertCaseManagerEvent = new Handelse()
+			.withRiktning(BYGGR_HANDELSE_RIKTNING_IN)
+			.withRubrik(BYGGR_HANDELSE_RUBRIK_MANUELL_HANTERING)
 			.withStartDatum(LocalDateTime.now())
-			.withHandelseslag("MANHANT")
-			.withHandelsetyp("STATUS")
+			.withHandelseslag(BYGGR_HANDELSESLAG_MANUELL_HANTERING_KRAVS)
+			.withHandelsetyp(BYGGR_HANDELSETYP_STATUS)
 			.withSekretess(false)
 			.withMakulerad(false)
 			.withArbetsmaterial(false);
@@ -668,7 +642,7 @@ public final class ByggrMapper {
 		return new SaveNewHandelse()
 			.withMessage(new SaveNewHandelseMessage()
 				.withDnr(dnr)
-				.withHandlaggarSign("SYSTEM")
+				.withHandlaggarSign(BYGGR_SYSTEM_HANDLAGGARE_SIGN)
 				.withHandelse(alertCaseManagerEvent)
 				.withAnkomststamplaHandlingar(false)
 				.withAutoGenereraBeslutNr(false));

@@ -8,7 +8,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
-import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.api.validation.impl.SingularFacilityConstraintValidator;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,21 +25,21 @@ class SingularFacilityConstraintValidatorTest {
 
 	@Test
 	void isValidOneFacility() {
-		final var ecosCase = createEcosCaseDTO(CaseType.REGISTRERING_AV_LIVSMEDEL, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		final var ecosCase = createEcosCaseDTO("REGISTRERING_AV_LIVSMEDEL", AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		ecosCase.setFacilities(List.of(createFacilityDTO(false)));
 		assertThat(validator.isValid(ecosCase, context)).isTrue();
 	}
 
 	@Test
 	void isValidNoFacility() {
-		final var ecosCase = createEcosCaseDTO(CaseType.REGISTRERING_AV_LIVSMEDEL, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		final var ecosCase = createEcosCaseDTO("REGISTRERING_AV_LIVSMEDEL", AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		ecosCase.setFacilities(List.of());
 		assertThat(validator.isValid(ecosCase, context)).isFalse();
 	}
 
 	@Test
 	void isValidTwoFacilities() {
-		final var ecosCase = createEcosCaseDTO(CaseType.REGISTRERING_AV_LIVSMEDEL, AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		final var ecosCase = createEcosCaseDTO("REGISTRERING_AV_LIVSMEDEL", AttachmentCategory.BUILDING_PERMIT_APPLICATION);
 		ecosCase.setFacilities(List.of(createFacilityDTO(false), createFacilityDTO(true)));
 		assertThat(validator.isValid(ecosCase, context)).isFalse();
 	}

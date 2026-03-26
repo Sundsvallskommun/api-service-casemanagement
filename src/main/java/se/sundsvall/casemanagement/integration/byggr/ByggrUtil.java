@@ -6,11 +6,16 @@ import java.util.List;
 import java.util.Optional;
 import se.sundsvall.casemanagement.api.model.AddressDTO;
 import se.sundsvall.casemanagement.api.model.FacilityDTO;
+import se.sundsvall.casemanagement.api.model.OrganizationDTO;
 import se.sundsvall.casemanagement.api.model.PersonDTO;
 import se.sundsvall.casemanagement.api.model.StakeholderDTO;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
-import se.sundsvall.casemanagement.util.Constants;
+import se.sundsvall.casemanagement.integration.party.PartyIntegration;
+import se.sundsvall.casemanagement.service.util.LegalIdUtility;
+import se.sundsvall.dept44.problem.Problem;
 
+import static generated.client.party.PartyType.PRIVATE;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrMapper.filterPersonId;
 
 public final class ByggrUtil {
@@ -78,12 +83,44 @@ public final class ByggrUtil {
 		}
 	}
 
-	static boolean isCaseClosed(final Arende arende) {
-		return arende.getStatus() != null && Constants.BYGGR_STATUS_AVSLUTAT.equals(arende.getStatus());
+	static boolean isCaseClosed(final Arende arende, final String closedStatus) {
+		return arende.getStatus() != null && closedStatus.equals(arende.getStatus());
 	}
 
 	static boolean hasHandelseList(final Arende arende) {
 		return arende.getHandelseLista() != null && arende.getHandelseLista().getHandelse() != null;
+	}
+
+	/**
+	 * The incoming request might have one or two stakeholders. If any stakeholder is of type Organization, we should use
+	 * the organization number as stakeholderId. If no organization is found, we should use the personId to fetch a personal
+	 * number from partyIntegration and use this personal number as the stakeholder id.
+	 *
+	 * @param  stakeholders     List of stakeholders
+	 * @param  municipalityId   Municipality ID
+	 * @param  partyIntegration PartyIntegration for looking up legal IDs
+	 * @return                  String, organization number, or personal number of the stakeholder.
+	 */
+	public static String extractStakeholderId(final List<StakeholderDTO> stakeholders, final String municipalityId, final PartyIntegration partyIntegration) {
+		final var organizationId = stakeholders.stream()
+			.filter(OrganizationDTO.class::isInstance)
+			.findFirst()
+			.map(stakeholder -> ((OrganizationDTO) stakeholder).getOrganizationNumber())
+			.map(LegalIdUtility::prefixOrgNr)
+			.map(LegalIdUtility::addHyphen)
+			.orElse(null);
+
+		if (organizationId != null) {
+			return organizationId;
+		}
+
+		return stakeholders.stream()
+			.filter(PersonDTO.class::isInstance)
+			.findFirst()
+			.map(stakeholder -> ((PersonDTO) stakeholder).getPersonId())
+			.map((final String personId) -> partyIntegration.getLegalIdByPartyId(municipalityId, personId).get(PRIVATE))
+			.map(LegalIdUtility::addHyphen)
+			.orElseThrow(() -> Problem.valueOf(BAD_REQUEST, "No stakeholder found in the incoming request."));
 	}
 
 }

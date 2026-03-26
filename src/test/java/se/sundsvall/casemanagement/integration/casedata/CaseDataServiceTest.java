@@ -1,9 +1,12 @@
 package se.sundsvall.casemanagement.integration.casedata;
 
+import generated.client.casedata.Attachment;
 import generated.client.casedata.Errand;
 import generated.client.casedata.Errand.ChannelEnum;
+import generated.client.casedata.ExtraParameter;
 import generated.client.casedata.PatchErrand;
 import generated.client.casedata.Stakeholder;
+import generated.client.casedata.Status;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.LocalDateTime;
@@ -33,7 +36,6 @@ import se.sundsvall.casemanagement.TestUtil;
 import se.sundsvall.casemanagement.api.model.CaseDTO;
 import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
 import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
-import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.api.model.enums.Namespace;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderType;
@@ -41,6 +43,7 @@ import se.sundsvall.casemanagement.api.model.enums.SystemType;
 import se.sundsvall.casemanagement.integration.casedata.configuration.CaseDataProperties;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.service.CaseMappingService;
+import se.sundsvall.casemanagement.service.CaseTypeRegistry;
 import se.sundsvall.casemanagement.util.Constants;
 import se.sundsvall.dept44.problem.Problem;
 import se.sundsvall.dept44.problem.ThrowableProblem;
@@ -58,10 +61,6 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.LOST_PARKING_PERMIT;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.MEX_BUILDING_PERMIT;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARKING_PERMIT;
-import static se.sundsvall.casemanagement.api.model.enums.CaseType.Value.PARKING_PERMIT_RENEWAL;
 import static se.sundsvall.casemanagement.api.model.enums.Namespace.ANGE_PARKING_PERMIT;
 import static se.sundsvall.casemanagement.api.model.enums.Namespace.SBK_MEX;
 import static se.sundsvall.casemanagement.api.model.enums.Namespace.SBK_PARKING_PERMIT;
@@ -87,35 +86,38 @@ class CaseDataServiceTest {
 	@Mock
 	private CaseDataProperties caseDataPropertiesMock;
 
+	@Mock
+	private CaseTypeRegistry caseTypeRegistryMock;
+
 	@Captor
 	private ArgumentCaptor<PatchErrand> patchErrandArgumentCaptor;
 
 	@Captor
-	private ArgumentCaptor<generated.client.casedata.Status> statusArgumentCaptor;
+	private ArgumentCaptor<Status> statusArgumentCaptor;
 
 	@Captor
-	private ArgumentCaptor<List<generated.client.casedata.Stakeholder>> stakeholderListArgumentCaptor;
+	private ArgumentCaptor<List<Stakeholder>> stakeholderListArgumentCaptor;
 
 	@Captor
-	private ArgumentCaptor<generated.client.casedata.Attachment> attachmentArgumentCaptor;
+	private ArgumentCaptor<Attachment> attachmentArgumentCaptor;
 
 	private static Stream<Arguments> argumentsProvider() {
 		return Stream.of(
-			Arguments.of(PARKING_PERMIT, MUNICIPALITY_ID, SBK_PARKING_PERMIT, "externalCaseId", false),
-			Arguments.of(LOST_PARKING_PERMIT, MUNICIPALITY_ID, SBK_PARKING_PERMIT, "externalCaseId", false),
-			Arguments.of(PARKING_PERMIT_RENEWAL, MUNICIPALITY_ID, SBK_PARKING_PERMIT, "externalCaseId", false),
-			Arguments.of(PARKING_PERMIT, MUNICIPALITY_ID_ANGE, ANGE_PARKING_PERMIT, "externalCaseId", true),
-			Arguments.of(LOST_PARKING_PERMIT, MUNICIPALITY_ID_ANGE, ANGE_PARKING_PERMIT, "externalCaseId", true),
-			Arguments.of(PARKING_PERMIT_RENEWAL, MUNICIPALITY_ID_ANGE, ANGE_PARKING_PERMIT, "externalCaseId", true),
-			Arguments.of(PARKING_PERMIT_RENEWAL, MUNICIPALITY_ID_ANGE, ANGE_PARKING_PERMIT, "externalCaseId", true),
-			Arguments.of(PARKING_PERMIT_RENEWAL, MUNICIPALITY_ID_ANGE, ANGE_PARKING_PERMIT, null, false),
-			Arguments.of(MEX_BUILDING_PERMIT, MUNICIPALITY_ID, SBK_MEX, "externalCaseId", false),
-			Arguments.of(MEX_BUILDING_PERMIT, MUNICIPALITY_ID_ANGE, SBK_MEX, "externalCaseId", false));
+			Arguments.of("PARKING_PERMIT", MUNICIPALITY_ID, SBK_PARKING_PERMIT, "externalCaseId", false),
+			Arguments.of("LOST_PARKING_PERMIT", MUNICIPALITY_ID, SBK_PARKING_PERMIT, "externalCaseId", false),
+			Arguments.of("PARKING_PERMIT_RENEWAL", MUNICIPALITY_ID, SBK_PARKING_PERMIT, "externalCaseId", false),
+			Arguments.of("PARKING_PERMIT", MUNICIPALITY_ID_ANGE, ANGE_PARKING_PERMIT, "externalCaseId", true),
+			Arguments.of("LOST_PARKING_PERMIT", MUNICIPALITY_ID_ANGE, ANGE_PARKING_PERMIT, "externalCaseId", true),
+			Arguments.of("PARKING_PERMIT_RENEWAL", MUNICIPALITY_ID_ANGE, ANGE_PARKING_PERMIT, "externalCaseId", true),
+			Arguments.of("PARKING_PERMIT_RENEWAL", MUNICIPALITY_ID_ANGE, ANGE_PARKING_PERMIT, "externalCaseId", true),
+			Arguments.of("PARKING_PERMIT_RENEWAL", MUNICIPALITY_ID_ANGE, ANGE_PARKING_PERMIT, null, false),
+			Arguments.of("MEX_BUILDING_PERMIT", MUNICIPALITY_ID, SBK_MEX, "externalCaseId", false),
+			Arguments.of("MEX_BUILDING_PERMIT", MUNICIPALITY_ID_ANGE, SBK_MEX, "externalCaseId", false));
 	}
 
 	@ParameterizedTest
 	@MethodSource("argumentsProvider")
-	void postCases(final CaseType caseType, final String municipalityId, final Namespace namespace, final String externalCaseId, final boolean isAutomatic) throws URISyntaxException {
+	void postCases(final String caseType, final String municipalityId, final Namespace namespace, final String externalCaseId, final boolean isAutomatic) throws URISyntaxException {
 		// Arrange
 		final var errandId = RANDOM.nextLong();
 		final var uri = new URI("https://sundsvall-test.se/errands/" + errandId);
@@ -133,6 +135,7 @@ class CaseDataServiceTest {
 			.roles(List.of("ADMINISTRATOR"));
 
 		// Mock
+		when(caseTypeRegistryMock.resolveNamespace(caseType, municipalityId)).thenReturn(namespace.name());
 		when(caseDataClientMock.postErrands(eq(municipalityId), eq(namespace.name()), any())).thenReturn(ResponseEntity.created(uri).build());
 		when(caseDataClientMock.getErrand(municipalityId, namespace.name(), errandId)).thenReturn(getErrand);
 
@@ -183,10 +186,12 @@ class CaseDataServiceTest {
 		assertThat(errand.getExternalCaseId()).isEqualTo(inputCase.getExternalCaseId());
 		assertThat(errand.getPhase()).isEqualTo("Aktualisering");
 		assertThat(errand.getPriority()).isEqualTo(Errand.PriorityEnum.HIGH);
-		assertThat(errand.getStatus().getStatusType()).isEqualTo("Ärende inkommit");
-		assertThat(errand.getStatus().getCreated()).isNotNull();
+		assertThat(errand.getStatus()).isNotNull().satisfies(status -> {
+			assertThat(status.getStatusType()).isEqualTo("Ärende inkommit");
+			assertThat(status.getCreated()).isNotNull();
+		});
 
-		attachmentArgumentCaptor = ArgumentCaptor.forClass(generated.client.casedata.Attachment.class);
+		attachmentArgumentCaptor = ArgumentCaptor.forClass(Attachment.class);
 		verify(caseDataClientMock, times(3)).postAttachment(eq(municipalityId), eq(namespace.name()), eq(errandId), attachmentArgumentCaptor.capture());
 		final var attachment = attachmentArgumentCaptor.getValue();
 		assertThat(attachment).isNotNull();
@@ -205,10 +210,11 @@ class CaseDataServiceTest {
 	void putErrand() {
 		// Arrange
 		final var errandId = RANDOM.nextLong();
-		final var inputCase = createCase(CaseType.PARKING_PERMIT);
+		final var inputCase = createCase("PARKING_PERMIT");
 		final var namespace = SBK_PARKING_PERMIT.name();
 
 		// Mock
+		when(caseTypeRegistryMock.resolveNamespace("PARKING_PERMIT", MUNICIPALITY_ID)).thenReturn(namespace);
 		when(caseDataClientMock.patchErrand(eq(MUNICIPALITY_ID), eq(namespace), any(), any())).thenReturn(null);
 		when(caseDataClientMock.patchStatusOnErrand(eq(MUNICIPALITY_ID), eq(namespace), any(), any())).thenReturn(null);
 		when(caseDataClientMock.putStakeholdersOnErrand(eq(MUNICIPALITY_ID), eq(namespace), any(), any())).thenReturn(null);
@@ -255,15 +261,15 @@ class CaseDataServiceTest {
 		final var errandMock = new Errand();
 		final var namespace = SBK_PARKING_PERMIT.name();
 		errandMock.setId(caseId);
-		final var statusMock1 = new generated.client.casedata.Status()
+		final var statusMock1 = new Status()
 			.statusType(RandomStringUtils.secure().next(10, true, false))
 			.created(now().minusDays(10))
 			.description(RandomStringUtils.secure().next(10, true, false));
-		final var statusMock2 = new generated.client.casedata.Status()
+		final var statusMock2 = new Status()
 			.statusType(RandomStringUtils.secure().next(10, true, false))
 			.created(now().minusDays(5))
 			.description(RandomStringUtils.secure().next(10, true, false));
-		final var statusMock3 = new generated.client.casedata.Status()
+		final var statusMock3 = new Status()
 			.statusType(RandomStringUtils.secure().next(10, true, false))
 			.created(now().minusDays(20))
 			.description(RandomStringUtils.secure().next(10, true, false));
@@ -273,10 +279,11 @@ class CaseDataServiceTest {
 			.withCaseId(String.valueOf(caseId))
 			.withExternalCaseId(UUID.randomUUID().toString())
 			.withSystem(SystemType.CASE_DATA)
-			.withCaseType(CaseType.PARKING_PERMIT.toString())
+			.withCaseType("PARKING_PERMIT")
 			.withServiceName(RandomStringUtils.secure().next(10, true, false))
 			.build();
 		// Mock
+		when(caseTypeRegistryMock.resolveNamespace("PARKING_PERMIT", MUNICIPALITY_ID)).thenReturn(namespace);
 		when(caseDataClientMock.getErrand(MUNICIPALITY_ID, namespace, caseId)).thenReturn(errandMock);
 
 		// Act
@@ -289,6 +296,7 @@ class CaseDataServiceTest {
 		assertThat(result.getSystem()).isEqualTo(caseMapping.getSystem());
 		assertThat(result.getServiceName()).isEqualTo(caseMapping.getServiceName());
 		assertThat(result.getStatus()).isEqualTo(statusMock2.getStatusType());
+		assertThat(statusMock2.getCreated()).isNotNull();
 		assertThat(result.getTimestamp()).isEqualTo(statusMock2.getCreated().atZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime());
 	}
 
@@ -298,6 +306,7 @@ class CaseDataServiceTest {
 		final var caseMapping = CaseMapping.builder().withCaseId("1").build();
 		final var namespace = "OTHER";
 		// Mock
+		when(caseTypeRegistryMock.resolveNamespace(null, MUNICIPALITY_ID)).thenReturn(namespace);
 		when(caseDataClientMock.getErrand(eq(MUNICIPALITY_ID), eq(namespace), any())).thenThrow(Problem.valueOf(NOT_FOUND));
 		// Act
 		assertThatThrownBy(() -> caseDataService.getStatus(caseMapping, MUNICIPALITY_ID))
@@ -310,6 +319,7 @@ class CaseDataServiceTest {
 	void getStatusNotFound() {
 		// Arrange
 		final var caseMapping = CaseMapping.builder().withCaseId("1").build();
+		when(caseTypeRegistryMock.resolveNamespace(null, MUNICIPALITY_ID)).thenReturn("OTHER");
 		// Act and assert
 		assertThatThrownBy(() -> caseDataService.getStatus(caseMapping, MUNICIPALITY_ID))
 			.isInstanceOf(ThrowableProblem.class)
@@ -326,6 +336,7 @@ class CaseDataServiceTest {
 		final var namespace = "OTHER";
 		final var caseMapping = CaseMapping.builder().withCaseId(String.valueOf(errandId)).withExternalCaseId(errandNumber).build();
 
+		when(caseTypeRegistryMock.resolveNamespace(null, MUNICIPALITY_ID)).thenReturn(namespace);
 		when(caseDataClientMock.postAttachment(MUNICIPALITY_ID, namespace, errandId, toAttachment(attachment, errandId))).thenThrow(Problem.valueOf(NOT_FOUND));
 
 		assertThatThrownBy(() -> caseDataService.patchErrandWithAttachment(caseMapping, attachments, MUNICIPALITY_ID))
@@ -408,24 +419,24 @@ class CaseDataServiceTest {
 		return errand;
 	}
 
-	private generated.client.casedata.Status createStatus() {
-		final var status = new generated.client.casedata.Status();
+	private Status createStatus() {
+		final var status = new Status();
 		status.setStatusType("STATUS_TYPE");
 		status.setCreated(now());
 		status.setDescription("DESCRIPTION");
 		return status;
 	}
 
-	private generated.client.casedata.ExtraParameter createExtraParameter() {
-		final var extraParameter = new generated.client.casedata.ExtraParameter();
+	private ExtraParameter createExtraParameter() {
+		final var extraParameter = new ExtraParameter();
 		extraParameter.setKey("serviceName");
 		extraParameter.setValues(List.of("VALUE1", "VALUE2"));
 		return extraParameter;
 	}
 
-	private OtherCaseDTO createCase(final CaseType caseType) {
+	private OtherCaseDTO createCase(final String caseType) {
 		final var otherCase = new OtherCaseDTO();
-		otherCase.setCaseType(caseType.toString());
+		otherCase.setCaseType(caseType);
 		otherCase.setExternalCaseId(UUID.randomUUID().toString());
 		otherCase.setCaseTitleAddition("Some case title addition");
 		otherCase.setDescription("Some random description");

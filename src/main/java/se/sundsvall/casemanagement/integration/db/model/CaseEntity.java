@@ -25,7 +25,7 @@ import static org.hibernate.annotations.TimeZoneStorageType.NORMALIZE;
 @Builder(setterPrefix = "with")
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Table(name = "CaseEntity", indexes = {
+@Table(name = "case_entity", indexes = {
 	@Index(name = "case_entity_municipality_id_idx", columnList = "municipalityId"),
 })
 public class CaseEntity {

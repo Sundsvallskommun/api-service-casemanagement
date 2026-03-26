@@ -6,7 +6,6 @@ import org.springframework.test.context.jdbc.Sql;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import se.sundsvall.casemanagement.Application;
 import se.sundsvall.casemanagement.api.model.CaseResourceResponseDTO;
-import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
 import se.sundsvall.casemanagement.integration.db.CaseMappingRepository;
 import se.sundsvall.casemanagement.integration.db.CaseRepository;
@@ -58,7 +57,7 @@ class EcosCreateCaseIT extends AbstractAppTest {
 		final var caseMapping = caseMappingRepository.findByExternalCaseIdAndMunicipalityId("874407364", MUNICIPALITY_ID);
 		assertThat(caseMapping).isNotNull();
 		assertThat(caseMapping.getExternalCaseId()).isEqualTo("874407364");
-		assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.ANMALAN_INSTALLATION_VARMEPUMP.toString());
+		assertThat(caseMapping.getCaseType()).isEqualTo("ANMALAN_INSTALLATION_VARMEPUMP");
 		assertThat(caseMapping.getCaseId()).isEqualTo(ECOS_CASE_ID);
 		assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
 
@@ -88,7 +87,7 @@ class EcosCreateCaseIT extends AbstractAppTest {
 		assertThat(caseMapping).isNotNull();
 		assertThat(caseMapping.getExternalCaseId()).isEqualTo(EXTERNAL_CASE_ID);
 		assertThat(caseMapping.getCaseId()).isEqualTo(ECOS_CASE_ID);
-		assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP.toString());
+		assertThat(caseMapping.getCaseType()).isEqualTo("ANSOKAN_TILLSTAND_VARMEPUMP");
 		assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
 
 		caseMappingRepository.delete(caseMapping);
@@ -117,7 +116,7 @@ class EcosCreateCaseIT extends AbstractAppTest {
 		assertThat(caseMapping).isNotNull();
 		assertThat(caseMapping.getExternalCaseId()).isEqualTo(EXTERNAL_CASE_ID);
 		assertThat(caseMapping.getCaseId()).isEqualTo(ECOS_CASE_ID);
-		assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP.toString());
+		assertThat(caseMapping.getCaseType()).isEqualTo("ANSOKAN_OM_TILLSTAND_ENSKILT_AVLOPP");
 		assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
 
 		caseMappingRepository.delete(caseMapping);
@@ -147,7 +146,7 @@ class EcosCreateCaseIT extends AbstractAppTest {
 		assertThat(caseMapping).isNotNull();
 		assertThat(caseMapping.getExternalCaseId()).isEqualTo(EXTERNAL_CASE_ID);
 		assertThat(caseMapping.getCaseId()).isEqualTo(ECOS_CASE_ID);
-		assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC.toString());
+		assertThat(caseMapping.getCaseType()).isEqualTo("ANMALAN_INSTALLTION_ENSKILT_AVLOPP_UTAN_WC");
 		assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
 
 		caseMappingRepository.delete(caseMapping);
@@ -177,7 +176,7 @@ class EcosCreateCaseIT extends AbstractAppTest {
 		assertThat(caseMapping).isNotNull();
 		assertThat(caseMapping.getExternalCaseId()).isEqualTo(EXTERNAL_CASE_ID);
 		assertThat(caseMapping.getCaseId()).isEqualTo(ECOS_CASE_ID);
-		assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.ANMALAN_ANDRING_AVLOPPSANLAGGNING.toString());
+		assertThat(caseMapping.getCaseType()).isEqualTo("ANMALAN_ANDRING_AVLOPPSANLAGGNING");
 		assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
 
 		caseMappingRepository.delete(caseMapping);
@@ -207,7 +206,7 @@ class EcosCreateCaseIT extends AbstractAppTest {
 		assertThat(caseMapping).isNotNull();
 		assertThat(caseMapping.getExternalCaseId()).isEqualTo(EXTERNAL_CASE_ID);
 		assertThat(caseMapping.getCaseId()).isEqualTo(ECOS_CASE_ID);
-		assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.ANMALAN_ANDRING_AVLOPPSANORDNING.toString());
+		assertThat(caseMapping.getCaseType()).isEqualTo("ANMALAN_ANDRING_AVLOPPSANORDNING");
 		assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
 
 		caseMappingRepository.delete(caseMapping);
@@ -238,7 +237,7 @@ class EcosCreateCaseIT extends AbstractAppTest {
 		assertThat(caseMapping).isNotNull();
 		assertThat(caseMapping.getExternalCaseId()).isEqualTo(EXTERNAL_CASE_ID);
 		assertThat(caseMapping.getCaseId()).isEqualTo(ECOS_CASE_ID);
-		assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.ANMALAN_HALSOSKYDDSVERKSAMHET.toString());
+		assertThat(caseMapping.getCaseType()).isEqualTo("ANMALAN_HALSOSKYDDSVERKSAMHET");
 		assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
 
 		caseMappingRepository.delete(caseMapping);
@@ -268,7 +267,7 @@ class EcosCreateCaseIT extends AbstractAppTest {
 		assertThat(caseMapping).isNotNull();
 		assertThat(caseMapping.getExternalCaseId()).isEqualTo(EXTERNAL_CASE_ID);
 		assertThat(caseMapping.getCaseId()).isEqualTo(ECOS_CASE_ID);
-		assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.REGISTRERING_AV_LIVSMEDEL.toString());
+		assertThat(caseMapping.getCaseType()).isEqualTo("REGISTRERING_AV_LIVSMEDEL");
 		assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
 
 		caseMappingRepository.delete(caseMapping);
@@ -301,7 +300,7 @@ class EcosCreateCaseIT extends AbstractAppTest {
 		assertThat(caseMapping).isNotNull();
 		assertThat(caseMapping.getExternalCaseId()).isEqualTo(externalCaseId);
 		assertThat(caseMapping.getCaseId()).isEqualTo(ECOS_CASE_ID);
-		assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.ANDRING_AV_LIVSMEDELSVERKSAMHET.toString());
+		assertThat(caseMapping.getCaseType()).isEqualTo("ANDRING_AV_LIVSMEDELSVERKSAMHET");
 		assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
 
 		caseMappingRepository.delete(caseMapping);
@@ -333,7 +332,7 @@ class EcosCreateCaseIT extends AbstractAppTest {
 		assertThat(caseMapping).isNotNull();
 		assertThat(caseMapping.getExternalCaseId()).isEqualTo(externalCaseId);
 		assertThat(caseMapping.getCaseId()).isEqualTo(ECOS_CASE_ID);
-		assertThat(caseMapping.getCaseType()).isEqualTo(CaseType.INFORMATION_OM_UPPHORANDE_AV_VERKSAMHET.toString());
+		assertThat(caseMapping.getCaseType()).isEqualTo("INFORMATION_OM_UPPHORANDE_AV_VERKSAMHET");
 		assertThat(caseMapping.getSystem()).isEqualTo(SystemType.ECOS);
 
 		caseMappingRepository.delete(caseMapping);

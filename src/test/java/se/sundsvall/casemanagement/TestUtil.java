@@ -56,14 +56,13 @@ import se.sundsvall.casemanagement.api.model.PersonDTO;
 import se.sundsvall.casemanagement.api.model.StakeholderDTO;
 import se.sundsvall.casemanagement.api.model.enums.AddressCategory;
 import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
-import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.api.model.enums.FacilityType;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderType;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
 import se.sundsvall.casemanagement.integration.byggr.ArendeExportClient;
+import se.sundsvall.casemanagement.integration.db.model.ByggrCaseTypeConfigEntity;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
-import se.sundsvall.casemanagement.integration.db.model.CaseTypeData;
 import se.sundsvall.casemanagement.integration.ecos.MinutMiljoClient;
 import se.sundsvall.casemanagement.integration.ecos.PartyService;
 import se.sundsvall.casemanagement.integration.fb.model.FbPropertyInfo;
@@ -83,7 +82,7 @@ public final class TestUtil {
 	public static final Integer FNR = 22045604;
 	public static final Integer ADRESSPLATS_ID = 90022392;
 
-	public static EcosCaseDTO createEcosCaseDTO(final CaseType caseType, final AttachmentCategory attachmentCategory) {
+	public static EcosCaseDTO createEcosCaseDTO(final String caseType, final AttachmentCategory attachmentCategory) {
 		final List<StakeholderDTO> stakeholderDTOs = new ArrayList<>();
 		stakeholderDTOs.add(createStakeholderDTO(StakeholderType.ORGANIZATION, List.of(StakeholderRole.APPLICANT.toString(), StakeholderRole.OPERATOR.toString())));
 		stakeholderDTOs.add(createStakeholderDTO(StakeholderType.PERSON, List.of(StakeholderRole.CONTACT_PERSON.toString())));
@@ -93,7 +92,7 @@ public final class TestUtil {
 			.withFacilities(List.of(createFacilityDTO(caseType)))
 			.withAttachments(List.of(createAttachmentDTO(attachmentCategory)))
 			.withStakeholders(stakeholderDTOs)
-			.withCaseType(caseType.toString())
+			.withCaseType(caseType)
 			.withStartDate(LocalDate.now().plusDays(10))
 			.withEndDate(LocalDate.now().plusDays(365))
 			.withCaseTitleAddition(RandomStringUtils.secure().next(10, true, false))
@@ -115,7 +114,7 @@ public final class TestUtil {
 			.build();
 	}
 
-	public static FacilityDTO createFacilityDTO(final CaseType caseType) {
+	public static FacilityDTO createFacilityDTO(final String caseType) {
 		final var facility = FacilityDTO.builder()
 			.withFacilityType(FacilityType.ONE_FAMILY_HOUSE.toString())
 			.withDescription(RandomStringUtils.secure().next(10, true, false))
@@ -124,14 +123,14 @@ public final class TestUtil {
 			.withAddress(createAddressDTO(List.of(AddressCategory.VISITING_ADDRESS)));
 
 		final var extraParameters = switch (caseType) {
-			case ANSOKAN_TILLSTAND_VARMEPUMP, ANMALAN_INSTALLATION_VARMEPUMP -> getHeatPumpExtraParams();
+			case "ANSOKAN_TILLSTAND_VARMEPUMP", "ANMALAN_INSTALLATION_VARMEPUMP" -> getHeatPumpExtraParams();
 			default -> createExtraParameters();
 		};
 
 		return facility.withExtraParameters(extraParameters).build();
 	}
 
-	public static ByggRCaseDTO createByggRCaseDTO(final CaseType caseType, final AttachmentCategory attachmentCategory) {
+	public static ByggRCaseDTO createByggRCaseDTO(final String caseType, final AttachmentCategory attachmentCategory) {
 		final List<StakeholderDTO> stakeholderDTOs = new ArrayList<>();
 		stakeholderDTOs.add(createStakeholderDTO(StakeholderType.ORGANIZATION, List.of(StakeholderRole.APPLICANT.toString(), StakeholderRole.PAYMENT_PERSON.toString())));
 		stakeholderDTOs.add(createStakeholderDTO(StakeholderType.PERSON, List.of(StakeholderRole.CONTACT_PERSON.toString())));
@@ -141,7 +140,7 @@ public final class TestUtil {
 			.withDiaryNumber(RandomStringUtils.secure().next(5))
 			.withFacilities(List.of(createFacilityDTO(true)))
 			.withStakeholders(stakeholderDTOs)
-			.withCaseType(caseType.toString())
+			.withCaseType(caseType)
 			.withCaseTitleAddition(RandomStringUtils.secure().next(10, true, false))
 			.withDescription(RandomStringUtils.secure().next(10, true, false))
 			.withExternalCaseId(String.valueOf(RANDOM.nextLong()))
@@ -193,12 +192,12 @@ public final class TestUtil {
 
 	public static OtherCaseDTO createOtherCaseDTO() {
 		return OtherCaseDTO.builder()
-			.withCaseType(CaseType.PARKING_PERMIT.toString())
+			.withCaseType("PARKING_PERMIT")
 			.withCaseTitleAddition("caseTitleAddition")
 			.withDescription("description")
 			.withExternalCaseId("externalCaseId")
 			.withExtraParameters(createExtraParameters())
-			.withFacilities(List.of(createFacilityDTO(CaseType.ANSOKAN_TILLSTAND_VARMEPUMP)))
+			.withFacilities(List.of(createFacilityDTO("ANSOKAN_TILLSTAND_VARMEPUMP")))
 			.withAttachments(List.of(createAttachmentDTO(AttachmentCategory.ANMALAN_VARMEPUMP)))
 			.withStakeholders(List.of(createStakeholderDTO(StakeholderType.ORGANIZATION, List.of(StakeholderRole.APPLICANT.toString()))))
 			.build();
@@ -353,7 +352,7 @@ public final class TestUtil {
 		final var caseMapping = CaseMapping.builder()
 			.withCaseId("caseId")
 			.withExternalCaseId("externalCaseId")
-			.withCaseType(CaseType.REGISTRERING_AV_LIVSMEDEL.toString())
+			.withCaseType("REGISTRERING_AV_LIVSMEDEL")
 			.withServiceName("serviceName")
 			.withTimestamp(LocalDate.now().atStartOfDay())
 			.withSystem(SystemType.ECOS)
@@ -401,10 +400,10 @@ public final class TestUtil {
 		return Arrays.stream(enumClass.getEnumConstants()).toList().get(RANDOM.nextInt(enumClass.getEnumConstants().length));
 	}
 
-	public static List<CaseTypeData> setUpCaseTypes() {
-		final var caseTypeDataList = new ArrayList<CaseTypeData>();
-		caseTypeDataList.add(CaseTypeData.builder()
-			.withValue("ANDRING_ANSOKAN_OM_BYGGLOV")
+	public static List<ByggrCaseTypeConfigEntity> setUpCaseTypes() {
+		final var caseTypeDataList = new ArrayList<ByggrCaseTypeConfigEntity>();
+		caseTypeDataList.add(ByggrCaseTypeConfigEntity.builder()
+			.withCaseTypeName("ANDRING_ANSOKAN_OM_BYGGLOV")
 			.withArendeTyp("BL")
 			.withArendeSlag(null)
 			.withHandelseTyp("ANSÖKAN")
@@ -413,8 +412,8 @@ public final class TestUtil {
 			.withHandelseSlag("Bygglov")
 			.withArendeGrupp("LOV")
 			.build());
-		caseTypeDataList.add(CaseTypeData.builder()
-			.withValue("ANMALAN_ATTEFALL")
+		caseTypeDataList.add(ByggrCaseTypeConfigEntity.builder()
+			.withCaseTypeName("ANMALAN_ATTEFALL")
 			.withArendeTyp("ATTANM")
 			.withArendeSlag(null)
 			.withHandelseTyp("ANM")
@@ -423,8 +422,8 @@ public final class TestUtil {
 			.withHandelseSlag("ANMATT")
 			.withArendeGrupp("LOV")
 			.build());
-		caseTypeDataList.add(CaseTypeData.builder()
-			.withValue("ANMALAN_ELDSTAD")
+		caseTypeDataList.add(ByggrCaseTypeConfigEntity.builder()
+			.withCaseTypeName("ANMALAN_ELDSTAD")
 			.withArendeTyp("ANM")
 			.withArendeSlag(null)
 			.withHandelseTyp("ANM")
@@ -433,8 +432,8 @@ public final class TestUtil {
 			.withHandelseSlag(null)
 			.withArendeGrupp("LOV")
 			.build());
-		caseTypeDataList.add(CaseTypeData.builder()
-			.withValue("NYBYGGNAD_ANSOKAN_OM_BYGGLOV")
+		caseTypeDataList.add(ByggrCaseTypeConfigEntity.builder()
+			.withCaseTypeName("NYBYGGNAD_ANSOKAN_OM_BYGGLOV")
 			.withArendeTyp("BL")
 			.withArendeSlag("A")
 			.withHandelseTyp("ANSÖKAN")
@@ -443,8 +442,8 @@ public final class TestUtil {
 			.withHandelseSlag("Bygglov")
 			.withArendeGrupp("LOV")
 			.build());
-		caseTypeDataList.add(CaseTypeData.builder()
-			.withValue("NYBYGGNAD_FORHANDSBESKED")
+		caseTypeDataList.add(ByggrCaseTypeConfigEntity.builder()
+			.withCaseTypeName("NYBYGGNAD_FORHANDSBESKED")
 			.withArendeTyp("FÖRF")
 			.withArendeSlag("A")
 			.withHandelseTyp("ANSÖKAN")
@@ -453,8 +452,8 @@ public final class TestUtil {
 			.withHandelseSlag("Förhand")
 			.withArendeGrupp("LOV")
 			.build());
-		caseTypeDataList.add(CaseTypeData.builder()
-			.withValue("STRANDSKYDD_ANDRAD_ANVANDNING")
+		caseTypeDataList.add(ByggrCaseTypeConfigEntity.builder()
+			.withCaseTypeName("STRANDSKYDD_ANDRAD_ANVANDNING")
 			.withArendeTyp("DI")
 			.withArendeSlag("ÄNDR")
 			.withHandelseTyp("ANSÖKAN")
@@ -463,8 +462,8 @@ public final class TestUtil {
 			.withHandelseSlag("Strand")
 			.withArendeGrupp("STRA")
 			.build());
-		caseTypeDataList.add(CaseTypeData.builder()
-			.withValue("STRANDSKYDD_ANLAGGANDE")
+		caseTypeDataList.add(ByggrCaseTypeConfigEntity.builder()
+			.withCaseTypeName("STRANDSKYDD_ANLAGGANDE")
 			.withArendeTyp("DI")
 			.withArendeSlag("A1")
 			.withHandelseTyp("ANSÖKAN")
@@ -473,8 +472,8 @@ public final class TestUtil {
 			.withHandelseSlag("Strand")
 			.withArendeGrupp("STRA")
 			.build());
-		caseTypeDataList.add(CaseTypeData.builder()
-			.withValue("STRANDSKYDD_ANORDNANDE")
+		caseTypeDataList.add(ByggrCaseTypeConfigEntity.builder()
+			.withCaseTypeName("STRANDSKYDD_ANORDNANDE")
 			.withArendeTyp("DI")
 			.withArendeSlag("AO")
 			.withHandelseTyp("ANSÖKAN")
@@ -483,8 +482,8 @@ public final class TestUtil {
 			.withHandelseSlag("Strand")
 			.withArendeGrupp("STRA")
 			.build());
-		caseTypeDataList.add(CaseTypeData.builder()
-			.withValue("STRANDSKYDD_NYBYGGNAD")
+		caseTypeDataList.add(ByggrCaseTypeConfigEntity.builder()
+			.withCaseTypeName("STRANDSKYDD_NYBYGGNAD")
 			.withArendeTyp("DI")
 			.withArendeSlag("NYB")
 			.withHandelseTyp("ANSÖKAN")
@@ -493,8 +492,8 @@ public final class TestUtil {
 			.withHandelseSlag("Strand")
 			.withArendeGrupp("STRA")
 			.build());
-		caseTypeDataList.add(CaseTypeData.builder()
-			.withValue("TILLBYGGNAD_ANSOKAN_OM_BYGGLOV")
+		caseTypeDataList.add(ByggrCaseTypeConfigEntity.builder()
+			.withCaseTypeName("TILLBYGGNAD_ANSOKAN_OM_BYGGLOV")
 			.withArendeTyp("BL")
 			.withArendeSlag("B")
 			.withHandelseTyp("ANSÖKAN")
@@ -503,8 +502,8 @@ public final class TestUtil {
 			.withHandelseSlag("Bygglov")
 			.withArendeGrupp("LOV")
 			.build());
-		caseTypeDataList.add(CaseTypeData.builder()
-			.withValue("UPPSATTANDE_SKYLT")
+		caseTypeDataList.add(ByggrCaseTypeConfigEntity.builder()
+			.withCaseTypeName("UPPSATTANDE_SKYLT")
 			.withArendeTyp("BL")
 			.withArendeSlag("L")
 			.withHandelseTyp("ANSÖKAN")

@@ -84,7 +84,11 @@ public class EcosStatusWorker {
 		final var sinceLocal = since.toLocalDateTime();
 
 		final var orFilters = new ArrayOfFilterSvcDto();
-		Stream.of(ECOS_CASE_STATUS_ID_AVSKRIVET, ECOS_CASE_STATUS_ID_UNDER_BEREDNING, ECOS_CASE_STATUS_ID_AVSLUTAT, ECOS_CASE_STATUS_ID_MAKULERAT)
+		Stream.of(
+			ECOS_CASE_STATUS_ID_AVSKRIVET,
+			ECOS_CASE_STATUS_ID_UNDER_BEREDNING,
+			ECOS_CASE_STATUS_ID_AVSLUTAT,
+			ECOS_CASE_STATUS_ID_MAKULERAT)
 			.map(statusId -> new CaseStatusFilterSvcDto()
 				.withCaseStatusFromDate(sinceLocal)
 				.withCaseStatusId(statusId))

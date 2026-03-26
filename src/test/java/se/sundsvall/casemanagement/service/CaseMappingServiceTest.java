@@ -11,7 +11,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
 import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
-import se.sundsvall.casemanagement.api.model.enums.CaseType;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
 import se.sundsvall.casemanagement.integration.db.CaseMappingRepository;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
@@ -89,14 +88,14 @@ class CaseMappingServiceTest {
 		when(caseMappingRepository.findAll()).thenReturn(List.of(CaseMapping.builder()
 			.withCaseId("caseId")
 			.withExternalCaseId("externalCaseId")
-			.withCaseType(CaseType.REGISTRERING_AV_LIVSMEDEL.toString())
+			.withCaseType("REGISTRERING_AV_LIVSMEDEL")
 			.withServiceName("serviceName")
 			.withTimestamp(LocalDateTime.now())
 			.build(),
 			CaseMapping.builder()
 				.withCaseId("caseId2")
 				.withExternalCaseId("externalCaseId2")
-				.withCaseType(CaseType.LOST_PARKING_PERMIT.toString())
+				.withCaseType("LOST_PARKING_PERMIT")
 				.withServiceName("serviceName2")
 				.withTimestamp(LocalDateTime.now())
 				.build()));
@@ -108,13 +107,13 @@ class CaseMappingServiceTest {
 		assertThat(result).hasSize(2);
 		assertThat(result.getFirst().getCaseId()).isEqualTo("caseId");
 		assertThat(result.getFirst().getExternalCaseId()).isEqualTo("externalCaseId");
-		assertThat(result.getFirst().getCaseType()).isEqualTo(CaseType.REGISTRERING_AV_LIVSMEDEL.toString());
+		assertThat(result.getFirst().getCaseType()).isEqualTo("REGISTRERING_AV_LIVSMEDEL");
 		assertThat(result.getFirst().getServiceName()).isEqualTo("serviceName");
 		assertThat(result.getFirst().getTimestamp()).isNotNull();
 
 		assertThat(result.get(1).getCaseId()).isEqualTo("caseId2");
 		assertThat(result.get(1).getExternalCaseId()).isEqualTo("externalCaseId2");
-		assertThat(result.get(1).getCaseType()).isEqualTo(CaseType.LOST_PARKING_PERMIT.toString());
+		assertThat(result.get(1).getCaseType()).isEqualTo("LOST_PARKING_PERMIT");
 		assertThat(result.get(1).getServiceName()).isEqualTo("serviceName2");
 		assertThat(result.get(1).getTimestamp()).isNotNull();
 	}

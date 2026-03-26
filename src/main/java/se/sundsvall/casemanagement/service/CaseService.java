@@ -60,6 +60,7 @@ public class CaseService {
 			saveCase(futureCase, municipalityId);
 			handleFutureCase(futureCase, municipalityId);
 		} else if (dto instanceof final OtherCaseDTO otherCase) {
+			validator.validateCaseDataErrand(otherCase, municipalityId);
 			validator.validateAttachments(otherCase);
 			saveCase(otherCase, municipalityId);
 			handleOtherCase(otherCase, municipalityId);
