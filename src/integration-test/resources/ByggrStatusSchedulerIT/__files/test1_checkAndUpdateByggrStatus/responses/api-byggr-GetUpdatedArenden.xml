@@ -17,7 +17,12 @@
 							<efternamn/>
 						</handlaggare>
 						<intressentLista xmlns="www.tekis.se/arende"/>
-						<handelseLista xmlns="www.tekis.se/arende"/>
+						<handelseLista xmlns="www.tekis.se/arende">
+							<handelse>
+								<startDatum>2021-08-18T10:00:00</startDatum>
+								<handelsetyp>ANSÖKAN</handelsetyp>
+							</handelse>
+						</handelseLista>
 						<projektnr xmlns="www.tekis.se/arende">BALDER 2</projektnr>
 						<objektLista xmlns="www.tekis.se/arende"/>
 					</arende>
