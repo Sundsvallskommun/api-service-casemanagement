@@ -6,9 +6,11 @@ import arendeexport.ArrayOfArende;
 import arendeexport.BatchFilter;
 import arendeexport.GetUpdatedArenden;
 import arendeexport.GetUpdatedArendenResponse;
+import arendeexport.Handelse;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
@@ -19,6 +21,7 @@ import se.sundsvall.casemanagement.integration.db.CaseMappingRepository;
 import se.sundsvall.casemanagement.integration.db.ExecutionInformationRepository;
 import se.sundsvall.casemanagement.integration.db.model.ExecutionInformationEntity;
 import se.sundsvall.casemanagement.integration.eventlog.EventlogClient;
+import se.sundsvall.casemanagement.service.ByggrSystemConfigProvider;
 
 import static java.time.OffsetDateTime.now;
 
@@ -35,16 +38,18 @@ public class ByggrStatusWorker {
 	private final CaseMappingRepository caseMappingRepository;
 	private final ExecutionInformationRepository executionInformationRepository;
 	private final EventlogClient eventlogClient;
+	private final ByggrSystemConfigProvider byggrSystemConfigProvider;
 
 	public ByggrStatusWorker(final ArendeExportClient arendeExportClient,
 		final CaseMappingRepository caseMappingRepository,
 		final ExecutionInformationRepository executionInformationRepository,
-		final EventlogClient eventlogClient) {
+		final EventlogClient eventlogClient, ByggrSystemConfigProvider byggrSystemConfigProvider) {
 
 		this.arendeExportClient = arendeExportClient;
 		this.caseMappingRepository = caseMappingRepository;
 		this.executionInformationRepository = executionInformationRepository;
 		this.eventlogClient = eventlogClient;
+		this.byggrSystemConfigProvider = byggrSystemConfigProvider;
 	}
 
 	public void updateStatuses(final String municipalityId) {
@@ -99,10 +104,27 @@ public class ByggrStatusWorker {
 				LOG.debug("No case mapping found for ByggR case {}, skipping", arende.getDnr());
 				return;
 			}
-			StatusEventMapper.createStatusEvent(eventlogClient, municipalityId, mapping.getExternalCaseId(), arende.getStatus());
+
+			if (hasHandelseList(arende)) {
+				final var handelseLista = arende.getHandelseLista().getHandelse();
+				handelseLista.sort(Comparator.comparing(Handelse::getStartDatum, Comparator.nullsLast(Comparator.naturalOrder())).reversed());
+
+				final var handelse = handelseLista.getFirst();
+				var status = byggrSystemConfigProvider.resolveHandelseStatus(handelse.getHandelsetyp(), handelse.getHandelseslag(), handelse.getHandelseutfall());
+
+				if (status != null) {
+					StatusEventMapper.createStatusEvent(eventlogClient, municipalityId, mapping.getExternalCaseId(), status);
+				}
+			}
 		} catch (final Exception e) {
 			LOG.warn("Failed to process ByggR case {}: {}", arende.getDnr(), e.getMessage());
 		}
+	}
+
+	static boolean hasHandelseList(final Arende2 arende) {
+		return arende.getHandelseLista() != null
+			&& arende.getHandelseLista().getHandelse() != null
+			&& !arende.getHandelseLista().getHandelse().isEmpty();
 	}
 
 	private ExecutionInformationEntity initializeExecutionInfo(final String municipalityId) {

@@ -94,7 +94,8 @@ public final class ByggrUtil {
 	/**
 	 * The incoming request might have one or two stakeholders. If any stakeholder is of type Organization, we should use
 	 * the organization number as stakeholderId. If no organization is found, we should use the personId to fetch a personal
-	 * number from partyIntegration and use this personal number as the stakeholder id.
+	 * number from
+	 * partyIntegration and use this personal number as the stakeholder id.
 	 *
 	 * @param  stakeholders     List of stakeholders
 	 * @param  municipalityId   Municipality ID

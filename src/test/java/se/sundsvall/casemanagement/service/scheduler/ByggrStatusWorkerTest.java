@@ -3,7 +3,9 @@ package se.sundsvall.casemanagement.service.scheduler;
 import arendeexport.Arende2;
 import arendeexport.ArendeBatch;
 import arendeexport.ArrayOfArende;
+import arendeexport.ArrayOfHandelse;
 import arendeexport.GetUpdatedArendenResponse;
+import arendeexport.Handelse;
 import generated.client.eventlog.Event;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -22,6 +24,7 @@ import se.sundsvall.casemanagement.integration.db.ExecutionInformationRepository
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.integration.db.model.ExecutionInformationEntity;
 import se.sundsvall.casemanagement.integration.eventlog.EventlogClient;
+import se.sundsvall.casemanagement.service.ByggrSystemConfigProvider;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -47,6 +50,9 @@ class ByggrStatusWorkerTest {
 
 	@Mock
 	private EventlogClient eventlogClientMock;
+
+	@Mock
+	private ByggrSystemConfigProvider byggrSystemConfigProviderMock;
 
 	@Captor
 	private ArgumentCaptor<Event> eventCaptor;
@@ -110,9 +116,16 @@ class ByggrStatusWorkerTest {
 			.withJobName(ByggrStatusWorker.JOB_NAME)
 			.withLastSuccessfulExecution(lastExecution);
 
+		final var handelse = new Handelse();
+		handelse.setStartDatum(LocalDateTime.now());
+		handelse.setHandelsetyp("ANSÖKAN");
+
+		final var handelseLista = new ArrayOfHandelse();
+		handelseLista.getHandelse().add(handelse);
+
 		final var arende = new Arende2();
 		arende.setDnr("BYGG 2024-000001");
-		arende.setStatus("Pågående");
+		arende.setHandelseLista(handelseLista);
 
 		final var caseMapping = CaseMapping.builder()
 			.withExternalCaseId("ext-123")
@@ -125,6 +138,8 @@ class ByggrStatusWorkerTest {
 		when(arendeExportClientMock.getUpdatedArenden(any())).thenReturn(createByggrResponse(arende));
 		when(caseMappingRepositoryMock.findFirstByCaseIdAndMunicipalityId("BYGG 2024-000001", MUNICIPALITY_ID))
 			.thenReturn(Optional.of(caseMapping));
+		when(byggrSystemConfigProviderMock.resolveHandelseStatus("ANSÖKAN", null, null))
+			.thenReturn("Pågående");
 
 		// Act
 		worker.updateStatuses(MUNICIPALITY_ID);
@@ -147,7 +162,6 @@ class ByggrStatusWorkerTest {
 
 		final var arende = new Arende2();
 		arende.setDnr("BYGG-UNKNOWN");
-		arende.setStatus("Pågående");
 
 		when(executionInformationRepositoryMock.findByMunicipalityIdAndJobName(MUNICIPALITY_ID, ByggrStatusWorker.JOB_NAME))
 			.thenReturn(Optional.of(executionInfo));
@@ -218,6 +232,95 @@ class ByggrStatusWorkerTest {
 		verify(executionInformationRepositoryMock).save(executionInfoCaptor.capture());
 		final var savedExecution = executionInfoCaptor.getValue().getLastSuccessfulExecution();
 		assertThat(savedExecution).isBetween(before, after);
+	}
+
+	@Test
+	void updateStatusesSkipsByggrArendeWithNoHandelseLista() {
+		// Arrange
+		final var lastExecution = OffsetDateTime.now().minusHours(1);
+		final var executionInfo = ExecutionInformationEntity.create()
+			.withMunicipalityId(MUNICIPALITY_ID)
+			.withJobName(ByggrStatusWorker.JOB_NAME)
+			.withLastSuccessfulExecution(lastExecution);
+
+		final var arende = new Arende2();
+		arende.setDnr("BYGG 2024-000001");
+
+		final var caseMapping = CaseMapping.builder()
+			.withExternalCaseId("ext-123")
+			.withCaseId("BYGG 2024-000001")
+			.withMunicipalityId(MUNICIPALITY_ID)
+			.build();
+
+		when(executionInformationRepositoryMock.findByMunicipalityIdAndJobName(MUNICIPALITY_ID, ByggrStatusWorker.JOB_NAME))
+			.thenReturn(Optional.of(executionInfo));
+		when(arendeExportClientMock.getUpdatedArenden(any())).thenReturn(createByggrResponse(arende));
+		when(caseMappingRepositoryMock.findFirstByCaseIdAndMunicipalityId("BYGG 2024-000001", MUNICIPALITY_ID))
+			.thenReturn(Optional.of(caseMapping));
+
+		// Act
+		worker.updateStatuses(MUNICIPALITY_ID);
+
+		// Assert
+		verifyNoInteractions(eventlogClientMock);
+		verify(executionInformationRepositoryMock).save(executionInfo);
+	}
+
+	@Test
+	void updateStatusesSkipsByggrArendeWhenResolvedStatusIsNull() {
+		// Arrange
+		final var lastExecution = OffsetDateTime.now().minusHours(1);
+		final var executionInfo = ExecutionInformationEntity.create()
+			.withMunicipalityId(MUNICIPALITY_ID)
+			.withJobName(ByggrStatusWorker.JOB_NAME)
+			.withLastSuccessfulExecution(lastExecution);
+
+		final var handelse = new Handelse();
+		handelse.setStartDatum(LocalDateTime.now());
+		handelse.setHandelsetyp("UNKNOWN_TYPE");
+
+		final var handelseLista = new ArrayOfHandelse();
+		handelseLista.getHandelse().add(handelse);
+
+		final var arende = new Arende2();
+		arende.setDnr("BYGG 2024-000001");
+		arende.setHandelseLista(handelseLista);
+
+		final var caseMapping = CaseMapping.builder()
+			.withExternalCaseId("ext-123")
+			.withCaseId("BYGG 2024-000001")
+			.withMunicipalityId(MUNICIPALITY_ID)
+			.build();
+
+		when(executionInformationRepositoryMock.findByMunicipalityIdAndJobName(MUNICIPALITY_ID, ByggrStatusWorker.JOB_NAME))
+			.thenReturn(Optional.of(executionInfo));
+		when(arendeExportClientMock.getUpdatedArenden(any())).thenReturn(createByggrResponse(arende));
+		when(caseMappingRepositoryMock.findFirstByCaseIdAndMunicipalityId("BYGG 2024-000001", MUNICIPALITY_ID))
+			.thenReturn(Optional.of(caseMapping));
+		when(byggrSystemConfigProviderMock.resolveHandelseStatus("UNKNOWN_TYPE", null, null))
+			.thenReturn(null);
+
+		// Act
+		worker.updateStatuses(MUNICIPALITY_ID);
+
+		// Assert
+		verifyNoInteractions(eventlogClientMock);
+		verify(executionInformationRepositoryMock).save(executionInfo);
+	}
+
+	@Test
+	void hasHandelseListReturnsFalseWhenHandelseListaIsNull() {
+		final var arende = new Arende2();
+		assertThat(ByggrStatusWorker.hasHandelseList(arende)).isFalse();
+	}
+
+	@Test
+	void hasHandelseListReturnsTrueWhenPopulated() {
+		final var arende = new Arende2();
+		final var handelseLista = new ArrayOfHandelse();
+		handelseLista.getHandelse().add(new Handelse());
+		arende.setHandelseLista(handelseLista);
+		assertThat(ByggrStatusWorker.hasHandelseList(arende)).isTrue();
 	}
 
 	private GetUpdatedArendenResponse createEmptyByggrResponse() {
