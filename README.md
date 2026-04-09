@@ -81,9 +81,17 @@ This microservice depends on the following services:
   - **Purpose:** Provides basic data on property and population information.
   - **External URL:** [Sokigo FB](https://sokigo.com/produkter/fastighet-och-befolkning/)
   - **Setup Instructions:** Refer to its documentation for installation and configuration steps.
-- **Open-e Platform**
-  - **Purpose:** To report back status to OpenE platform
-  - **Repository:** [Open-ePlatform](https://github.com/Open-ePlatform/Open-ePlatform)
+- **Citizen**
+  - **Purpose:** Provides citizen mapping between party IDs and legal IDs.
+  - **Setup Instructions:** Refer to its documentation for installation and configuration steps.
+- **EventLog**
+  - **Purpose:** Logs events related to case processing.
+  - **Setup Instructions:** Refer to its documentation for installation and configuration steps.
+- **OeP Integrator**
+  - **Purpose:** To report back status to OpenE platform.
+  - **Setup Instructions:** Refer to its documentation for installation and configuration steps.
+- **EDP Future**
+  - **Purpose:** Integration with the EDP Future case management system.
   - **Setup Instructions:** Refer to its documentation for installation and configuration steps.
 
 Ensure that these services are running and properly configured before starting this microservice.
@@ -105,7 +113,7 @@ Refer to the [API Documentation](#api-documentation) for detailed information on
 ### Example Request
 
 ```bash
-curl -X GET http://localhost:8080/api/2281/cases/case-mappings
+curl -X GET http://localhost:8080/2281/cases/case-mappings
 ```
 
 ## Configuration
@@ -134,72 +142,73 @@ Configuration is crucial for the application to run successfully. Ensure all nec
 
   ```yaml
   integration:
-   arendeexport:
-     url: http://your_arendeexport_url
-   case-data:
-     oauth2ClientId: some_client_id
-     oauth2ClientSecret: some_token_secret
-     oauth2TokenUrl: https://your_token_url
-     url: http://your_casedata_url
-     namespaces:
-       2281:
-         - MY_NAMESPACE
-         - MY_OTHER_NAMESPACE
-   alk-t:
-     oauth2ClientId: some_client_id
-     oauth2ClientSecret: some_token_secret
-     oauth2TokenUrl: https://your_token_url
-     url: http://your_alkt_url
-   fb:
-     database: your_db_name
-     url: http://your_fb_url
-     username: your_fb_username
-     password: your_fb_password
-   lantmateriet:
-     oauth2TokenUrl: https://your_token_url
-     oauth2ClientId: your_lantmateriet_client_id
-     oauth2ClientSecret: your_lantmateriet_client_secret
-     registerbeteckning:
-       url: http://your_lantmateriet_registerbeteckning_url
-   messaging:
-     mailRecipient: recipient@email.se
-     channel: channel-to-post-in
-     client-id: some_client_id
-     client-secret: some_token_secret
-     token-uri: https://your_token_url
-     url: https://your_messaging_url
-     token: your_messaging_token
-   party:
-     oauth2ClientId: some_client_id
-     oauth2ClientSecret: some_token_secret
-     oauth2TokenUrl: https://your_token_url
-     url: http://your_party_url
-   minutmiljo:
-     url: https://your_MinutMiljoService.svc_url
-     origin: http://your_MinutMiljoService_url
-     username: your_minutmiljo_username
-     password: your_minutmiljo_password
-   minutmiljoV2:
-     url: https://your_MinutMiljoServiceV2.svc_url
-   opene:
-     url: https://callback_url
-     username: your_opene_username
-     password: your_opene_password
-   lantmateriet-api-gateway:
-     origin: https://lantmateriet_gateway_url
-
+    arendeexport:
+      url: http://your_arendeexport_url
+    case-data:
+      oauth2ClientId: some_client_id
+      oauth2ClientSecret: some_token_secret
+      oauth2TokenUrl: https://your_token_url
+      url: http://your_casedata_url
+      namespaces:
+        2281:
+          - MY_NAMESPACE
+          - MY_OTHER_NAMESPACE
+    alk-t:
+      oauth2ClientId: some_client_id
+      oauth2ClientSecret: some_token_secret
+      oauth2TokenUrl: https://your_token_url
+      url: http://your_alkt_url
+    citizen:
+      oauth2ClientId: some_client_id
+      oauth2ClientSecret: some_token_secret
+      oauth2TokenUrl: https://your_token_url
+      url: http://your_citizen_url
+    eventlog:
+      oauth2ClientId: some_client_id
+      oauth2ClientSecret: some_token_secret
+      oauth2TokenUrl: https://your_token_url
+      url: http://your_eventlog_url
+    fb:
+      database: your_db_name
+      url: http://your_fb_url
+      username: your_fb_username
+      password: your_fb_password
+    lantmateriet:
+      oauth2ClientId: your_lantmateriet_client_id
+      oauth2ClientSecret: your_lantmateriet_client_secret
+      oauth2TokenUrl: https://your_token_url
+      registerbeteckning:
+        url: http://your_lantmateriet_registerbeteckning_url
+    messaging:
+      channel: channel-to-post-in
+      client-id: some_client_id
+      client-secret: some_token_secret
+      token-uri: https://your_token_url
+      url: https://your_messaging_url
+      token: your_messaging_token
+    party:
+      oauth2ClientId: some_client_id
+      oauth2ClientSecret: some_token_secret
+      oauth2TokenUrl: https://your_token_url
+      url: http://your_party_url
+    minutmiljo:
+      url: https://your_MinutMiljoService.svc_url
+      username: your_minutmiljo_username
+      password: your_minutmiljo_password
+    oep-integrator:
+      oauth2ClientId: some_client_id
+      oauth2ClientSecret: some_token_secret
+      oauth2TokenUrl: https://your_token_url
+      url: http://your_oep_integrator_url
+    edp-future:
+      url: http://your_edp_future_url
+      api-key: your_api_key
   ```
 
 ### Database Initialization
 
-The project is set up with [Flyway](https://github.com/flyway/flyway) for database migrations. Flyway is disabled by
-default so you will have to enable it to automatically populate the database schema upon application startup.
-
-```yaml
-spring:
-  flyway:
-    enabled: true
-```
+The project is set up with [Flyway](https://github.com/flyway/flyway) for database migrations. Flyway is enabled by
+default and will automatically populate the database schema upon application startup.
 
 - **No additional setup is required** for database initialization, as long as the database connection settings are
   correctly configured.
@@ -213,6 +222,52 @@ spring:
 - **Logging Configuration:**
 
   Adjust logging levels if necessary.
+
+## Case Types
+
+Case types are database-driven and determine which backend system handles a given case. The routing is configured in the `case_type` table.
+
+### Adding Case Types
+
+The approach depends on which system the case type belongs to:
+
+#### CaseData
+
+No database migration is needed. Case types that are not found in the `case_type` table automatically default to CaseData. The types are validated dynamically against the CaseData API based on the configured namespaces per municipality in `application.yml`:
+
+```yaml
+integration:
+  case-data:
+    namespaces:
+      2281:
+        - MY_NAMESPACE
+```
+
+#### Byggr
+
+Create a Flyway migration that inserts into both `case_type` and `byggr_case_type_config`:
+
+```sql
+INSERT INTO case_type (name, system_type, nullable_facility_type, nullable_facility, facility_type_rule)
+VALUES ('MY_NEW_TYPE', 'BYGGR', 0, 0, NULL);
+
+INSERT INTO byggr_case_type_config (case_type_name, arende_slag, arende_grupp, arende_typ, handelse_typ, handelse_rubrik, handelse_slag, arende_mening)
+VALUES ('MY_NEW_TYPE', 'SLAG', 'GRP', 'TYP', 'HTYP', 'Rubrik', 'HSLAG', 'Mening');
+```
+
+#### Ecos
+
+Create a Flyway migration that inserts into both `case_type` and `ecos_case_type_config`:
+
+```sql
+INSERT INTO case_type (name, system_type, nullable_facility_type, nullable_facility)
+VALUES ('MY_NEW_TYPE', 'ECOS', 0, 0);
+
+INSERT INTO ecos_case_type_config (case_type_name, diary_plan_id, process_type_id, facility_handler)
+VALUES ('MY_NEW_TYPE', 'diary-uuid', 'process-uuid', 'FOOD');
+```
+
+Available facility handlers: `FOOD`, `HEAT_PUMP`, `INDIVIDUAL_SEWAGE`, `HEALTH_PROTECTION`, `RISK_CLASS_UPDATE`, `EXISTING_FACILITY`, `NONE`.
 
 ## Contributing
 
@@ -234,4 +289,4 @@ This project is licensed under the [MIT License](LICENSE).
 
 ---
 
-© 2024 Sundsvalls kommun
+© 2026 Sundsvalls kommun
