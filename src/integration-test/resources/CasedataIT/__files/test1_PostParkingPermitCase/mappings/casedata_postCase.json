@@ -196,7 +196,8 @@
 					"status": {
 						"statusType": "Ärende inkommit",
 						"created": "${json-unit.ignore}"
-					}
+					},
+					"jsonParameters": []
 				},
 				"ignoreArrayOrder": true
 			}
