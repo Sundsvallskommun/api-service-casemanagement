@@ -121,7 +121,7 @@ class CaseDataMapperTest {
 		final var result = CaseDataMapper.toPatchErrand(otherCaseDTO);
 
 		assertThat(result).satisfies(errandDTO -> {
-			assertThat(errandDTO.getCaseType()).isEqualTo(PatchErrand.CaseTypeEnum.fromValue(otherCaseDTO.getCaseType()));
+			assertThat(errandDTO.getCaseType()).isEqualTo(otherCaseDTO.getCaseType());
 			assertThat(errandDTO.getCaseTitleAddition()).isEqualTo(otherCaseDTO.getCaseTitleAddition());
 			assertThat(errandDTO.getDescription()).isEqualTo(otherCaseDTO.getDescription());
 			assertThat(errandDTO.getExternalCaseId()).isEqualTo(otherCaseDTO.getExternalCaseId());

@@ -1,25 +1,33 @@
-openapi: 3.0.1
+openapi: 3.1.0
 info:
   title: api-service-case-data
   contact: {}
   license:
     name: MIT License
     url: https://opensource.org/licenses/MIT
-  version: "11.0"
+  version: "12.0"
 servers:
-- url: http://localhost:8080
+- url: http://localhost:63050
   description: Generated server url
 tags:
+- name: Notifications
+  description: User notification operations
+- name: History
+  description: History operations
+- name: Conversations
+  description: Conversation operations
+- name: Metadata for caseTypes
+  description: Metadata caseTypes operations
+- name: Facilities
+  description: Errand facilities operations
+- name: Errands extra parameters
+  description: Errand extra parameters operations
 - name: Notes
   description: Note operations
 - name: Status
   description: Errand status operations
-- name: Notifications
-  description: User notification operations
 - name: Messages
   description: Message operations
-- name: History
-  description: History operations
 - name: Decisions
   description: Decision operations
 - name: Stakeholders
@@ -28,37 +36,7 @@ tags:
   description: Errand operations
 - name: Attachments
   description: Attachment operations
-- name: Facilities
-  description: Errand facilities operations
 paths:
-  /{municipalityId}/{namespace}/metadata/casetypes:
-    get:
-      tags:
-      - Metadata for caseTypes
-      description: Get all case types
-      operationId: getCaseTypes
-      parameters:
-      - name: municipalityId
-        in: path
-        required: true
-        schema:
-          type: string
-        example: 2281
-      - name: namespace
-        in: path
-        required: true
-        schema:
-          type: string
-        example: MY_NAMESPACE
-      responses:
-        "200":
-          description: Successful Operation
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/CaseType"
   /{municipalityId}/{namespace}/errands/{errandId}/stakeholders:
     get:
       tags:
@@ -78,8 +56,8 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
       - name: errandId
         in: path
@@ -141,8 +119,8 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
       - name: errandId
         in: path
@@ -201,8 +179,8 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
       - name: errandId
         in: path
@@ -266,8 +244,8 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
       - name: errandId
         in: path
@@ -328,8 +306,8 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
       - name: errandId
         in: path
@@ -392,8 +370,8 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
       - name: errandId
         in: path
@@ -450,8 +428,8 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
       - name: errandId
         in: path
@@ -517,8 +495,8 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
       - name: errandId
         in: path
@@ -570,8 +548,8 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
       - name: errandId
         in: path
@@ -633,8 +611,8 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
       - name: errandId
         in: path
@@ -691,8 +669,8 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
       - name: errandId
         in: path
@@ -751,8 +729,8 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
       - name: errandId
         in: path
@@ -815,8 +793,8 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
       - name: errandId
         in: path
@@ -877,8 +855,8 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
       - name: errandId
         in: path
@@ -941,8 +919,8 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
       - name: errandId
         in: path
@@ -999,8 +977,8 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
       - name: errandId
         in: path
@@ -1064,8 +1042,8 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
       - name: errandId
         in: path
@@ -1126,8 +1104,8 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
       - name: errandId
         in: path
@@ -1190,8 +1168,8 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
       - name: errandId
         in: path
@@ -1248,8 +1226,8 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
       - name: errandId
         in: path
@@ -1294,6 +1272,100 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
+  /{municipalityId}/{namespace}/metadata/casetypes:
+    get:
+      tags:
+      - Metadata for caseTypes
+      description: Get all case types
+      operationId: getCaseTypes
+      parameters:
+      - name: municipalityId
+        in: path
+        description: Municipality ID
+        required: true
+        schema:
+          type: string
+        example: 2281
+      - name: namespace
+        in: path
+        description: Namespace
+        required: true
+        schema:
+          type: string
+          pattern: "[\\w|\\-]+"
+        example: MY_NAMESPACE
+      responses:
+        "200":
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CaseType"
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+    post:
+      tags:
+      - Metadata for caseTypes
+      description: Create caseType
+      operationId: createCaseType
+      parameters:
+      - name: municipalityId
+        in: path
+        description: Municipality ID
+        required: true
+        schema:
+          type: string
+        example: 2281
+      - name: namespace
+        in: path
+        description: Namespace
+        required: true
+        schema:
+          type: string
+          pattern: "[\\w|\\-]+"
+        example: MY_NAMESPACE
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CaseType"
+        required: true
+      responses:
+        "201":
+          description: Created - Successful operation
+          headers:
+            Location:
+              style: simple
+              schema:
+                type: string
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
   /{municipalityId}/{namespace}/errands:
     get:
       tags:
@@ -1314,13 +1386,13 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
       - name: filter
         in: query
         description: "Syntax description: [spring-filter](https://github.com/turkraft/spring-filter/blob/85730f950a5f8623159cc0eb4d737555f9382bb7/README.md#syntax)"
-        required: true
+        required: false
         schema:
           type: string
         example: caseType:'PARKING_PERMIT' and stakeholders.firstName~'*mar*' and
@@ -1330,17 +1402,17 @@ paths:
         description: Zero-based page index (0..N)
         required: false
         schema:
-          minimum: 0
           type: integer
           default: 0
+          minimum: 0
       - name: size
         in: query
         description: The size of the page to be returned
         required: false
         schema:
-          minimum: 1
           type: integer
           default: 20
+          minimum: 1
       - name: sort
         in: query
         description: "Sorting criteria in the format: property,(asc|desc). Default\
@@ -1396,9 +1468,16 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
+      - name: referred_from
+        in: query
+        description: "Relation reference in format (only source is used): '{relationType}|{sourceResourceId};{sourceType};{sourceService};{sourceNamespace}|{targetResourceId};{targetType};{targetService};{targetNamespace}'"
+        required: false
+        schema:
+          type: string
+        example: LINK|1234;case;service;MY_NAMESPACE|
       requestBody:
         content:
           application/json:
@@ -1454,8 +1533,8 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
       - name: errandId
         in: path
@@ -1522,8 +1601,8 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
       - name: errandId
         in: path
@@ -1586,8 +1665,8 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
       - name: errandId
         in: path
@@ -1644,8 +1723,8 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
       - name: errandId
         in: path
@@ -1684,11 +1763,301 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
+  /{municipalityId}/{namespace}/errands/{errandId}/communication/conversations:
+    get:
+      tags:
+      - Conversations
+      summary: Get conversations
+      description: Get existing conversations
+      operationId: getConversations
+      parameters:
+      - name: namespace
+        in: path
+        description: Namespace
+        required: true
+        schema:
+          type: string
+          pattern: "[\\w|\\-]+"
+        example: MY_NAMESPACE
+      - name: municipalityId
+        in: path
+        description: Municipality ID
+        required: true
+        schema:
+          type: string
+        example: 2281
+      - name: errandId
+        in: path
+        description: Errand ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 1
+      responses:
+        "200":
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Conversation"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+    post:
+      tags:
+      - Conversations
+      summary: Create conversation
+      description: Create new conversation
+      operationId: createConversation
+      parameters:
+      - name: namespace
+        in: path
+        description: Namespace
+        required: true
+        schema:
+          type: string
+          pattern: "[\\w|\\-]+"
+        example: MY_NAMESPACE
+      - name: municipalityId
+        in: path
+        description: Municipality ID
+        required: true
+        schema:
+          type: string
+        example: 2281
+      - name: errandId
+        in: path
+        description: Errand ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Conversation"
+        required: true
+      responses:
+        "201":
+          description: Successful operation
+          headers:
+            Location:
+              style: simple
+              schema:
+                type: string
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+  /{municipalityId}/{namespace}/errands/{errandId}/communication/conversations/{conversationId}/messages:
+    get:
+      tags:
+      - Conversations
+      summary: Get message list
+      description: Get message list
+      operationId: getMessages
+      parameters:
+      - name: namespace
+        in: path
+        description: Namespace
+        required: true
+        schema:
+          type: string
+          pattern: "[\\w|\\-]+"
+        example: MY_NAMESPACE
+      - name: municipalityId
+        in: path
+        description: Municipality ID
+        required: true
+        schema:
+          type: string
+        example: 2281
+      - name: errandId
+        in: path
+        description: Errand ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 1
+      - name: conversationId
+        in: path
+        description: Conversation ID
+        required: true
+        schema:
+          type: string
+        example: 1aefbbb8-de82-414b-b5d7-ba7c5bbe4506
+      - name: page
+        in: query
+        description: Zero-based page index (0..N)
+        required: false
+        schema:
+          type: integer
+          default: 0
+          minimum: 0
+      - name: size
+        in: query
+        description: The size of the page to be returned
+        required: false
+        schema:
+          type: integer
+          default: 20
+          minimum: 1
+      - name: sort
+        in: query
+        description: "Sorting criteria in the format: property,(asc|desc). Default\
+          \ sort order is ascending. Multiple sort criteria are supported."
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        "200":
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PageMessage"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+    post:
+      tags:
+      - Conversations
+      summary: Create new message
+      description: Create new message
+      operationId: createMessage_1
+      parameters:
+      - name: namespace
+        in: path
+        description: Namespace
+        required: true
+        schema:
+          type: string
+          pattern: "[\\w|\\-]+"
+        example: MY_NAMESPACE
+      - name: municipalityId
+        in: path
+        description: Municipality ID
+        required: true
+        schema:
+          type: string
+        example: 2281
+      - name: errandId
+        in: path
+        description: Errand ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 1
+      - name: conversationId
+        in: path
+        description: Conversation ID
+        required: true
+        schema:
+          type: string
+        example: 1aefbbb8-de82-414b-b5d7-ba7c5bbe4506
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                message:
+                  $ref: "#/components/schemas/Message"
+                  description: Message to be posted
+                attachments:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+              required:
+              - message
+      responses:
+        "204":
+          description: Successful operation
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
   /{municipalityId}/{namespace}/errands/{errandId}/attachments:
     get:
       tags:
       - Attachments
-      description: Get attachments by errand number.
+      description: Get attachments by errand id.
       operationId: getAttachmentsByErrandId
       parameters:
       - name: municipalityId
@@ -1703,8 +2072,8 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
       - name: errandId
         in: path
@@ -1761,8 +2130,8 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
       - name: errandId
         in: path
@@ -1828,8 +2197,8 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
       - name: ownerId
         in: query
@@ -1886,8 +2255,8 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
       requestBody:
         content:
@@ -1939,8 +2308,8 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
       - name: errandId
         in: path
@@ -1995,8 +2364,8 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
       - name: errandId
         in: path
@@ -2054,8 +2423,8 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
       - name: errandId
         in: path
@@ -2113,8 +2482,8 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
       - name: errandId
         in: path
@@ -2176,8 +2545,8 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
       - name: errandId
         in: path
@@ -2241,8 +2610,8 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
       - name: errandId
         in: path
@@ -2303,8 +2672,8 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
       - name: errandId
         in: path
@@ -2361,8 +2730,8 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
       - name: errandId
         in: path
@@ -2426,8 +2795,8 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
       - name: errandId
         in: path
@@ -2488,8 +2857,8 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
       - name: errandId
         in: path
@@ -2546,8 +2915,8 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
       - name: errandId
         in: path
@@ -2592,6 +2961,340 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
+  /{municipalityId}/{namespace}/errands/{errandId}/extraparameters:
+    get:
+      tags:
+      - Errands extra parameters
+      summary: Find errand extra parameters
+      description: Find the errand parameters that matches the provided attributes
+      operationId: findErrandParameters
+      parameters:
+      - name: namespace
+        in: path
+        description: Namespace
+        required: true
+        schema:
+          type: string
+          pattern: "[\\w|\\-]+"
+        example: MY_NAMESPACE
+      - name: municipalityId
+        in: path
+        description: Municipality id
+        required: true
+        schema:
+          type: string
+        example: 2281
+      - name: errandId
+        in: path
+        description: Errand id
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: b82bd8ac-1507-4d9a-958d-369261eecc15
+      responses:
+        "200":
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ExtraParameter"
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "404":
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+    patch:
+      tags:
+      - Errands extra parameters
+      summary: Update errand extra parameters
+      description: "Adds new extra parameters to errand or updates value of existing\
+        \ parameters, based on the supplied attributes (the resource will not remove\
+        \ any existing extra parameters, for removal use the delete resource)."
+      operationId: updateErrandParameters
+      parameters:
+      - name: namespace
+        in: path
+        description: Namespace
+        required: true
+        schema:
+          type: string
+          pattern: "[\\w|\\-]+"
+        example: MY_NAMESPACE
+      - name: municipalityId
+        in: path
+        description: Municipality id
+        required: true
+        schema:
+          type: string
+        example: 2281
+      - name: errandId
+        in: path
+        description: Errand id
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: b82bd8ac-1507-4d9a-958d-369261eecc15
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/ExtraParameter"
+        required: true
+      responses:
+        "200":
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ExtraParameter"
+        "404":
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+  /{municipalityId}/{namespace}/errands/{errandId}/extraparameters/{parameterKey}:
+    get:
+      tags:
+      - Errands extra parameters
+      summary: Read errand extra parameter
+      description: Fetches the errand extra parameter that matches the provided errand
+        id and parameter id
+      operationId: readErrandParameter
+      parameters:
+      - name: namespace
+        in: path
+        description: Namespace
+        required: true
+        schema:
+          type: string
+          pattern: "[\\w|\\-]+"
+        example: MY_NAMESPACE
+      - name: municipalityId
+        in: path
+        description: Municipality id
+        required: true
+        schema:
+          type: string
+        example: 2281
+      - name: errandId
+        in: path
+        description: Errand id
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: b82bd8ac-1507-4d9a-958d-369261eecc15
+      - name: parameterKey
+        in: path
+        description: Errand parameter key
+        required: true
+        schema:
+          type: string
+          minLength: 1
+        example: propertyInfo
+      responses:
+        "200":
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        "404":
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+    delete:
+      tags:
+      - Errands extra parameters
+      summary: Delete errand extra parameter
+      description: Deletes the errand extra parameter that matches the provided errand
+        id and parameter id
+      operationId: deleteErrandParameter
+      parameters:
+      - name: namespace
+        in: path
+        description: Namespace
+        required: true
+        schema:
+          type: string
+          pattern: "[\\w|\\-]+"
+        example: MY_NAMESPACE
+      - name: municipalityId
+        in: path
+        description: Municipality id
+        required: true
+        schema:
+          type: string
+        example: 2281
+      - name: errandId
+        in: path
+        description: Errand id
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: b82bd8ac-1507-4d9a-958d-369261eecc15
+      - name: parameterKey
+        in: path
+        description: Errand parameter key
+        required: true
+        schema:
+          type: string
+          minLength: 1
+        example: propertyInfo
+      responses:
+        "204":
+          description: Successful operation
+        "404":
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+    patch:
+      tags:
+      - Errands extra parameters
+      summary: Update single errand extra parameter
+      description: Updates the errand extra parameter matching provided errand id
+        and parameter id with the supplied attributes
+      operationId: updateErrandParameter
+      parameters:
+      - name: namespace
+        in: path
+        description: Namespace
+        required: true
+        schema:
+          type: string
+          pattern: "[\\w|\\-]+"
+        example: MY_NAMESPACE
+      - name: municipalityId
+        in: path
+        description: Municipality id
+        required: true
+        schema:
+          type: string
+        example: 2281
+      - name: errandId
+        in: path
+        description: Errand id
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: b82bd8ac-1507-4d9a-958d-369261eecc15
+      - name: parameterKey
+        in: path
+        description: Errand parameter key
+        required: true
+        schema:
+          type: string
+          minLength: 1
+        example: propertyInfo
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+        required: true
+      responses:
+        "200":
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExtraParameter"
+        "404":
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
   /{municipalityId}/{namespace}/errands/{errandId}/decisions:
     get:
       tags:
@@ -2611,8 +3314,8 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
       - name: errandId
         in: path
@@ -2669,8 +3372,8 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
       - name: errandId
         in: path
@@ -2715,6 +3418,244 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
+  /{municipalityId}/{namespace}/errands/{errandId}/communication/conversations/{conversationId}:
+    get:
+      tags:
+      - Conversations
+      summary: Get conversation
+      description: Get existing conversation
+      operationId: getConversation
+      parameters:
+      - name: namespace
+        in: path
+        description: Namespace
+        required: true
+        schema:
+          type: string
+          pattern: "[\\w|\\-]+"
+        example: MY_NAMESPACE
+      - name: municipalityId
+        in: path
+        description: Municipality ID
+        required: true
+        schema:
+          type: string
+        example: 2281
+      - name: errandId
+        in: path
+        description: Errand ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 1
+      - name: conversationId
+        in: path
+        description: Conversation ID
+        required: true
+        schema:
+          type: string
+        example: 1aefbbb8-de82-414b-b5d7-ba7c5bbe4506
+      responses:
+        "200":
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Conversation"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+    patch:
+      tags:
+      - Conversations
+      summary: Update conversation
+      description: Update existing conversation
+      operationId: updateConversation
+      parameters:
+      - name: namespace
+        in: path
+        description: Namespace
+        required: true
+        schema:
+          type: string
+          pattern: "[\\w|\\-]+"
+        example: MY_NAMESPACE
+      - name: municipalityId
+        in: path
+        description: Municipality ID
+        required: true
+        schema:
+          type: string
+        example: 2281
+      - name: errandId
+        in: path
+        description: Errand ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 1
+      - name: conversationId
+        in: path
+        description: Conversation ID
+        required: true
+        schema:
+          type: string
+        example: 1aefbbb8-de82-414b-b5d7-ba7c5bbe4506
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Conversation"
+        required: true
+      responses:
+        "200":
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Conversation"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+  /{municipalityId}/{namespace}/metadata/casetypes/{type}:
+    get:
+      tags:
+      - Metadata for caseTypes
+      description: Get a specific case type
+      operationId: getCaseType
+      parameters:
+      - name: municipalityId
+        in: path
+        description: Municipality ID
+        required: true
+        schema:
+          type: string
+        example: 2281
+      - name: namespace
+        in: path
+        description: Namespace
+        required: true
+        schema:
+          type: string
+          pattern: "[\\w|\\-]+"
+        example: MY_NAMESPACE
+      - name: type
+        in: path
+        description: 'type '
+        required: true
+        schema:
+          type: string
+        example: PARATRANSIT
+      responses:
+        "200":
+          description: OK - Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CaseType"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CaseType"
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+    delete:
+      tags:
+      - Metadata for caseTypes
+      description: Delete caseType
+      operationId: deleteCaseType
+      parameters:
+      - name: municipalityId
+        in: path
+        description: Municipality ID
+        required: true
+        schema:
+          type: string
+        example: 2281
+      - name: namespace
+        in: path
+        description: Namespace
+        required: true
+        schema:
+          type: string
+          pattern: "[\\w|\\-]+"
+        example: MY_NAMESPACE
+      - name: type
+        in: path
+        description: 'type '
+        required: true
+        schema:
+          type: string
+        example: PARATRANSIT
+      responses:
+        "204":
+          description: No content - Successful operation
+        "404":
+          description: Not found
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
   /{municipalityId}/{namespace}/errands/{errandId}/stakeholders/{stakeholderId}/history:
     get:
       tags:
@@ -2734,8 +3675,8 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
       - name: errandId
         in: path
@@ -2800,8 +3741,8 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
       - name: notificationId
         in: path
@@ -2822,7 +3763,7 @@ paths:
         "200":
           description: Successful operation
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: "#/components/schemas/Notification"
         "400":
@@ -2864,8 +3805,8 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
       - name: errandId
         in: path
@@ -2923,8 +3864,8 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
       - name: errandId
         in: path
@@ -2988,8 +3929,8 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
       - name: errandId
         in: path
@@ -3052,8 +3993,8 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
       - name: errandId
         in: path
@@ -3096,6 +4037,65 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
+  /{municipalityId}/{namespace}/errands/{errandId}/messages/external:
+    get:
+      tags:
+      - Messages
+      description: Get non internal messages
+      operationId: getExternalMessagesByErrand
+      parameters:
+      - name: municipalityId
+        in: path
+        description: Municipality ID
+        required: true
+        schema:
+          type: string
+        example: 2281
+      - name: namespace
+        in: path
+        description: Namespace
+        required: true
+        schema:
+          type: string
+          pattern: "[\\w|\\-]+"
+        example: MY_NAMESPACE
+      - name: errandId
+        in: path
+        description: Errand ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 123
+      responses:
+        "200":
+          description: OK - Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MessageResponse"
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
   /{municipalityId}/{namespace}/errands/{errandId}/history:
     get:
       tags:
@@ -3115,8 +4115,8 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
       - name: errandId
         in: path
@@ -3174,8 +4174,8 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
       - name: errandId
         in: path
@@ -3239,8 +4239,8 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
       - name: errandId
         in: path
@@ -3285,6 +4285,82 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
+  ? /{municipalityId}/{namespace}/errands/{errandId}/communication/conversations/{conversationId}/messages/{messageId}/attachments/{attachmentId}
+  : get:
+      tags:
+      - Conversations
+      summary: Get a streamed conversation message attachment.
+      description: "Fetches the conversation message attachment that matches the provided\
+        \ ID, in a streamed manner"
+      operationId: getConversationMessageAttachment
+      parameters:
+      - name: namespace
+        in: path
+        description: Namespace
+        required: true
+        schema:
+          type: string
+          pattern: "[\\w|\\-]+"
+        example: MY_NAMESPACE
+      - name: municipalityId
+        in: path
+        description: Municipality ID
+        required: true
+        schema:
+          type: string
+        example: 2281
+      - name: errandId
+        in: path
+        description: Errand ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 1
+      - name: conversationId
+        in: path
+        description: Conversation ID
+        required: true
+        schema:
+          type: string
+        example: 1aefbbb8-de82-414b-b5d7-ba7c5bbe4506
+      - name: messageId
+        in: path
+        description: Message ID
+        required: true
+        schema:
+          type: string
+        example: be3a5c7b-0f39-4867-8065-6a286b36fcc3
+      - name: attachmentId
+        in: path
+        description: Conversation message attachment ID
+        required: true
+        schema:
+          type: string
+        example: b82bd8ac-1507-4d9a-958d-369261eecc15
+      responses:
+        "200":
+          description: Successful Operation
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
   /{municipalityId}/{namespace}/errands/{errandId}/attachments/{attachmentId}/history:
     get:
       tags:
@@ -3304,8 +4380,8 @@ paths:
         description: Namespace
         required: true
         schema:
-          pattern: "[\\w|\\-]+"
           type: string
+          pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
       - name: errandId
         in: path
@@ -3350,6 +4426,79 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
+  /{municipalityId}/errands/{partyId}/decisions:
+    get:
+      tags:
+      - Decisions
+      description: Get final decisions connected to a partyId.
+      operationId: getFinalDecisions
+      parameters:
+      - name: municipalityId
+        in: path
+        description: Municipality ID
+        required: true
+        schema:
+          type: string
+        example: 2281
+      - name: partyId
+        in: path
+        description: PartyId to find cases for
+        required: true
+        schema:
+          type: string
+        example: 123e4567-e89b-12d3-a456-426614174000
+      - name: page
+        in: query
+        description: Zero-based page index (0..N)
+        required: false
+        schema:
+          type: integer
+          default: 0
+          minimum: 0
+      - name: size
+        in: query
+        description: The size of the page to be returned
+        required: false
+        schema:
+          type: integer
+          default: 20
+          minimum: 1
+      - name: sort
+        in: query
+        description: "Sorting criteria in the format: property,(asc|desc). Default\
+          \ sort order is ascending. Multiple sort criteria are supported."
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        "200":
+          description: OK - Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PageDecision"
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "404":
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
   /api-docs:
     get:
       tags:
@@ -3374,197 +4523,215 @@ components:
         addressCategory:
           type: string
           description: Category of the address
-          example: RESIDENTIAL
           enum:
           - POSTAL_ADDRESS
           - INVOICE_ADDRESS
           - VISITING_ADDRESS
+          examples:
+          - RESIDENTIAL
         street:
-          maxLength: 255
-          minLength: 0
           type: string
           description: Street name
-          example: Testvägen
-        houseNumber:
+          examples:
+          - Testvägen
           maxLength: 255
           minLength: 0
+        houseNumber:
           type: string
           description: House number
-          example: "18"
-        postalCode:
+          examples:
+          - "18"
           maxLength: 255
           minLength: 0
+        postalCode:
           type: string
           description: Postal code
-          example: 123 45
-        city:
+          examples:
+          - 123 45
           maxLength: 255
           minLength: 0
+        city:
           type: string
           description: City name
-          example: Sundsvall
-        country:
+          examples:
+          - Sundsvall
           maxLength: 255
           minLength: 0
+        country:
           type: string
           description: Country name
-          example: Sverige
-        careOf:
+          examples:
+          - Sverige
           maxLength: 255
           minLength: 0
+        careOf:
           type: string
           description: Care of (c/o)
-          example: Test Testorsson
-        attention:
+          examples:
+          - Test Testorsson
           maxLength: 255
           minLength: 0
+        attention:
           type: string
           description: Attention to
-          example: Test Testorsson
-        propertyDesignation:
+          examples:
+          - Test Testorsson
           maxLength: 255
           minLength: 0
+        propertyDesignation:
           type: string
           description: Property designation
-          example: SUNDSVALL LJUSTA 7:2
-        apartmentNumber:
+          examples:
+          - SUNDSVALL LJUSTA 7:2
           maxLength: 255
           minLength: 0
+        apartmentNumber:
           type: string
           description: Apartment number
-          example: LGH 1001
+          examples:
+          - LGH 1001
+          maxLength: 255
+          minLength: 0
         isZoningPlanArea:
           type: boolean
           description: Indicates if the address is within a zoning plan area
-          example: true
         invoiceMarking:
-          maxLength: 255
-          minLength: 0
           type: string
           description: "Invoice marking, only in combination with addressCategory:\
             \ INVOICE_ADDRESS"
-          example: "1234567890"
+          examples:
+          - "1234567890"
+          maxLength: 255
+          minLength: 0
         location:
           $ref: "#/components/schemas/Coordinates"
-      description: "A stakeholder may have one or more addresses. For example, one\
-        \ POSTAL_ADDRESS and another INVOICE_ADDRESS."
+          description: The location of the address
+          examples:
+          - "{\"latitude\": 62.3908, \"longitude\": 17.3069}"
     ContactInformation:
       type: object
       properties:
         contactType:
           type: string
           description: The type of contact information
-          example: EMAIL
           enum:
           - CELLPHONE
           - PHONE
           - EMAIL
+          examples:
+          - EMAIL
         value:
-          maxLength: 255
-          minLength: 0
           type: string
           description: The value of the contact information
-          example: someEmail@sundsvall.se@
-      description: The contact information of the stakeholder
+          examples:
+          - someEmail@sundsvall.se@
+          maxLength: 255
+          minLength: 0
     Coordinates:
       type: object
       properties:
         latitude:
           type: number
-          description: Decimal Degrees (DD)
           format: double
-          example: 62.390205
+          description: Decimal Degrees (DD)
+          examples:
+          - "62.390205"
         longitude:
           type: number
-          description: Decimal Degrees (DD)
           format: double
-          example: 17.306616
-      description: The location of the address
-      example:
-        latitude: 62.3908
-        longitude: 17.3069
+          description: Decimal Degrees (DD)
+          examples:
+          - "17.306616"
     Stakeholder:
-      required:
-      - roles
-      - type
       type: object
       properties:
         id:
           type: integer
-          description: The unique identifier of the stakeholder
           format: int64
+          description: The unique identifier of the stakeholder
+          examples:
+          - "1"
           readOnly: true
-          example: 1
         version:
           type: integer
-          description: The version of the stakeholder
           format: int32
+          description: The version of the stakeholder
+          examples:
+          - "1"
           readOnly: true
-          example: 1
         municipalityId:
           type: string
           description: The municipality ID
+          examples:
+          - "2281"
           readOnly: true
-          example: "2281"
         namespace:
           type: string
           description: Namespace
+          examples:
+          - MY_NAMESPACE
           readOnly: true
-          example: MY_NAMESPACE
         type:
           type: string
           description: The type of stakeholder
-          example: PERSON
           enum:
           - PERSON
           - ORGANIZATION
+          examples:
+          - PERSON
         firstName:
-          maxLength: 255
-          minLength: 0
           type: string
           description: The first name of the stakeholder
-          example: Test
-        lastName:
+          examples:
+          - Test
           maxLength: 255
           minLength: 0
+        lastName:
           type: string
           description: The last name of the stakeholder
-          example: Testorsson
+          examples:
+          - Testorsson
+          maxLength: 255
+          minLength: 0
         personId:
           type: string
           description: The person ID of the stakeholder
-          example: 3ed5bc30-6308-4fd5-a5a7-78d7f96f4438
+          examples:
+          - 3ed5bc30-6308-4fd5-a5a7-78d7f96f4438
         organizationName:
-          maxLength: 255
-          minLength: 0
           type: string
           description: The organization name of the stakeholder
-          example: Sundsvalls testfabrik
+          examples:
+          - Sundsvalls testfabrik
+          maxLength: 255
+          minLength: 0
         organizationNumber:
+          type: string
+          description: Organization number with 10 or 12 digits.
+          examples:
+          - 19901010-1234
           maxLength: 13
           minLength: 0
           pattern: "^((18|19|20|21)\\d{6}|\\d{6})-(\\d{4})$"
-          type: string
-          description: Organization number with 10 or 12 digits.
-          example: 19901010-1234
         authorizedSignatory:
-          maxLength: 255
-          minLength: 0
           type: string
           description: The authorized signatory of the stakeholder
-          example: Test Testorsson
-        adAccount:
-          maxLength: 36
+          examples:
+          - Test Testorsson
+          maxLength: 255
           minLength: 0
+        adAccount:
           type: string
           description: The AD-account of the stakeholder
-          example: user
+          examples:
+          - user
+          maxLength: 36
+          minLength: 0
         roles:
           type: array
           description: A stakeholder can have one or more roles.
           items:
             type: string
-            description: A stakeholder can have one or more roles.
         addresses:
           type: array
           description: "A stakeholder may have one or more addresses. For example,\
@@ -3580,24 +4747,26 @@ components:
           type: object
           additionalProperties:
             type: string
-            description: Additional parameters for the stakeholder
-            example: "{\"key1\":\"value1\",\"key2\":\"value2\"}"
           description: Additional parameters for the stakeholder
-          example:
-            key1: value1
-            key2: value2
+          examples:
+          - "{\"key1\":\"value1\",\"key2\":\"value2\"}"
         created:
           type: string
-          description: The timestamp when the stakeholder was created
           format: date-time
+          description: The timestamp when the stakeholder was created
+          examples:
+          - 2023-01-01T12:00:00Z
           readOnly: true
-          example: 2023-01-01T12:00:00Z
         updated:
           type: string
-          description: The timestamp when the stakeholder was last updated
           format: date-time
+          description: The timestamp when the stakeholder was last updated
+          examples:
+          - 2023-01-02T12:00:00Z
           readOnly: true
-          example: 2023-01-02T12:00:00Z
+      required:
+      - roles
+      - type
     Problem:
       type: object
       properties:
@@ -3607,184 +4776,52 @@ components:
         type:
           type: string
           format: uri
-        parameters:
-          type: object
-          additionalProperties:
-            type: object
-        status:
-          $ref: "#/components/schemas/StatusType"
         title:
           type: string
         detail:
           type: string
-    StatusType:
-      type: object
-      properties:
-        statusCode:
+        status:
           type: integer
           format: int32
-        reasonPhrase:
-          type: string
     ConstraintViolationProblem:
       type: object
       properties:
-        cause:
-          $ref: "#/components/schemas/ThrowableProblem"
-        stackTrace:
-          type: array
-          items:
-            type: object
-            properties:
-              classLoaderName:
-                type: string
-              moduleName:
-                type: string
-              moduleVersion:
-                type: string
-              methodName:
-                type: string
-              fileName:
-                type: string
-              lineNumber:
-                type: integer
-                format: int32
-              className:
-                type: string
-              nativeMethod:
-                type: boolean
         type:
           type: string
           format: uri
         status:
-          $ref: "#/components/schemas/StatusType"
+          type: integer
+          format: int32
         violations:
           type: array
           items:
             $ref: "#/components/schemas/Violation"
         title:
           type: string
-        message:
-          type: string
         instance:
           type: string
           format: uri
-        parameters:
-          type: object
-          additionalProperties:
-            type: object
+        causeAsProblem:
+          $ref: "#/components/schemas/ThrowableProblem"
         detail:
-          type: string
-        suppressed:
-          type: array
-          items:
-            type: object
-            properties:
-              stackTrace:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    classLoaderName:
-                      type: string
-                    moduleName:
-                      type: string
-                    moduleVersion:
-                      type: string
-                    methodName:
-                      type: string
-                    fileName:
-                      type: string
-                    lineNumber:
-                      type: integer
-                      format: int32
-                    className:
-                      type: string
-                    nativeMethod:
-                      type: boolean
-              message:
-                type: string
-              localizedMessage:
-                type: string
-        localizedMessage:
           type: string
     ThrowableProblem:
       type: object
       properties:
-        cause:
-          $ref: "#/components/schemas/ThrowableProblem"
-        stackTrace:
-          type: array
-          items:
-            type: object
-            properties:
-              classLoaderName:
-                type: string
-              moduleName:
-                type: string
-              moduleVersion:
-                type: string
-              methodName:
-                type: string
-              fileName:
-                type: string
-              lineNumber:
-                type: integer
-                format: int32
-              className:
-                type: string
-              nativeMethod:
-                type: boolean
-        message:
+        type:
+          type: string
+          format: uri
+        title:
+          type: string
+        status:
+          type: integer
+          format: int32
+        detail:
           type: string
         instance:
           type: string
           format: uri
-        type:
-          type: string
-          format: uri
-        parameters:
-          type: object
-          additionalProperties:
-            type: object
-        status:
-          $ref: "#/components/schemas/StatusType"
-        title:
-          type: string
-        detail:
-          type: string
-        suppressed:
-          type: array
-          items:
-            type: object
-            properties:
-              stackTrace:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    classLoaderName:
-                      type: string
-                    moduleName:
-                      type: string
-                    moduleVersion:
-                      type: string
-                    methodName:
-                      type: string
-                    fileName:
-                      type: string
-                    lineNumber:
-                      type: integer
-                      format: int32
-                    className:
-                      type: string
-                    nativeMethod:
-                      type: boolean
-              message:
-                type: string
-              localizedMessage:
-                type: string
-        localizedMessage:
-          type: string
+        causeAsProblem: {}
     Violation:
       type: object
       properties:
@@ -3797,196 +4834,231 @@ components:
       properties:
         id:
           type: integer
-          description: The id of the facility
           format: int64
+          description: The id of the facility
+          examples:
+          - "1"
           readOnly: true
-          example: 1
         version:
           type: integer
-          description: The version of the facility
           format: int32
+          description: The version of the facility
+          examples:
+          - "1"
           readOnly: true
-          example: 1
         municipalityId:
           type: string
           description: The municipality ID
+          examples:
+          - "2281"
           readOnly: true
-          example: "2281"
         namespace:
           type: string
           description: Namespace
+          examples:
+          - MY_NAMESPACE
           readOnly: true
-          example: MY_NAMESPACE
         description:
-          maxLength: 255
-          minLength: 0
           type: string
           description: Description of the facility
-          example: En fritextbeskrivning av facility.
-        address:
-          $ref: "#/components/schemas/Address"
-        facilityCollectionName:
+          examples:
+          - En fritextbeskrivning av facility.
           maxLength: 255
           minLength: 0
+        address:
+          $ref: "#/components/schemas/Address"
+          description: The address of the facility
+        facilityCollectionName:
           type: string
           description: The name on the sign
-          example: Sundsvalls testfabrik
+          examples:
+          - Sundsvalls testfabrik
+          maxLength: 255
+          minLength: 0
         mainFacility:
           type: boolean
           description: Is this the main facility for the case?
-          example: true
         facilityType:
           type: string
           description: Type of the facility
-          example: INDUSTRIAL
+          examples:
+          - INDUSTRIAL
         created:
           type: string
-          description: Date and time when the facility was created
           format: date-time
+          description: Date and time when the facility was created
+          examples:
+          - 2023-10-01T12:00:00Z
           readOnly: true
-          example: 2023-10-01T12:00:00Z
         updated:
           type: string
-          description: Date and time when the facility was last updated
           format: date-time
+          description: Date and time when the facility was last updated
+          examples:
+          - 2023-10-02T12:00:00Z
           readOnly: true
-          example: 2023-10-02T12:00:00Z
         extraParameters:
           type: object
           additionalProperties:
             type: string
-            description: Extra parameters
-            example: "{\"key1\":\"value1\",\"key2\":\"value2\"}"
           description: Extra parameters
-          example:
-            key1: value1
-            key2: value2
+          examples:
+          - "{\"key1\":\"value1\",\"key2\":\"value2\"}"
     Attachment:
       type: object
       properties:
         id:
           type: integer
-          description: The id of the attachment
           format: int64
+          description: The id of the attachment
+          examples:
+          - "1"
           readOnly: true
-          example: 1
         version:
           type: integer
-          description: The version of the attachment
           format: int32
+          description: The version of the attachment
+          examples:
+          - "1"
           readOnly: true
-          example: 1
         municipalityId:
           type: string
           description: The municipality ID
+          examples:
+          - "2281"
           readOnly: true
-          example: "2281"
         errandId:
           type: integer
-          description: Errand id associated with the attachment
           format: int64
+          description: Errand id associated with the attachment
+          examples:
+          - "123456"
           readOnly: true
-          example: 123456
         namespace:
           type: string
           description: Namespace
+          examples:
+          - MY_NAMESPACE
           readOnly: true
-          example: MY_NAMESPACE
         created:
           type: string
-          description: The date when this attachment was created
           format: date-time
+          description: The date when this attachment was created
+          examples:
+          - 2023-10-01T12:00:00Z
           readOnly: true
-          example: 2023-10-01T12:00:00Z
         updated:
           type: string
-          description: The date when this attachment was last updated
           format: date-time
+          description: The date when this attachment was last updated
+          examples:
+          - 2023-10-02T12:00:00Z
           readOnly: true
-          example: 2023-10-02T12:00:00Z
         category:
           type: string
           description: Category of the attachment
-          example: DOCUMENT
+          examples:
+          - DOCUMENT
         name:
           type: string
           description: Name of the attachment
-          example: Test Document
+          examples:
+          - Test Document
         note:
           type: string
           description: Note about the attachment
-          example: This is a test document.
+          examples:
+          - This is a test document.
         extension:
           type: string
           description: File extension of the attachment
-          example: pdf
+          examples:
+          - pdf
         mimeType:
           type: string
           description: MIME type of the attachment
-          example: application/pdf
+          examples:
+          - application/pdf
         file:
           type: string
           description: Base64 encoded file content
-          example: dGVzdCBjb250ZW50
+          examples:
+          - dGVzdCBjb250ZW50
         extraParameters:
           type: object
           additionalProperties:
             type: string
-            description: Additional parameters for the attachment
-            example: "{\"key1\":\"value1\",\"key2\":\"value2\"}"
           description: Additional parameters for the attachment
-          example:
-            key1: value1
-            key2: value2
-      description: List of attachments related to the decision
+          examples:
+          - "{\"key1\": \"value1\", \"key2\": \"value2\"}"
     Decision:
       type: object
       properties:
         id:
           type: integer
-          description: The id of the decision
           format: int64
+          description: The id of the decision
+          examples:
+          - "1"
           readOnly: true
-          example: 1
         version:
           type: integer
-          description: The version of the decision
           format: int32
+          description: The version of the decision
+          examples:
+          - "1"
           readOnly: true
-          example: 1
         municipalityId:
           type: string
           description: The municipality ID
+          examples:
+          - "2281"
           readOnly: true
-          example: "2281"
         namespace:
           type: string
           description: Namespace
+          examples:
+          - MY_NAMESPACE
           readOnly: true
-          example: MY_NAMESPACE
+        errandId:
+          type: integer
+          format: int64
+          description: The id of the errand
+          examples:
+          - "1"
+          readOnly: true
+        errandNumber:
+          type: string
+          description: Errand number
+          examples:
+          - SGP-2022-000001
+          readOnly: true
         decisionType:
           type: string
           description: Type of the decision
-          example: APPROVAL
           enum:
           - RECOMMENDED
           - PROPOSED
           - FINAL
+          examples:
+          - APPROVAL
         decisionOutcome:
           type: string
           description: Outcome of the decision
-          example: GRANTED
           enum:
           - APPROVAL
           - REJECTION
           - DISMISSAL
           - CANCELLATION
+          examples:
+          - GRANTED
         description:
-          maxLength: 100000
-          minLength: 0
           type: string
           description: Description of the decision
-          example: This decision approves the application.
+          examples:
+          - This decision approves the application.
+          maxLength: 100000
+          minLength: 0
         law:
           type: array
           description: List of laws related to the decision
@@ -3994,21 +5066,25 @@ components:
             $ref: "#/components/schemas/Law"
         decidedBy:
           $ref: "#/components/schemas/Stakeholder"
+          description: Stakeholder who made the decision
         decidedAt:
           type: string
-          description: Date and time when the decision was made
           format: date-time
-          example: 2023-10-01T12:00:00Z
+          description: Date and time when the decision was made
+          examples:
+          - 2023-10-01T12:00:00Z
         validFrom:
           type: string
-          description: Date and time when the decision becomes valid
           format: date-time
-          example: 2023-10-01T12:00:00Z
+          description: Date and time when the decision becomes valid
+          examples:
+          - 2023-10-01T12:00:00Z
         validTo:
           type: string
-          description: Date and time when the decision expires
           format: date-time
-          example: 2024-10-01T12:00:00Z
+          description: Date and time when the decision expires
+          examples:
+          - 2024-10-01T12:00:00Z
         attachments:
           type: array
           description: List of attachments related to the decision
@@ -4018,163 +5094,201 @@ components:
           type: object
           additionalProperties:
             type: string
-            description: Additional parameters for the decision
-            example: "{\"key1\":\"value1\",\"key2\":\"value2\"}"
           description: Additional parameters for the decision
-          example:
-            key1: value1
-            key2: value2
+          examples:
+          - "{\"key1\": \"value1\", \"key2\": \"value2\"}"
         created:
           type: string
-          description: Date and time when the decision was created
           format: date-time
+          description: Date and time when the decision was created
+          examples:
+          - 2023-10-01T12:00:00Z
           readOnly: true
-          example: 2023-10-01T12:00:00Z
         updated:
           type: string
-          description: Date and time when the decision was last updated
           format: date-time
+          description: Date and time when the decision was last updated
+          examples:
+          - 2023-10-02T12:00:00Z
           readOnly: true
-          example: 2023-10-02T12:00:00Z
     Law:
       type: object
       properties:
         heading:
-          maxLength: 255
-          minLength: 0
           type: string
           description: Heading of the law
-          example: Building Act
-        sfs:
+          examples:
+          - Building Act
           maxLength: 255
           minLength: 0
+        sfs:
           type: string
           description: Swedish Code of Statutes (SFS)
-          example: SFS 2010:900
-        chapter:
+          examples:
+          - SFS 2010:900
           maxLength: 255
           minLength: 0
+        chapter:
           type: string
           description: Chapter of the law
-          example: "3"
-        article:
+          examples:
+          - "3"
           maxLength: 255
           minLength: 0
+        article:
           type: string
           description: Article of the law
-          example: "1"
-      description: List of laws related to the decision
+          examples:
+          - "1"
+          maxLength: 255
+          minLength: 0
+    CaseType:
+      type: object
+      properties:
+        type:
+          type: string
+          description: The case type
+          examples:
+          - PARATRANSIT
+        displayName:
+          type: string
+          description: The display name of the case type
+          examples:
+          - Färdtjänst
+        startProcess:
+          type: boolean
+          description: Whether errands of this case type should start/update a process
     Errand:
       type: object
       properties:
         id:
           type: integer
-          description: The id of the errand
           format: int64
+          description: The id of the errand
+          examples:
+          - "1"
           readOnly: true
-          example: 1
         version:
           type: integer
-          description: The version of the errand
           format: int32
+          description: The version of the errand
+          examples:
+          - "1"
           readOnly: true
-          example: 1
         errandNumber:
           type: string
           description: Errand number
+          examples:
+          - SGP-2022-000001
           readOnly: true
-          example: PRH-2022-000001
         municipalityId:
           type: string
           description: The municipality ID
+          examples:
+          - "2281"
           readOnly: true
-          example: "2281"
         namespace:
           type: string
           description: Namespace
+          examples:
+          - MY_NAMESPACE
           readOnly: true
-          example: MY_NAMESPACE
         externalCaseId:
-          maxLength: 255
-          minLength: 0
           type: string
           description: Case ID from the client
-          example: caa230c6-abb4-4592-ad9a-34e263c2787b
+          examples:
+          - caa230c6-abb4-4592-ad9a-34e263c2787b
+          maxLength: 255
+          minLength: 0
         caseType:
           type: string
           description: Type of the case
-          example: BUILDING_PERMIT
+          examples:
+          - BUILDING_PERMIT
         channel:
           type: string
           description: How the errand was created
-          nullable: true
-          example: EMAIL
           enum:
           - ESERVICE
+          - ESERVICE_KATLA
           - EMAIL
           - WEB_UI
           - MOBILE
           - SYSTEM
+          - MY_PAGES
+          examples:
+          - EMAIL
         priority:
           type: string
-          description: Priority of the errand
-          example: HIGH
           default: MEDIUM
+          description: Priority of the errand
           enum:
           - HIGH
           - MEDIUM
           - LOW
+          examples:
+          - HIGH
         description:
           type: string
           description: Description of the errand
-          example: Some description of the case.
+          examples:
+          - Some description of the case.
         caseTitleAddition:
-          maxLength: 255
-          minLength: 0
           type: string
           description: "Additions to the case title. Right now only applicable to\
             \ cases of CaseType: NYBYGGNAD_ANSOKAN_OM_BYGGLOV."
-          example: "Eldstad/rökkanal, Skylt"
-        diaryNumber:
+          examples:
+          - "Eldstad/rökkanal, Skylt"
           maxLength: 255
           minLength: 0
+        diaryNumber:
           type: string
           description: Diary number
-          example: DIA123456
-        phase:
+          examples:
+          - DIA123456
           maxLength: 255
           minLength: 0
+        phase:
           type: string
           description: Phase of the errand
-          example: Aktualisering
+          examples:
+          - Aktualisering
+          maxLength: 255
+          minLength: 0
         status:
           $ref: "#/components/schemas/Status"
+          description: The current status of the errand
+          maxLength: 255
         statuses:
           type: array
           description: The statuses connected to the errand
-          readOnly: true
           items:
             $ref: "#/components/schemas/Status"
+          readOnly: true
         startDate:
           type: string
-          description: Start date for the business
           format: date
-          example: 2022-01-01
+          description: Start date for the business
+          examples:
+          - 2022-01-01
         endDate:
           type: string
-          description: End date of the business if it is time-limited
           format: date
-          example: 2022-06-01
+          description: End date of the business if it is time-limited
+          examples:
+          - 2022-06-01
         applicationReceived:
           type: string
-          description: The time the application was received
           format: date-time
-          example: 2023-10-01T12:00:00Z
+          description: The time the application was received
+          examples:
+          - 2023-10-01T12:00:00Z
         processId:
           type: string
           description: Process-ID from ProcessEngine
+          examples:
+          - c3cb9123-4ed2-11ed-ac7c-0242ac110003
           readOnly: true
-          example: c3cb9123-4ed2-11ed-ac7c-0242ac110003
         stakeholders:
           type: array
           description: The applicant and other stakeholders connected to the errand
@@ -4188,9 +5302,9 @@ components:
         notifications:
           type: array
           description: List of notifications connected to this errand
-          readOnly: true
           items:
             $ref: "#/components/schemas/Notification"
+          readOnly: true
         decisions:
           type: array
           description: The decisions connected to the errand
@@ -4205,22 +5319,16 @@ components:
           type: array
           description: Messages connected to this errand. Get message information
             from Message-API
-          readOnly: true
           items:
             type: string
-            description: Messages connected to this errand. Get message information
-              from Message-API
-            readOnly: true
+          readOnly: true
         labels:
           type: array
           description: List of labels for the errand
-          example:
-          - label1
-          - label2
+          examples:
+          - "[\"label1\",\"label2\"]"
           items:
             type: string
-            description: List of labels for the errand
-            example: "[\"label1\",\"label2\"]"
         relatesTo:
           type: array
           description: Other errands related to the errand
@@ -4244,31 +5352,44 @@ components:
           readOnly: true
         suspension:
           $ref: "#/components/schemas/Suspension"
+          description: Suspension information
+        confidential:
+          type: boolean
+          description: Whether the errand is confidential or not
         extraParameters:
           type: array
           description: Extra parameters for the errand
           items:
             $ref: "#/components/schemas/ExtraParameter"
+        jsonParameters:
+          type: array
+          description: JSON parameters for the errand
+          items:
+            $ref: "#/components/schemas/JsonParameter"
         created:
           type: string
-          description: Date and time when the errand was created
           format: date-time
+          description: Date and time when the errand was created
+          examples:
+          - 2023-10-01T12:00:00Z
           readOnly: true
-          example: 2023-10-01T12:00:00Z
         updated:
           type: string
-          description: Date and time when the errand was last updated
           format: date-time
+          description: Date and time when the errand was last updated
+          examples:
+          - 2023-10-02T12:00:00Z
           readOnly: true
-          example: 2023-10-02T12:00:00Z
     ExtraParameter:
-      required:
-      - key
       type: object
       properties:
+        id:
+          type: string
+          description: Parameter id
         key:
           type: string
           description: Parameter key
+          minLength: 1
         displayName:
           type: string
           description: Parameter display name
@@ -4277,238 +5398,356 @@ components:
           description: Parameter values
           items:
             type: string
-            description: Parameter values
-      description: Extra parameters for the errand
+      required:
+      - key
+    JsonNode:
+      type: object
+      properties:
+        empty:
+          type: boolean
+        array:
+          type: boolean
+        "null":
+          type: boolean
+        object:
+          type: boolean
+        float:
+          type: boolean
+        missingNode:
+          type: boolean
+        container:
+          type: boolean
+        binary:
+          type: boolean
+        string:
+          type: boolean
+        textual:
+          type: boolean
+          deprecated: true
+        int:
+          type: boolean
+        pojo:
+          type: boolean
+        double:
+          type: boolean
+        long:
+          type: boolean
+        boolean:
+          type: boolean
+        short:
+          type: boolean
+        number:
+          type: boolean
+        nodeType:
+          type: string
+          enum:
+          - ARRAY
+          - BINARY
+          - BOOLEAN
+          - MISSING
+          - "NULL"
+          - NUMBER
+          - OBJECT
+          - POJO
+          - STRING
+        valueNode:
+          type: boolean
+        bigInteger:
+          type: boolean
+        integralNumber:
+          type: boolean
+        bigDecimal:
+          type: boolean
+        floatingPointNumber:
+          type: boolean
+        embeddedValue:
+          type: boolean
+    JsonParameter:
+      type: object
+      properties:
+        key:
+          type: string
+          description: Parameter key
+          examples:
+          - formData1
+          minLength: 1
+        value:
+          $ref: "#/components/schemas/JsonNode"
+          description: JSON structure value
+        schemaId:
+          type: string
+          description: ID referencing a schema in the json-schema service
+          examples:
+          - 2281_person_1.0
+          minLength: 1
+      required:
+      - key
+      - schemaId
+      - value
     Note:
       type: object
       properties:
         id:
           type: integer
-          description: The unique identifier of the note
           format: int64
+          description: The unique identifier of the note
+          examples:
+          - "1"
           readOnly: true
-          example: 1
         version:
           type: integer
-          description: The version of the note
           format: int32
+          description: The version of the note
+          examples:
+          - "1"
           readOnly: true
-          example: 1
         municipalityId:
           type: string
           description: The municipality ID
+          examples:
+          - "2281"
           readOnly: true
-          example: "2281"
         namespace:
           type: string
           description: Namespace
+          examples:
+          - MY_NAMESPACE
           readOnly: true
-          example: MY_NAMESPACE
         title:
-          maxLength: 255
-          minLength: 0
           type: string
           description: The title of the note
-          example: Motivering till bifall
-        text:
-          maxLength: 10000
+          examples:
+          - Motivering till bifall
+          maxLength: 255
           minLength: 0
+        text:
           type: string
           description: The content of the note
-          example: Den sökande har rätt till parkeringstillstånd eftersom alla kriterier
+          examples:
+          - Den sökande har rätt till parkeringstillstånd eftersom alla kriterier
             uppfylls.
-        createdBy:
-          maxLength: 36
+          maxLength: 10000
           minLength: 0
+        createdBy:
           type: string
           description: AD-account for the user who created the note
-          readOnly: true
-          example: user
-        updatedBy:
+          examples:
+          - user
           maxLength: 36
           minLength: 0
+          readOnly: true
+        updatedBy:
           type: string
           description: AD-account for the user who last modified the note
+          examples:
+          - user
+          maxLength: 36
+          minLength: 0
           readOnly: true
-          example: user
         noteType:
           $ref: "#/components/schemas/NoteType"
+          description: The type of note
+          examples:
+          - INTERNAL
         extraParameters:
           type: object
           additionalProperties:
             type: string
-            description: Additional parameters for the note
           description: Additional parameters for the note
         created:
           type: string
-          description: The timestamp when the note was created
           format: date-time
+          description: The timestamp when the note was created
+          examples:
+          - 2023-01-01T12:00:00Z
           readOnly: true
-          example: 2023-01-01T12:00:00Z
         updated:
           type: string
-          description: The timestamp when the note was last updated
           format: date-time
+          description: The timestamp when the note was last updated
+          examples:
+          - 2023-01-02T12:00:00Z
           readOnly: true
-          example: 2023-01-02T12:00:00Z
-      description: The notes connected to the errand
     NoteType:
       type: string
-      description: The type of note
-      example: INTERNAL
       enum:
       - INTERNAL
       - PUBLIC
     Notification:
-      required:
-      - description
-      - ownerId
-      - type
       type: object
       properties:
         id:
           type: string
           description: Unique identifier for the notification
+          examples:
+          - 123e4567-e89b-12d3-a456-426614174000
           readOnly: true
-          example: 123e4567-e89b-12d3-a456-426614174000
         municipalityId:
           type: string
           description: The municipality ID
+          examples:
+          - "2281"
           readOnly: true
-          example: "2281"
         namespace:
           type: string
           description: Namespace
+          examples:
+          - MY_NAMESPACE
           readOnly: true
-          example: MY_NAMESPACE
         created:
           type: string
-          description: Timestamp when the notification was created
           format: date-time
+          description: Timestamp when the notification was created
+          examples:
+          - 2000-10-31T01:30:00.000+02:00
           readOnly: true
-          example: 2000-10-31T01:30:00+02:00
         modified:
           type: string
-          description: Timestamp when the notification was last modified
           format: date-time
+          description: Timestamp when the notification was last modified
+          examples:
+          - 2000-10-31T01:30:00.000+02:00
           readOnly: true
-          example: 2000-10-31T01:30:00+02:00
         ownerFullName:
           type: string
           description: Name of the owner of the notification
+          examples:
+          - Test Testorsson
           readOnly: true
-          example: Test Testorsson
         ownerId:
           type: string
           description: Owner id of the notification
-          example: AD01
+          examples:
+          - AD01
+          minLength: 1
         createdBy:
           type: string
           description: User who created the notification
+          examples:
+          - TestUser
           readOnly: true
-          example: TestUser
         createdByFullName:
           type: string
           description: Full name of the user who created the notification
+          examples:
+          - Test Testorsson
           readOnly: true
-          example: Test Testorsson
         type:
           type: string
           description: Type of the notification
-          example: CREATE
+          examples:
+          - CREATE
+          minLength: 1
+        subType:
+          type: string
+          description: Sub type of the notification
+          examples:
+          - PHASE_CHANGE
+          readOnly: true
         description:
           type: string
           description: Description of the notification
-          example: Some description of the notification
+          examples:
+          - Some description of the notification
+          minLength: 1
         content:
           type: string
           description: Content of the notification
-          example: Some content of the notification
+          examples:
+          - Some content of the notification
         expires:
           type: string
-          description: Timestamp when the notification expires
           format: date-time
-          example: 2000-10-31T01:30:00+02:00
+          description: Timestamp when the notification expires
+          examples:
+          - 2000-10-31T01:30:00.000+02:00
         acknowledged:
           type: boolean
           description: Acknowledged status of the notification
-          example: true
         globalAcknowledged:
           type: boolean
           description: Acknowledged status of the notification (global level). I.e.
             this notification is acknowledged by anyone.
-          example: true
         errandId:
           type: integer
-          description: Errand id of the notification
           format: int64
+          description: Errand id of the notification
+          examples:
+          - "1234"
           readOnly: true
-          example: 1234
         errandNumber:
           type: string
           description: Errand number of the notification
+          examples:
+          - SGP-2022-000001
           readOnly: true
-          example: PRH-2022-000001
-      description: List of notifications connected to this errand
-      readOnly: true
-    RelatedErrand:
       required:
-      - errandNumber
+      - description
+      - ownerId
+      - type
+    RelatedErrand:
       type: object
+      description: Related errand for errand
       properties:
         errandId:
           type: integer
-          description: Errand id
           format: int64
-          example: 123
+          description: Errand id
+          examples:
+          - "123"
         errandNumber:
           type: string
           description: Errand number
-          example: PRH-2022-000001
+          examples:
+          - SGP-2022-000001
         relationReason:
           type: string
           description: Relation reason
-          example: Related because of appealed decision on errand
-      description: Related errand for errand
-    Status:
+          examples:
+          - Related because of appealed decision on errand
       required:
-      - statusType
+      - errandNumber
+    Status:
       type: object
       properties:
         statusType:
-          maxLength: 255
-          minLength: 0
           type: string
           description: The type of status
-          example: Ärende inkommit
-        description:
+          examples:
+          - Ärende inkommit
           maxLength: 255
           minLength: 0
+        description:
           type: string
           description: Description of the status
-          example: Ärende har kommit in från e-tjänsten.
+          examples:
+          - Ärende har kommit in från e-tjänsten.
+          maxLength: 255
+          minLength: 0
         created:
           type: string
-          description: The date and time when the status was created
           format: date-time
+          description: The date and time when the status was created
+          examples:
+          - 2023-01-01T12:00:00Z
           readOnly: true
-          example: 2023-01-01T12:00:00Z
-      description: The statuses connected to the errand
-      readOnly: true
+      required:
+      - statusType
     Suspension:
       type: object
       properties:
         suspendedTo:
           type: string
-          description: Timestamp when the suspension wears off
           format: date-time
-          example: 2000-10-31T01:30:00+02:00
+          description: Timestamp when the suspension wears off
+          examples:
+          - 2000-10-31T01:30:00.000+02:00
         suspendedFrom:
           type: string
-          description: Timestamp when the suspension started
           format: date-time
-          example: 2000-10-31T01:30:00+02:00
-      description: Suspension information
+          description: Timestamp when the suspension started
+          examples:
+          - 2000-10-31T01:30:00.000+02:00
     Classification:
       type: string
       description: Message classification
@@ -4523,117 +5762,141 @@ components:
       properties:
         header:
           $ref: "#/components/schemas/Header"
+          description: An email header
+          examples:
+          - MESSAGE_ID
         values:
           type: array
           description: The value of the email header
-          example:
-          - <this-is-a-test@domain.com>
+          examples:
+          - "[\"<this-is-a-test@domain.com>\"]"
           items:
             type: string
-            description: The value of the email header
-            example: "[\"<this-is-a-test@domain.com>\"]"
-      description: List of email headers on the message
     Header:
       type: string
-      description: An email header
-      example: MESSAGE_ID
       enum:
       - IN_REPLY_TO
       - REFERENCES
       - MESSAGE_ID
+      - AUTO_SUBMITTED
+      - RETURN_PATH
+      - CONTENT_TYPE
     MessageAttachment:
-      required:
-      - content
-      - name
       type: object
+      description: MessageResponse
       properties:
         content:
           type: string
           description: The attachment (file) content as a BASE64-encoded string
-          example: aGVsbG8gd29ybGQK
+          examples:
+          - aGVsbG8gd29ybGQK
+          minLength: 1
         name:
           type: string
           description: The attachment filename
-          example: test.txt
+          examples:
+          - test.txt
+          minLength: 1
         contentType:
           type: string
           description: The attachment content type
-          example: text/plain
-      description: MessageResponse
+          examples:
+          - text/plain
+      required:
+      - content
+      - name
     MessageRequest:
       type: object
       properties:
         messageId:
           type: string
           description: The message ID
-          example: "12"
+          examples:
+          - "12"
         direction:
           type: string
           description: If the message is inbound or outbound from the perspective
             of case-data/e-service.
-          example: INBOUND
           enum:
           - INBOUND
           - OUTBOUND
+          examples:
+          - INBOUND
         familyId:
           type: string
           description: The E-service ID that the message was created in
-          example: "12"
+          examples:
+          - "12"
         externalCaseId:
           type: string
           description: OpenE caseID
-          example: "12"
+          examples:
+          - "12"
         message:
           type: string
           description: The message
-          example: Hello world
+          examples:
+          - Hello world
+        htmlMessage:
+          type: string
+          description: The message in HTML format
+          examples:
+          - <p>Hello world</p>
         sent:
           type: string
           description: The time the message was sent
-          example: 2020-01-01 12:00:00
+          examples:
+          - 2020-01-01 12:00:00
         subject:
           type: string
           description: The email-subject of the message
-          example: Hello world
+          examples:
+          - Hello world
         username:
           type: string
           description: The username of the user that sent the message
-          example: username
+          examples:
+          - username
         firstName:
           type: string
           description: The first name of the user that sent the message
-          example: Kalle
+          examples:
+          - Kalle
         lastName:
           type: string
           description: The last name of the user that sent the message
-          example: Anka
+          examples:
+          - Anka
         messageType:
           type: string
           description: The message was delivered by
-          example: EMAIL
+          examples:
+          - EMAIL
         mobileNumber:
           type: string
           description: The mobile number of the recipient
-          example: "+46701740605"
+          examples:
+          - "+46701740605"
         email:
           type: string
           description: The email of the user that sent the message
-          example: kalle.anka@ankeborg.se
+          examples:
+          - kalle.anka@ankeborg.se
         recipients:
           type: array
           description: List of email recipients
-          example:
-          - kalle.anka@ankeborg.se
+          examples:
+          - "[\"kalle.anka@ankeborg.se\"]"
           items:
             type: string
-            description: List of email recipients
-            example: "[\"kalle.anka@ankeborg.se\"]"
         userId:
           type: string
           description: The user ID of the user that sent the message
-          example: "12"
+          examples:
+          - "12"
         classification:
           $ref: "#/components/schemas/Classification"
+          description: The classification of the message
         attachments:
           type: array
           description: List of attachments on the message
@@ -4644,132 +5907,293 @@ components:
           description: List of email headers on the message
           items:
             $ref: "#/components/schemas/EmailHeader"
-    PatchNotification:
+        internal:
+          type: boolean
+          description: Is message internal
+    Conversation:
+      type: object
+      description: Conversation model
+      properties:
+        id:
+          type: string
+          description: Conversation ID
+          examples:
+          - 1aefbbb8-de82-414b-b5d7-ba7c5bbe4506
+          readOnly: true
+        topic:
+          type: string
+          description: The message-exchange topic
+          examples:
+          - The conversation topic
+          minLength: 1
+        type:
+          $ref: "#/components/schemas/ConversationType"
+          description: The conversation type
+          examples:
+          - INTERNAL
+        relationIds:
+          type: array
+          items:
+            type: string
+            description: List with relation ID:s
+        participants:
+          type: array
+          items:
+            $ref: "#/components/schemas/Identifier"
+            description: A list of participants in this conversation
+        metadata:
+          type: array
+          items:
+            $ref: "#/components/schemas/KeyValues"
+            description: A list of metadata objects associated with the conversation
       required:
-      - errandId
+      - topic
+      - type
+    ConversationType:
+      type: string
+      description: ConversationType model
+      enum:
+      - INTERNAL
+      - EXTERNAL
+    Identifier:
+      type: object
+      description: Identifier model
+      properties:
+        type:
+          type: string
+          description: The conversation identifier type
+          examples:
+          - adAccount
+          pattern: ^(adAccount|partyId)$
+        value:
+          type: string
+          description: The conversation identifier value
+          examples:
+          - joe01doe
+          minLength: 1
+      required:
+      - value
+    KeyValues:
+      type: object
+      description: KeyValues model
+      properties:
+        key:
+          type: string
+          description: The key
+          examples:
+          - key1
+        values:
+          type: array
+          items:
+            type: string
+    ReadBy:
+      type: object
+      description: Readby model
+      properties:
+        identifier:
+          $ref: "#/components/schemas/Identifier"
+          description: The identifier of the person who read the message.
+          examples:
+          - joe01doe
+        readAt:
+          type: string
+          format: date-time
+          description: The timestamp when the message was read.
+          examples:
+          - 2023-01-01T12:00:00+01:00
+    ConversationAttachment:
+      type: object
+      description: ConversationAttachment model
+      properties:
+        id:
+          type: string
+          description: ConversationAttachment ID
+          examples:
+          - cb20c51f-fcf3-42c0-b613-de563634a8ec
+        fileName:
+          type: string
+          description: Name of the file
+          examples:
+          - my-file.txt
+        fileSize:
+          type: integer
+          format: int32
+          description: Size of the file in bytes
+          examples:
+          - "1024"
+        mimeType:
+          type: string
+          description: Mime type of the file
+        created:
+          type: string
+          format: date-time
+          description: The attachment created date
+          examples:
+          - 2023-01-01T00:00:00+01:00
+    Message:
+      type: object
+      description: Message model
+      properties:
+        id:
+          type: string
+          description: Message ID
+          examples:
+          - 1aefbbb8-de82-414b-b5d7-ba7c5bbe4506
+          readOnly: true
+        inReplyToMessageId:
+          type: string
+          description: The ID of the replied message
+          examples:
+          - 1aefbbb8-de82-414b-b5d7-ba7c5bbe4506
+        created:
+          type: string
+          format: date-time
+          description: The timestamp when the message was created.
+          examples:
+          - 2023-01-01T12:00:00
+          readOnly: true
+        createdBy:
+          $ref: "#/components/schemas/Identifier"
+          description: The participant who created the message.
+          readOnly: true
+        content:
+          type: string
+          description: The content of the message.
+          examples:
+          - "Hello, how can I help you?"
+          minLength: 1
+        readBy:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReadBy"
+            description: A list of users who have read the message.
+            readOnly: true
+        attachments:
+          type: array
+          items:
+            $ref: "#/components/schemas/ConversationAttachment"
+            description: A list of attachments associated with the message.
+            readOnly: true
+        attachmentIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+            description: List of attachment IDs referencing existing errand attachments
+              to include in the message.
+            examples:
+            - "123"
+        type:
+          type: string
+          description: Type of message (user or system created)
+          enum:
+          - USER_CREATED
+          - SYSTEM_CREATED
+          examples:
+          - USER_CREATED
+          readOnly: true
+      required:
+      - content
+    PatchNotification:
       type: object
       properties:
         id:
           type: string
           description: Unique identifier for the notification
-          example: 123e4567-e89b-12d3-a456-426614174000
+          examples:
+          - 123e4567-e89b-12d3-a456-426614174000
         errandId:
           type: integer
-          description: The Errand Id
           format: int64
-          example: 123
+          description: The Errand Id
+          examples:
+          - "123"
         ownerId:
           type: string
           description: Owner id of the notification
-          example: AD01
+          examples:
+          - AD01
         type:
           type: string
           description: Type of the notification
-          example: CREATE
+          examples:
+          - CREATE
         description:
           type: string
           description: Description of the notification
-          example: Some description of the notification
+          examples:
+          - Some description of the notification
         content:
           type: string
           description: Content of the notification
-          example: Some content of the notification
+          examples:
+          - Some content of the notification
         expires:
           type: string
-          description: Timestamp when the notification expires
           format: date-time
-          example: 2000-10-31T01:30:00+02:00
+          description: Timestamp when the notification expires
+          examples:
+          - 2000-10-31T01:30:00.000+02:00
         acknowledged:
           type: boolean
           description: Acknowledged status of the notification
-          example: true
         globalAcknowledged:
           type: boolean
           description: Acknowledged status of the notification (global level). I.e.
             this notification is acknowledged by anyone.
-          example: true
+      required:
+      - errandId
     PatchErrand:
       type: object
       properties:
         externalCaseId:
-          maxLength: 255
-          minLength: 0
           type: string
           description: Case ID from the client.
-          example: caa230c6-abb4-4592-ad9a-34e263c2787b
+          examples:
+          - caa230c6-abb4-4592-ad9a-34e263c2787b
+          maxLength: 255
+          minLength: 0
         caseType:
           type: string
           description: The type of case
-          example: PARKING_PERMIT
-          enum:
-          - PARKING_PERMIT
-          - PARKING_PERMIT_RENEWAL
-          - LOST_PARKING_PERMIT
-          - MEX_LEASE_REQUEST
-          - MEX_BUY_LAND_FROM_THE_MUNICIPALITY
-          - MEX_SELL_LAND_TO_THE_MUNICIPALITY
-          - MEX_SQUARE_PLACE
-          - MEX_BUY_SMALL_HOUSE_PLOT
-          - MEX_APPLICATION_FOR_ROAD_ALLOWANCE
-          - MEX_UNAUTHORIZED_RESIDENCE
-          - MEX_LAND_RIGHT
-          - MEX_EARLY_DIALOG_PLAN_NOTIFICATION
-          - MEX_PROTECTIVE_HUNTING
-          - MEX_LAND_INSTRUCTION
-          - MEX_OTHER
-          - MEX_LAND_SURVEYING_OFFICE
-          - MEX_REFERRAL_BUILDING_PERMIT_EARLY_DIALOGUE_PLANNING_NOTICE
-          - MEX_INVOICE
-          - MEX_REQUEST_FOR_PUBLIC_DOCUMENT
-          - MEX_TERMINATION_OF_LEASE
-          - MEX_HUNTING_LEASE
-          - MEX_FORWARDED_FROM_CONTACTSUNDSVALL
-          - MEX_BUILDING_PERMIT
-          - MEX_STORMWATER
-          - MEX_INVASIVE_SPECIES
-          - MEX_LAND_USE_AGREEMENT_VALUATION_PROTOCOL
-          - MEX_LITTERING
-          - MEX_REFERRAL_CONSULTATION
-          - MEX_PUBLIC_SPACE_LEASE
-          - MEX_EASEMENT
-          - MEX_TREES_FORESTS
-          - MEX_ROAD_ASSOCIATION
-          - MEX_RETURNED_TO_CONTACT_SUNDSVALL
-          - MEX_SMALL_BOAT_HARBOR_DOCK_PORT
-          - MEX_SELL_LAND_TO_THE_MUNICIPALITY_PRIVATE
-          - MEX_SELL_LAND_TO_THE_MUNICIPALITY_BUSINESS
-          - APPEAL
+          examples:
+          - NYBYGGNAD_ANSOKAN_OM_BYGGLOV
         priority:
           type: string
           description: The priority of the case
-          example: MEDIUM
           enum:
           - HIGH
           - MEDIUM
           - LOW
+          examples:
+          - MEDIUM
         description:
           type: string
           description: Description of the case
-          example: Some description of the case.
+          examples:
+          - Some description of the case.
         caseTitleAddition:
-          maxLength: 255
-          minLength: 0
           type: string
           description: "Additions to the case title. Right now only applicable to\
             \ cases of CaseType: NYBYGGNAD_ANSOKAN_OM_BYGGLOV."
-          example: "Eldstad/rökkanal, Skylt"
-        diaryNumber:
+          examples:
+          - "Eldstad/rökkanal, Skylt"
           maxLength: 255
           minLength: 0
+        diaryNumber:
           type: string
           description: Diary number of the case
-          example: D123456
-        phase:
+          examples:
+          - D123456
           maxLength: 255
           minLength: 0
+        phase:
           type: string
           description: Phase of the case
-          example: Aktualisering
+          examples:
+          - Aktualisering
+          maxLength: 255
+          minLength: 0
         facilities:
           type: array
           description: The facilities in the case
@@ -4777,26 +6201,35 @@ components:
             $ref: "#/components/schemas/Facility"
         startDate:
           type: string
-          description: Start date for the business.
           format: date
-          example: 2022-01-01
+          description: Start date for the business.
+          examples:
+          - 2022-01-01
         endDate:
           type: string
-          description: End date of the business if it is time-limited.
           format: date
-          example: 2022-06-01
+          description: End date of the business if it is time-limited.
+          examples:
+          - 2022-06-01
         suspension:
           $ref: "#/components/schemas/Suspension"
+          description: Suspension information
         applicationReceived:
           type: string
-          description: The time the application was received.
           format: date-time
-          example: 2022-01-01T12:00:00Z
+          description: The time the application was received.
+          examples:
+          - 2022-01-01T12:00:00Z
         extraParameters:
           type: array
           description: Extra parameters for the errand
           items:
             $ref: "#/components/schemas/ExtraParameter"
+        jsonParameters:
+          type: array
+          description: JSON parameters for the errand
+          items:
+            $ref: "#/components/schemas/JsonParameter"
         relatesTo:
           type: array
           description: Other errands related to the errand
@@ -4805,66 +6238,67 @@ components:
         labels:
           type: array
           description: List of labels for the errand
-          example:
-          - label1
-          - label2
+          examples:
+          - "[\"label1\",\"label2\"]"
           items:
             type: string
-            description: List of labels for the errand
-            example: "[\"label1\",\"label2\"]"
         status:
           $ref: "#/components/schemas/Status"
+          description: The current status of the errand
     PatchDecision:
       type: object
       properties:
         decisionType:
           type: string
           description: The type of decision
-          example: APPROVAL
           enum:
           - RECOMMENDED
           - PROPOSED
           - FINAL
+          examples:
+          - APPROVAL
         decisionOutcome:
           type: string
           description: The outcome of the decision
-          example: GRANTED
           enum:
           - APPROVAL
           - REJECTION
           - DISMISSAL
           - CANCELLATION
+          examples:
+          - GRANTED
         description:
-          maxLength: 1000
-          minLength: 0
           type: string
           description: Description of the decision
-          example: The application has been approved.
+          examples:
+          - The application has been approved.
+          maxLength: 1000
+          minLength: 0
         decidedAt:
           type: string
-          description: The date and time when the decision was made
           format: date-time
-          example: 2023-10-01T12:00:00Z
+          description: The date and time when the decision was made
+          examples:
+          - 2023-10-01T12:00:00Z
         validFrom:
           type: string
-          description: The date and time when the decision becomes valid
           format: date-time
-          example: 2023-10-01T12:00:00Z
+          description: The date and time when the decision becomes valid
+          examples:
+          - 2023-10-01T12:00:00Z
         validTo:
           type: string
-          description: The date and time when the decision expires
           format: date-time
-          example: 2023-12-31T12:00:00Z
+          description: The date and time when the decision expires
+          examples:
+          - 2023-12-31T12:00:00Z
         extraParameters:
           type: object
           additionalProperties:
             type: string
-            description: Additional parameters for the decision
-            example: "{\"key1\":\"value1\",\"key2\":\"value2\"}"
           description: Additional parameters for the decision
-          example:
-            key1: value1
-            key2: value2
+          examples:
+          - "{\"key1\":\"value1\",\"key2\":\"value2\"}"
     PageErrand:
       type: object
       properties:
@@ -4905,14 +6339,14 @@ components:
           format: int64
         sort:
           $ref: "#/components/schemas/SortObject"
-        paged:
-          type: boolean
         pageNumber:
           type: integer
           format: int32
         pageSize:
           type: integer
           format: int32
+        paged:
+          type: boolean
         unpaged:
           type: boolean
     SortObject:
@@ -4936,8 +6370,7 @@ components:
           format: double
         properties:
           type: array
-          items:
-            type: object
+          items: {}
         commitDate:
           type: string
     ElementChangesItem:
@@ -4948,8 +6381,7 @@ components:
         index:
           type: integer
           format: int32
-        value:
-          type: object
+        value: {}
     EntryChangesItem:
       type: object
       properties:
@@ -4990,10 +6422,8 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/EntryChangesItem"
-        left:
-          type: object
-        right:
-          type: object
+        left: {}
+        right: {}
         elementChanges:
           type: array
           items:
@@ -5007,115 +6437,137 @@ components:
         entity:
           type: string
     AttachmentResponse:
-      required:
-      - attachmentId
-      - name
       type: object
       properties:
         attachmentId:
           type: string
           description: The attachment ID
-          example: aGVsbG8gd29ybGQK
+          examples:
+          - aGVsbG8gd29ybGQK
         name:
           type: string
           description: The attachment filename
-          example: test.txt
+          examples:
+          - test.txt
         contentType:
           type: string
           description: The attachment content type
-          example: text/plain
-      description: List of attachments on the message
+          examples:
+          - text/plain
+      required:
+      - attachmentId
+      - name
     MessageResponse:
       type: object
       properties:
         messageId:
           type: string
           description: The message ID
-          example: "12"
+          examples:
+          - "12"
         errandId:
           type: integer
-          description: The errand ID
           format: int64
-          example: 123
+          description: The errand ID
+          examples:
+          - "123"
         municipalityId:
           type: string
           description: The municipality ID
-          example: "2281"
+          examples:
+          - "2281"
         namespace:
           type: string
           description: Namespace
-          example: MY_NAMESPACE
+          examples:
+          - MY_NAMESPACE
         direction:
           type: string
           description: If the message is inbound or outbound from the perspective
             of case-data/e-service.
-          example: INBOUND
           enum:
           - INBOUND
           - OUTBOUND
+          examples:
+          - INBOUND
         familyId:
           type: string
           description: The E-service ID that the message was created in
-          example: "12"
+          examples:
+          - "12"
         externalCaseId:
           type: string
           description: OpenE caseID
-          example: "12"
+          examples:
+          - "12"
         message:
           type: string
           description: The message
-          example: Hello world
+          examples:
+          - Hello world
+        htmlMessage:
+          type: string
+          description: The message in HTML format
+          examples:
+          - <p>Hello world</p>
         sent:
           type: string
           description: The time the message was sent
-          example: 2020-01-01 12:00:00
+          examples:
+          - 2020-01-01 12:00:00
         subject:
           type: string
           description: The email-subject of the message
-          example: Hello world
+          examples:
+          - Hello world
         username:
           type: string
           description: The username of the user that sent the message
-          example: username
+          examples:
+          - username
         firstName:
           type: string
           description: The first name of the user that sent the message
-          example: Kalle
+          examples:
+          - Kalle
         lastName:
           type: string
           description: The last name of the user that sent the message
-          example: Anka
+          examples:
+          - Anka
         messageType:
           type: string
           description: The message was delivered by
-          example: EMAIL
+          examples:
+          - EMAIL
         mobileNumber:
           type: string
           description: The mobile number of the recipient
-          example: "+46701740605"
+          examples:
+          - "+46701740605"
         recipients:
           type: array
           description: "The recipients of the message, if email"
-          example:
-          - kalle.anka@ankeborg.se
+          examples:
+          - "[\"kalle.anka@ankeborg.se\"]"
           items:
             type: string
-            description: "The recipients of the message, if email"
-            example: "[\"kalle.anka@ankeborg.se\"]"
         email:
           type: string
           description: The email of the user that sent the message
-          example: kalle.anka@ankeborg.se
+          examples:
+          - kalle.anka@ankeborg.se
         userId:
           type: string
           description: The user ID of the user that sent the message
-          example: "12"
+          examples:
+          - "12"
         viewed:
           type: boolean
           description: Signal if the message has been viewed or not
-          example: true
         classification:
           $ref: "#/components/schemas/Classification"
+          description: The classification of the message
         attachments:
           type: array
           description: List of attachments on the message
@@ -5126,19 +6578,71 @@ components:
           description: List of email headers on the message
           items:
             $ref: "#/components/schemas/EmailHeader"
-    CaseType:
+        internal:
+          type: boolean
+          description: Is message internal
+    PageMessage:
       type: object
       properties:
-        type:
-          type: string
-          description: The case type
-          example: PARATRANSIT
-        displayName:
-          type: string
-          description: The display name of the case type
-          example: Färdtjänst
-        startProcess:
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: int32
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/Message"
+        number:
+          type: integer
+          format: int32
+        sort:
+          $ref: "#/components/schemas/SortObject"
+        first:
           type: boolean
-          description: Whether errands of this case type should start/update a process
-          example: true
+        last:
+          type: boolean
+        numberOfElements:
+          type: integer
+          format: int32
+        pageable:
+          $ref: "#/components/schemas/PageableObject"
+        empty:
+          type: boolean
+    PageDecision:
+      type: object
+      properties:
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: int32
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/Decision"
+        number:
+          type: integer
+          format: int32
+        sort:
+          $ref: "#/components/schemas/SortObject"
+        first:
+          type: boolean
+        last:
+          type: boolean
+        numberOfElements:
+          type: integer
+          format: int32
+        pageable:
+          $ref: "#/components/schemas/PageableObject"
+        empty:
+          type: boolean
   securitySchemes: {}

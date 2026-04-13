@@ -138,7 +138,7 @@ public final class CaseDataMapper {
 
 	public static PatchErrand toPatchErrand(final OtherCaseDTO otherCaseDTO) {
 		final var errand = new PatchErrand()
-			.caseType(PatchErrand.CaseTypeEnum.fromValue(otherCaseDTO.getCaseType()))
+			.caseType(otherCaseDTO.getCaseType())
 			.externalCaseId(otherCaseDTO.getExternalCaseId())
 			.description(otherCaseDTO.getDescription())
 			.caseTitleAddition(otherCaseDTO.getCaseTitleAddition())
