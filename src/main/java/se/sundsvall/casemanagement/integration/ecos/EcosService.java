@@ -84,6 +84,7 @@ import se.sundsvall.casemanagement.api.model.EcosCaseDTO;
 import se.sundsvall.casemanagement.api.model.FacilityDTO;
 import se.sundsvall.casemanagement.api.model.OrganizationDTO;
 import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
+import se.sundsvall.casemanagement.configuration.AsyncConfig;
 import se.sundsvall.casemanagement.integration.db.CaseTypeRepository;
 import se.sundsvall.casemanagement.integration.db.EcosCaseTypeConfigRepository;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
@@ -857,7 +858,7 @@ public class EcosService {
 		throw Problem.valueOf(NOT_FOUND, ERR_MSG_STATUS_NOT_FOUND);
 	}
 
-	@Async
+	@Async(AsyncConfig.MDC_EXECUTOR)
 	public CompletableFuture<List<CaseStatusDTO>> getEcosStatusByLegalId(final String legalId, final PartyType partyType, final String municipalityId) {
 		final List<CaseStatusDTO> caseStatusDTOList = new ArrayList<>();
 

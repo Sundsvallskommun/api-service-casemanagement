@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import se.sundsvall.casemanagement.api.model.AttachmentDTO;
 import se.sundsvall.casemanagement.api.model.CaseStatusDTO;
 import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
+import se.sundsvall.casemanagement.configuration.AsyncConfig;
 import se.sundsvall.casemanagement.integration.casedata.configuration.CaseDataProperties;
 import se.sundsvall.casemanagement.integration.db.model.CaseMapping;
 import se.sundsvall.casemanagement.service.CaseMappingService;
@@ -214,7 +215,7 @@ public class CaseDataService {
 		return page.getContent();
 	}
 
-	@Async
+	@Async(AsyncConfig.MDC_EXECUTOR)
 	public CompletableFuture<List<CaseStatusDTO>> getStatusesByFilter(final String filter, final String municipalityId) {
 		final List<CaseStatusDTO> caseStatuses = new ArrayList<>();
 		final var namespaces = Optional.ofNullable(caseDataProperties.namespaces())
