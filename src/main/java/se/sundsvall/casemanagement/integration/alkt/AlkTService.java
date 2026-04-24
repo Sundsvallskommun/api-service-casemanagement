@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import se.sundsvall.casemanagement.api.model.CaseStatusDTO;
+import se.sundsvall.casemanagement.configuration.AsyncConfig;
 
 import static java.lang.Boolean.TRUE;
 import static se.sundsvall.casemanagement.api.model.enums.SystemType.ALKT;
@@ -28,7 +29,7 @@ public class AlkTService {
 		this.alkTClient = alkTClient;
 	}
 
-	@Async
+	@Async(AsyncConfig.MDC_EXECUTOR)
 	public CompletableFuture<List<CaseStatusDTO>> getStatusesByPartyId(final String partyId, final String municipalityId) {
 		final var owners = getOwnersByPartyId(partyId, municipalityId);
 		final var modelCases = owners.stream()

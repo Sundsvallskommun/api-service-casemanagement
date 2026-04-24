@@ -38,6 +38,7 @@ import se.sundsvall.casemanagement.api.model.PersonDTO;
 import se.sundsvall.casemanagement.api.model.StakeholderDTO;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderRole;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
+import se.sundsvall.casemanagement.configuration.AsyncConfig;
 import se.sundsvall.casemanagement.integration.db.ByggrCaseTypeConfigRepository;
 import se.sundsvall.casemanagement.integration.db.CaseRepository;
 import se.sundsvall.casemanagement.integration.db.CaseTypeRepository;
@@ -204,7 +205,7 @@ public class ByggrService {
 		return ByggrMapper.toByggrStatus(arende, externalCaseId, caseMappingList, byggrSystemConfigProvider);
 	}
 
-	@Async
+	@Async(AsyncConfig.MDC_EXECUTOR)
 	public CompletableFuture<List<CaseStatusDTO>> getByggrStatusByLegalId(final String legalId, final PartyType partyType, final String municipalityId) {
 		final var getRelateradeArendenByPersOrgNrAndRoleInput = new GetRelateradeArendenByPersOrgNrAndRole()
 			.withPersOrgNr(legalId)
