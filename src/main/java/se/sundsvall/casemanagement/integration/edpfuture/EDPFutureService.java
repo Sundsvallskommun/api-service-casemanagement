@@ -62,27 +62,44 @@ public class EDPFutureService {
 		var request = createGetAuthorizedUsersRequest(identityNumber);
 		var response = edpFutureClient.getAuthorizedUsers(request);
 
-		return getCustomerId(response);
+		return getCustomerIdTemporary(response);
 	}
 
 	/**
-	 * Extracts the customerId from the GetAuthorizedUsersResponse. It looks for an authorized user that has an approved
-	 * eService of type "Order" and returns the associated customerId.
-	 *
-	 * @param  response GetAuthorizedUsersResponse containing the list of authorized users and their approved eServices.
-	 * @return          customerId for given identity number that has an approved eService of type "Order".
+	 * TEMPORARY: Returns the customerId of the first authorized user without filtering on approved eService type "Order".
+	 * EDP Future is not currently returning "Order" in the eService list even though it should be present. Restore the
+	 * commented-out {@code getCustomerId(GetAuthorizedUsersResponse)} below once the upstream issue has been resolved.
 	 */
-	private int getCustomerId(final GetAuthorizedUsersResponse response) {
+	private int getCustomerIdTemporary(final GetAuthorizedUsersResponse response) {
 		var users = response.getGetAuthorizedUsersResult().getResultValue().getAuthorizedUser();
 		var user = users.stream()
-			.filter(authorizedUser -> authorizedUser.getApprovedEservices().getEServiceType().stream()
-				.anyMatch(service -> "Order".equals(service.value())))
 			.findFirst()
 			.orElseThrow(() -> Problem.valueOf(BAD_GATEWAY,
-				"Failed to retrieve customerId from EDP Future. No approved eService of type 'Order' found for the given identity number."));
+				"Failed to retrieve customerId from EDP Future. No authorized users found."));
 
 		return user.getCustomerId();
 	}
+
+	// TODO: Re-enable this method (and remove getCustomerIdTemporary) once EDP Future returns "Order" in the eService list.
+	// /**
+	// * Extracts the customerId from the GetAuthorizedUsersResponse. It looks for an authorized user that has an approved
+	// * eService of type "Order" and returns the associated customerId.
+	// *
+	// * @param response GetAuthorizedUsersResponse containing the list of authorized users and their approved eServices.
+	// * @return customerId for given identity number that has an approved eService of type "Order".
+	// */
+	// private int getCustomerId(final GetAuthorizedUsersResponse response) {
+	// var users = response.getGetAuthorizedUsersResult().getResultValue().getAuthorizedUser();
+	// var user = users.stream()
+	// .filter(authorizedUser -> authorizedUser.getApprovedEservices().getEServiceType().stream()
+	// .anyMatch(service -> "Order".equals(service.value())))
+	// .findFirst()
+	// .orElseThrow(() -> Problem.valueOf(BAD_GATEWAY,
+	// "Failed to retrieve customerId from EDP Future. No approved eService of type 'Order' found for the given identity
+	// number."));
+	//
+	// return user.getCustomerId();
+	// }
 
 	private GetAuthorizedUsers createGetAuthorizedUsersRequest(final String identityNumber) {
 		var request = new GetAuthorizedUsers();

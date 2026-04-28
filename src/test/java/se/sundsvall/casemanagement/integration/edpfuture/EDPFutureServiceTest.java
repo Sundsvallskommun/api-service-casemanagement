@@ -132,18 +132,34 @@ class EDPFutureServiceTest {
 	}
 
 	@Test
-	void getCustomerIdNoOrderEService() {
+	void getCustomerIdNoAuthorizedUsers() {
 		when(edpFutureClientMock.getAuthorizedUsers(any()))
-			.thenReturn(createGetAuthorizedUsersResponse(EServiceType.MY_SERVICES));
+			.thenReturn(createEmptyGetAuthorizedUsersResponse());
 
 		assertThatThrownBy(() -> edpFutureService.getCustomerId(IDENTITY_NUMBER))
 			.isInstanceOf(Problem.class)
 			.hasMessageContaining(BAD_GATEWAY.getReasonPhrase())
-			.hasMessageContaining("No approved eService of type 'Order' found");
+			.hasMessageContaining("No authorized users found");
 
 		verify(edpFutureClientMock).getAuthorizedUsers(any());
 		verifyNoMoreInteractions(edpFutureClientMock);
 	}
+
+	// TODO: Re-enable this test (and remove getCustomerIdNoAuthorizedUsers) once EDP Future returns "Order" in the eService
+	// list.
+	// @Test
+	// void getCustomerIdNoOrderEService() {
+	// when(edpFutureClientMock.getAuthorizedUsers(any()))
+	// .thenReturn(createGetAuthorizedUsersResponse(EServiceType.MY_SERVICES));
+	//
+	// assertThatThrownBy(() -> edpFutureService.getCustomerId(IDENTITY_NUMBER))
+	// .isInstanceOf(Problem.class)
+	// .hasMessageContaining(BAD_GATEWAY.getReasonPhrase())
+	// .hasMessageContaining("No approved eService of type 'Order' found");
+	//
+	// verify(edpFutureClientMock).getAuthorizedUsers(any());
+	// verifyNoMoreInteractions(edpFutureClientMock);
+	// }
 
 	@Test
 	void getBuildingId() {
@@ -294,6 +310,13 @@ class EDPFutureServiceTest {
 			.withGetAuthorizedUsersResult(
 				new OperationResultOfArrayOfAuthorizedUserFbShh6Ke()
 					.withResultValue(new ArrayOfAuthorizedUser().withAuthorizedUser(user)));
+	}
+
+	private GetAuthorizedUsersResponse createEmptyGetAuthorizedUsersResponse() {
+		return new GetAuthorizedUsersResponse()
+			.withGetAuthorizedUsersResult(
+				new OperationResultOfArrayOfAuthorizedUserFbShh6Ke()
+					.withResultValue(new ArrayOfAuthorizedUser()));
 	}
 
 	private GetBuildingsByAutorizationRoleV12Response createGetBuildingsResponse(final String address) {
