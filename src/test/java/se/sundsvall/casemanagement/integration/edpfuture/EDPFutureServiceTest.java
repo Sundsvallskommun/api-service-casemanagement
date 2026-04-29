@@ -53,7 +53,7 @@ class EDPFutureServiceTest {
 	private static final String ADDRESS = "Testgatan 1";
 	private static final String BUILDING_ID = "BLD-123";
 	private static final String WASTE_TYPE = "Restavfall";
-	private static final String ORDER_TYPE_TEXT = "Extra säck";
+	private static final String ORDER_TYPE_TEXT = "Trädgårdssäck, hämtning";
 	private static final String QUANTITY = "1";
 	private static final int CUSTOMER_ID = 42;
 	private static final int SERVICE_ID = 99;

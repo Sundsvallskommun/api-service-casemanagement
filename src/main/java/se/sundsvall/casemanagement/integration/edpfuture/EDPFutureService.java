@@ -68,7 +68,8 @@ public class EDPFutureService {
 	/**
 	 * TEMPORARY: Returns the customerId of the first authorized user without filtering on approved eService type "Order".
 	 * EDP Future is not currently returning "Order" in the eService list even though it should be present. Restore the
-	 * commented-out {@code getCustomerId(GetAuthorizedUsersResponse)} below once the upstream issue has been resolved.
+	 * commented-out
+	 * {@code getCustomerId(GetAuthorizedUsersResponse)} below once the upstream issue has been resolved.
 	 */
 	private int getCustomerIdTemporary(final GetAuthorizedUsersResponse response) {
 		var users = response.getGetAuthorizedUsersResult().getResultValue().getAuthorizedUser();
@@ -206,22 +207,22 @@ public class EDPFutureService {
 	}
 
 	/**
-	 * Extracts the order type with the name "Extra säck" from the GetRenhOrderTypesForServiceV17Response. It looks for an
-	 * order type that matches the given serviceId and has the name "Extra säck", and returns it. If no such order type is
-	 * found, it throws
-	 * an exception.
+	 * Extracts the order type with the name "Trädgårdssäck, hämtning" from the GetRenhOrderTypesForServiceV17Response. It
+	 * looks for an order type that matches the given serviceId and has the name "Trädgårdssäck, hämtning", and returns it.
+	 * If no such order
+	 * type is found, it throws an exception.
 	 *
 	 * @param  response GetRenhOrderTypesForServiceV17Response containing the list of order types associated with the
 	 *                  serviceId.
-	 * @return          the order type with the name "Extra säck" for the given serviceId.
+	 * @return          the order type with the name "Trädgårdssäck, hämtning" for the given serviceId.
 	 */
 	private OrderTypeV14 getOrderType(final GetRenhOrderTypesForServiceV17Response response, final String quantity) {
 		var orderType = response.getGetRenhOrderTypesForServiceV17Result().getResultValue().getOrderTypeV17().stream()
-			.filter(service -> "Extra säck".equals(service.getText()))
+			.filter(service -> "Trädgårdssäck, hämtning".equals(service.getText()))
 			.findFirst()
 			.orElseThrow(() -> Problem.valueOf(BAD_GATEWAY, "Failed to retrieve order type from EDP Future. No order type found with the given name."));
 
-		// Sets the number of "Extra säck" to order.
+		// Sets the number of "Trädgårdssäck, hämtning" to order.
 		orderType.getOrderRows().getOrderRowV14().stream()
 			.findFirst()
 			.ifPresentOrElse(row -> row.setQuantity(Integer.parseInt(quantity)), () -> {
