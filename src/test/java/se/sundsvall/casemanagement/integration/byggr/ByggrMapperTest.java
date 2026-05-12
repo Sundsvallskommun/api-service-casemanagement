@@ -843,7 +843,7 @@ class ByggrMapperTest {
 
 	@ParameterizedTest
 	@ValueSource(strings = {
-		"GRASV", "UNDERE", "KOMFAST", "KOMFASVA", "BIL"
+		"GRASV", "UNDERE", "UNDER", "UNDERER", "BIL"
 	})
 	void createNeighborhoodNotificationArrayOfHandling(final String category) {
 		// Arrange
