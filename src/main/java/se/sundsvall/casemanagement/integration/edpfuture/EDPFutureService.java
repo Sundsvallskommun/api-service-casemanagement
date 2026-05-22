@@ -14,29 +14,64 @@ import edpfuture.GetServicesByBuildingIdForOrderResponse;
 import edpfuture.OrderTypeV14;
 import edpfuture.RHService;
 import edpfuture.SubmitOrderTypeApplicationV14;
+import generated.client.party.PartyType;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import se.sundsvall.casemanagement.api.model.FutureCaseDTO;
+import se.sundsvall.casemanagement.api.model.PersonDTO;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
+import se.sundsvall.casemanagement.integration.party.PartyIntegration;
 import se.sundsvall.casemanagement.service.CaseMappingService;
 import se.sundsvall.dept44.problem.Problem;
 
 import static org.springframework.http.HttpStatus.BAD_GATEWAY;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @Service
 public class EDPFutureService {
 
 	private final EDPFutureClient edpFutureClient;
 	private final CaseMappingService caseMappingService;
+	private final PartyIntegration partyIntegration;
 
-	public EDPFutureService(final EDPFutureClient edpFutureClient, final CaseMappingService caseMappingService) {
+	public EDPFutureService(final EDPFutureClient edpFutureClient, final CaseMappingService caseMappingService, final PartyIntegration partyIntegration) {
 		this.edpFutureClient = edpFutureClient;
 		this.caseMappingService = caseMappingService;
+		this.partyIntegration = partyIntegration;
 	}
 
 	public void handleOrder(final FutureCaseDTO futureCaseDTO, final String municipalityId) {
-		var identityNumber = futureCaseDTO.getExtraParameters().get("IdentityNumber");
-		var address = futureCaseDTO.getExtraParameters().get("Address");
-		var quantity = futureCaseDTO.getExtraParameters().get("Quantity");
+		final var personId = futureCaseDTO.getStakeholders().stream()
+			.filter(PersonDTO.class::isInstance)
+			.map(PersonDTO.class::cast)
+			.map(PersonDTO::getPersonId)
+			.filter(id -> id != null && !id.isBlank())
+			.findFirst()
+			.orElseThrow(() -> Problem.valueOf(BAD_REQUEST,
+				"FutureCase requires at least one PERSON stakeholder with personId."));
+
+		final var identityNumber = Optional.ofNullable(
+			partyIntegration.getLegalIdByPartyId(municipalityId, personId).get(PartyType.PRIVATE))
+			.orElseThrow(() -> Problem.valueOf(BAD_REQUEST,
+				"Could not resolve PRIVATE legalId for partyId: " + personId));
+
+		final var facility = futureCaseDTO.getFacilities().getFirst();
+		final var addressDto = Optional.ofNullable(facility.getAddress())
+			.orElseThrow(() -> Problem.valueOf(BAD_REQUEST,
+				"FutureCase facility must contain an address."));
+		final var street = Optional.ofNullable(addressDto.getStreet()).orElse("").trim();
+		final var houseNumber = Optional.ofNullable(addressDto.getHouseNumber()).orElse("").trim();
+		if (street.isBlank() && houseNumber.isBlank()) {
+			throw Problem.valueOf(BAD_REQUEST,
+				"FutureCase facility address must contain street and/or houseNumber.");
+		}
+		final var address = (street + " " + houseNumber).trim();
+
+		final var quantity = Optional.ofNullable(futureCaseDTO.getExtraParameters())
+			.map(p -> p.get("Quantity"))
+			.filter(q -> !q.isBlank())
+			.orElseThrow(() -> Problem.valueOf(BAD_REQUEST,
+				"FutureCase extraParameters must contain non-blank 'Quantity'."));
 
 		sendOrder(identityNumber, address, quantity);
 		caseMappingService.postCaseMapping(futureCaseDTO, futureCaseDTO.getExternalCaseId(), SystemType.EDPFUTURE, municipalityId);

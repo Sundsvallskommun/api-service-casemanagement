@@ -2,6 +2,9 @@ package se.sundsvall.casemanagement.api.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
@@ -20,6 +23,12 @@ import lombok.experimental.SuperBuilder;
 public class FutureCaseDTO extends CaseDTO implements Serializable {
 
 	private static final long serialVersionUID = 4270693784029868560L;
+
+	@NotEmpty
+	@Size(min = 1, max = 1, message = "size must be 1")
+	@Valid
+	@Schema(description = "The facilities in the case")
+	private List<@Valid FacilityDTO> facilities;
 
 	@Override
 	@JsonIgnore

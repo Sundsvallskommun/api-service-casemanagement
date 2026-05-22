@@ -4,8 +4,7 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;
 import java.text.MessageFormat;
-import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import org.springframework.stereotype.Component;
 import se.sundsvall.casemanagement.api.model.ByggRCaseDTO;
@@ -139,19 +138,13 @@ public class Validator {
 	}
 
 	public void validateFutureErrand(final FutureCaseDTO futureCase) {
-		if (anyBlank(futureCase.getExtraParameters(), List.of("IdentityNumber", "Address", "Quantity"))) {
+		final var quantity = Optional.ofNullable(futureCase.getExtraParameters())
+			.map(p -> p.get("Quantity"))
+			.orElse(null);
+		if (quantity == null || quantity.isBlank()) {
 			throw Problem.valueOf(BAD_REQUEST,
-				"extraParameters must contain non-blank values for keys: IdentityNumber, Address, Quantity");
+				"extraParameters must contain a non-blank value for key: Quantity");
 		}
-	}
-
-	private boolean anyBlank(final Map<String, String> parameters, final List<String> keys) {
-		if (parameters == null) {
-			return true;
-		}
-		return keys.stream()
-			.map(parameters::get)
-			.anyMatch(value -> value == null || value.isBlank());
 	}
 
 	public void validateEcosErrand(final EcosCaseDTO eCase) {

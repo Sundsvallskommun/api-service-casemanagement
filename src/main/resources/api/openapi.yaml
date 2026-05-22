@@ -852,6 +852,13 @@ components:
           oneOf:
           - $ref: "#/components/schemas/PersonDTO"
           - $ref: "#/components/schemas/OrganizationDTO"
+        facilities:
+          type: array
+          description: The facilities in the case
+          items:
+            $ref: "#/components/schemas/FacilityDTO"
+          maxItems: 1
+          minItems: 1
         extraParameters:
           type: object
           additionalProperties:
@@ -860,6 +867,7 @@ components:
       required:
       - caseType
       - externalCaseId
+      - facilities
       - stakeholders
     OrganizationDTO:
       allOf:
