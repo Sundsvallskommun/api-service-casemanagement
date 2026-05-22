@@ -23,4 +23,14 @@ class FutureCaseDTOTest {
 		assertThat(dto.getAttachments()).isEmpty();
 	}
 
+	@Test
+	void getAndSetFacilities() {
+		final var facility = FacilityDTO.builder().build();
+		final var dto = FutureCaseDTO.builder()
+			.withFacilities(List.of(facility))
+			.build();
+
+		assertThat(dto.getFacilities()).containsExactly(facility);
+	}
+
 }

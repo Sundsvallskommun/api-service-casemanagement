@@ -29,6 +29,10 @@ import edpfuture.OrderTypeV14;
 import edpfuture.OrderTypeV17;
 import edpfuture.RHService;
 import edpfuture.SubmitOrderTypeApplicationV14;
+import generated.client.party.PartyType;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -36,20 +40,35 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import se.sundsvall.casemanagement.api.model.AddressDTO;
+import se.sundsvall.casemanagement.api.model.FacilityDTO;
+import se.sundsvall.casemanagement.api.model.FutureCaseDTO;
+import se.sundsvall.casemanagement.api.model.OrganizationDTO;
+import se.sundsvall.casemanagement.api.model.PersonDTO;
+import se.sundsvall.casemanagement.api.model.enums.SystemType;
+import se.sundsvall.casemanagement.integration.party.PartyIntegration;
+import se.sundsvall.casemanagement.service.CaseMappingService;
 import se.sundsvall.dept44.problem.Problem;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.BAD_GATEWAY;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @ExtendWith(MockitoExtension.class)
 class EDPFutureServiceTest {
 
+	private static final String MUNICIPALITY_ID = "2281";
+	private static final String EXTERNAL_CASE_ID = "ext-1";
+	private static final String PARTY_ID = "3ed5bc30-6308-4fd5-a5a7-78d7f96f4438";
 	private static final String IDENTITY_NUMBER = "202601052380";
+	private static final String STREET = "Testgatan";
+	private static final String HOUSE_NUMBER = "1";
 	private static final String ADDRESS = "Testgatan 1";
 	private static final String BUILDING_ID = "BLD-123";
 	private static final String WASTE_TYPE = "Restavfall";
@@ -60,6 +79,12 @@ class EDPFutureServiceTest {
 
 	@Mock
 	private EDPFutureClient edpFutureClientMock;
+
+	@Mock
+	private CaseMappingService caseMappingServiceMock;
+
+	@Mock
+	private PartyIntegration partyIntegrationMock;
 
 	@InjectMocks
 	private EDPFutureService edpFutureService;
@@ -78,6 +103,152 @@ class EDPFutureServiceTest {
 
 	@Captor
 	private ArgumentCaptor<SubmitOrderTypeApplicationV14> submitOrderCaptor;
+
+	@Test
+	void handleOrderHappyPath() {
+		final var dto = createFutureCaseDTO(PARTY_ID, STREET, HOUSE_NUMBER, QUANTITY);
+		when(partyIntegrationMock.getLegalIdByPartyId(MUNICIPALITY_ID, PARTY_ID))
+			.thenReturn(Map.of(PartyType.PRIVATE, IDENTITY_NUMBER));
+		when(edpFutureClientMock.getAuthorizedUsers(any()))
+			.thenReturn(createGetAuthorizedUsersResponse(EServiceType.ORDER));
+		when(edpFutureClientMock.getBuildingsByAutorizationRoleV1_2(any()))
+			.thenReturn(createGetBuildingsResponse(ADDRESS));
+		when(edpFutureClientMock.getServicesByBuildingIdForOrder(any()))
+			.thenReturn(createGetServicesResponse(WASTE_TYPE));
+		when(edpFutureClientMock.getRenhOrderTypesForServiceV1_7(any()))
+			.thenReturn(createGetOrderTypesResponse(ORDER_TYPE_TEXT, true));
+
+		edpFutureService.handleOrder(dto, MUNICIPALITY_ID);
+
+		verify(partyIntegrationMock).getLegalIdByPartyId(MUNICIPALITY_ID, PARTY_ID);
+		verify(edpFutureClientMock).getAuthorizedUsers(getAuthorizedUsersCaptor.capture());
+		assertThat(getAuthorizedUsersCaptor.getValue().getIdentityNumber()).isEqualTo(IDENTITY_NUMBER);
+		verify(edpFutureClientMock).getBuildingsByAutorizationRoleV1_2(getBuildingsCaptor.capture());
+		assertThat(getBuildingsCaptor.getValue().getIdentitynumber()).isEqualTo(IDENTITY_NUMBER);
+		verify(edpFutureClientMock).submitOrderTypeApplicationV1_4(any());
+		verify(caseMappingServiceMock).postCaseMapping(dto, EXTERNAL_CASE_ID, SystemType.EDPFUTURE, MUNICIPALITY_ID);
+	}
+
+	@Test
+	void handleOrderPicksFirstPersonAmongMixedStakeholders() {
+		final var dto = FutureCaseDTO.builder()
+			.withExternalCaseId(EXTERNAL_CASE_ID)
+			.withStakeholders(List.of(
+				OrganizationDTO.builder().withOrganizationName("Acme AB").build(),
+				PersonDTO.builder().withPersonId(PARTY_ID).build()))
+			.withFacilities(List.of(FacilityDTO.builder()
+				.withAddress(AddressDTO.builder().withStreet(STREET).withHouseNumber(HOUSE_NUMBER).build())
+				.build()))
+			.withExtraParameters(Map.of("Quantity", QUANTITY))
+			.build();
+		when(partyIntegrationMock.getLegalIdByPartyId(MUNICIPALITY_ID, PARTY_ID))
+			.thenReturn(Map.of(PartyType.PRIVATE, IDENTITY_NUMBER));
+		when(edpFutureClientMock.getAuthorizedUsers(any()))
+			.thenReturn(createGetAuthorizedUsersResponse(EServiceType.ORDER));
+		when(edpFutureClientMock.getBuildingsByAutorizationRoleV1_2(any()))
+			.thenReturn(createGetBuildingsResponse(ADDRESS));
+		when(edpFutureClientMock.getServicesByBuildingIdForOrder(any()))
+			.thenReturn(createGetServicesResponse(WASTE_TYPE));
+		when(edpFutureClientMock.getRenhOrderTypesForServiceV1_7(any()))
+			.thenReturn(createGetOrderTypesResponse(ORDER_TYPE_TEXT, true));
+
+		edpFutureService.handleOrder(dto, MUNICIPALITY_ID);
+
+		verify(partyIntegrationMock).getLegalIdByPartyId(MUNICIPALITY_ID, PARTY_ID);
+	}
+
+	@Test
+	void handleOrderNoPersonStakeholder() {
+		final var dto = FutureCaseDTO.builder()
+			.withExternalCaseId(EXTERNAL_CASE_ID)
+			.withStakeholders(List.of(OrganizationDTO.builder().withOrganizationName("Acme AB").build()))
+			.withFacilities(List.of(FacilityDTO.builder()
+				.withAddress(AddressDTO.builder().withStreet(STREET).withHouseNumber(HOUSE_NUMBER).build())
+				.build()))
+			.withExtraParameters(Map.of("Quantity", QUANTITY))
+			.build();
+
+		assertThatThrownBy(() -> edpFutureService.handleOrder(dto, MUNICIPALITY_ID))
+			.isInstanceOf(Problem.class)
+			.hasMessageContaining(BAD_REQUEST.getReasonPhrase())
+			.hasMessageContaining("FutureCase requires at least one PERSON stakeholder with personId");
+
+		verifyNoInteractions(partyIntegrationMock, edpFutureClientMock, caseMappingServiceMock);
+	}
+
+	@Test
+	void handleOrderPersonMissingPersonId() {
+		final var dto = createFutureCaseDTO(null, STREET, HOUSE_NUMBER, QUANTITY);
+
+		assertThatThrownBy(() -> edpFutureService.handleOrder(dto, MUNICIPALITY_ID))
+			.isInstanceOf(Problem.class)
+			.hasMessageContaining(BAD_REQUEST.getReasonPhrase())
+			.hasMessageContaining("FutureCase requires at least one PERSON stakeholder with personId");
+
+		verifyNoInteractions(partyIntegrationMock, edpFutureClientMock, caseMappingServiceMock);
+	}
+
+	@Test
+	void handleOrderPartyReturnsNoPrivate() {
+		final var dto = createFutureCaseDTO(PARTY_ID, STREET, HOUSE_NUMBER, QUANTITY);
+		when(partyIntegrationMock.getLegalIdByPartyId(MUNICIPALITY_ID, PARTY_ID))
+			.thenReturn(Map.of());
+
+		assertThatThrownBy(() -> edpFutureService.handleOrder(dto, MUNICIPALITY_ID))
+			.isInstanceOf(Problem.class)
+			.hasMessageContaining(BAD_REQUEST.getReasonPhrase())
+			.hasMessageContaining("Could not resolve PRIVATE legalId for partyId: " + PARTY_ID);
+
+		verify(partyIntegrationMock).getLegalIdByPartyId(MUNICIPALITY_ID, PARTY_ID);
+		verifyNoInteractions(edpFutureClientMock, caseMappingServiceMock);
+	}
+
+	@Test
+	void handleOrderFacilityAddressMissing() {
+		final var dto = FutureCaseDTO.builder()
+			.withExternalCaseId(EXTERNAL_CASE_ID)
+			.withStakeholders(List.of(PersonDTO.builder().withPersonId(PARTY_ID).build()))
+			.withFacilities(List.of(FacilityDTO.builder().build()))
+			.withExtraParameters(Map.of("Quantity", QUANTITY))
+			.build();
+		when(partyIntegrationMock.getLegalIdByPartyId(MUNICIPALITY_ID, PARTY_ID))
+			.thenReturn(Map.of(PartyType.PRIVATE, IDENTITY_NUMBER));
+
+		assertThatThrownBy(() -> edpFutureService.handleOrder(dto, MUNICIPALITY_ID))
+			.isInstanceOf(Problem.class)
+			.hasMessageContaining(BAD_REQUEST.getReasonPhrase())
+			.hasMessageContaining("FutureCase facility must contain an address");
+
+		verifyNoInteractions(edpFutureClientMock, caseMappingServiceMock);
+	}
+
+	@Test
+	void handleOrderFacilityAddressBlank() {
+		final var dto = createFutureCaseDTO(PARTY_ID, null, null, QUANTITY);
+		when(partyIntegrationMock.getLegalIdByPartyId(MUNICIPALITY_ID, PARTY_ID))
+			.thenReturn(Map.of(PartyType.PRIVATE, IDENTITY_NUMBER));
+
+		assertThatThrownBy(() -> edpFutureService.handleOrder(dto, MUNICIPALITY_ID))
+			.isInstanceOf(Problem.class)
+			.hasMessageContaining(BAD_REQUEST.getReasonPhrase())
+			.hasMessageContaining("FutureCase facility address must contain street and/or houseNumber");
+
+		verifyNoInteractions(edpFutureClientMock, caseMappingServiceMock);
+	}
+
+	@Test
+	void handleOrderMissingQuantity() {
+		final var dto = createFutureCaseDTO(PARTY_ID, STREET, HOUSE_NUMBER, null);
+		when(partyIntegrationMock.getLegalIdByPartyId(MUNICIPALITY_ID, PARTY_ID))
+			.thenReturn(Map.of(PartyType.PRIVATE, IDENTITY_NUMBER));
+
+		assertThatThrownBy(() -> edpFutureService.handleOrder(dto, MUNICIPALITY_ID))
+			.isInstanceOf(Problem.class)
+			.hasMessageContaining(BAD_REQUEST.getReasonPhrase())
+			.hasMessageContaining("FutureCase extraParameters must contain non-blank 'Quantity'");
+
+		verifyNoInteractions(edpFutureClientMock, caseMappingServiceMock);
+	}
 
 	@Test
 	void sendOrder() {
@@ -283,6 +454,21 @@ class EDPFutureServiceTest {
 		assertThat(request.getServiceId()).isEqualTo(SERVICE_ID);
 		assertThat(request.getOrderType()).isEqualTo(orderType);
 		verifyNoMoreInteractions(edpFutureClientMock);
+	}
+
+	private FutureCaseDTO createFutureCaseDTO(final String personId, final String street, final String houseNumber, final String quantity) {
+		final var extraParameters = new HashMap<String, String>();
+		if (quantity != null) {
+			extraParameters.put("Quantity", quantity);
+		}
+		return FutureCaseDTO.builder()
+			.withExternalCaseId(EXTERNAL_CASE_ID)
+			.withStakeholders(List.of(PersonDTO.builder().withPersonId(personId).build()))
+			.withFacilities(List.of(FacilityDTO.builder()
+				.withAddress(AddressDTO.builder().withStreet(street).withHouseNumber(houseNumber).build())
+				.build()))
+			.withExtraParameters(extraParameters)
+			.build();
 	}
 
 	private GetAuthorizedUsersResponse createGetAuthorizedUsersResponse(final EServiceType eServiceType) {

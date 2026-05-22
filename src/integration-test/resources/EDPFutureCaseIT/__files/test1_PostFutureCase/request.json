@@ -6,14 +6,24 @@
 			"type": "PERSON",
 			"firstName": "Test",
 			"lastName": "Test",
+			"personId": "3ed5bc30-6308-4fd5-a5a7-78d7f96f4438",
 			"roles": [
 				"APPLICANT"
 			]
 		}
 	],
+	"facilities": [
+		{
+			"address": {
+				"addressCategories": [
+					"POSTAL_ADDRESS"
+				],
+				"street": "Testgatan",
+				"houseNumber": "1"
+			}
+		}
+	],
 	"extraParameters": {
-		"IdentityNumber": "202601052380",
-		"Address": "Testgatan 1",
 		"Quantity": "1"
 	}
 }

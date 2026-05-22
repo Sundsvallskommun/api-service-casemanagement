@@ -204,7 +204,10 @@ class CaseServiceTest {
 		final var futureCaseDTO = FutureCaseDTO.builder()
 			.withCaseType("EXTRA_SACK")
 			.withStakeholders(List.of())
-			.withExtraParameters(Map.of("IdentityNumber", "198001011234", "Address", "Storgatan 1", "Quantity", "1"))
+			.withFacilities(List.of(FacilityDTO.builder()
+				.withAddress(AddressDTO.builder().withStreet("Storgatan").withHouseNumber("1").build())
+				.build()))
+			.withExtraParameters(Map.of("Quantity", "1"))
 			.build();
 		// Act
 		caseService.handleCase(futureCaseDTO, MUNICIPALITY_ID);
@@ -219,20 +222,20 @@ class CaseServiceTest {
 	}
 
 	@Test
-	void testHandleFutureCaseMissingExtraParameters() {
+	void testHandleFutureCaseMissingQuantity() {
 		// Arrange
 		final var futureCaseDTO = FutureCaseDTO.builder()
 			.withCaseType("EXTRA_SACK")
 			.withStakeholders(List.of())
 			.build();
 
-		doThrow(Problem.valueOf(BAD_REQUEST, "extraParameters must contain non-blank values for keys: IdentityNumber, Address, Quantity"))
+		doThrow(Problem.valueOf(BAD_REQUEST, "extraParameters must contain a non-blank value for key: Quantity"))
 			.when(validator).validateFutureErrand(futureCaseDTO);
 
 		// Act && assert
 		assertThatExceptionOfType(ThrowableProblem.class)
 			.isThrownBy(() -> caseService.handleCase(futureCaseDTO, MUNICIPALITY_ID))
-			.withMessage("Bad Request: extraParameters must contain non-blank values for keys: IdentityNumber, Address, Quantity");
+			.withMessage("Bad Request: extraParameters must contain a non-blank value for key: Quantity");
 
 		verify(validator).validateFutureErrand(futureCaseDTO);
 		verifyNoInteractions(eventPublisher);
