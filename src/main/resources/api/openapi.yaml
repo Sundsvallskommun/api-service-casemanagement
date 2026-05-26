@@ -7,7 +7,7 @@ info:
     url: https://opensource.org/licenses/MIT
   version: "8.4"
 servers:
-- url: http://localhost:59798
+- url: http://localhost:60088
   description: Generated server url
 tags:
 - name: Status
@@ -444,14 +444,24 @@ components:
           minItems: 1
         street:
           type: string
+          examples:
+          - Testargatan
         houseNumber:
           type: string
+          examples:
+          - "18"
         postalCode:
           type: string
+          examples:
+          - 123 45
         city:
           type: string
+          examples:
+          - Sundsvall
         country:
           type: string
+          examples:
+          - Sverige
         careOf:
           type: string
           description: c/o
@@ -459,10 +469,16 @@ components:
           - Test Testorsson
         attention:
           type: string
+          examples:
+          - Test Testorsson
         propertyDesignation:
           type: string
+          examples:
+          - SUNDSVALL BALDER 7:2
         appartmentNumber:
           type: string
+          examples:
+          - LGH 1001
         location:
           $ref: "#/components/schemas/CoordinatesDTO"
           description: The address coordinates
@@ -599,50 +615,32 @@ components:
       type: object
       description: Base case model
       examples:
-      - |-
-        {
-            "externalCaseId":"e19981ad-34b2-4e14-88f5-133f61ca85aa",
-            "caseType":"NYBYGGNAD_ANSOKAN_OM_BYGGLOV",
-            "facilities":[
-                {
-                    "facilityType":"STOREHOUSE",
-                    "address":{
-                        "addressCategories":[
-                            "VISITING_ADDRESS"
-                        ],
-                        "propertyDesignation":"SUNDSVALL BALDER 2"
-                    }
-                }
-            ],
-            "stakeholders":[
-                {
-                    "type":"ORGANIZATION",
-                    "roles":[
-                        "APPLICANT",
-                        "PAYMENT_PERSON"
-                    ],
-                    "organizationName":"Testorganisationen",
-                    "organizationNumber":"123456-1234"
-                },
-                {
-                    "type":"PERSON",
-                    "roles":[
-                        "CONTACT_PERSON"
-                    ],
-                    "firstName":"Test",
-                    "lastName":"Testsson",
-                    "personId":"e19981ad-34b2-4e14-88f5-133f61ca85aa"
-                }
-            ],
-            "attachments":[
-                {
-                    "category":"ANS",
-                    "name":"Some_name_2022-03-07",
-                    "extension":".pdf",
-                    "file":"dGVzdA=="
-                }
-            ]
-        }
+      - externalCaseId: e19981ad-34b2-4e14-88f5-133f61ca85aa
+        caseType: NYBYGGNAD_ANSOKAN_OM_BYGGLOV
+        facilities:
+        - facilityType: STOREHOUSE
+          address:
+            addressCategories:
+            - VISITING_ADDRESS
+            propertyDesignation: SUNDSVALL BALDER 2
+        stakeholders:
+        - type: ORGANIZATION
+          roles:
+          - APPLICANT
+          - PAYMENT_PERSON
+          organizationName: Testorganisationen
+          organizationNumber: 123456-1234
+        - type: PERSON
+          roles:
+          - CONTACT_PERSON
+          firstName: Test
+          lastName: Testsson
+          personId: e19981ad-34b2-4e14-88f5-133f61ca85aa
+        attachments:
+        - category: ANS
+          name: Some_name_2022-03-07
+          extension: .pdf
+          file: dGVzdA==
       oneOf:
       - $ref: "#/components/schemas/ByggRCaseDTO"
       - $ref: "#/components/schemas/EcosCaseDTO"
@@ -705,13 +703,13 @@ components:
           format: double
           description: Decimal Degrees (DD)
           examples:
-          - "62.390205"
+          - 62.390205
         longitude:
           type: number
           format: double
           description: Decimal Degrees (DD)
           examples:
-          - "17.306616"
+          - 17.306616
     EcosCaseDTO:
       type: object
       description: Ecos2-case model class
@@ -852,6 +850,11 @@ components:
           oneOf:
           - $ref: "#/components/schemas/PersonDTO"
           - $ref: "#/components/schemas/OrganizationDTO"
+        extraParameters:
+          type: object
+          additionalProperties:
+            type: string
+          description: Extra parameters for the case.
         facilities:
           type: array
           description: The facilities in the case
@@ -859,11 +862,6 @@ components:
             $ref: "#/components/schemas/FacilityDTO"
           maxItems: 1
           minItems: 1
-        extraParameters:
-          type: object
-          additionalProperties:
-            type: string
-          description: Extra parameters for the case.
       required:
       - caseType
       - externalCaseId
@@ -1065,10 +1063,10 @@ components:
             $ref: "#/components/schemas/Violation"
         title:
           type: string
-        causeAsProblem:
-          $ref: "#/components/schemas/ThrowableProblem"
         detail:
           type: string
+        causeAsProblem:
+          $ref: "#/components/schemas/ThrowableProblem"
         instance:
           type: string
           format: uri
