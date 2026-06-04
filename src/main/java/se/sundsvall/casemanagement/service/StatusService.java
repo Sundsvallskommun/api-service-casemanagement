@@ -110,7 +110,7 @@ public class StatusService {
 	private CompletableFuture<List<CaseStatusDTO>> getAlktStatus(final String municipalityId, final String partyId) {
 		return alkTService.getStatusesByPartyId(partyId, municipalityId)
 			.exceptionally(ex -> {
-				LOG.warn("AlkT status fetch failed for party {} in municipality {}: {}", partyId, sanitizeForLogging(municipalityId), ex.getMessage(), ex);
+				LOG.warn("AlkT status fetch failed for party {} in municipality {}: {}", sanitizeForLogging(partyId), sanitizeForLogging(municipalityId), ex.getMessage(), ex);
 				return emptyList();
 			});
 	}
