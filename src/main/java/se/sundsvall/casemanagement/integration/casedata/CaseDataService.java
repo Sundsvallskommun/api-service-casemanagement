@@ -35,7 +35,8 @@ import static java.util.Comparator.naturalOrder;
 import static java.util.Comparator.nullsFirst;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static se.sundsvall.casemanagement.api.model.enums.SystemType.CASE_DATA;
-import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toAttachment;
+import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toAttachmentFilePart;
+import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toAttachmentMetadataPart;
 import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toErrand;
 import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toPatchErrand;
 import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toStakeholders;
@@ -112,9 +113,7 @@ public class CaseDataService {
 		final var errandNumber = getErrand(id, municipalityId, namespace).getErrandNumber();
 
 		if (errandNumber != null) {
-			otherCase.getAttachments().stream().map(
-				attachment -> toAttachment(attachment, id))
-				.forEach(attachmentDTO -> caseDataClient.postAttachment(municipalityId, namespace, id, attachmentDTO));
+			postAttachments(municipalityId, namespace, id, otherCase.getAttachments());
 		}
 		caseMappingService.postCaseMapping(otherCase, String.valueOf(id), CASE_DATA, municipalityId);
 
@@ -126,7 +125,7 @@ public class CaseDataService {
 		final var errandId = Long.valueOf(caseMapping.getCaseId());
 		final var namespace = mapNamespace(caseMapping.getCaseType(), municipalityId);
 		try {
-			attachmentDTOS.forEach(attachment -> caseDataClient.postAttachment(municipalityId, namespace, errandId, toAttachment(attachment, errandId)));
+			postAttachments(municipalityId, namespace, errandId, attachmentDTOS);
 		} catch (final ThrowableProblem e) {
 			if (Objects.equals(e.getStatus(), NOT_FOUND)) {
 				throw Problem.valueOf(NOT_FOUND, NO_CASE_WAS_FOUND_IN_CASE_DATA_WITH_CASE_ID + errandId);
@@ -198,12 +197,22 @@ public class CaseDataService {
 		caseDataClient.patchStatusOnErrand(municipalityId, namespace, caseId, statusDTO);
 		caseDataClient.putStakeholdersOnErrand(municipalityId, namespace, caseId, toStakeholders(otherCaseDTO.getStakeholders()));
 
-		final var result = caseDataClient.getAttachmentsByErrandNumber(municipalityId, namespace, otherCaseDTO.getExternalCaseId());
+		final var result = caseDataClient.getAttachmentsByErrandId(municipalityId, namespace, caseId);
 		if (result != null) {
 			result.forEach(attachment -> caseDataClient.deleteAttachment(municipalityId, namespace, caseId, attachment.getId()));
 		}
-		otherCaseDTO.getAttachments().stream().map(attachment -> toAttachment(attachment, caseId))
-			.forEach(attachmentDTO -> caseDataClient.postAttachment(municipalityId, namespace, caseId, attachmentDTO));
+		postAttachments(municipalityId, namespace, caseId, otherCaseDTO.getAttachments());
+	}
+
+	/**
+	 * Posts every attachment to CaseData. Each attachment is sent as a multipart request where the metadata and the decoded
+	 * file content are separate parts.
+	 */
+	private void postAttachments(final String municipalityId, final String namespace, final Long errandId, final List<AttachmentDTO> attachments) {
+		Optional.ofNullable(attachments).orElse(emptyList())
+			.forEach(attachment -> caseDataClient.postAttachment(municipalityId, namespace, errandId,
+				toAttachmentMetadataPart(attachment, errandId),
+				toAttachmentFilePart(attachment)));
 	}
 
 	public String mapNamespace(final String caseType, final String municipalityId) {

@@ -1,10 +1,12 @@
 package se.sundsvall.casemanagement.integration.casedata;
 
 import generated.client.casedata.Address.AddressCategoryEnum;
+import generated.client.casedata.Attachment;
 import generated.client.casedata.ContactInformation;
 import generated.client.casedata.Errand;
 import generated.client.casedata.PatchErrand;
 import generated.client.casedata.Stakeholder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
@@ -15,10 +17,12 @@ import se.sundsvall.casemanagement.api.model.PersonDTO;
 import se.sundsvall.casemanagement.api.model.enums.AddressCategory;
 import se.sundsvall.casemanagement.api.model.enums.AttachmentCategory;
 import se.sundsvall.casemanagement.api.model.enums.StakeholderType;
+import tools.jackson.databind.ObjectMapper;
 
 import static generated.client.casedata.Stakeholder.TypeEnum.ORGANIZATION;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static se.sundsvall.casemanagement.TestUtil.createAddressDTO;
 import static se.sundsvall.casemanagement.TestUtil.createAttachmentDTO;
 import static se.sundsvall.casemanagement.TestUtil.createCoordinatesDTO;
@@ -30,12 +34,15 @@ import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.to
 
 class CaseDataMapperTest {
 
+	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
 	@Test
 	void toAttachment() {
 		final var attachmentDTO = AttachmentDTO.builder()
 			.withExtension("pdf")
 			.withCategory("someCategory")
-			.withFile("someFile")
+			.withMimeType("application/pdf")
+			.withFile("dGVzdA==")
 			.withName("someName")
 			.withNote("someNote")
 			.withExtraParameters(createExtraParameters())
@@ -47,12 +54,50 @@ class CaseDataMapperTest {
 		assertThat(result).satisfies(bean -> {
 			assertThat(bean.getExtension()).isEqualTo(attachmentDTO.getExtension());
 			assertThat(bean.getCategory()).isEqualTo(attachmentDTO.getCategory());
-			assertThat(bean.getFile()).isEqualTo(attachmentDTO.getFile());
+			assertThat(bean.getMimeType()).isEqualTo(attachmentDTO.getMimeType());
 			assertThat(bean.getName()).isEqualTo(attachmentDTO.getName());
 			assertThat(bean.getNote()).isEqualTo(attachmentDTO.getNote());
 			assertThat(bean.getExtraParameters()).isEqualTo(attachmentDTO.getExtraParameters());
 			assertThat(bean.getErrandId()).isEqualTo(errandId);
+			// The file content is sent as a separate multipart part since CaseData major version 13
+			assertThat(bean.getHash()).isNull();
 		});
+	}
+
+	@Test
+	void toAttachmentMetadataPart() {
+		final var attachmentDTO = createAttachmentDTO(AttachmentCategory.ANMALAN_VARMEPUMP);
+		final var errandId = 1L;
+
+		final var result = CaseDataMapper.toAttachmentMetadataPart(attachmentDTO, errandId);
+
+		assertThat(result.getContentType()).isEqualTo(APPLICATION_JSON_VALUE);
+		assertThat(result.getFileName()).isNull();
+		assertThat(OBJECT_MAPPER.readValue(result.getData(), Attachment.class))
+			.isEqualTo(CaseDataMapper.toAttachment(attachmentDTO, errandId));
+	}
+
+	@Test
+	void toAttachmentFilePart() {
+		final var attachmentDTO = createAttachmentDTO(AttachmentCategory.ANMALAN_VARMEPUMP);
+
+		final var result = CaseDataMapper.toAttachmentFilePart(attachmentDTO);
+
+		assertThat(result.getContentType()).isEqualTo(attachmentDTO.getMimeType());
+		assertThat(result.getFileName()).isEqualTo(attachmentDTO.getName());
+		assertThat(result.getData()).isEqualTo("test".getBytes(StandardCharsets.UTF_8));
+	}
+
+	@Test
+	void toAttachmentFilePartWhenFileIsMissing() {
+		final var attachmentDTO = AttachmentDTO.builder()
+			.withMimeType("application/pdf")
+			.withName("someName")
+			.build();
+
+		final var result = CaseDataMapper.toAttachmentFilePart(attachmentDTO);
+
+		assertThat(result.getData()).isEmpty();
 	}
 
 	@Test
