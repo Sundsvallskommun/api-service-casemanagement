@@ -1,5 +1,6 @@
 package se.sundsvall.casemanagement.integration.casedata;
 
+import feign.form.FormData;
 import generated.client.casedata.Attachment;
 import generated.client.casedata.Errand;
 import generated.client.casedata.PatchErrand;
@@ -23,8 +24,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import se.sundsvall.casemanagement.integration.casedata.configuration.CaseDataConfiguration;
 
+import static org.springframework.http.MediaType.ALL_VALUE;
+import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 import static se.sundsvall.casemanagement.integration.casedata.configuration.CaseDataConfiguration.CLIENT_ID;
 
 @FeignClient(name = CLIENT_ID, url = "${integration.case-data.url}", configuration = CaseDataConfiguration.class)
@@ -43,27 +47,27 @@ public interface CaseDataClient {
 		@PathVariable final String namespace,
 		@RequestBody @Valid Errand errand);
 
-	@PostMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}/attachments")
+	/**
+	 * Creates an attachment on an errand. CaseData expects the attachment metadata as a JSON part named 'attachment' and
+	 * the binary content as a file part named 'file'.
+	 *
+	 * @param attachment the attachment metadata, serialized as JSON
+	 * @param file       the decoded (binary) file content
+	 */
+	@PostMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}/attachments", consumes = MULTIPART_FORM_DATA_VALUE, produces = ALL_VALUE)
 	ResponseEntity<Void> postAttachment(
 		@PathVariable final String municipalityId,
 		@PathVariable final String namespace,
 		@PathVariable final Long errandId,
-		@RequestBody @Valid Attachment attachment);
+		@RequestPart("attachment") final FormData attachment,
+		@RequestPart("file") final FormData file);
 
-	@PutMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}/attachments/{attachmentId}")
-	ResponseEntity<Void> putAttachment(
+	@Operation(description = "Get attachment metadata for an errand.")
+	@GetMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}/attachments")
+	List<Attachment> getAttachmentsByErrandId(
 		@PathVariable final String municipalityId,
 		@PathVariable final String namespace,
-		@PathVariable final Long errandId,
-		@PathVariable final Long attachmentId,
-		@RequestBody @Valid Attachment attachment);
-
-	@Operation(description = "Get all attachments.")
-	@GetMapping(path = "/{municipalityId}/{namespace}/attachments/errand/{errandNumber}")
-	List<Attachment> getAttachmentsByErrandNumber(
-		@PathVariable final String municipalityId,
-		@PathVariable final String namespace,
-		@PathVariable String errandNumber);
+		@PathVariable final Long errandId);
 
 	@Operation(description = "Delete attachment.")
 	@DeleteMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}/attachments/{attachmentId}")

@@ -1,5 +1,6 @@
 package se.sundsvall.casemanagement.integration.casedata;
 
+import feign.form.FormData;
 import generated.client.casedata.Address;
 import generated.client.casedata.ContactInformation;
 import generated.client.casedata.Coordinates;
@@ -8,8 +9,10 @@ import generated.client.casedata.ExtraParameter;
 import generated.client.casedata.Facility;
 import generated.client.casedata.PatchErrand;
 import generated.client.casedata.Stakeholder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +27,7 @@ import se.sundsvall.casemanagement.api.model.OrganizationDTO;
 import se.sundsvall.casemanagement.api.model.OtherCaseDTO;
 import se.sundsvall.casemanagement.api.model.PersonDTO;
 import se.sundsvall.casemanagement.api.model.StakeholderDTO;
+import tools.jackson.databind.ObjectMapper;
 
 import static generated.client.casedata.ContactInformation.ContactTypeEnum.CELLPHONE;
 import static generated.client.casedata.ContactInformation.ContactTypeEnum.EMAIL;
@@ -31,8 +35,11 @@ import static generated.client.casedata.ContactInformation.ContactTypeEnum.PHONE
 import static generated.client.casedata.Stakeholder.TypeEnum.ORGANIZATION;
 import static generated.client.casedata.Stakeholder.TypeEnum.PERSON;
 import static java.util.Collections.emptyList;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 public final class CaseDataMapper {
+
+	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
 	private static final String APPLICATION_PRIORITY_KEY = "application.priority";
 
@@ -47,9 +54,28 @@ public final class CaseDataMapper {
 			.name(attachment.getName())
 			.extension(attachment.getExtension())
 			.mimeType(attachment.getMimeType())
-			.file(attachment.getFile())
 			.extraParameters(attachment.getExtraParameters())
 			.errandId(errandId);
+	}
+
+	/**
+	 * Creates the 'attachment' multipart part, holding the attachment metadata as JSON. Since CaseData major version 13 the
+	 * file content is no longer part of the metadata, see {@link #toAttachmentFilePart(AttachmentDTO)}.
+	 */
+	public static FormData toAttachmentMetadataPart(final AttachmentDTO attachment, final Long errandId) {
+		return new FormData(APPLICATION_JSON_VALUE, null, OBJECT_MAPPER.writeValueAsBytes(toAttachment(attachment, errandId)));
+	}
+
+	/**
+	 * Creates the 'file' multipart part, holding the decoded file content.
+	 */
+	public static FormData toAttachmentFilePart(final AttachmentDTO attachment) {
+		final var content = Optional.ofNullable(attachment.getFile())
+			.filter(StringUtils::isNotBlank)
+			.map(file -> Base64.getDecoder().decode(file.getBytes(StandardCharsets.UTF_8)))
+			.orElseGet(() -> new byte[0]);
+
+		return new FormData(attachment.getMimeType(), attachment.getName(), content);
 	}
 
 	public static Errand toErrand(final OtherCaseDTO otherCase) {
@@ -61,7 +87,7 @@ public final class CaseDataMapper {
 			.stakeholders(toStakeholders(otherCase.getStakeholders()))
 			.extraParameters(toExtraParameters(otherCase.getExtraParameters()))
 			.channel(Optional.ofNullable(otherCase.getExternalCaseId())
-				.map(id -> Errand.ChannelEnum.ESERVICE)
+				.map(_ -> Errand.ChannelEnum.ESERVICE)
 				.orElse(null))
 			.facilities(Optional.ofNullable(otherCase.getFacilities())
 				.map(CaseDataMapper::toFacilities)
@@ -110,7 +136,7 @@ public final class CaseDataMapper {
 			.isZoningPlanArea(address.getIsZoningPlanArea())
 			.invoiceMarking(address.getInvoiceMarking())
 			.addressCategory(Optional.ofNullable(dto.getAddressCategories())
-				.map(a -> Address.AddressCategoryEnum.VISITING_ADDRESS)
+				.map(_ -> Address.AddressCategoryEnum.VISITING_ADDRESS)
 				.orElse(null)))
 			.orElse(null);
 	}
@@ -185,7 +211,7 @@ public final class CaseDataMapper {
 	}
 
 	public static Coordinates toCoordinates(final CoordinatesDTO location) {
-		return Optional.ofNullable(location).map(coordinatesDTO -> new Coordinates()
+		return Optional.ofNullable(location).map(_ -> new Coordinates()
 			.latitude(location.getLatitude())
 			.longitude(location.getLongitude()))
 			.orElse(null);

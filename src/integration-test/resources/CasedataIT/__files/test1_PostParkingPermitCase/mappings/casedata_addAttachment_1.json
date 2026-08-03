@@ -2,23 +2,54 @@
 	"request": {
 		"method": "POST",
 		"urlPathPattern": "/case-data/2281/NAMESPACE_1/errands/24/attachments",
-		"bodyPatterns": [
+		"multipartPatterns": [
 			{
-				"equalToJson": {
-					"errandId": 24,
-					"category": "ANS",
-					"name": "Some attachment name.pdf",
-					"note": "Some attachment note",
-					"extension": ".pdf",
-					"mimeType": "application/pdf",
-					"file": "dGVzdA==",
-					"extraParameters": {
-						"kreEGkanzo": "BPQjVCepCGxynIqskCeZ",
-						"mNXkbBCjmF": "xVtjXtNrXLddWKNbbMbR",
-						"xeeNxLQwNL": "gMyDQhBjUqzGSIdVpdmg"
+				"name": "attachment",
+				"matchingType": "ANY",
+				"headers": {
+					"Content-Disposition": {
+						"contains": "name=\"attachment\""
+					},
+					"Content-Type": {
+						"contains": "application/json"
 					}
 				},
-				"ignoreArrayOrder": true
+				"bodyPatterns": [
+					{
+						"equalToJson": {
+							"errandId": 24,
+							"category": "ANS",
+							"name": "Some attachment name.pdf",
+							"note": "Some attachment note",
+							"extension": ".pdf",
+							"mimeType": "application/pdf",
+							"extraParameters": {
+								"kreEGkanzo": "BPQjVCepCGxynIqskCeZ",
+								"mNXkbBCjmF": "xVtjXtNrXLddWKNbbMbR",
+								"xeeNxLQwNL": "gMyDQhBjUqzGSIdVpdmg"
+							}
+						},
+						"ignoreArrayOrder": true,
+						"ignoreExtraElements": true
+					}
+				]
+			},
+			{
+				"name": "file",
+				"matchingType": "ANY",
+				"headers": {
+					"Content-Disposition": {
+						"contains": "name=\"file\"; filename=\"Some attachment name.pdf\""
+					},
+					"Content-Type": {
+						"contains": "application/pdf"
+					}
+				},
+				"bodyPatterns": [
+					{
+						"binaryEqualTo": "dGVzdA=="
+					}
+				]
 			}
 		]
 	},

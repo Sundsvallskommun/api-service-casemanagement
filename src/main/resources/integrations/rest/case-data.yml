@@ -5,9 +5,9 @@ info:
   license:
     name: MIT License
     url: https://opensource.org/licenses/MIT
-  version: "12.0"
+  version: "13.0"
 servers:
-- url: http://localhost:63050
+- url: http://localhost:36179
   description: Generated server url
 tags:
 - name: Notifications
@@ -1027,8 +1027,10 @@ paths:
     get:
       tags:
       - Attachments
-      description: Get attachment on errand by attachment id.
-      operationId: getAttachments
+      summary: Get a streamed attachment.
+      description: Fetches the binary content of the attachment that matches the provided
+        id in a streamed manner.
+      operationId: getAttachment
       parameters:
       - name: municipalityId
         in: path
@@ -1062,74 +1064,6 @@ paths:
       responses:
         "200":
           description: OK - Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Attachment"
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                oneOf:
-                - $ref: "#/components/schemas/Problem"
-                - $ref: "#/components/schemas/ConstraintViolationProblem"
-        "404":
-          description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-    put:
-      tags:
-      - Attachments
-      description: Replace attachment on errand.
-      operationId: putAttachmentOnErrand
-      parameters:
-      - name: municipalityId
-        in: path
-        description: Municipality ID
-        required: true
-        schema:
-          type: string
-        example: 2281
-      - name: namespace
-        in: path
-        description: Namespace
-        required: true
-        schema:
-          type: string
-          pattern: "[\\w|\\-]+"
-        example: MY_NAMESPACE
-      - name: errandId
-        in: path
-        description: Errand ID
-        required: true
-        schema:
-          type: integer
-          format: int64
-        example: 123
-      - name: attachmentId
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Attachment"
-        required: true
-      responses:
-        "204":
-          description: No content - Successful operation
         "400":
           description: Bad request
           content:
@@ -1211,7 +1145,8 @@ paths:
     patch:
       tags:
       - Attachments
-      description: Update attachment on errand.
+      description: "Update attachment metadata on errand. The binary content cannot\
+        \ be updated; replace it by deleting and recreating the attachment."
       operationId: patchAttachment
       parameters:
       - name: municipalityId
@@ -1471,9 +1406,9 @@ paths:
           type: string
           pattern: "[\\w|\\-]+"
         example: MY_NAMESPACE
-      - name: referred_from
+      - name: referredFrom
         in: query
-        description: "Relation reference in format (only source is used): '{relationType}|{sourceResourceId};{sourceType};{sourceService};{sourceNamespace}|{targetResourceId};{targetType};{targetService};{targetNamespace}'"
+        description: "Relation reference in format (target part is ignored): '{relationType}|{sourceResourceId};{sourceType};{sourceService};{sourceNamespace}|{targetResourceId};{targetType};{targetService};{targetNamespace}'"
         required: false
         schema:
           type: string
@@ -2057,7 +1992,7 @@ paths:
     get:
       tags:
       - Attachments
-      description: Get attachments by errand id.
+      description: Get attachments metadata by errand id.
       operationId: getAttachmentsByErrandId
       parameters:
       - name: municipalityId
@@ -2115,7 +2050,8 @@ paths:
     post:
       tags:
       - Attachments
-      description: Create attachment on errand.
+      description: "Create attachment on errand. The metadata is supplied as a JSON\
+        \ part named 'attachment' and the binary content as a file part named 'file'."
       operationId: postAttachment
       parameters:
       - name: municipalityId
@@ -2143,9 +2079,19 @@ paths:
         example: 123
       requestBody:
         content:
-          application/json:
+          multipart/form-data:
             schema:
-              $ref: "#/components/schemas/Attachment"
+              type: object
+              properties:
+                attachment:
+                  $ref: "#/components/schemas/Attachment"
+                  description: Attachment metadata
+                file:
+                  type: string
+                  format: binary
+              required:
+              - attachment
+              - file
         required: true
       responses:
         "201":
@@ -4607,7 +4553,8 @@ components:
           $ref: "#/components/schemas/Coordinates"
           description: The location of the address
           examples:
-          - "{\"latitude\": 62.3908, \"longitude\": 17.3069}"
+          - latitude: 62.3908
+            longitude: 17.3069
     ContactInformation:
       type: object
       properties:
@@ -4635,13 +4582,13 @@ components:
           format: double
           description: Decimal Degrees (DD)
           examples:
-          - "62.390205"
+          - 62.390205
         longitude:
           type: number
           format: double
           description: Decimal Degrees (DD)
           examples:
-          - "17.306616"
+          - 17.306616
     Stakeholder:
       type: object
       properties:
@@ -4650,14 +4597,14 @@ components:
           format: int64
           description: The unique identifier of the stakeholder
           examples:
-          - "1"
+          - 1
           readOnly: true
         version:
           type: integer
           format: int32
           description: The version of the stakeholder
           examples:
-          - "1"
+          - 1
           readOnly: true
         municipalityId:
           type: string
@@ -4749,7 +4696,8 @@ components:
             type: string
           description: Additional parameters for the stakeholder
           examples:
-          - "{\"key1\":\"value1\",\"key2\":\"value2\"}"
+          - key1: value1
+            key2: value2
         created:
           type: string
           format: date-time
@@ -4801,10 +4749,10 @@ components:
         instance:
           type: string
           format: uri
-        causeAsProblem:
-          $ref: "#/components/schemas/ThrowableProblem"
         detail:
           type: string
+        causeAsProblem:
+          $ref: "#/components/schemas/ThrowableProblem"
     ThrowableProblem:
       type: object
       properties:
@@ -4837,14 +4785,14 @@ components:
           format: int64
           description: The id of the facility
           examples:
-          - "1"
+          - 1
           readOnly: true
         version:
           type: integer
           format: int32
           description: The version of the facility
           examples:
-          - "1"
+          - 1
           readOnly: true
         municipalityId:
           type: string
@@ -4903,7 +4851,8 @@ components:
             type: string
           description: Extra parameters
           examples:
-          - "{\"key1\":\"value1\",\"key2\":\"value2\"}"
+          - key1: value1
+            key2: value2
     Attachment:
       type: object
       properties:
@@ -4912,14 +4861,14 @@ components:
           format: int64
           description: The id of the attachment
           examples:
-          - "1"
+          - 1
           readOnly: true
         version:
           type: integer
           format: int32
           description: The version of the attachment
           examples:
-          - "1"
+          - 1
           readOnly: true
         municipalityId:
           type: string
@@ -4932,7 +4881,7 @@ components:
           format: int64
           description: Errand id associated with the attachment
           examples:
-          - "123456"
+          - 123456
           readOnly: true
         namespace:
           type: string
@@ -4959,6 +4908,18 @@ components:
           description: Category of the attachment
           examples:
           - DOCUMENT
+        channel:
+          type:
+          - string
+          - "null"
+          description: Channel through which the attachment was received
+          enum:
+          - EMAIL
+          - ESERVICE
+          - WEB_UI
+          - MY_PAGES
+          examples:
+          - EMAIL
         name:
           type: string
           description: Name of the attachment
@@ -4979,18 +4940,20 @@ components:
           description: MIME type of the attachment
           examples:
           - application/pdf
-        file:
+        hash:
           type: string
-          description: Base64 encoded file content
+          description: SHA-256 hash (hex encoded) of the attachment's raw content
           examples:
-          - dGVzdCBjb250ZW50
+          - 9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08
+          readOnly: true
         extraParameters:
           type: object
           additionalProperties:
             type: string
           description: Additional parameters for the attachment
           examples:
-          - "{\"key1\": \"value1\", \"key2\": \"value2\"}"
+          - key1: value1
+            key2: value2
     Decision:
       type: object
       properties:
@@ -4999,14 +4962,14 @@ components:
           format: int64
           description: The id of the decision
           examples:
-          - "1"
+          - 1
           readOnly: true
         version:
           type: integer
           format: int32
           description: The version of the decision
           examples:
-          - "1"
+          - 1
           readOnly: true
         municipalityId:
           type: string
@@ -5025,7 +4988,7 @@ components:
           format: int64
           description: The id of the errand
           examples:
-          - "1"
+          - 1
           readOnly: true
         errandNumber:
           type: string
@@ -5096,7 +5059,8 @@ components:
             type: string
           description: Additional parameters for the decision
           examples:
-          - "{\"key1\": \"value1\", \"key2\": \"value2\"}"
+          - key1: value1
+            key2: value2
         created:
           type: string
           format: date-time
@@ -5166,14 +5130,14 @@ components:
           format: int64
           description: The id of the errand
           examples:
-          - "1"
+          - 1
           readOnly: true
         version:
           type: integer
           format: int32
           description: The version of the errand
           examples:
-          - "1"
+          - 1
           readOnly: true
         errandNumber:
           type: string
@@ -5258,7 +5222,6 @@ components:
         status:
           $ref: "#/components/schemas/Status"
           description: The current status of the errand
-          maxLength: 255
         statuses:
           type: array
           description: The statuses connected to the errand
@@ -5326,7 +5289,8 @@ components:
           type: array
           description: List of labels for the errand
           examples:
-          - "[\"label1\",\"label2\"]"
+          - - label1
+            - label2
           items:
             type: string
         relatesTo:
@@ -5413,30 +5377,11 @@ components:
           type: boolean
         float:
           type: boolean
-        missingNode:
-          type: boolean
         container:
           type: boolean
-        binary:
-          type: boolean
-        string:
-          type: boolean
-        textual:
-          type: boolean
-          deprecated: true
-        int:
-          type: boolean
-        pojo:
-          type: boolean
-        double:
-          type: boolean
-        long:
-          type: boolean
-        boolean:
-          type: boolean
-        short:
-          type: boolean
         number:
+          type: boolean
+        missingNode:
           type: boolean
         nodeType:
           type: string
@@ -5450,15 +5395,34 @@ components:
           - OBJECT
           - POJO
           - STRING
-        valueNode:
-          type: boolean
-        bigInteger:
+        string:
           type: boolean
         integralNumber:
           type: boolean
-        bigDecimal:
+        pojo:
           type: boolean
         floatingPointNumber:
+          type: boolean
+        short:
+          type: boolean
+        int:
+          type: boolean
+        long:
+          type: boolean
+        double:
+          type: boolean
+        bigDecimal:
+          type: boolean
+        bigInteger:
+          type: boolean
+        textual:
+          type: boolean
+          deprecated: true
+        boolean:
+          type: boolean
+        binary:
+          type: boolean
+        valueNode:
           type: boolean
         embeddedValue:
           type: boolean
@@ -5492,14 +5456,14 @@ components:
           format: int64
           description: The unique identifier of the note
           examples:
-          - "1"
+          - 1
           readOnly: true
         version:
           type: integer
           format: int32
           description: The version of the note
           examples:
-          - "1"
+          - 1
           readOnly: true
         municipalityId:
           type: string
@@ -5673,7 +5637,7 @@ components:
           format: int64
           description: Errand id of the notification
           examples:
-          - "1234"
+          - 1234
           readOnly: true
         errandNumber:
           type: string
@@ -5694,7 +5658,7 @@ components:
           format: int64
           description: Errand id
           examples:
-          - "123"
+          - 123
         errandNumber:
           type: string
           description: Errand number
@@ -5769,7 +5733,7 @@ components:
           type: array
           description: The value of the email header
           examples:
-          - "[\"<this-is-a-test@domain.com>\"]"
+          - - <this-is-a-test@domain.com>
           items:
             type: string
     Header:
@@ -5886,7 +5850,14 @@ components:
           type: array
           description: List of email recipients
           examples:
-          - "[\"kalle.anka@ankeborg.se\"]"
+          - - kalle.anka@ankeborg.se
+          items:
+            type: string
+        ccRecipients:
+          type: array
+          description: List of CC email recipients
+          examples:
+          - - cc@ankeborg.se
           items:
             type: string
         userId:
@@ -6020,10 +5991,15 @@ components:
           format: int32
           description: Size of the file in bytes
           examples:
-          - "1024"
+          - 1024
         mimeType:
           type: string
           description: Mime type of the file
+        hash:
+          type: string
+          description: Hash of the file content
+          examples:
+          - a3b4c5d6e7f8...
         created:
           type: string
           format: date-time
@@ -6082,7 +6058,7 @@ components:
             description: List of attachment IDs referencing existing errand attachments
               to include in the message.
             examples:
-            - "123"
+            - 123
         type:
           type: string
           description: Type of message (user or system created)
@@ -6107,7 +6083,7 @@ components:
           format: int64
           description: The Errand Id
           examples:
-          - "123"
+          - 123
         ownerId:
           type: string
           description: Owner id of the notification
@@ -6239,12 +6215,16 @@ components:
           type: array
           description: List of labels for the errand
           examples:
-          - "[\"label1\",\"label2\"]"
+          - - label1
+            - label2
           items:
             type: string
         status:
           $ref: "#/components/schemas/Status"
           description: The current status of the errand
+        confidential:
+          type: boolean
+          description: Whether the errand is confidential or not
     PatchDecision:
       type: object
       properties:
@@ -6298,16 +6278,17 @@ components:
             type: string
           description: Additional parameters for the decision
           examples:
-          - "{\"key1\":\"value1\",\"key2\":\"value2\"}"
+          - key1: value1
+            key2: value2
     PageErrand:
       type: object
       properties:
-        totalElements:
-          type: integer
-          format: int64
         totalPages:
           type: integer
           format: int32
+        totalElements:
+          type: integer
+          format: int64
         size:
           type: integer
           format: int32
@@ -6318,12 +6299,12 @@ components:
         number:
           type: integer
           format: int32
-        sort:
-          $ref: "#/components/schemas/SortObject"
         first:
           type: boolean
         last:
           type: boolean
+        sort:
+          $ref: "#/components/schemas/SortObject"
         numberOfElements:
           type: integer
           format: int32
@@ -6339,14 +6320,14 @@ components:
           format: int64
         sort:
           $ref: "#/components/schemas/SortObject"
+        paged:
+          type: boolean
         pageNumber:
           type: integer
           format: int32
         pageSize:
           type: integer
           format: int32
-        paged:
-          type: boolean
         unpaged:
           type: boolean
     SortObject:
@@ -6470,7 +6451,7 @@ components:
           format: int64
           description: The errand ID
           examples:
-          - "123"
+          - 123
         municipalityId:
           type: string
           description: The municipality ID
@@ -6549,7 +6530,14 @@ components:
           type: array
           description: "The recipients of the message, if email"
           examples:
-          - "[\"kalle.anka@ankeborg.se\"]"
+          - - kalle.anka@ankeborg.se
+          items:
+            type: string
+        ccRecipients:
+          type: array
+          description: "The CC recipients of the message, if email"
+          examples:
+          - - cc@ankeborg.se
           items:
             type: string
         email:
@@ -6584,12 +6572,12 @@ components:
     PageMessage:
       type: object
       properties:
-        totalElements:
-          type: integer
-          format: int64
         totalPages:
           type: integer
           format: int32
+        totalElements:
+          type: integer
+          format: int64
         size:
           type: integer
           format: int32
@@ -6600,12 +6588,12 @@ components:
         number:
           type: integer
           format: int32
-        sort:
-          $ref: "#/components/schemas/SortObject"
         first:
           type: boolean
         last:
           type: boolean
+        sort:
+          $ref: "#/components/schemas/SortObject"
         numberOfElements:
           type: integer
           format: int32
@@ -6616,12 +6604,12 @@ components:
     PageDecision:
       type: object
       properties:
-        totalElements:
-          type: integer
-          format: int64
         totalPages:
           type: integer
           format: int32
+        totalElements:
+          type: integer
+          format: int64
         size:
           type: integer
           format: int32
@@ -6632,12 +6620,12 @@ components:
         number:
           type: integer
           format: int32
-        sort:
-          $ref: "#/components/schemas/SortObject"
         first:
           type: boolean
         last:
           type: boolean
+        sort:
+          $ref: "#/components/schemas/SortObject"
         numberOfElements:
           type: integer
           format: int32

@@ -1,5 +1,6 @@
 package se.sundsvall.casemanagement.integration.casedata;
 
+import feign.form.FormData;
 import generated.client.casedata.Attachment;
 import generated.client.casedata.Errand;
 import generated.client.casedata.Errand.ChannelEnum;
@@ -9,6 +10,7 @@ import generated.client.casedata.Stakeholder;
 import generated.client.casedata.Status;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
@@ -47,6 +49,7 @@ import se.sundsvall.casemanagement.service.CaseTypeRegistry;
 import se.sundsvall.casemanagement.util.Constants;
 import se.sundsvall.dept44.problem.Problem;
 import se.sundsvall.dept44.problem.ThrowableProblem;
+import tools.jackson.databind.ObjectMapper;
 
 import static generated.client.casedata.Stakeholder.TypeEnum.PERSON;
 import static java.time.OffsetDateTime.now;
@@ -64,7 +67,8 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static se.sundsvall.casemanagement.api.model.enums.Namespace.ANGE_PARKING_PERMIT;
 import static se.sundsvall.casemanagement.api.model.enums.Namespace.SBK_MEX;
 import static se.sundsvall.casemanagement.api.model.enums.Namespace.SBK_PARKING_PERMIT;
-import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toAttachment;
+import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toAttachmentFilePart;
+import static se.sundsvall.casemanagement.integration.casedata.CaseDataMapper.toAttachmentMetadataPart;
 import static se.sundsvall.casemanagement.util.Constants.SERVICE_NAME;
 
 @ExtendWith(MockitoExtension.class)
@@ -73,6 +77,7 @@ class CaseDataServiceTest {
 	private static final String MUNICIPALITY_ID = "2281";
 	private static final String MUNICIPALITY_ID_ANGE = "2260";
 	private static final Random RANDOM = new Random();
+	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
 	@InjectMocks
 	private CaseDataService caseDataService;
@@ -99,7 +104,14 @@ class CaseDataServiceTest {
 	private ArgumentCaptor<List<Stakeholder>> stakeholderListArgumentCaptor;
 
 	@Captor
-	private ArgumentCaptor<Attachment> attachmentArgumentCaptor;
+	private ArgumentCaptor<FormData> attachmentMetadataArgumentCaptor;
+
+	@Captor
+	private ArgumentCaptor<FormData> attachmentFileArgumentCaptor;
+
+	private static Attachment toAttachment(final FormData metadataPart) {
+		return OBJECT_MAPPER.readValue(metadataPart.getData(), Attachment.class);
+	}
 
 	private static Stream<Arguments> argumentsProvider() {
 		return Stream.of(
@@ -191,11 +203,12 @@ class CaseDataServiceTest {
 			assertThat(status.getCreated()).isNotNull();
 		});
 
-		attachmentArgumentCaptor = ArgumentCaptor.forClass(Attachment.class);
-		verify(caseDataClientMock, times(3)).postAttachment(eq(municipalityId), eq(namespace.name()), eq(errandId), attachmentArgumentCaptor.capture());
-		final var attachment = attachmentArgumentCaptor.getValue();
+		verify(caseDataClientMock, times(3)).postAttachment(eq(municipalityId), eq(namespace.name()), eq(errandId),
+			attachmentMetadataArgumentCaptor.capture(), attachmentFileArgumentCaptor.capture());
+		final var attachment = toAttachment(attachmentMetadataArgumentCaptor.getValue());
 		assertThat(attachment).isNotNull();
 		assertThat(attachment.getCategory()).isEqualTo(AttachmentCategory.ANMALAN_VARMEPUMP.toString());
+		assertThat(attachmentFileArgumentCaptor.getValue().getData()).isEqualTo("test".getBytes(StandardCharsets.UTF_8));
 
 		final var caseArgumentCaptor = ArgumentCaptor.forClass(CaseDTO.class);
 		verify(caseMappingServiceMock).postCaseMapping(caseArgumentCaptor.capture(), any(String.class), any(SystemType.class), eq(municipalityId));
@@ -218,7 +231,8 @@ class CaseDataServiceTest {
 		when(caseDataClientMock.patchErrand(eq(MUNICIPALITY_ID), eq(namespace), any(), any())).thenReturn(null);
 		when(caseDataClientMock.patchStatusOnErrand(eq(MUNICIPALITY_ID), eq(namespace), any(), any())).thenReturn(null);
 		when(caseDataClientMock.putStakeholdersOnErrand(eq(MUNICIPALITY_ID), eq(namespace), any(), any())).thenReturn(null);
-		when(caseDataClientMock.postAttachment(eq(MUNICIPALITY_ID), eq(namespace), eq(errandId), any())).thenReturn(null);
+		when(caseDataClientMock.postAttachment(eq(MUNICIPALITY_ID), eq(namespace), eq(errandId), any(), any())).thenReturn(null);
+		when(caseDataClientMock.getAttachmentsByErrandId(MUNICIPALITY_ID, namespace, errandId)).thenReturn(List.of(new Attachment().id(1L), new Attachment().id(2L)));
 
 		// Act
 		caseDataService.putErrand(errandId, inputCase, MUNICIPALITY_ID);
@@ -226,8 +240,13 @@ class CaseDataServiceTest {
 		// Assert
 		verify(caseDataClientMock, times(1)).patchErrand(eq(MUNICIPALITY_ID), eq(namespace), eq(errandId), patchErrandArgumentCaptor.capture());
 		verify(caseDataClientMock, times(1)).putStakeholdersOnErrand(eq(MUNICIPALITY_ID), eq(namespace), eq(errandId), stakeholderListArgumentCaptor.capture());
-		verify(caseDataClientMock, times(3)).postAttachment(eq(MUNICIPALITY_ID), eq(namespace), eq(errandId), attachmentArgumentCaptor.capture());
+		verify(caseDataClientMock, times(3)).postAttachment(eq(MUNICIPALITY_ID), eq(namespace), eq(errandId),
+			attachmentMetadataArgumentCaptor.capture(), attachmentFileArgumentCaptor.capture());
 		verify(caseDataClientMock, times(1)).patchStatusOnErrand(eq(MUNICIPALITY_ID), eq(namespace), eq(errandId), statusArgumentCaptor.capture());
+		// The existing attachments are removed before the new ones are posted
+		verify(caseDataClientMock).getAttachmentsByErrandId(MUNICIPALITY_ID, namespace, errandId);
+		verify(caseDataClientMock).deleteAttachment(MUNICIPALITY_ID, namespace, errandId, 1L);
+		verify(caseDataClientMock).deleteAttachment(MUNICIPALITY_ID, namespace, errandId, 2L);
 
 		final var patchErrand = patchErrandArgumentCaptor.getValue();
 		assertThat(patchErrand.getCaseType()).isEqualTo(inputCase.getCaseType());
@@ -251,7 +270,8 @@ class CaseDataServiceTest {
 		assertThat(status.getCreated()).isNotNull();
 
 		assertThat(stakeholderListArgumentCaptor.getValue()).hasSameSizeAs(inputCase.getStakeholders());
-		assertThat(attachmentArgumentCaptor.getValue().getCategory()).isEqualTo(AttachmentCategory.ANMALAN_VARMEPUMP.toString());
+		assertThat(toAttachment(attachmentMetadataArgumentCaptor.getValue()).getCategory()).isEqualTo(AttachmentCategory.ANMALAN_VARMEPUMP.toString());
+		assertThat(attachmentFileArgumentCaptor.getValue().getData()).isEqualTo("test".getBytes(StandardCharsets.UTF_8));
 	}
 
 	@Test
@@ -331,13 +351,14 @@ class CaseDataServiceTest {
 	void patchErrandWithAttachmentNotFound() {
 		final var errandNumber = UUID.randomUUID().toString();
 		final var errandId = RANDOM.nextLong();
-		final var attachment = new se.sundsvall.casemanagement.api.model.AttachmentDTO();
+		final var attachment = TestUtil.createAttachment(AttachmentCategory.ANMALAN_VARMEPUMP);
 		final var attachments = List.of(attachment);
 		final var namespace = "OTHER";
 		final var caseMapping = CaseMapping.builder().withCaseId(String.valueOf(errandId)).withExternalCaseId(errandNumber).build();
 
 		when(caseTypeRegistryMock.resolveNamespace(null, MUNICIPALITY_ID)).thenReturn(namespace);
-		when(caseDataClientMock.postAttachment(MUNICIPALITY_ID, namespace, errandId, toAttachment(attachment, errandId))).thenThrow(Problem.valueOf(NOT_FOUND));
+		when(caseDataClientMock.postAttachment(MUNICIPALITY_ID, namespace, errandId,
+			toAttachmentMetadataPart(attachment, errandId), toAttachmentFilePart(attachment))).thenThrow(Problem.valueOf(NOT_FOUND));
 
 		assertThatThrownBy(() -> caseDataService.patchErrandWithAttachment(caseMapping, attachments, MUNICIPALITY_ID))
 			.isInstanceOf(ThrowableProblem.class)
