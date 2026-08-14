@@ -118,6 +118,8 @@ resilience4j:
         ignoreExceptions: se.sundsvall.dept44.exception.ClientProblem
       case-data:
         ignoreExceptions: se.sundsvall.dept44.exception.ClientProblem
+      caseDataMetadata:
+        ignoreExceptions: se.sundsvall.dept44.exception.ClientProblem
       citizen-mapping:
         ignoreExceptions: se.sundsvall.dept44.exception.ClientProblem
       fb:
