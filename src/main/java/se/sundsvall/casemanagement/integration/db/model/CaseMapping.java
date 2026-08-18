@@ -13,6 +13,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -64,7 +65,7 @@ public class CaseMapping {
 	@PrePersist
 	@PreUpdate
 	protected void onPersistAndUpdate() {
-		timestamp = LocalDateTime.now().truncatedTo(ChronoUnit.MICROS);
+		timestamp = LocalDateTime.now(ZoneId.systemDefault()).truncatedTo(ChronoUnit.MICROS);
 	}
 
 }

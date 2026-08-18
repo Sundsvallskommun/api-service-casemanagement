@@ -3,6 +3,7 @@ package se.sundsvall.casemanagement.integration.ecos;
 import generated.client.party.PartyType;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Comparator;
@@ -800,7 +801,7 @@ public class EcosService {
 		final CreateOccurrenceOnCase createOccurrenceOnCase = new CreateOccurrenceOnCase();
 		final CreateOccurrenceOnCaseSvcDto createOccurrenceOnCaseSvcDto = new CreateOccurrenceOnCaseSvcDto();
 		createOccurrenceOnCaseSvcDto.setCaseId(caseId);
-		createOccurrenceOnCaseSvcDto.setOccurrenceDate(LocalDateTime.now());
+		createOccurrenceOnCaseSvcDto.setOccurrenceDate(LocalDateTime.now(ZoneId.systemDefault()));
 		createOccurrenceOnCaseSvcDto.setOccurrenceTypeId(ECOS_OCCURRENCE_TYPE_ID_INFO_FRAN_ETJANST);
 		createOccurrenceOnCaseSvcDto.setNote(ECOS_OCCURRENCE_TEXT_MOBIL_ANLAGGNING);
 		createOccurrenceOnCase.setCreateOccurrenceOnCaseSvcDto(createOccurrenceOnCaseSvcDto);

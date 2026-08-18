@@ -3,6 +3,7 @@ package se.sundsvall.casemanagement.service.mapper;
 import java.sql.Clob;
 import java.sql.SQLException;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import javax.sql.rowset.serial.SerialClob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +32,7 @@ public final class CaseMapper {
 			.withMunicipalityId(municipalityId)
 			.withDeliveryStatus(PENDING)
 			.withRequestId(RequestId.get())
-			.withCreated(OffsetDateTime.now())
+			.withCreated(OffsetDateTime.now(ZoneId.systemDefault()))
 			.build();
 	}
 

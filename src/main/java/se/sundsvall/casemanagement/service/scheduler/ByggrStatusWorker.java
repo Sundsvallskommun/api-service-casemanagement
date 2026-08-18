@@ -10,6 +10,7 @@ import arendeexport.Handelse;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -76,7 +77,7 @@ public class ByggrStatusWorker {
 	private Optional<LocalDateTime> updateByggrStatuses(final String municipalityId, final OffsetDateTime since) {
 		final var filter = new BatchFilter()
 			.withLowerExclusiveBound(since.toLocalDateTime())
-			.withUpperInclusiveBound(LocalDateTime.now());
+			.withUpperInclusiveBound(LocalDateTime.now(ZoneId.systemDefault()));
 
 		final var response = arendeExportClient.getUpdatedArenden(new GetUpdatedArenden().withFilter(filter));
 
@@ -131,7 +132,7 @@ public class ByggrStatusWorker {
 		return executionInformationRepository.save(ExecutionInformationEntity.create()
 			.withMunicipalityId(municipalityId)
 			.withJobName(JOB_NAME)
-			.withLastSuccessfulExecution(now()));
+			.withLastSuccessfulExecution(now(ZoneId.systemDefault())));
 	}
 
 }

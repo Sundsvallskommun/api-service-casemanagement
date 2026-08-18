@@ -19,6 +19,7 @@ import generated.client.oep_integrator.ConfirmDeliveryRequest;
 import generated.client.oep_integrator.InstanceType;
 import generated.client.party.PartyType;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -428,7 +429,7 @@ public class ByggrService {
 			.withBeskrivning(ByggrMapper.getArendeBeskrivning(byggRCase, caseTypeData.getArendeMening()))
 			.withIntressentLista(getByggrIntressenter(byggRCase))
 			.withObjektLista(getByggrArendeObjektLista(byggRCase))
-			.withAnkomstDatum(LocalDate.now())
+			.withAnkomstDatum(LocalDate.now(ZoneId.systemDefault()))
 			// ProjektNummer/FakturaId in ByggR.
 			.withProjektnr(Optional.ofNullable(ByggrMapper.getInvoiceMarking(byggRCase))
 				.orElse(parsePropertyDesignation(byggRCase.getFacilities())));
