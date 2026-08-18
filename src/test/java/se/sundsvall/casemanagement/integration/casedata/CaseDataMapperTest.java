@@ -73,7 +73,11 @@ class CaseDataMapperTest {
 
 		assertThat(result.getContentType()).isEqualTo(APPLICATION_JSON_VALUE);
 		assertThat(result.getFileName()).isNull();
+		// extraParameters is excluded: the generated model initializes it to an empty map, so a
+		// round-trip can never yield null. Its mapping is asserted in toAttachment() above.
 		assertThat(OBJECT_MAPPER.readValue(result.getData(), Attachment.class))
+			.usingRecursiveComparison()
+			.ignoringFields("extraParameters")
 			.isEqualTo(CaseDataMapper.toAttachment(attachmentDTO, errandId));
 	}
 
