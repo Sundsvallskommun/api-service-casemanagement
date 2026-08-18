@@ -807,7 +807,7 @@ components:
           type: boolean
           description: Is it a main facility?
           examples:
-          - "true"
+          - true
         extraParameters:
           type: object
           additionalProperties:
