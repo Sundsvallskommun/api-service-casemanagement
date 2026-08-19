@@ -1,6 +1,7 @@
 package se.sundsvall.casemanagement.service.scheduler;
 
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -66,7 +67,7 @@ public class EcosStatusWorker {
 
 		updateEcosStatuses(municipalityId, lastExecution);
 
-		executionInfo.setLastSuccessfulExecution(now());
+		executionInfo.setLastSuccessfulExecution(now(ZoneId.systemDefault()));
 		executionInformationRepository.save(executionInfo);
 
 		LOG.info("ECOS status update completed for municipality {}", municipalityId);
@@ -142,7 +143,7 @@ public class EcosStatusWorker {
 		return executionInformationRepository.save(ExecutionInformationEntity.create()
 			.withMunicipalityId(municipalityId)
 			.withJobName(JOB_NAME)
-			.withLastSuccessfulExecution(now()));
+			.withLastSuccessfulExecution(now(ZoneId.systemDefault())));
 	}
 
 }

@@ -123,13 +123,13 @@ public final class ByggrMapper {
 					.withRiktning(BYGGR_HANDELSE_RIKTNING_IN)
 					.withHandelsetyp(BYGGR_HANDELSETYP_STATUS)
 					.withHandelseslag(BYGGR_HANDELSESLAG_MANUELL_HANTERING_KRAVS)
-					.withStartDatum(LocalDateTime.now())
+					.withStartDatum(LocalDateTime.now(ZoneId.systemDefault()))
 					.withAnteckning(note)));
 	}
 
 	static Handelse toHandelse(final ByggRCaseDTO dto, final ByggrCaseTypeConfigEntity caseType) {
 		final var handelse = new Handelse()
-			.withStartDatum(LocalDateTime.now())
+			.withStartDatum(LocalDateTime.now(ZoneId.systemDefault()))
 			.withRiktning(BYGGR_HANDELSE_RIKTNING_IN)
 			.withRubrik(caseType.getHandelseRubrik())
 			.withHandelsetyp(caseType.getHandelseTyp())
@@ -588,7 +588,7 @@ public final class ByggrMapper {
 		return new Handelse()
 			.withRiktning(BYGGR_HANDELSE_RIKTNING_IN)
 			.withRubrik(mapHandelseslagToRubrik(handelseslag))
-			.withStartDatum(LocalDateTime.now())
+			.withStartDatum(LocalDateTime.now(ZoneId.systemDefault()))
 			.withAnteckning(errandInformation)
 			.withHandelsetyp(BYGGR_HANDELSETYP_HANDLING)
 			.withHandelseslag(handelseslag)
@@ -609,7 +609,7 @@ public final class ByggrMapper {
 		return new Handelse()
 			.withRiktning(BYGGR_HANDELSE_RIKTNING_IN)
 			.withRubrik("Anmälan KA")
-			.withStartDatum(LocalDateTime.now())
+			.withStartDatum(LocalDateTime.now(ZoneId.systemDefault()))
 			.withAnteckning(errandInformation)
 			.withHandelseslag(BYGGR_HANDELSESLAG_KOMPLETTERANDE_HANDLINGAR)
 			.withHandelsetyp(BYGGR_HANDELSETYP_HANDLING)
@@ -632,7 +632,7 @@ public final class ByggrMapper {
 		final var alertCaseManagerEvent = new Handelse()
 			.withRiktning(BYGGR_HANDELSE_RIKTNING_IN)
 			.withRubrik(BYGGR_HANDELSE_RUBRIK_MANUELL_HANTERING)
-			.withStartDatum(LocalDateTime.now())
+			.withStartDatum(LocalDateTime.now(ZoneId.systemDefault()))
 			.withHandelseslag(BYGGR_HANDELSESLAG_MANUELL_HANTERING_KRAVS)
 			.withHandelsetyp(BYGGR_HANDELSETYP_STATUS)
 			.withSekretess(false)

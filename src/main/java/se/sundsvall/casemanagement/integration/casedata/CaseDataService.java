@@ -89,7 +89,7 @@ public class CaseDataService {
 		errandDTO.setPhase(AKTUALISERING_PHASE);
 		final var statusDTO = new Status();
 		statusDTO.setStatusType(ARENDE_INKOMMIT_STATUS);
-		statusDTO.setCreated(now());
+		statusDTO.setCreated(now(ZoneId.systemDefault()));
 		errandDTO.setStatus(statusDTO);
 
 		final var namespace = mapNamespace(otherCase.getCaseType(), municipalityId);
@@ -192,7 +192,7 @@ public class CaseDataService {
 
 		final var statusDTO = new Status();
 		statusDTO.setStatusType(KOMPLETTERING_INKOMMEN_STATUS);
-		statusDTO.setCreated(now());
+		statusDTO.setCreated(now(ZoneId.systemDefault()));
 		caseDataClient.patchStatusOnErrand(municipalityId, namespace, caseId, statusDTO);
 		caseDataClient.putStakeholdersOnErrand(municipalityId, namespace, caseId, toStakeholders(otherCaseDTO.getStakeholders()));
 
