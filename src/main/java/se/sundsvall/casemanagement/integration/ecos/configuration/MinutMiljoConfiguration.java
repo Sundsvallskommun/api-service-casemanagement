@@ -7,11 +7,13 @@ import feign.soap.SOAPDecoder;
 import feign.soap.SOAPEncoder;
 import jakarta.xml.soap.SOAPConstants;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import javax.net.ssl.X509TrustManager;
+import jcifs.CIFSContext;
+import jcifs.context.SingletonContext;
 import jcifs.ntlmssp.Type1Message;
 import jcifs.ntlmssp.Type2Message;
 import jcifs.ntlmssp.Type3Message;
-import jcifs.util.Base64;
 import okhttp3.Authenticator;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -71,19 +73,24 @@ public class MinutMiljoConfiguration {
 			.composeCustomizersToOne();
 	}
 
-	private static class NTLMAuthenticator implements Authenticator {
+	protected static class NTLMAuthenticator implements Authenticator {
 
 		private final String username;
 
 		private final String password;
 
 		private final String ntlmMsg1;
+		private final CIFSContext cifsContext;
 
-		private NTLMAuthenticator(final String username, final String password) {
+		NTLMAuthenticator(final String username, final String password) {
 			this.username = username;
 			this.password = password;
-			final var type1Message = new Type1Message(Type1Message.getDefaultFlags(), null, null);
-			ntlmMsg1 = Base64.encode(type1Message.toByteArray());
+			cifsContext = SingletonContext.getInstance();
+			if (cifsContext == null) {
+				throw new IllegalStateException("Unable to initialize jcifs context");
+			}
+			final var type1Message = new Type1Message(cifsContext, Type1Message.getDefaultFlags(cifsContext), null, null);
+			ntlmMsg1 = Base64.getEncoder().encodeToString(type1Message.toByteArray());
 		}
 
 		@Override
@@ -94,8 +101,9 @@ public class MinutMiljoConfiguration {
 			}
 			String ntlmMsg3 = null;
 			try {
-				final var type3Message = new Type3Message(new Type2Message(Base64.decode(wwwAuthenticate.getFirst().substring(5))), password, "", username, null, Type3Message.getDefaultFlags());
-				ntlmMsg3 = Base64.encode(type3Message.toByteArray());
+				final var type2Message = new Type2Message(Base64.getDecoder().decode(wwwAuthenticate.getFirst().substring(5)));
+				final var type3Message = new Type3Message(cifsContext, type2Message, null, password, "", username, null, Type3Message.getDefaultFlags(cifsContext));
+				ntlmMsg3 = Base64.getEncoder().encodeToString(type3Message.toByteArray());
 			} catch (final Exception e) {
 				log.error("Error generating NTLM type 3 message", e);
 			}
