@@ -86,6 +86,9 @@ public class MinutMiljoConfiguration {
 			this.username = username;
 			this.password = password;
 			cifsContext = SingletonContext.getInstance();
+			if (cifsContext == null) {
+				throw new IllegalStateException("Unable to initialize jcifs context");
+			}
 			final var type1Message = new Type1Message(cifsContext, Type1Message.getDefaultFlags(cifsContext), null, null);
 			ntlmMsg1 = Base64.getEncoder().encodeToString(type1Message.toByteArray());
 		}
