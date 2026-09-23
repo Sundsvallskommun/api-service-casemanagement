@@ -72,7 +72,7 @@ class EDPFutureServiceTest {
 	private static final String ADDRESS = "Testgatan 1";
 	private static final String BUILDING_ID = "BLD-123";
 	private static final String WASTE_TYPE = "Restavfall";
-	private static final String ORDER_TYPE_TEXT = "SA_TRÄDGSÄCK";
+	private static final String ORDER_TYPE = "SA_TRÄDGSÄCK";
 	private static final String QUANTITY = "1";
 	private static final int CUSTOMER_ID = 42;
 	private static final int SERVICE_ID = 99;
@@ -116,7 +116,7 @@ class EDPFutureServiceTest {
 		when(edpFutureClientMock.getServicesByBuildingIdForOrder(any()))
 			.thenReturn(createGetServicesResponse(WASTE_TYPE));
 		when(edpFutureClientMock.getRenhOrderTypesForServiceV1_7(any()))
-			.thenReturn(createGetOrderTypesResponse(ORDER_TYPE_TEXT, true));
+			.thenReturn(createGetOrderTypesResponse(ORDER_TYPE, true));
 
 		edpFutureService.handleOrder(dto, MUNICIPALITY_ID);
 
@@ -150,7 +150,7 @@ class EDPFutureServiceTest {
 		when(edpFutureClientMock.getServicesByBuildingIdForOrder(any()))
 			.thenReturn(createGetServicesResponse(WASTE_TYPE));
 		when(edpFutureClientMock.getRenhOrderTypesForServiceV1_7(any()))
-			.thenReturn(createGetOrderTypesResponse(ORDER_TYPE_TEXT, true));
+			.thenReturn(createGetOrderTypesResponse(ORDER_TYPE, true));
 
 		edpFutureService.handleOrder(dto, MUNICIPALITY_ID);
 
@@ -259,7 +259,7 @@ class EDPFutureServiceTest {
 		when(edpFutureClientMock.getServicesByBuildingIdForOrder(any()))
 			.thenReturn(createGetServicesResponse(WASTE_TYPE));
 		when(edpFutureClientMock.getRenhOrderTypesForServiceV1_7(any()))
-			.thenReturn(createGetOrderTypesResponse(ORDER_TYPE_TEXT, true));
+			.thenReturn(createGetOrderTypesResponse(ORDER_TYPE, true));
 
 		edpFutureService.sendOrder(IDENTITY_NUMBER, ADDRESS, QUANTITY);
 
@@ -284,7 +284,7 @@ class EDPFutureServiceTest {
 		assertThat(submitRequest.getBuildingId()).isEqualTo(BUILDING_ID);
 		assertThat(submitRequest.getServiceId()).isEqualTo(SERVICE_ID);
 		assertThat(submitRequest.getOrderType()).isNotNull();
-		assertThat(submitRequest.getOrderType().getText()).isEqualTo(ORDER_TYPE_TEXT);
+		assertThat(submitRequest.getOrderType().getType()).isEqualTo(ORDER_TYPE);
 
 		verifyNoMoreInteractions(edpFutureClientMock);
 	}
@@ -373,7 +373,7 @@ class EDPFutureServiceTest {
 		when(edpFutureClientMock.getServicesByBuildingIdForOrder(any()))
 			.thenReturn(createGetServicesResponse(WASTE_TYPE));
 		when(edpFutureClientMock.getRenhOrderTypesForServiceV1_7(any()))
-			.thenReturn(createGetOrderTypesResponse(ORDER_TYPE_TEXT, true));
+			.thenReturn(createGetOrderTypesResponse(ORDER_TYPE, true));
 
 		edpFutureService.sendOrder(IDENTITY_NUMBER, ADDRESS, QUANTITY);
 
@@ -399,12 +399,12 @@ class EDPFutureServiceTest {
 	@Test
 	void getOrderType() {
 		when(edpFutureClientMock.getRenhOrderTypesForServiceV1_7(any()))
-			.thenReturn(createGetOrderTypesResponse(ORDER_TYPE_TEXT, true));
+			.thenReturn(createGetOrderTypesResponse(ORDER_TYPE, true));
 
 		var result = edpFutureService.getOrderType(SERVICE_ID, QUANTITY);
 
 		assertThat(result).isNotNull();
-		assertThat(result.getText()).isEqualTo(ORDER_TYPE_TEXT);
+		assertThat(result.getType()).isEqualTo(ORDER_TYPE);
 		assertThat(result.getOrderRows().getOrderRowV14().getFirst().getQuantity()).isEqualTo(1);
 		verify(edpFutureClientMock).getRenhOrderTypesForServiceV1_7(getOrderTypesCaptor.capture());
 		assertThat(getOrderTypesCaptor.getValue().getServiceId()).isEqualTo(SERVICE_ID);
@@ -419,7 +419,7 @@ class EDPFutureServiceTest {
 		assertThatThrownBy(() -> edpFutureService.getOrderType(SERVICE_ID, QUANTITY))
 			.isInstanceOf(Problem.class)
 			.hasMessageContaining(BAD_GATEWAY.getReasonPhrase())
-			.hasMessageContaining("No order type found with the given name");
+			.hasMessageContaining("No order type found with the given type");
 
 		verify(edpFutureClientMock).getRenhOrderTypesForServiceV1_7(any());
 		verifyNoMoreInteractions(edpFutureClientMock);
@@ -428,7 +428,7 @@ class EDPFutureServiceTest {
 	@Test
 	void getOrderTypeNoOrderRows() {
 		when(edpFutureClientMock.getRenhOrderTypesForServiceV1_7(any()))
-			.thenReturn(createGetOrderTypesResponse(ORDER_TYPE_TEXT, false));
+			.thenReturn(createGetOrderTypesResponse(ORDER_TYPE, false));
 
 		assertThatThrownBy(() -> edpFutureService.getOrderType(SERVICE_ID, QUANTITY))
 			.isInstanceOf(Problem.class)
@@ -442,7 +442,7 @@ class EDPFutureServiceTest {
 	@Test
 	void submitOrderTypeApplication() {
 		var orderType = new OrderTypeV14()
-			.withText(ORDER_TYPE_TEXT)
+			.withType(ORDER_TYPE)
 			.withOrderRows(new ArrayOfOrderRowV14().withOrderRowV14(new OrderRowV14()));
 
 		edpFutureService.submitOrderTypeApplication(CUSTOMER_ID, BUILDING_ID, SERVICE_ID, orderType);
@@ -510,8 +510,8 @@ class EDPFutureServiceTest {
 						.withRhServices(new ArrayOfRHService().withRHService(service))));
 	}
 
-	private GetRenhOrderTypesForServiceV17Response createGetOrderTypesResponse(final String text, final boolean withOrderRows) {
-		var orderType = new OrderTypeV17().withText(text);
+	private GetRenhOrderTypesForServiceV17Response createGetOrderTypesResponse(final String type, final boolean withOrderRows) {
+		var orderType = new OrderTypeV17().withType(type);
 
 		if (withOrderRows) {
 			orderType.withOrderRows(new ArrayOfOrderRowV14().withOrderRowV14(new OrderRowV14()));

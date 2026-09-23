@@ -27,8 +27,8 @@
 						</b:_OrderRows>
 						<b:_Price>50</b:_Price>
 						<b:_Product>ESK</b:_Product>
-						<b:_Text>SA_TRÄDGSÄCK</b:_Text>
-						<b:_Type>Order</b:_Type>
+						<b:_Text>Trädgårdssäck, hämtning</b:_Text>
+						<b:_Type>SA_TRÄDGSÄCK</b:_Type>
 						<b:_HideComment>false</b:_HideComment>
 					</b:OrderTypeV1_7>
 				</a:_resultValue>
