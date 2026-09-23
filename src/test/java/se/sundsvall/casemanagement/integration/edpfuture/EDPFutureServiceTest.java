@@ -24,11 +24,13 @@ import edpfuture.OperationResultOfAllServicesFbShh6Ke;
 import edpfuture.OperationResultOfArrayOfAuthorizedUserFbShh6Ke;
 import edpfuture.OperationResultOfArrayOfCustomerBuildingInformationHolderV12FbShh6Ke;
 import edpfuture.OperationResultOfArrayOfOrderTypeV17FbShh6Ke;
+import edpfuture.OperationResultOfint;
 import edpfuture.OrderRowV14;
 import edpfuture.OrderTypeV14;
 import edpfuture.OrderTypeV17;
 import edpfuture.RHService;
 import edpfuture.SubmitOrderTypeApplicationV14;
+import edpfuture.SubmitOrderTypeApplicationV14Response;
 import generated.client.party.PartyType;
 import java.util.HashMap;
 import java.util.List;
@@ -117,6 +119,8 @@ class EDPFutureServiceTest {
 			.thenReturn(createGetServicesResponse(WASTE_TYPE));
 		when(edpFutureClientMock.getRenhOrderTypesForServiceV1_7(any()))
 			.thenReturn(createGetOrderTypesResponse(ORDER_TYPE, true));
+		when(edpFutureClientMock.submitOrderTypeApplicationV1_4(any()))
+			.thenReturn(createSubmitResponse(true, null));
 
 		edpFutureService.handleOrder(dto, MUNICIPALITY_ID);
 
@@ -151,6 +155,8 @@ class EDPFutureServiceTest {
 			.thenReturn(createGetServicesResponse(WASTE_TYPE));
 		when(edpFutureClientMock.getRenhOrderTypesForServiceV1_7(any()))
 			.thenReturn(createGetOrderTypesResponse(ORDER_TYPE, true));
+		when(edpFutureClientMock.submitOrderTypeApplicationV1_4(any()))
+			.thenReturn(createSubmitResponse(true, null));
 
 		edpFutureService.handleOrder(dto, MUNICIPALITY_ID);
 
@@ -260,6 +266,8 @@ class EDPFutureServiceTest {
 			.thenReturn(createGetServicesResponse(WASTE_TYPE));
 		when(edpFutureClientMock.getRenhOrderTypesForServiceV1_7(any()))
 			.thenReturn(createGetOrderTypesResponse(ORDER_TYPE, true));
+		when(edpFutureClientMock.submitOrderTypeApplicationV1_4(any()))
+			.thenReturn(createSubmitResponse(true, null));
 
 		edpFutureService.sendOrder(IDENTITY_NUMBER, ADDRESS, QUANTITY);
 
@@ -374,6 +382,8 @@ class EDPFutureServiceTest {
 			.thenReturn(createGetServicesResponse(WASTE_TYPE));
 		when(edpFutureClientMock.getRenhOrderTypesForServiceV1_7(any()))
 			.thenReturn(createGetOrderTypesResponse(ORDER_TYPE, true));
+		when(edpFutureClientMock.submitOrderTypeApplicationV1_4(any()))
+			.thenReturn(createSubmitResponse(true, null));
 
 		edpFutureService.sendOrder(IDENTITY_NUMBER, ADDRESS, QUANTITY);
 
@@ -444,6 +454,8 @@ class EDPFutureServiceTest {
 		var orderType = new OrderTypeV14()
 			.withType(ORDER_TYPE)
 			.withOrderRows(new ArrayOfOrderRowV14().withOrderRowV14(new OrderRowV14()));
+		when(edpFutureClientMock.submitOrderTypeApplicationV1_4(any()))
+			.thenReturn(createSubmitResponse(true, null));
 
 		edpFutureService.submitOrderTypeApplication(CUSTOMER_ID, BUILDING_ID, SERVICE_ID, orderType);
 
@@ -453,6 +465,36 @@ class EDPFutureServiceTest {
 		assertThat(request.getBuildingId()).isEqualTo(BUILDING_ID);
 		assertThat(request.getServiceId()).isEqualTo(SERVICE_ID);
 		assertThat(request.getOrderType()).isEqualTo(orderType);
+		verifyNoMoreInteractions(edpFutureClientMock);
+	}
+
+	@Test
+	void submitOrderTypeApplicationNotSucceeded() {
+		var orderType = new OrderTypeV14().withType(ORDER_TYPE);
+		when(edpFutureClientMock.submitOrderTypeApplicationV1_4(any()))
+			.thenReturn(createSubmitResponse(false, "Order rejected"));
+
+		assertThatThrownBy(() -> edpFutureService.submitOrderTypeApplication(CUSTOMER_ID, BUILDING_ID, SERVICE_ID, orderType))
+			.isInstanceOf(Problem.class)
+			.hasMessageContaining(BAD_GATEWAY.getReasonPhrase())
+			.hasMessageContaining("Failed to submit order to EDP Future. Order rejected");
+
+		verify(edpFutureClientMock).submitOrderTypeApplicationV1_4(any());
+		verifyNoMoreInteractions(edpFutureClientMock);
+	}
+
+	@Test
+	void submitOrderTypeApplicationNoResult() {
+		var orderType = new OrderTypeV14().withType(ORDER_TYPE);
+		when(edpFutureClientMock.submitOrderTypeApplicationV1_4(any()))
+			.thenReturn(new SubmitOrderTypeApplicationV14Response());
+
+		assertThatThrownBy(() -> edpFutureService.submitOrderTypeApplication(CUSTOMER_ID, BUILDING_ID, SERVICE_ID, orderType))
+			.isInstanceOf(Problem.class)
+			.hasMessageContaining(BAD_GATEWAY.getReasonPhrase())
+			.hasMessageContaining("Failed to submit order to EDP Future. No result returned.");
+
+		verify(edpFutureClientMock).submitOrderTypeApplicationV1_4(any());
 		verifyNoMoreInteractions(edpFutureClientMock);
 	}
 
@@ -523,6 +565,14 @@ class EDPFutureServiceTest {
 			.withGetRenhOrderTypesForServiceV17Result(
 				new OperationResultOfArrayOfOrderTypeV17FbShh6Ke()
 					.withResultValue(new ArrayOfOrderTypeV17().withOrderTypeV17(orderType)));
+	}
+
+	private SubmitOrderTypeApplicationV14Response createSubmitResponse(final boolean succeeded, final String errorMessage) {
+		return new SubmitOrderTypeApplicationV14Response()
+			.withSubmitOrderTypeApplicationV14Result(
+				new OperationResultOfint()
+					.withSucceeded(succeeded)
+					.withErrorMessage(errorMessage));
 	}
 
 }

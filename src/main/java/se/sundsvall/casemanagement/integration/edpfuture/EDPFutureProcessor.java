@@ -62,6 +62,9 @@ class EDPFutureProcessor extends Processor {
 
 		try {
 			edpFutureService.handleOrder(futureCaseDTO, event.getMunicipalityId());
+			// EDPFuture deliveries are not confirmed to OeP, so the entity is only removed.
+			caseRepository.delete(caseEntity);
+			LOGGER.info("Successfully processed EDPFuture errand with externalCaseId: {} and municipalityId: {}", sanitizeForLogging(event.getPayload().getExternalCaseId()), sanitizeForLogging(event.getMunicipalityId()));
 		} catch (Exception e) {
 			LOGGER.error("Error while processing EDPFuture errand with externalCaseId: {} and municipalityId: {}. Error: {}", sanitizeForLogging(event.getPayload().getExternalCaseId()), sanitizeForLogging(event.getMunicipalityId()), e.getMessage());
 			handleFailedDelivery(e, caseEntity, "EDPFuture", event.getMunicipalityId());
