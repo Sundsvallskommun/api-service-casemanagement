@@ -14,7 +14,9 @@ import edpfuture.GetServicesByBuildingIdForOrderResponse;
 import edpfuture.OrderTypeV14;
 import edpfuture.RHService;
 import edpfuture.SubmitOrderTypeApplicationV14;
+import edpfuture.SubmitOrderTypeApplicationV14Response;
 import generated.client.party.PartyType;
+import java.util.Objects;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 import se.sundsvall.casemanagement.api.model.FutureCaseDTO;
@@ -267,7 +269,13 @@ public class EDPFutureService {
 	 */
 	public void submitOrderTypeApplication(final int customerId, final String buildingId, final int serviceId, final OrderTypeV14 orderType) {
 		var request = createSubmitOrderTypeApplicationV14(customerId, buildingId, serviceId, orderType);
-		edpFutureClient.submitOrderTypeApplicationV1_4(request);
+		var result = Optional.ofNullable(edpFutureClient.submitOrderTypeApplicationV1_4(request))
+			.map(SubmitOrderTypeApplicationV14Response::getSubmitOrderTypeApplicationV14Result)
+			.orElseThrow(() -> Problem.valueOf(BAD_GATEWAY, "Failed to submit order to EDP Future. No result returned."));
+
+		if (!result.isSucceeded()) {
+			throw Problem.valueOf(BAD_GATEWAY, "Failed to submit order to EDP Future. " + Objects.toString(result.getErrorMessage(), "No error message returned."));
+		}
 	}
 
 	private SubmitOrderTypeApplicationV14 createSubmitOrderTypeApplicationV14(final int customerId, final String buildingId, final int serviceId, final OrderTypeV14 orderType) {

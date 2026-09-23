@@ -69,6 +69,8 @@ class EDPFutureCaseIT extends AbstractAppTest {
 		assertThat(caseMapping.getCaseId()).isEqualTo(EXTERNAL_CASE_ID);
 		assertThat(caseMapping.getCaseType()).isEqualTo("EXTRA_SACK");
 		assertThat(caseMapping.getSystem()).isEqualTo(SystemType.EDPFUTURE);
+
+		await().atMost(15, SECONDS).until(() -> caseRepository.findByIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID).isEmpty());
 	}
 
 	@Test
