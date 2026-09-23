@@ -224,22 +224,22 @@ public class EDPFutureService {
 	}
 
 	/**
-	 * Extracts the order type with the name "Extra säck" from the GetRenhOrderTypesForServiceV17Response. It looks for an
-	 * order type that matches the given serviceId and has the name "Extra säck", and returns it. If no such order type is
+	 * Extracts the order type with the name "SA_TRÄDGSÄCK" from the GetRenhOrderTypesForServiceV17Response. It looks for an
+	 * order type that matches the given serviceId and has the name "SA_TRÄDGSÄCK", and returns it. If no such order type is
 	 * found, it throws
 	 * an exception.
 	 *
 	 * @param  response GetRenhOrderTypesForServiceV17Response containing the list of order types associated with the
 	 *                  serviceId.
-	 * @return          the order type with the name "Extra säck" for the given serviceId.
+	 * @return          the order type with the name "SA_TRÄDGSÄCK" for the given serviceId.
 	 */
 	private OrderTypeV14 getOrderType(final GetRenhOrderTypesForServiceV17Response response, final String quantity) {
 		var orderType = response.getGetRenhOrderTypesForServiceV17Result().getResultValue().getOrderTypeV17().stream()
-			.filter(service -> "Extra säck".equals(service.getText()))
+			.filter(service -> "SA_TRÄDGSÄCK".equals(service.getText()))
 			.findFirst()
 			.orElseThrow(() -> Problem.valueOf(BAD_GATEWAY, "Failed to retrieve order type from EDP Future. No order type found with the given name."));
 
-		// Sets the number of "Extra säck" to order.
+		// Sets the number of "SA_TRÄDGSÄCK" to order.
 		orderType.getOrderRows().getOrderRowV14().stream()
 			.findFirst()
 			.ifPresentOrElse(row -> row.setQuantity(Integer.parseInt(quantity)), () -> {
@@ -263,7 +263,7 @@ public class EDPFutureService {
 	 * @param customerId the customerId associated with the given legal identity number.
 	 * @param buildingId the buildingId associated with the customerId and the given address.
 	 * @param serviceId  the serviceId associated with the buildingId and waste type "Restavfall".
-	 * @param orderType  the order type associated with the serviceId and with the name "Extra säck".
+	 * @param orderType  the order type associated with the serviceId and with the name "SA_TRÄDGSÄCK".
 	 */
 	public void submitOrderTypeApplication(final int customerId, final String buildingId, final int serviceId, final OrderTypeV14 orderType) {
 		var request = createSubmitOrderTypeApplicationV14(customerId, buildingId, serviceId, orderType);
