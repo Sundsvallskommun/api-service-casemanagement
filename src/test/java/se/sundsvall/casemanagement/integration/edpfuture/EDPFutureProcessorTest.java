@@ -91,6 +91,22 @@ class EDPFutureProcessorTest {
 	}
 
 	@Test
+	void handleIncomingErrandDeleteFails() throws SQLException, IOException {
+		final var event = createEvent();
+		final var entity = createEntity(event);
+		when(caseRepositoryMock.findByIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID)).thenReturn(Optional.of(entity));
+		doThrow(new RuntimeException("test")).when(caseRepositoryMock).delete(entity);
+
+		edpFutureProcessor.handleIncomingErrand(event);
+
+		verify(edpFutureServiceMock).handleOrder(any(FutureCaseDTO.class), eq(MUNICIPALITY_ID));
+		verify(caseRepositoryMock).findByIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID);
+		verify(caseRepositoryMock).delete(entity);
+		verifyNoMoreInteractions(caseRepositoryMock, edpFutureServiceMock);
+		verifyNoInteractions(oepIntegratorClientMock, messagingIntegrationMock);
+	}
+
+	@Test
 	void handleIncomingErrandNoErrandFound() throws SQLException, IOException {
 		final var event = createEvent();
 

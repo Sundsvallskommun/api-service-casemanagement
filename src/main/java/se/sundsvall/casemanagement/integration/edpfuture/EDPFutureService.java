@@ -16,6 +16,7 @@ import edpfuture.RHService;
 import edpfuture.SubmitOrderTypeApplicationV14;
 import edpfuture.SubmitOrderTypeApplicationV14Response;
 import generated.client.party.PartyType;
+import java.util.Objects;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 import se.sundsvall.casemanagement.api.model.FutureCaseDTO;
@@ -273,7 +274,7 @@ public class EDPFutureService {
 			.orElseThrow(() -> Problem.valueOf(BAD_GATEWAY, "Failed to submit order to EDP Future. No result returned."));
 
 		if (!result.isSucceeded()) {
-			throw Problem.valueOf(BAD_GATEWAY, "Failed to submit order to EDP Future. " + result.getErrorMessage());
+			throw Problem.valueOf(BAD_GATEWAY, "Failed to submit order to EDP Future. " + Objects.toString(result.getErrorMessage(), "No error message returned."));
 		}
 	}
 

@@ -484,6 +484,21 @@ class EDPFutureServiceTest {
 	}
 
 	@Test
+	void submitOrderTypeApplicationNotSucceededWithoutErrorMessage() {
+		var orderType = new OrderTypeV14().withType(ORDER_TYPE);
+		when(edpFutureClientMock.submitOrderTypeApplicationV1_4(any()))
+			.thenReturn(createSubmitResponse(false, null));
+
+		assertThatThrownBy(() -> edpFutureService.submitOrderTypeApplication(CUSTOMER_ID, BUILDING_ID, SERVICE_ID, orderType))
+			.isInstanceOf(Problem.class)
+			.hasMessageContaining(BAD_GATEWAY.getReasonPhrase())
+			.hasMessageContaining("Failed to submit order to EDP Future. No error message returned.");
+
+		verify(edpFutureClientMock).submitOrderTypeApplicationV1_4(any());
+		verifyNoMoreInteractions(edpFutureClientMock);
+	}
+
+	@Test
 	void submitOrderTypeApplicationNoResult() {
 		var orderType = new OrderTypeV14().withType(ORDER_TYPE);
 		when(edpFutureClientMock.submitOrderTypeApplicationV1_4(any()))
