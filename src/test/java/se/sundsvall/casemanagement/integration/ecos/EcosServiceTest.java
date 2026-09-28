@@ -36,9 +36,12 @@ import minutmiljo.GetCase;
 import minutmiljo.GetCaseResponse;
 import minutmiljo.InfiltrationPlantSvcDto;
 import minutmiljo.MiniSewageSvcDto;
+import minutmiljo.MultiPartyRoleFilterSvcDto;
 import minutmiljo.OccurrenceListItemSvcDto;
+import minutmiljo.PartyRoleTupleSvcDto;
 import minutmiljo.PartySvcDto;
 import minutmiljo.SandFilterSvcDto;
+import minutmiljo.SearchCase;
 import minutmiljo.SearchCaseResponse;
 import minutmiljo.SearchCaseResultSvcDto;
 import minutmiljo.SearchFacilityResponse;
@@ -79,6 +82,7 @@ import se.sundsvall.dept44.problem.Problem;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
@@ -109,6 +113,8 @@ import static se.sundsvall.casemanagement.util.Constants.ECOS_OCCURRENCE_TEXT_MO
 import static se.sundsvall.casemanagement.util.Constants.ECOS_OCCURRENCE_TYPE_ID_ANMALAN;
 import static se.sundsvall.casemanagement.util.Constants.ECOS_OCCURRENCE_TYPE_ID_INFO_FRAN_ETJANST;
 import static se.sundsvall.casemanagement.util.Constants.ECOS_OCCURRENCE_TYPE_ID_KOMPLETTERING;
+import static se.sundsvall.casemanagement.util.Constants.ECOS_ROLE_ID_SOKANDE;
+import static se.sundsvall.casemanagement.util.Constants.ECOS_ROLE_ID_VERKSAMHETSUTOVARE;
 
 @ExtendWith(MockitoExtension.class)
 class EcosServiceTest {
@@ -904,6 +910,19 @@ class EcosServiceTest {
 
 		final var getCaseArgumentCaptor = ArgumentCaptor.forClass(GetCase.class);
 		verify(minutMiljoClientMock, times(2)).getCase(getCaseArgumentCaptor.capture());
+
+		final var searchCaseArgumentCaptor = ArgumentCaptor.forClass(SearchCase.class);
+		verify(minutMiljoClientMock, times(2)).searchCase(searchCaseArgumentCaptor.capture());
+		assertThat(searchCaseArgumentCaptor.getAllValues()).extracting(searchCase -> searchCase.getModel().getFilters().getFilterSvcDto())
+			.zipSatisfy(arrayOfPartySvcDto.getPartySvcDto(), (filters, party) -> assertThat(filters).singleElement()
+				.isInstanceOfSatisfying(MultiPartyRoleFilterSvcDto.class, filter -> {
+					assertThat(filter.isRequireAll()).isFalse();
+					assertThat(filter.getPartyRoles().getPartyRoleTupleSvcDto())
+						.extracting(PartyRoleTupleSvcDto::getPartyId, PartyRoleTupleSvcDto::getRoleId)
+						.containsExactlyInAnyOrder(
+							tuple(party.getId(), ECOS_ROLE_ID_VERKSAMHETSUTOVARE),
+							tuple(party.getId(), ECOS_ROLE_ID_SOKANDE));
+				}));
 	}
 
 	@Test
