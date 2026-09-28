@@ -21,6 +21,7 @@ import minutmiljo.ArrayOfDocumentSvcDto;
 import minutmiljo.ArrayOfFacilityFilterSvcDto;
 import minutmiljo.ArrayOfFilterSvcDto;
 import minutmiljo.ArrayOfHeatCollectorTubeSvcDto;
+import minutmiljo.ArrayOfPartyRoleTupleSvcDto;
 import minutmiljo.ArrayOfPartySvcDto;
 import minutmiljo.ArrayOfPurificationStepSvcDto;
 import minutmiljo.ArrayOfSearchCaseResultSvcDto;
@@ -58,7 +59,9 @@ import minutmiljo.HeatCollectorTubeSvcDto;
 import minutmiljo.InfiltrationPlantSvcDto;
 import minutmiljo.LocationSvcDto;
 import minutmiljo.MiniSewageSvcDto;
+import minutmiljo.MultiPartyRoleFilterSvcDto;
 import minutmiljo.OccurrenceListItemSvcDto;
+import minutmiljo.PartyRoleTupleSvcDto;
 import minutmiljo.PhosphorusTrapSvcDto;
 import minutmiljo.PurificationStepSvcDto;
 import minutmiljo.SandFilterSvcDto;
@@ -69,7 +72,6 @@ import minutmiljo.SearchCaseSvcDto;
 import minutmiljo.SearchFacility;
 import minutmiljo.SearchFacilitySvcDto;
 import minutmiljo.SepticTankSvcDto;
-import minutmiljo.SinglePartyRoleFilterSvcDto;
 import minutmiljoV2.RegisterDocument;
 import minutmiljoV2.RegisterDocumentCaseResultSvcDto;
 import minutmiljoV2.RegisterDocumentCaseSvcDtoV2;
@@ -120,6 +122,7 @@ import static se.sundsvall.casemanagement.util.Constants.ECOS_OCCURRENCE_TEXT_MO
 import static se.sundsvall.casemanagement.util.Constants.ECOS_OCCURRENCE_TYPE_ID_ANMALAN;
 import static se.sundsvall.casemanagement.util.Constants.ECOS_OCCURRENCE_TYPE_ID_INFO_FRAN_ETJANST;
 import static se.sundsvall.casemanagement.util.Constants.ECOS_OCCURRENCE_TYPE_ID_KOMPLETTERING;
+import static se.sundsvall.casemanagement.util.Constants.ECOS_ROLE_ID_SOKANDE;
 import static se.sundsvall.casemanagement.util.Constants.ECOS_ROLE_ID_VERKSAMHETSUTOVARE;
 import static se.sundsvall.casemanagement.util.Constants.ERR_MSG_STATUS_NOT_FOUND;
 import static se.sundsvall.casemanagement.util.Constants.FACILITY_STATUS_ID_ACTIVE;
@@ -146,6 +149,7 @@ public class EcosService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(EcosService.class);
 	private static final String VOLUME = "Volume";
+	private static final List<String> PARTY_CASE_SEARCH_ROLE_IDS = List.of(ECOS_ROLE_ID_VERKSAMHETSUTOVARE, ECOS_ROLE_ID_SOKANDE);
 
 	private final CaseMappingService caseMappingService;
 	private final PartyService partyService;
@@ -900,14 +904,22 @@ public class EcosService {
 		minutMiljoClient.addDocumentsToCase(addDocumentsToCase);
 	}
 
+	/**
+	 * Searches the cases where the party is either operator or applicant. The party gets whatever roles the e-service sent
+	 * when the case was created, so a citizen applying on their own behalf may only be an applicant; searching on the
+	 * operator role alone would leave that case out of the party's case list.
+	 */
 	private ArrayOfSearchCaseResultSvcDto searchCase(final String partyId) {
 		final SearchCase searchCase = new SearchCase();
 		final SearchCaseSvcDto searchCaseSvcDto = new SearchCaseSvcDto();
 		final ArrayOfFilterSvcDto arrayOfFilterSvcDto = new ArrayOfFilterSvcDto();
-		final SinglePartyRoleFilterSvcDto filter = new SinglePartyRoleFilterSvcDto();
+		final MultiPartyRoleFilterSvcDto filter = new MultiPartyRoleFilterSvcDto()
+			.withRequireAll(false)
+			.withPartyRoles(new ArrayOfPartyRoleTupleSvcDto()
+				.withPartyRoleTupleSvcDto(PARTY_CASE_SEARCH_ROLE_IDS.stream()
+					.map(roleId -> new PartyRoleTupleSvcDto().withPartyId(partyId).withRoleId(roleId))
+					.toList()));
 
-		filter.setPartyId(partyId);
-		filter.setRoleId(ECOS_ROLE_ID_VERKSAMHETSUTOVARE);
 		arrayOfFilterSvcDto.getFilterSvcDto().add(filter);
 		searchCaseSvcDto.setFilters(arrayOfFilterSvcDto);
 
