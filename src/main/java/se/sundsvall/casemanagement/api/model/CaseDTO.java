@@ -33,16 +33,14 @@ public abstract class CaseDTO {
 	private String caseTitleAddition;
 
 	@NotEmpty
-	@Valid
 	@Schema(description = "The stakeholders in the case", oneOf = {
 		PersonDTO.class, OrganizationDTO.class
 	})
-	private List<StakeholderDTO> stakeholders;
+	private List<@Valid StakeholderDTO> stakeholders;
 
 	@NotEmpty(groups = AttachmentConstraints.class)
-	@Valid
 	@Schema(description = "The attachments in the case")
-	private List<AttachmentDTO> attachments;
+	private List<@Valid AttachmentDTO> attachments;
 
 	@Schema(description = "Extra parameters for the case.")
 	private Map<String, String> extraParameters;

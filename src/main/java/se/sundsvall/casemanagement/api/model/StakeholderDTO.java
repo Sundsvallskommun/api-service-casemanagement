@@ -57,11 +57,8 @@ public abstract class StakeholderDTO {
 	@Schema(description = "Stakeholder emailaddress", examples = "test.testorsson@sundsvall.se")
 	private String emailAddress;
 
-	@Valid
-	@ConvertGroup(from = ByggRConstraints.class, to = DefaultConstraints.class)
-	@ConvertGroup(from = EcosConstraints.class, to = DefaultConstraints.class)
 	@Schema(description = "A stakeholder may have one or more addresses. For example one POSTAL_ADDRESS and another INVOICE_ADDRESS.")
-	private List<AddressDTO> addresses;
+	private List<@Valid @ConvertGroup(from = ByggRConstraints.class, to = DefaultConstraints.class) @ConvertGroup(from = EcosConstraints.class, to = DefaultConstraints.class) AddressDTO> addresses;
 
 	@Schema(description = "The stakeholder's billing address")
 	private Map<String, String> extraParameters;

@@ -40,7 +40,6 @@ public class EcosCaseDTO extends CaseDTO implements Serializable {
 
 	@NotEmpty
 	@Size(min = 1, max = 1, message = "size must be 1")
-	@Valid
 	@Schema(description = "The facilities in the case")
 	private List<@Valid FacilityDTO> facilities;
 
