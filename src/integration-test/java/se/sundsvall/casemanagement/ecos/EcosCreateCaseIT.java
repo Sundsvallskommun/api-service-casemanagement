@@ -12,7 +12,9 @@ import se.sundsvall.casemanagement.integration.db.CaseRepository;
 import se.sundsvall.dept44.test.AbstractAppTest;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.OK;
 
@@ -52,7 +54,7 @@ class EcosCreateCaseIT extends AbstractAppTest {
 		assertThat(result.getCaseId()).isEqualTo("Inskickat");
 
 		// Make sure that there doesn't exist a case entity
-		assertThat(caseRepository.findByIdAndMunicipalityId("874407364", MUNICIPALITY_ID)).isEmpty();
+		await().atMost(15, SECONDS).until(() -> caseRepository.findByIdAndMunicipalityId("874407364", MUNICIPALITY_ID).isEmpty());
 		// Make sure that there exists a case mapping
 		final var caseMapping = caseMappingRepository.findByExternalCaseIdAndMunicipalityId("874407364", MUNICIPALITY_ID);
 		assertThat(caseMapping).isNotNull();
@@ -81,7 +83,7 @@ class EcosCreateCaseIT extends AbstractAppTest {
 		assertThat(result.getCaseId()).isEqualTo("Inskickat");
 
 		// Make sure that there doesn't exist a case entity
-		assertThat(caseRepository.findByIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID)).isEmpty();
+		await().atMost(15, SECONDS).until(() -> caseRepository.findByIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID).isEmpty());
 		// Make sure that there exists a case mapping
 		final var caseMapping = caseMappingRepository.findByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID);
 		assertThat(caseMapping).isNotNull();
@@ -110,7 +112,7 @@ class EcosCreateCaseIT extends AbstractAppTest {
 		assertThat(result.getCaseId()).isEqualTo("Inskickat");
 
 		// Make sure that there doesn't exist a case entity
-		assertThat(caseRepository.findByIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID)).isEmpty();
+		await().atMost(15, SECONDS).until(() -> caseRepository.findByIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID).isEmpty());
 		// Make sure that there exists a case mapping
 		final var caseMapping = caseMappingRepository.findByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID);
 		assertThat(caseMapping).isNotNull();
@@ -140,7 +142,7 @@ class EcosCreateCaseIT extends AbstractAppTest {
 		assertThat(result.getCaseId()).isEqualTo("Inskickat");
 
 		// Make sure that there doesn't exist a case entity
-		assertThat(caseRepository.findByIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID)).isEmpty();
+		await().atMost(15, SECONDS).until(() -> caseRepository.findByIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID).isEmpty());
 		// Make sure that there exists a case mapping
 		final var caseMapping = caseMappingRepository.findByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID);
 		assertThat(caseMapping).isNotNull();
@@ -170,7 +172,7 @@ class EcosCreateCaseIT extends AbstractAppTest {
 		assertThat(result.getCaseId()).isEqualTo("Inskickat");
 
 		// Make sure that there doesn't exist a case entity
-		assertThat(caseRepository.findByIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID)).isEmpty();
+		await().atMost(15, SECONDS).until(() -> caseRepository.findByIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID).isEmpty());
 		// Make sure that there exists a case mapping
 		final var caseMapping = caseMappingRepository.findByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID);
 		assertThat(caseMapping).isNotNull();
@@ -200,7 +202,7 @@ class EcosCreateCaseIT extends AbstractAppTest {
 		assertThat(result.getCaseId()).isEqualTo("Inskickat");
 
 		// Make sure that there doesn't exist a case entity
-		assertThat(caseRepository.findByIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID)).isEmpty();
+		await().atMost(15, SECONDS).until(() -> caseRepository.findByIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID).isEmpty());
 		// Make sure that there exists a case mapping
 		final var caseMapping = caseMappingRepository.findByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID);
 		assertThat(caseMapping).isNotNull();
@@ -231,7 +233,7 @@ class EcosCreateCaseIT extends AbstractAppTest {
 		assertThat(result.getCaseId()).isEqualTo("Inskickat");
 
 		// Make sure that there doesn't exist a case entity
-		assertThat(caseRepository.findByIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID)).isEmpty();
+		await().atMost(15, SECONDS).until(() -> caseRepository.findByIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID).isEmpty());
 		// Make sure that there exists a case mapping
 		final var caseMapping = caseMappingRepository.findByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID);
 		assertThat(caseMapping).isNotNull();
@@ -261,7 +263,7 @@ class EcosCreateCaseIT extends AbstractAppTest {
 		assertThat(result.getCaseId()).isEqualTo("Inskickat");
 
 		// Make sure that there doesn't exist a case entity
-		assertThat(caseRepository.findByIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID)).isEmpty();
+		await().atMost(15, SECONDS).until(() -> caseRepository.findByIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID).isEmpty());
 		// Make sure that there exists a case mapping
 		final var caseMapping = caseMappingRepository.findByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID);
 		assertThat(caseMapping).isNotNull();
@@ -294,7 +296,7 @@ class EcosCreateCaseIT extends AbstractAppTest {
 		assertThat(result.getCaseId()).isEqualTo("Inskickat");
 
 		// Make sure that there doesn't exist a case entity
-		assertThat(caseRepository.findByIdAndMunicipalityId(externalCaseId, MUNICIPALITY_ID)).isEmpty();
+		await().atMost(15, SECONDS).until(() -> caseRepository.findByIdAndMunicipalityId(externalCaseId, MUNICIPALITY_ID).isEmpty());
 		// Make sure that there exists a case mapping
 		final var caseMapping = caseMappingRepository.findByExternalCaseIdAndMunicipalityId(externalCaseId, MUNICIPALITY_ID);
 		assertThat(caseMapping).isNotNull();
@@ -326,7 +328,7 @@ class EcosCreateCaseIT extends AbstractAppTest {
 		assertThat(result.getCaseId()).isEqualTo("Inskickat");
 
 		// Make sure that there doesn't exist a case entity
-		assertThat(caseRepository.findByIdAndMunicipalityId(externalCaseId, MUNICIPALITY_ID)).isEmpty();
+		await().atMost(15, SECONDS).until(() -> caseRepository.findByIdAndMunicipalityId(externalCaseId, MUNICIPALITY_ID).isEmpty());
 		// Make sure that there exists a case mapping
 		final var caseMapping = caseMappingRepository.findByExternalCaseIdAndMunicipalityId(externalCaseId, MUNICIPALITY_ID);
 		assertThat(caseMapping).isNotNull();

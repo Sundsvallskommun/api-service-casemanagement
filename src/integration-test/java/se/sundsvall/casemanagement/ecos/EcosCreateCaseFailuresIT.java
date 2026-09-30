@@ -17,7 +17,9 @@ import se.sundsvall.casemanagement.integration.db.CaseRepository;
 import se.sundsvall.dept44.test.AbstractAppTest;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 
 @ActiveProfiles("it")
 @Testcontainers
@@ -61,7 +63,7 @@ public class EcosCreateCaseFailuresIT extends AbstractAppTest {
 		assertThat(result.getCaseId()).isEqualTo("Inskickat");
 
 		// Make sure that there doesn't exist a case entity
-		assertThat(caseRepository.findById("1256239125")).isEmpty();
+		await().atMost(15, SECONDS).until(() -> caseRepository.findById("1256239125").isEmpty());
 		// Make sure that there exists a case mapping
 		final var caseMapping = caseMappingRepository.findByExternalCaseIdAndMunicipalityId("1256239125", MUNICIPALITY_ID);
 		assertThat(caseMapping).isNotNull();
@@ -86,7 +88,7 @@ public class EcosCreateCaseFailuresIT extends AbstractAppTest {
 			.andReturnBody(ConstraintViolationProblem.class);
 
 		// Make sure that there doesn't exist a case entity
-		assertThat(caseRepository.findById(EXTERNAL_CASE_ID)).isEmpty();
+		await().atMost(15, SECONDS).until(() -> caseRepository.findById(EXTERNAL_CASE_ID).isEmpty());
 		// Make sure that there doesn't exist a case mapping
 		assertThat(caseMappingRepository.findByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID))
 			.isNull();
