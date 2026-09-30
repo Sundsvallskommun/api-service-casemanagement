@@ -8,12 +8,16 @@ import arendeexport.ArendeIntressent;
 import arendeexport.ArrayOfArende1;
 import arendeexport.ArrayOfHandelse;
 import arendeexport.ArrayOfHandling;
+import arendeexport.ArrayOfIntressent;
 import arendeexport.GetArende;
 import arendeexport.GetArendeResponse;
+import arendeexport.GetIntressentResponse;
+import arendeexport.GetIntressentResponse2;
 import arendeexport.GetRelateradeArendenByPersOrgNrAndRole;
 import arendeexport.GetRelateradeArendenByPersOrgNrAndRoleResponse;
 import arendeexport.Handelse;
 import arendeexport.HandelseHandling;
+import arendeexport.Intressent;
 import arendeexport.SaveNewArende;
 import arendeexport.SaveNewArendeMessage;
 import arendeexport.SaveNewArendeResponse2;
@@ -841,6 +845,123 @@ class ByggrServiceTest {
 
 		final var applicants = intressenter.stream().filter(intressent -> intressent.getRollLista().getRoll().contains(StakeholderRole.APPLICANT.getText())).toList();
 		assertThat(applicants).hasSize(1);
+	}
+
+	// 2 facilities on the same property, with a propertyOwner that is not in the request
+	@Test
+	void testPopulateStakeholderListWithPropertyOwnersSamePropertyOnTwoFacilities() {
+		final var input = createByggRCaseDTO("NYBYGGNAD_ANSOKAN_OM_BYGGLOV", AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		final var applicant = (PersonDTO) TestUtil.createStakeholderDTO(StakeholderType.PERSON, List.of(StakeholderRole.APPLICANT.toString()));
+		input.setStakeholders(List.of(applicant));
+		input.setFacilities(List.of(TestUtil.createFacilityDTO(true), TestUtil.createFacilityDTO(false)));
+
+		final var propertyOwner = (PersonDTO) TestUtil.createStakeholderDTO(StakeholderType.PERSON, List.of(StakeholderRole.PROPERTY_OWNER.toString()));
+
+		// FB returns new objects on every call
+		when(fbServiceMock.getPropertyOwnerByPropertyDesignation(anyString())).thenAnswer(invocation -> List.of(PersonDTO.builder()
+			.withType(StakeholderType.PERSON)
+			.withPersonalNumber(propertyOwner.getPersonalNumber())
+			.withFirstName(propertyOwner.getFirstName())
+			.withLastName(propertyOwner.getLastName())
+			.withRoles(List.of(StakeholderRole.PROPERTY_OWNER.toString()))
+			.build()));
+
+		byggrService.saveNewCase(input, MUNICIPALITY_ID);
+
+		final ArgumentCaptor<SaveNewArende> saveNewArendeRequestCaptor = ArgumentCaptor.forClass(SaveNewArende.class);
+		verify(arendeExportClientMock).saveNewArende(saveNewArendeRequestCaptor.capture());
+		final var intressenter = saveNewArendeRequestCaptor.getValue().getMessage().getArende().getIntressentLista().getIntressent();
+
+		assertThat(intressenter).hasSize(2);
+		assertThat(intressenter).extracting(ArendeIntressent::getPersOrgNr).containsOnlyOnce(propertyOwner.getPersonalNumber());
+		verify(fbServiceMock).getPropertyOwnerByPropertyDesignation(anyString());
+	}
+
+	// 2 facilities on different properties, with the same propertyOwner that is not in the request
+	@Test
+	void testPopulateStakeholderListWithPropertyOwnersSameOwnerOfTwoProperties() {
+		final var input = createByggRCaseDTO("NYBYGGNAD_ANSOKAN_OM_BYGGLOV", AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		final var applicant = (OrganizationDTO) TestUtil.createStakeholderDTO(StakeholderType.ORGANIZATION, List.of(StakeholderRole.APPLICANT.toString()));
+		input.setStakeholders(List.of(applicant));
+		final var secondFacility = TestUtil.createFacilityDTO(false);
+		secondFacility.getAddress().setPropertyDesignation("SUNDSVALL FILLA 8:186");
+		input.setFacilities(List.of(TestUtil.createFacilityDTO(true), secondFacility));
+
+		final var propertyOwner = (OrganizationDTO) TestUtil.createStakeholderDTO(StakeholderType.ORGANIZATION, List.of(StakeholderRole.PROPERTY_OWNER.toString()));
+
+		// FB returns new objects on every call
+		when(fbServiceMock.getPropertyOwnerByPropertyDesignation(anyString())).thenAnswer(invocation -> List.of(OrganizationDTO.builder()
+			.withType(StakeholderType.ORGANIZATION)
+			.withOrganizationNumber(propertyOwner.getOrganizationNumber())
+			.withOrganizationName(propertyOwner.getOrganizationName())
+			.withRoles(List.of(StakeholderRole.PROPERTY_OWNER.toString()))
+			.build()));
+
+		byggrService.saveNewCase(input, MUNICIPALITY_ID);
+
+		final ArgumentCaptor<SaveNewArende> saveNewArendeRequestCaptor = ArgumentCaptor.forClass(SaveNewArende.class);
+		verify(arendeExportClientMock).saveNewArende(saveNewArendeRequestCaptor.capture());
+		final var intressenter = saveNewArendeRequestCaptor.getValue().getMessage().getArende().getIntressentLista().getIntressent();
+
+		assertThat(intressenter).hasSize(2);
+		assertThat(intressenter).extracting(ArendeIntressent::getPersOrgNr).containsOnlyOnce(propertyOwner.getOrganizationNumber());
+		verify(fbServiceMock, times(2)).getPropertyOwnerByPropertyDesignation(anyString());
+	}
+
+	// The same organization sent as two stakeholders with different roles
+	@Test
+	void testSameOrganizationAsApplicantAndPaymentPerson() {
+		final var input = createByggRCaseDTO("NYBYGGNAD_ANSOKAN_OM_BYGGLOV", AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		final var applicant = (OrganizationDTO) TestUtil.createStakeholderDTO(StakeholderType.ORGANIZATION, List.of(StakeholderRole.APPLICANT.toString()));
+		final var paymentPerson = (OrganizationDTO) TestUtil.createStakeholderDTO(StakeholderType.ORGANIZATION, List.of(StakeholderRole.PAYMENT_PERSON.toString()));
+		paymentPerson.setOrganizationNumber(applicant.getOrganizationNumber());
+		input.setStakeholders(List.of(applicant, paymentPerson));
+
+		when(fbServiceMock.getPropertyOwnerByPropertyDesignation(anyString())).thenReturn(Collections.emptyList());
+
+		byggrService.saveNewCase(input, MUNICIPALITY_ID);
+
+		final ArgumentCaptor<SaveNewArende> saveNewArendeRequestCaptor = ArgumentCaptor.forClass(SaveNewArende.class);
+		verify(arendeExportClientMock).saveNewArende(saveNewArendeRequestCaptor.capture());
+		final var intressenter = saveNewArendeRequestCaptor.getValue().getMessage().getArende().getIntressentLista().getIntressent();
+
+		assertThat(intressenter).hasSize(1);
+		assertThat(intressenter.getFirst().getNamn()).isEqualTo(applicant.getOrganizationName());
+		assertThat(intressenter.getFirst().getRollLista().getRoll()).containsExactly(StakeholderRole.APPLICANT.getText(), StakeholderRole.PAYMENT_PERSON.getText());
+	}
+
+	// Sundsvalls kommun sent as applicant and payment person, and also the property owner
+	@Test
+	void testSundsvallsKommunAsApplicantPaymentPersonAndPropertyOwner() {
+		final var input = createByggRCaseDTO("NYBYGGNAD_ANSOKAN_OM_BYGGLOV", AttachmentCategory.BUILDING_PERMIT_APPLICATION);
+		final var applicant = (OrganizationDTO) TestUtil.createStakeholderDTO(StakeholderType.ORGANIZATION, List.of(StakeholderRole.APPLICANT.toString()));
+		applicant.setOrganizationNumber("2120002411");
+		final var paymentPerson = (OrganizationDTO) TestUtil.createStakeholderDTO(StakeholderType.ORGANIZATION, List.of(StakeholderRole.PAYMENT_PERSON.toString()));
+		paymentPerson.setOrganizationNumber("2120002411");
+		input.setStakeholders(List.of(applicant, paymentPerson));
+
+		when(fbServiceMock.getPropertyOwnerByPropertyDesignation(anyString())).thenReturn(List.of(OrganizationDTO.builder()
+			.withType(StakeholderType.ORGANIZATION)
+			.withOrganizationNumber("16212000-2411")
+			.withOrganizationName("Sundsvalls kommun")
+			.withRoles(List.of(StakeholderRole.PROPERTY_OWNER.toString()))
+			.build()));
+		when(arendeExportClientMock.getIntressent(any())).thenReturn(new GetIntressentResponse()
+			.withGetIntressentResult(new GetIntressentResponse2()
+				.withIntressent(new ArrayOfIntressent()
+					.withIntressent(new Intressent().withIntressentId(123).withIntressentVersionId(456)))));
+
+		byggrService.saveNewCase(input, MUNICIPALITY_ID);
+
+		final ArgumentCaptor<SaveNewArende> saveNewArendeRequestCaptor = ArgumentCaptor.forClass(SaveNewArende.class);
+		verify(arendeExportClientMock).saveNewArende(saveNewArendeRequestCaptor.capture());
+		final var intressenter = saveNewArendeRequestCaptor.getValue().getMessage().getArende().getIntressentLista().getIntressent();
+
+		assertThat(intressenter).hasSize(1);
+		assertThat(intressenter.getFirst().getIntressentId()).isEqualTo(123);
+		assertThat(intressenter.getFirst().getIntressentVersionId()).isEqualTo(456);
+		assertThat(intressenter.getFirst().getRollLista().getRoll())
+			.containsExactly(StakeholderRole.APPLICANT.getText(), StakeholderRole.PROPERTY_OWNER.getText(), StakeholderRole.PAYMENT_PERSON.getText());
 	}
 
 	// Case does not contain PropertyOwner

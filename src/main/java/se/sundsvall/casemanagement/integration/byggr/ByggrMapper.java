@@ -260,6 +260,27 @@ public final class ByggrMapper {
 				.toList());
 	}
 
+	/**
+	 * The party an intressent refers to: the ByggR intressent version when set, otherwise the digits of persOrgNr.
+	 */
+	static String toIntressentIdentity(final ArendeIntressent intressent) {
+		if ((intressent.getIntressentId() != null) && (intressent.getIntressentVersionId() != null)) {
+			return "%s:%s".formatted(intressent.getIntressentId(), intressent.getIntressentVersionId());
+		}
+		return intressent.getPersOrgNr().replaceAll("\\D", "");
+	}
+
+	/**
+	 * Merges the roles of a duplicate intressent into the first one. All other fields are kept from the first one.
+	 */
+	static ArendeIntressent mergeIntressentRoles(final ArendeIntressent intressent, final ArendeIntressent duplicate) {
+		final var roles = intressent.getRollLista().getRoll();
+		duplicate.getRollLista().getRoll().stream()
+			.filter(not(roles::contains))
+			.forEach(roles::add);
+		return intressent;
+	}
+
 	static Fakturaadress toFakturaadress(final AddressDTO addressDTO) {
 		return new Fakturaadress()
 			.withAdress(Optional.ofNullable(addressDTO.getHouseNumber())
