@@ -107,6 +107,8 @@ logbook:
         value: '[base64]'
       - key: '$..filBuffer'
         value: '[base64]'
+      - key: '$..token'
+        value: '[masked]'
     xPath:
       - key: '//filBuffer/text()'
         value: '[binary]'
