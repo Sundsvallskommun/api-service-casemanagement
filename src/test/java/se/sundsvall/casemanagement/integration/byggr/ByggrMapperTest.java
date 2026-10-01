@@ -3,6 +3,7 @@ package se.sundsvall.casemanagement.integration.byggr;
 import arendeexport.Arende;
 import arendeexport.ArendeIntressent;
 import arendeexport.ArrayOfHandelse;
+import arendeexport.ArrayOfString2;
 import arendeexport.Handelse;
 import arendeexport.HandelseIntressent;
 import arendeexport.IntressentAttention;
@@ -478,6 +479,36 @@ class ByggrMapperTest {
 		assertThat(result).isNotNull().hasNoNullFieldsOrProperties();
 		assertThat(result.getRoll()).hasSize(1);
 		assertThat(result.getRoll().getFirst()).isEqualTo("BETA");
+	}
+
+	@Test
+	void toIntressentIdentityWithIntressentVersion() {
+		final var intressent = new ArendeIntressent();
+		intressent.setIntressentId(123);
+		intressent.setIntressentVersionId(456);
+		intressent.setPersOrgNr("16212000-2411");
+
+		assertThat(ByggrMapper.toIntressentIdentity(intressent)).isEqualTo("123:456");
+	}
+
+	@Test
+	void toIntressentIdentityWithPersOrgNr() {
+		final var intressent = new ArendeIntressent();
+		intressent.setPersOrgNr("16212000-2411");
+
+		assertThat(ByggrMapper.toIntressentIdentity(intressent)).isEqualTo("162120002411");
+	}
+
+	@Test
+	void mergeIntressentRoles() {
+		final var intressent = new ArendeIntressent().withNamn("first").withRollLista(new ArrayOfString2().withRoll("SOK", "FAG"));
+		final var duplicate = new ArendeIntressent().withNamn("duplicate").withRollLista(new ArrayOfString2().withRoll("BETA", "FAG"));
+
+		final var result = ByggrMapper.mergeIntressentRoles(intressent, duplicate);
+
+		assertThat(result).isSameAs(intressent);
+		assertThat(result.getNamn()).isEqualTo("first");
+		assertThat(result.getRollLista().getRoll()).containsExactly("SOK", "FAG", "BETA");
 	}
 
 	@Test

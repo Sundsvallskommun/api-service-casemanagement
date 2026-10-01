@@ -63,7 +63,7 @@ class AttachmentResource {
 	ResponseEntity<Void> postAttachmentsToCase(
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
 		@Parameter(name = "externalCaseId", description = "External case id", example = "1234") @PathVariable final String externalCaseId,
-		@NotNull(message = REQUEST_BODY_MUST_NOT_BE_NULL) @RequestBody @Valid final List<AttachmentDTO> attachmentDTOList) {
+		@NotNull(message = REQUEST_BODY_MUST_NOT_BE_NULL) @RequestBody final List<@Valid AttachmentDTO> attachmentDTOList) {
 
 		final CaseMapping caseMapping = caseMappingService.getCaseMapping(externalCaseId, municipalityId);
 

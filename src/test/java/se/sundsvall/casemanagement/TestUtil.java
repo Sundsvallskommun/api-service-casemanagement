@@ -301,7 +301,8 @@ public final class TestUtil {
 	}
 
 	public static void standardMockCitizen(final PartyIntegration mock) {
-		lenient().doReturn(Map.of(PRIVATE, generateRandomPersonalNumber())).when(mock).getLegalIdByPartyId(anyString(), anyString());
+		// A new personal number per call, as every partyId belongs to a different person
+		lenient().doAnswer(invocation -> Map.of(PRIVATE, generateRandomPersonalNumber())).when(mock).getLegalIdByPartyId(anyString(), anyString());
 	}
 
 	public static void setSewageStandardExtraParams(final Map<String, String> extraParameters, final String prefix) {

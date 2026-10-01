@@ -22,6 +22,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -57,6 +58,8 @@ import se.sundsvall.dept44.problem.Problem;
 import static generated.client.party.PartyType.ENTERPRISE;
 import static generated.client.party.PartyType.PRIVATE;
 import static java.util.Collections.emptyList;
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toMap;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrUtil.containsControlOfficial;
 import static se.sundsvall.casemanagement.integration.byggr.ByggrUtil.containsPersonDuplicates;
@@ -243,7 +246,7 @@ public class ByggrService {
 		populateStakeholderListWithPropertyOwners(byggRCase, stakeholders);
 		final var personIds = ByggrMapper.filterPersonId(stakeholders);
 
-		return new ArrayOfArendeIntressent2().withIntressent(stakeholders.stream().filter(dto -> !dto.getRoles().contains(StakeholderRole.CONTROL_OFFICIAL.toString()))
+		final var intressenter = stakeholders.stream().filter(dto -> !dto.getRoles().contains(StakeholderRole.CONTROL_OFFICIAL.toString()))
 			.map(stakeholderDTO -> {
 
 				final var intressent = new ArendeIntressent();
@@ -264,35 +267,36 @@ public class ByggrService {
 				return intressent;
 			})
 			.filter(intressent -> StringUtils.isNotBlank(intressent.getPersOrgNr()) || (intressent.getIntressentId() != null && intressent.getIntressentVersionId() != null))
-			.toList());
+			// ByggR can't link the same intressent to a case twice, so stakeholders that are the same party are merged
+			.collect(toMap(ByggrMapper::toIntressentIdentity, identity(), ByggrMapper::mergeIntressentRoles, LinkedHashMap::new));
+
+		return new ArrayOfArendeIntressent2().withIntressent(new ArrayList<>(intressenter.values()));
 	}
 
 	public void populateStakeholderListWithPropertyOwners(final ByggRCaseDTO byggRCase, final List<StakeholderDTO> stakeholders) {
-		// Filter all persons
-		final var persons = stakeholders.stream()
-			.filter(PersonDTO.class::isInstance)
-			.map(obj -> {
-				final var personOjb = (PersonDTO) obj;
-				personOjb.setPersonalNumber(getPersonalNumber(personOjb, byggRCase.getMunicipalityId()));
-				return personOjb;
-			})
-			.toList();
+		// Resolve personal numbers and format organization numbers so stakeholders can be matched against property owners
+		instancesOf(stakeholders, PersonDTO.class)
+			.forEach(person -> person.setPersonalNumber(getPersonalNumber(person, byggRCase.getMunicipalityId())));
+		instancesOf(stakeholders, OrganizationDTO.class)
+			.forEach(organization -> organization.setOrganizationNumber(CaseUtil.getSokigoFormattedOrganizationNumber(organization.getOrganizationNumber())));
 
-		// Filter all organizations
-		final var organizations = stakeholders.stream()
-			.filter(OrganizationDTO.class::isInstance)
-			.map(obj -> {
-				final var orgObj = (OrganizationDTO) obj;
-				orgObj.setOrganizationNumber(CaseUtil.getSokigoFormattedOrganizationNumber(orgObj.getOrganizationNumber()));
-				return orgObj;
-			})
+		// Get the property owners once per property. Owners added for a previous property are matched as existing stakeholders,
+		// so an owner is never sent twice when several facilities share a property or several properties share an owner.
+		byggRCase.getFacilities().stream()
+			.map(facility -> facility.getAddress().getPropertyDesignation())
+			.distinct()
+			.forEach(propertyDesignation -> {
+				final var propertyOwners = fbService.getPropertyOwnerByPropertyDesignation(propertyDesignation);
+				ByggrMapper.populateStakeholderListWithPropertyOwnerPersons(instancesOf(stakeholders, PersonDTO.class), stakeholders, propertyOwners);
+				ByggrMapper.populateStakeholderListWithPropertyOwnerOrganizations(instancesOf(stakeholders, OrganizationDTO.class), stakeholders, propertyOwners);
+			});
+	}
+
+	private static <T extends StakeholderDTO> List<T> instancesOf(final List<StakeholderDTO> stakeholders, final Class<T> type) {
+		return stakeholders.stream()
+			.filter(type::isInstance)
+			.map(type::cast)
 			.toList();
-		// Loop through each facility and get the property owners for each one
-		byggRCase.getFacilities().forEach(facility -> {
-			final var propertyOwners = fbService.getPropertyOwnerByPropertyDesignation(facility.getAddress().getPropertyDesignation());
-			ByggrMapper.populateStakeholderListWithPropertyOwnerPersons(persons, stakeholders, propertyOwners);
-			ByggrMapper.populateStakeholderListWithPropertyOwnerOrganizations(organizations, stakeholders, propertyOwners);
-		});
 	}
 
 	/**
