@@ -77,6 +77,7 @@ public final class Constants {
 	public static final String ERR_MSG_ONLY_ONE_MAIN_FACILITY = "Only one facility can be defined as main facility";
 	public static final String ERR_MSG_CASES_NOT_FOUND = "Case not found";
 	public static final String ERR_MSG_STATUS_NOT_FOUND = "Status not found";
+	public static final String ERR_MSG_STATUS_NOT_AVAILABLE = "Status is not available for cases in %s";
 	public static final String ERR_MSG_PERSON_INVOICE_ADDRESS = "Stakeholders of type PERSON should not have an address with the addressCategory INVOICE_ADDRESS";
 	public static final String ERR_MSG_WRONG_ROLE_ENV_CASE = "Stakeholder contains a role that may not be used with Ecos-cases. Check the OpenAPI-specification.";
 	public static final String ERR_MSG_WRONG_ROLE_PLANNING_CASE = "Stakeholder contains a role that may not be used with Byggr-cases. Check the OpenAPI-specification.";
