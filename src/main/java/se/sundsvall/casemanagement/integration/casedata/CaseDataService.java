@@ -163,6 +163,8 @@ public class CaseDataService {
 			.withSystem(caseMapping.getSystem())
 			.withCaseId(caseMapping.getCaseId())
 			.withExternalCaseId(caseMapping.getExternalCaseId())
+			.withErrandNumber(errandDTO.getErrandNumber())
+			.withNamespace(namespace)
 			.withStatus(latestStatus.getStatusType())
 			.withServiceName(caseMapping.getServiceName())
 			.withTimestamp(

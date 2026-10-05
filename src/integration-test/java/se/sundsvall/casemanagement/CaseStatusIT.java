@@ -88,6 +88,8 @@ class CaseStatusIT extends AbstractAppTest {
 		assertThat(result.getCaseType()).isEqualTo("PARKING_PERMIT");
 		assertThat(result.getExternalCaseId()).isEqualTo("231");
 		assertThat(result.getCaseId()).isEqualTo("24");
+		assertThat(result.getErrandNumber()).isEqualTo("PRH-2022-000001");
+		assertThat(result.getNamespace()).isEqualTo("NAMESPACE_1");
 		assertThat(result.getStatus()).isEqualTo("Ärende inkommit");
 		assertThat(result.getServiceName()).isEqualTo("Parkeringstillstånd");
 
