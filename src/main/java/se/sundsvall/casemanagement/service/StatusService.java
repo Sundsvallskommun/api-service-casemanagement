@@ -14,11 +14,14 @@ import se.sundsvall.casemanagement.integration.byggr.ByggrService;
 import se.sundsvall.casemanagement.integration.casedata.CaseDataService;
 import se.sundsvall.casemanagement.integration.ecos.EcosService;
 import se.sundsvall.casemanagement.integration.party.PartyIntegration;
+import se.sundsvall.dept44.problem.Problem;
 
 import static generated.client.party.PartyType.ENTERPRISE;
 import static generated.client.party.PartyType.PRIVATE;
 import static java.util.Collections.emptyList;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static se.sundsvall.casemanagement.util.Constants.CASE_DATA_STATUS_ROLE_SEARCH;
+import static se.sundsvall.casemanagement.util.Constants.ERR_MSG_STATUS_NOT_AVAILABLE;
 import static se.sundsvall.dept44.util.LogUtils.sanitizeForLogging;
 
 @Service
@@ -68,7 +71,8 @@ public class StatusService {
 			case BYGGR -> byggrService.toByggrStatus(caseMapping);
 			case ECOS -> ecosService.getStatus(caseMapping.getCaseId(), caseMapping.getExternalCaseId(), municipalityId);
 			case CASE_DATA -> caseDataService.getStatus(caseMapping, municipalityId);
-			default -> throw new IllegalStateException("Unexpected value: " + caseMapping.getSystem());
+			// Mapped, but these systems have no status to look up: answered like any other case without a status
+			case ALKT, EDPFUTURE -> throw Problem.valueOf(NOT_FOUND, ERR_MSG_STATUS_NOT_AVAILABLE.formatted(caseMapping.getSystem()));
 		};
 	}
 

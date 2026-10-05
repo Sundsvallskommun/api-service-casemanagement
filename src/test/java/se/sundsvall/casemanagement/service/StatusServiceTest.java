@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -15,14 +17,17 @@ import se.sundsvall.casemanagement.integration.byggr.ByggrService;
 import se.sundsvall.casemanagement.integration.casedata.CaseDataService;
 import se.sundsvall.casemanagement.integration.ecos.EcosService;
 import se.sundsvall.casemanagement.integration.party.PartyIntegration;
+import se.sundsvall.dept44.problem.ThrowableProblem;
 
 import static generated.client.party.PartyType.ENTERPRISE;
 import static generated.client.party.PartyType.PRIVATE;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static se.sundsvall.casemanagement.TestUtil.createCaseMapping;
 import static se.sundsvall.casemanagement.TestUtil.createCaseStatusDTO;
 import static se.sundsvall.casemanagement.service.StatusService.CASE_DATA_ORGANIZATION_FILTER;
@@ -125,6 +130,30 @@ class StatusServiceTest {
 		verify(caseDataServiceMock).getStatus(caseMapping, MUNICIPALITY_ID);
 		verifyNoMoreInteractions(caseMappingServiceMock, caseDataServiceMock);
 		verifyNoInteractions(ecosServiceMock, partyIntegrationMock);
+	}
+
+	/**
+	 * AlkT and EDPFuture cases get a case mapping but have no status to look up. That is answered with 404 like any other
+	 * case without a status, not as a server error.
+	 */
+	@ParameterizedTest
+	@EnumSource(value = SystemType.class, names = {
+		"ALKT", "EDPFUTURE"
+	})
+	void getStatusByExternalCaseIdWithoutStatusSource(final SystemType systemType) {
+		final var caseMapping = createCaseMapping(mapping -> mapping.setSystem(systemType));
+
+		when(caseMappingServiceMock.getCaseMapping(EXTERNAL_CASE_ID, MUNICIPALITY_ID)).thenReturn(caseMapping);
+
+		assertThatThrownBy(() -> statusService.getStatusByExternalCaseId(MUNICIPALITY_ID, EXTERNAL_CASE_ID))
+			.isInstanceOfSatisfying(ThrowableProblem.class, problem -> {
+				assertThat(problem.getStatus()).isEqualTo(NOT_FOUND);
+				assertThat(problem.getDetail()).isEqualTo("Status is not available for cases in " + systemType);
+			});
+
+		verify(caseMappingServiceMock).getCaseMapping(EXTERNAL_CASE_ID, MUNICIPALITY_ID);
+		verifyNoMoreInteractions(caseMappingServiceMock);
+		verifyNoInteractions(byggrServiceMock, ecosServiceMock, caseDataServiceMock, partyIntegrationMock);
 	}
 
 	@Test

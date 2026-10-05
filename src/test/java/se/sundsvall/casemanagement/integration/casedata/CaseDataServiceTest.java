@@ -161,15 +161,15 @@ class CaseDataServiceTest {
 		verify(caseDataClientMock).postErrands(eq(municipalityId), eq(namespace.name()), errandArgumentCaptor.capture());
 		final var errand = errandArgumentCaptor.getValue();
 
-		assertThat(errand.getCaseTitleAddition()).isEqualTo(inputCase.getCaseTitleAddition());
-		assertThat(errand.getCaseType()).isEqualTo(inputCase.getCaseType());
+		assertThat(errand)
+			.extracting(Errand::getCaseTitleAddition, Errand::getCaseType, Errand::getDescription, Errand::getExternalCaseId, Errand::getPhase, Errand::getPriority)
+			.containsExactly(inputCase.getCaseTitleAddition(), inputCase.getCaseType(), inputCase.getDescription(), inputCase.getExternalCaseId(), "Aktualisering", Errand.PriorityEnum.HIGH);
 
 		if (externalCaseId != null) {
 			assertThat(errand.getChannel()).isEqualTo(ChannelEnum.ESERVICE);
 		} else {
 			assertThat(errand.getChannel()).isNull();
 		}
-		assertThat(errand.getDescription()).isEqualTo(inputCase.getDescription());
 
 		final var expectedSizeParameters = isAutomatic ? 5 : 4;
 		assertThat(errand.getExtraParameters()).hasSize(expectedSizeParameters);
@@ -195,9 +195,6 @@ class CaseDataServiceTest {
 			.orElseThrow()
 			.getValues().getFirst()).isEqualTo("HIGH");
 
-		assertThat(errand.getExternalCaseId()).isEqualTo(inputCase.getExternalCaseId());
-		assertThat(errand.getPhase()).isEqualTo("Aktualisering");
-		assertThat(errand.getPriority()).isEqualTo(Errand.PriorityEnum.HIGH);
 		assertThat(errand.getStatus()).isNotNull().satisfies(status -> {
 			assertThat(status.getStatusType()).isEqualTo("Ärende inkommit");
 			assertThat(status.getCreated()).isNotNull();
@@ -213,8 +210,7 @@ class CaseDataServiceTest {
 		final var caseArgumentCaptor = ArgumentCaptor.forClass(CaseDTO.class);
 		verify(caseMappingServiceMock).postCaseMapping(caseArgumentCaptor.capture(), any(String.class), any(SystemType.class), eq(municipalityId));
 		final var caseMapping = caseArgumentCaptor.getValue();
-		assertThat(caseMapping.getExternalCaseId()).isEqualTo(inputCase.getExternalCaseId());
-		assertThat(caseMapping.getCaseType()).isEqualTo(inputCase.getCaseType());
+		assertThat(caseMapping).extracting(CaseDTO::getExternalCaseId, CaseDTO::getCaseType).containsExactly(inputCase.getExternalCaseId(), inputCase.getCaseType());
 		assertThat(caseMapping.getExtraParameters().get(SERVICE_NAME)).isNull();
 	}
 
@@ -280,7 +276,9 @@ class CaseDataServiceTest {
 		final var caseId = RANDOM.nextLong();
 		final var errandMock = new Errand();
 		final var namespace = SBK_PARKING_PERMIT.name();
+		final var errandNumber = "PRH-2022-000001";
 		errandMock.setId(caseId);
+		errandMock.setErrandNumber(errandNumber);
 		final var statusMock1 = new Status()
 			.statusType(RandomStringUtils.secure().next(10, true, false))
 			.created(now().minusDays(10))
@@ -312,6 +310,8 @@ class CaseDataServiceTest {
 		// Assert
 		assertThat(result.getCaseId()).isEqualTo(caseMapping.getCaseId());
 		assertThat(result.getExternalCaseId()).isEqualTo(caseMapping.getExternalCaseId());
+		assertThat(result.getErrandNumber()).isEqualTo(errandNumber);
+		assertThat(result.getNamespace()).isEqualTo(namespace);
 		assertThat(result.getCaseType()).isEqualTo(caseMapping.getCaseType());
 		assertThat(result.getSystem()).isEqualTo(caseMapping.getSystem());
 		assertThat(result.getServiceName()).isEqualTo(caseMapping.getServiceName());
