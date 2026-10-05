@@ -149,10 +149,10 @@ public class CaseDataService {
 	public CaseStatusDTO getStatus(final CaseMapping caseMapping, final String municipalityId) {
 		final var namespace = mapNamespace(caseMapping.getCaseType(), municipalityId);
 
-		final var errandDTO = getErrand(Long.valueOf(caseMapping.getCaseId()), municipalityId, namespace);
+		final var errandDTO = Optional.ofNullable(getErrand(Long.valueOf(caseMapping.getCaseId()), municipalityId, namespace))
+			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, Constants.ERR_MSG_STATUS_NOT_FOUND));
 
-		final var latestStatus = Optional.ofNullable(errandDTO)
-			.map(Errand::getStatuses)
+		final var latestStatus = Optional.ofNullable(errandDTO.getStatuses())
 			.orElse(emptyList())
 			.stream()
 			.max(comparing(Status::getCreated, nullsFirst(naturalOrder())))
