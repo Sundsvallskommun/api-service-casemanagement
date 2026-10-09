@@ -11,6 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.sundsvall.casemanagement.integration.casedata.configuration.CaseDataProperties;
 import se.sundsvall.casemanagement.integration.db.CaseTypeRepository;
 import se.sundsvall.casemanagement.integration.db.model.CaseTypeEntity;
+import se.sundsvall.dept44.exception.ClientProblem;
 import se.sundsvall.dept44.exception.ServerProblem;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,6 +22,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.BAD_GATEWAY;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static se.sundsvall.casemanagement.api.model.enums.SystemType.BYGGR;
 import static se.sundsvall.casemanagement.api.model.enums.SystemType.CASE_DATA;
 import static se.sundsvall.casemanagement.api.model.enums.SystemType.ECOS;
@@ -33,6 +35,7 @@ class CaseTypeRegistryTest {
 	private static final String NAMESPACE = "SBK_PARKING";
 	private static final String DYNAMIC_CASE_TYPE = "PARKING_PERMIT";
 	private static final ServerProblem CASE_DATA_UNAVAILABLE = new ServerProblem(BAD_GATEWAY, "case-data error: {status=500 Internal Server Error}");
+	private static final ClientProblem CLIENT_PROBLEM = new ClientProblem(NOT_FOUND, "case-data error: {status=404 Not Found}");
 
 	@Mock
 	private CaseTypeRepository caseTypeRepository;
@@ -145,12 +148,11 @@ class CaseTypeRegistryTest {
 	}
 
 	@Test
-	void isCaseDataType_whenLookupFailsForOneNamespace_andTypeFoundInAnother_returnsTrue() {
-		final var otherNamespace = "SBK_MEX";
-		when(caseDataProperties.namespaces()).thenReturn(Map.of(MUNICIPALITY_ID, List.of(otherNamespace, NAMESPACE)));
-		when(caseDataCaseTypeProvider.getCaseDataTypesByNamespace(MUNICIPALITY_ID, otherNamespace)).thenThrow(CASE_DATA_UNAVAILABLE);
-		when(caseDataCaseTypeProvider.getCaseDataTypesByNamespace(MUNICIPALITY_ID, NAMESPACE))
-			.thenReturn(Map.of(DYNAMIC_CASE_TYPE, "Parking Permit"));
+	void isCaseDataType_whenCaseDataUnavailable_usesLastFetchedTypes() {
+		when(caseDataProperties.namespaces()).thenReturn(Map.of(MUNICIPALITY_ID, List.of(NAMESPACE)));
+		when(caseDataCaseTypeProvider.getCaseDataTypesByNamespace(MUNICIPALITY_ID, NAMESPACE)).thenThrow(CASE_DATA_UNAVAILABLE);
+		when(caseDataCaseTypeProvider.getLastFetchedCaseDataTypes(MUNICIPALITY_ID, NAMESPACE))
+			.thenReturn(Optional.of(Map.of(DYNAMIC_CASE_TYPE, "Parking Permit")));
 
 		final var result = caseTypeRegistry.isCaseDataType(DYNAMIC_CASE_TYPE, MUNICIPALITY_ID);
 
@@ -158,25 +160,50 @@ class CaseTypeRegistryTest {
 	}
 
 	@Test
-	void isCaseDataType_whenLookupFailsForOneNamespace_andTypeNotFoundInAnother_rethrows() {
+	void isCaseDataType_whenEarlierNamespaceAnswersClientProblem_rethrowsEvenIfLaterNamespaceHasType() {
 		final var otherNamespace = "SBK_MEX";
 		when(caseDataProperties.namespaces()).thenReturn(Map.of(MUNICIPALITY_ID, List.of(otherNamespace, NAMESPACE)));
-		when(caseDataCaseTypeProvider.getCaseDataTypesByNamespace(MUNICIPALITY_ID, otherNamespace)).thenThrow(CASE_DATA_UNAVAILABLE);
-		when(caseDataCaseTypeProvider.getCaseDataTypesByNamespace(MUNICIPALITY_ID, NAMESPACE)).thenReturn(Map.of());
+		when(caseDataCaseTypeProvider.getCaseDataTypesByNamespace(MUNICIPALITY_ID, otherNamespace)).thenThrow(CLIENT_PROBLEM);
+		lenient().when(caseDataCaseTypeProvider.getCaseDataTypesByNamespace(MUNICIPALITY_ID, NAMESPACE))
+			.thenReturn(Map.of(DYNAMIC_CASE_TYPE, "Parking Permit"));
 
 		assertThatThrownBy(() -> caseTypeRegistry.isCaseDataType(DYNAMIC_CASE_TYPE, MUNICIPALITY_ID))
-			.isSameAs(CASE_DATA_UNAVAILABLE);
+			.isSameAs(CLIENT_PROBLEM);
+		verify(caseDataCaseTypeProvider, never()).getCaseDataTypesByNamespace(MUNICIPALITY_ID, NAMESPACE);
 	}
 
 	@Test
-	void resolveNamespace_whenLookupFails_rethrowsWithoutQueryingLaterNamespaces() {
+	void resolveNamespace_whenCaseDataUnavailable_usesLastFetchedTypes() {
+		when(caseDataProperties.namespaces()).thenReturn(Map.of(MUNICIPALITY_ID, List.of(NAMESPACE)));
+		when(caseDataCaseTypeProvider.getCaseDataTypesByNamespace(MUNICIPALITY_ID, NAMESPACE)).thenThrow(CASE_DATA_UNAVAILABLE);
+		when(caseDataCaseTypeProvider.getLastFetchedCaseDataTypes(MUNICIPALITY_ID, NAMESPACE))
+			.thenReturn(Optional.of(Map.of(DYNAMIC_CASE_TYPE, "Parking Permit")));
+
+		final var result = caseTypeRegistry.resolveNamespace(DYNAMIC_CASE_TYPE, MUNICIPALITY_ID);
+
+		assertThat(result).isEqualTo(NAMESPACE);
+	}
+
+	@Test
+	void resolveNamespace_whenCaseDataUnavailable_andNamespaceNeverFetched_rethrows() {
 		final var otherNamespace = "SBK_MEX";
 		when(caseDataProperties.namespaces()).thenReturn(Map.of(MUNICIPALITY_ID, List.of(otherNamespace, NAMESPACE)));
 		when(caseDataCaseTypeProvider.getCaseDataTypesByNamespace(MUNICIPALITY_ID, otherNamespace)).thenThrow(CASE_DATA_UNAVAILABLE);
+		when(caseDataCaseTypeProvider.getLastFetchedCaseDataTypes(MUNICIPALITY_ID, otherNamespace)).thenReturn(Optional.empty());
 
 		assertThatThrownBy(() -> caseTypeRegistry.resolveNamespace(DYNAMIC_CASE_TYPE, MUNICIPALITY_ID))
 			.isSameAs(CASE_DATA_UNAVAILABLE);
 		verify(caseDataCaseTypeProvider, never()).getCaseDataTypesByNamespace(MUNICIPALITY_ID, NAMESPACE);
+	}
+
+	@Test
+	void resolveNamespace_whenClientProblem_rethrowsWithoutFallback() {
+		when(caseDataProperties.namespaces()).thenReturn(Map.of(MUNICIPALITY_ID, List.of(NAMESPACE)));
+		when(caseDataCaseTypeProvider.getCaseDataTypesByNamespace(MUNICIPALITY_ID, NAMESPACE)).thenThrow(CLIENT_PROBLEM);
+
+		assertThatThrownBy(() -> caseTypeRegistry.resolveNamespace(DYNAMIC_CASE_TYPE, MUNICIPALITY_ID))
+			.isSameAs(CLIENT_PROBLEM);
+		verify(caseDataCaseTypeProvider, never()).getLastFetchedCaseDataTypes(MUNICIPALITY_ID, NAMESPACE);
 	}
 
 	@Test

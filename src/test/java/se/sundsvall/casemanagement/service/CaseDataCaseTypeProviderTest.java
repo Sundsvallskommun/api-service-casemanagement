@@ -9,23 +9,18 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.sundsvall.casemanagement.integration.casedata.CaseDataClient;
-import se.sundsvall.dept44.exception.ClientProblem;
-import se.sundsvall.dept44.exception.ServerProblem;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
-import static org.springframework.http.HttpStatus.BAD_GATEWAY;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @ExtendWith(MockitoExtension.class)
 class CaseDataCaseTypeProviderTest {
 
 	private static final String MUNICIPALITY_ID = "2281";
 	private static final String NAMESPACE = "SBK_PARKING";
-	private static final ServerProblem CASE_DATA_UNAVAILABLE = new ServerProblem(BAD_GATEWAY, "case-data error: {status=500 Internal Server Error}");
 
 	@Mock
 	private CaseDataClient caseDataClient;
@@ -67,56 +62,40 @@ class CaseDataCaseTypeProviderTest {
 	}
 
 	@Test
-	void getCaseDataTypesByNamespace_whenCaseDataFailsAfterSuccessfulFetch_returnsLastFetchedTypes() {
-		when(caseDataClient.getCaseTypes(MUNICIPALITY_ID, NAMESPACE))
-			.thenReturn(List.of(new CaseType().type("PARKING_PERMIT").displayName("Parking Permit")))
-			.thenThrow(CASE_DATA_UNAVAILABLE);
+	void getLastFetchedCaseDataTypes_beforeAnyFetch_returnsEmpty() {
+		final var result = caseDataCaseTypeProvider.getLastFetchedCaseDataTypes(MUNICIPALITY_ID, NAMESPACE);
 
-		caseDataCaseTypeProvider.getCaseDataTypesByNamespace(MUNICIPALITY_ID, NAMESPACE);
-		final var result = caseDataCaseTypeProvider.getCaseDataTypesByNamespace(MUNICIPALITY_ID, NAMESPACE);
-
-		assertThat(result).containsExactlyEntriesOf(Map.of("PARKING_PERMIT", "Parking Permit"));
-		verify(caseDataClient, times(2)).getCaseTypes(MUNICIPALITY_ID, NAMESPACE);
+		assertThat(result).isEmpty();
+		verifyNoInteractions(caseDataClient);
 	}
 
 	@Test
-	void getCaseDataTypesByNamespace_whenCaseDataFails_returnsTypesFromLatestSuccessfulFetch() {
+	void getLastFetchedCaseDataTypes_afterFetch_returnsFetchedTypes() {
+		when(caseDataClient.getCaseTypes(MUNICIPALITY_ID, NAMESPACE))
+			.thenReturn(List.of(new CaseType().type("PARKING_PERMIT").displayName("Parking Permit")));
+
+		caseDataCaseTypeProvider.getCaseDataTypesByNamespace(MUNICIPALITY_ID, NAMESPACE);
+		final var result = caseDataCaseTypeProvider.getLastFetchedCaseDataTypes(MUNICIPALITY_ID, NAMESPACE);
+
+		assertThat(result).hasValue(Map.of("PARKING_PERMIT", "Parking Permit"));
+		assertThat(caseDataCaseTypeProvider.getLastFetchedCaseDataTypes(MUNICIPALITY_ID, "SBK_MEX")).isEmpty();
+	}
+
+	@Test
+	void getLastFetchedCaseDataTypes_afterFailedFetch_returnsTypesFromLatestSuccessfulFetch() {
 		when(caseDataClient.getCaseTypes(MUNICIPALITY_ID, NAMESPACE))
 			.thenReturn(List.of(new CaseType().type("PARKING_PERMIT").displayName("Parking Permit")))
 			.thenReturn(List.of(new CaseType().type("LOST_PARKING_PERMIT").displayName("Lost Parking Permit")))
-			.thenThrow(CASE_DATA_UNAVAILABLE);
+			.thenThrow(new RuntimeException("Connection refused"));
 
 		caseDataCaseTypeProvider.getCaseDataTypesByNamespace(MUNICIPALITY_ID, NAMESPACE);
 		caseDataCaseTypeProvider.getCaseDataTypesByNamespace(MUNICIPALITY_ID, NAMESPACE);
-		final var result = caseDataCaseTypeProvider.getCaseDataTypesByNamespace(MUNICIPALITY_ID, NAMESPACE);
-
-		assertThat(result).containsOnlyKeys("LOST_PARKING_PERMIT");
-	}
-
-	@Test
-	void getCaseDataTypesByNamespace_whenCaseDataFailsForNamespaceNeverFetched_propagatesException() {
-		final var otherNamespace = "SBK_MEX";
-		when(caseDataClient.getCaseTypes(MUNICIPALITY_ID, NAMESPACE))
-			.thenReturn(List.of(new CaseType().type("PARKING_PERMIT").displayName("Parking Permit")));
-		when(caseDataClient.getCaseTypes(MUNICIPALITY_ID, otherNamespace)).thenThrow(CASE_DATA_UNAVAILABLE);
-
-		caseDataCaseTypeProvider.getCaseDataTypesByNamespace(MUNICIPALITY_ID, NAMESPACE);
-
-		assertThatThrownBy(() -> caseDataCaseTypeProvider.getCaseDataTypesByNamespace(MUNICIPALITY_ID, otherNamespace))
-			.isSameAs(CASE_DATA_UNAVAILABLE);
-	}
-
-	@Test
-	void getCaseDataTypesByNamespace_whenClientProblemAfterSuccessfulFetch_propagatesException() {
-		final var clientProblem = new ClientProblem(NOT_FOUND, "case-data error: {status=404 Not Found}");
-		when(caseDataClient.getCaseTypes(MUNICIPALITY_ID, NAMESPACE))
-			.thenReturn(List.of(new CaseType().type("PARKING_PERMIT").displayName("Parking Permit")))
-			.thenThrow(clientProblem);
-
-		caseDataCaseTypeProvider.getCaseDataTypesByNamespace(MUNICIPALITY_ID, NAMESPACE);
-
 		assertThatThrownBy(() -> caseDataCaseTypeProvider.getCaseDataTypesByNamespace(MUNICIPALITY_ID, NAMESPACE))
-			.isSameAs(clientProblem);
+			.hasMessage("Connection refused");
+
+		final var result = caseDataCaseTypeProvider.getLastFetchedCaseDataTypes(MUNICIPALITY_ID, NAMESPACE);
+
+		assertThat(result).hasValue(Map.of("LOST_PARKING_PERMIT", "Lost Parking Permit"));
 	}
 
 }
