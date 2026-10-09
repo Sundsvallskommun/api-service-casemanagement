@@ -3,23 +3,23 @@ package se.sundsvall.casemanagement.ecos;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.OK;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import se.sundsvall.dept44.problem.violations.ConstraintViolationProblem;
 import se.sundsvall.casemanagement.Application;
 import se.sundsvall.casemanagement.api.model.CaseResourceResponseDTO;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
 import se.sundsvall.casemanagement.integration.db.CaseMappingRepository;
 import se.sundsvall.casemanagement.integration.db.CaseRepository;
+import se.sundsvall.dept44.problem.violations.ConstraintViolationProblem;
 import se.sundsvall.dept44.test.AbstractAppTest;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.OK;
 
 @ActiveProfiles("it")
 @Testcontainers
@@ -112,7 +112,7 @@ public class EcosCreateCaseFailuresIT extends AbstractAppTest {
 		assertThat(result).isNotNull();
 		assertThat(result.getCaseId()).isEqualTo("Inskickat");
 
-		//  Make sure that there exists a case entity
+		// Make sure that there exists a case entity
 		assertThat(caseRepository.findById(EXTERNAL_CASE_ID)).isPresent();
 		// Make sure that there doesn't exist a case mapping
 		assertThat(caseMappingRepository.findByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID))
