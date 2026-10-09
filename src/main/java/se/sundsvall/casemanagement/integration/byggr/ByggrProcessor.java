@@ -23,6 +23,7 @@ import se.sundsvall.dept44.requestid.RequestId;
 import tools.jackson.databind.ObjectMapper;
 
 import static se.sundsvall.casemanagement.util.Constants.BYGGR;
+import static se.sundsvall.dept44.util.LogUtils.sanitizeForLogging;
 
 @Component
 class ByggrProcessor extends Processor {
@@ -63,7 +64,7 @@ class ByggrProcessor extends Processor {
 
 		if (caseEntity == null) {
 			cleanAttachmentBase64(event);
-			log.warn("Unable to process byggR errand {}", event.getPayload());
+			log.warn("Unable to process byggR errand with externalCaseId {}", sanitizeForLogging(event.getPayload().getExternalCaseId()));
 			return;
 		}
 
@@ -86,7 +87,7 @@ class ByggrProcessor extends Processor {
 
 		if (caseEntity == null) {
 			cleanAttachmentBase64(event);
-			log.warn("Unable to process byggR errand {}", event.getPayload());
+			log.warn("Unable to process byggR errand with externalCaseId {}", sanitizeForLogging(event.getPayload().getExternalCaseId()));
 			return;
 		}
 
@@ -106,7 +107,7 @@ class ByggrProcessor extends Processor {
 				.get(() -> service.saveNewCase(byggRCaseDTO, event.getMunicipalityId()));
 		} catch (final Exception e) {
 			cleanAttachmentBase64(event);
-			log.warn("Unable to create byggR errand {}: {}", event.getPayload(), e.getMessage());
+			log.warn("Unable to create byggR errand with externalCaseId {}: {}", sanitizeForLogging(event.getPayload().getExternalCaseId()), e.getMessage());
 		}
 	}
 
