@@ -1,5 +1,6 @@
 package se.sundsvall.casemanagement.service;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 import se.sundsvall.casemanagement.api.model.enums.SystemType;
@@ -7,6 +8,7 @@ import se.sundsvall.casemanagement.integration.casedata.configuration.CaseDataPr
 import se.sundsvall.casemanagement.integration.db.CaseTypeRepository;
 import se.sundsvall.casemanagement.integration.db.model.CaseTypeEntity;
 
+import static java.util.Collections.emptyList;
 import static se.sundsvall.casemanagement.api.model.enums.SystemType.CASE_DATA;
 
 /**
@@ -48,35 +50,48 @@ public class CaseTypeRegistry {
 
 	/**
 	 * Checks if the given caseType exists as a CaseData type for the given municipalityId by querying configured
-	 * namespaces.
+	 * namespaces. A namespace whose case types cannot be fetched does not hide a match in another namespace; the failure
+	 * is only rethrown when no other namespace contains the caseType, since the caseType cannot then be ruled out.
 	 */
 	public boolean isCaseDataType(final String caseType, final String municipalityId) {
-		return !OTHER.equals(resolveNamespace(caseType, municipalityId));
+		RuntimeException lookupFailure = null;
+		for (final var namespace : namespacesFor(caseType, municipalityId)) {
+			try {
+				if (caseDataCaseTypeProvider.getCaseDataTypesByNamespace(municipalityId, namespace).containsKey(caseType)) {
+					return true;
+				}
+			} catch (final RuntimeException e) {
+				lookupFailure = e;
+			}
+		}
+		if (lookupFailure != null) {
+			throw lookupFailure;
+		}
+		return false;
 	}
 
 	/**
 	 * Resolves the CaseData namespace for a given caseType and municipalityId. Looks up which namespace the caseType
-	 * belongs to by querying all configured namespaces for that municipality.
+	 * belongs to by querying the configured namespaces for that municipality in order. A namespace whose case types cannot
+	 * be fetched fails the lookup rather than being skipped, as skipping it could resolve the caseType to a later
+	 * namespace than the one it belongs to.
 	 */
 	public String resolveNamespace(final String caseType, final String municipalityId) {
-		if (caseType == null || municipalityId == null) {
-			return OTHER;
-		}
-		final var namespacesForMunicipality = Optional.ofNullable(caseDataProperties.namespaces())
-			.map(ns -> ns.get(municipalityId))
-			.orElse(null);
-
-		if (namespacesForMunicipality == null) {
-			return OTHER;
-		}
-
-		for (final var namespace : namespacesForMunicipality) {
-			final var typesInNamespace = caseDataCaseTypeProvider.getCaseDataTypesByNamespace(municipalityId, namespace);
-			if (typesInNamespace.containsKey(caseType)) {
+		for (final var namespace : namespacesFor(caseType, municipalityId)) {
+			if (caseDataCaseTypeProvider.getCaseDataTypesByNamespace(municipalityId, namespace).containsKey(caseType)) {
 				return namespace;
 			}
 		}
 		return OTHER;
+	}
+
+	private List<String> namespacesFor(final String caseType, final String municipalityId) {
+		if (caseType == null || municipalityId == null) {
+			return emptyList();
+		}
+		return Optional.ofNullable(caseDataProperties.namespaces())
+			.map(namespaces -> namespaces.get(municipalityId))
+			.orElse(emptyList());
 	}
 
 }
