@@ -20,6 +20,8 @@ import se.sundsvall.casemanagement.util.Processor;
 import se.sundsvall.dept44.requestid.RequestId;
 import tools.jackson.databind.ObjectMapper;
 
+import static se.sundsvall.dept44.util.LogUtils.sanitizeForLogging;
+
 @Component
 class CasedataProcessor extends Processor {
 
@@ -54,7 +56,7 @@ class CasedataProcessor extends Processor {
 
 		if (caseEntity == null) {
 			cleanAttachmentBase64(event);
-			log.warn("Unable to process CaseData errand {}", event.getPayload());
+			log.warn("Unable to process CaseData errand with externalCaseId {}", sanitizeForLogging(event.getPayload().getExternalCaseId()));
 			return;
 		}
 
@@ -74,7 +76,7 @@ class CasedataProcessor extends Processor {
 				.get(() -> service.postErrand(otherCaseDTO, event.getMunicipalityId()));
 		} catch (final Exception e) {
 			cleanAttachmentBase64(event);
-			log.warn("Unable to create CaseData errand {}: {}", event.getPayload(), e.getMessage());
+			log.warn("Unable to create CaseData errand with externalCaseId {}: {}", sanitizeForLogging(event.getPayload().getExternalCaseId()), e.getMessage());
 		}
 	}
 }

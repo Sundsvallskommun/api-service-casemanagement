@@ -48,7 +48,7 @@ class EDPFutureProcessor extends Processor {
 		final var caseEntity = caseRepository.findByIdAndMunicipalityId(event.getPayload().getExternalCaseId(), event.getMunicipalityId()).orElse(null);
 
 		if (caseEntity == null) {
-			LOGGER.warn("Unable to process EDPFuture errand {}", event.getPayload());
+			LOGGER.warn("Unable to process EDPFuture errand with externalCaseId: {} and municipalityId: {}", sanitizeForLogging(event.getPayload().getExternalCaseId()), sanitizeForLogging(event.getMunicipalityId()));
 			return;
 		}
 

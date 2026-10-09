@@ -17,7 +17,8 @@ public class CacheConfiguration {
 		final var manager = new CaffeineCacheManager("caseDataCaseTypes");
 		manager.setCaffeine(Caffeine.newBuilder()
 			.expireAfterWrite(15, TimeUnit.MINUTES)
-			.maximumSize(100));
+			.maximumSize(100)
+			.recordStats());
 		return manager;
 	}
 

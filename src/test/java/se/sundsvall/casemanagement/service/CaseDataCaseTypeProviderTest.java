@@ -2,6 +2,7 @@ package se.sundsvall.casemanagement.service;
 
 import generated.client.casedata.CaseType;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -12,6 +13,7 @@ import se.sundsvall.casemanagement.integration.casedata.CaseDataClient;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -57,6 +59,43 @@ class CaseDataCaseTypeProviderTest {
 		assertThatThrownBy(() -> caseDataCaseTypeProvider.getCaseDataTypesByNamespace(MUNICIPALITY_ID, NAMESPACE))
 			.isInstanceOf(RuntimeException.class)
 			.hasMessage("Connection refused");
+	}
+
+	@Test
+	void getLastFetchedCaseDataTypes_beforeAnyFetch_returnsEmpty() {
+		final var result = caseDataCaseTypeProvider.getLastFetchedCaseDataTypes(MUNICIPALITY_ID, NAMESPACE);
+
+		assertThat(result).isEmpty();
+		verifyNoInteractions(caseDataClient);
+	}
+
+	@Test
+	void getLastFetchedCaseDataTypes_afterFetch_returnsFetchedTypes() {
+		when(caseDataClient.getCaseTypes(MUNICIPALITY_ID, NAMESPACE))
+			.thenReturn(List.of(new CaseType().type("PARKING_PERMIT").displayName("Parking Permit")));
+
+		caseDataCaseTypeProvider.getCaseDataTypesByNamespace(MUNICIPALITY_ID, NAMESPACE);
+		final var result = caseDataCaseTypeProvider.getLastFetchedCaseDataTypes(MUNICIPALITY_ID, NAMESPACE);
+
+		assertThat(result).hasValue(Map.of("PARKING_PERMIT", "Parking Permit"));
+		assertThat(caseDataCaseTypeProvider.getLastFetchedCaseDataTypes(MUNICIPALITY_ID, "SBK_MEX")).isEmpty();
+	}
+
+	@Test
+	void getLastFetchedCaseDataTypes_afterFailedFetch_returnsTypesFromLatestSuccessfulFetch() {
+		when(caseDataClient.getCaseTypes(MUNICIPALITY_ID, NAMESPACE))
+			.thenReturn(List.of(new CaseType().type("PARKING_PERMIT").displayName("Parking Permit")))
+			.thenReturn(List.of(new CaseType().type("LOST_PARKING_PERMIT").displayName("Lost Parking Permit")))
+			.thenThrow(new RuntimeException("Connection refused"));
+
+		caseDataCaseTypeProvider.getCaseDataTypesByNamespace(MUNICIPALITY_ID, NAMESPACE);
+		caseDataCaseTypeProvider.getCaseDataTypesByNamespace(MUNICIPALITY_ID, NAMESPACE);
+		assertThatThrownBy(() -> caseDataCaseTypeProvider.getCaseDataTypesByNamespace(MUNICIPALITY_ID, NAMESPACE))
+			.hasMessage("Connection refused");
+
+		final var result = caseDataCaseTypeProvider.getLastFetchedCaseDataTypes(MUNICIPALITY_ID, NAMESPACE);
+
+		assertThat(result).hasValue(Map.of("LOST_PARKING_PERMIT", "Lost Parking Permit"));
 	}
 
 }

@@ -21,6 +21,8 @@ import se.sundsvall.casemanagement.util.Processor;
 import se.sundsvall.dept44.requestid.RequestId;
 import tools.jackson.databind.ObjectMapper;
 
+import static se.sundsvall.dept44.util.LogUtils.sanitizeForLogging;
+
 @Component
 class EcosProcessor extends Processor {
 
@@ -57,7 +59,7 @@ class EcosProcessor extends Processor {
 
 		if (caseEntity == null) {
 			cleanAttachmentBase64(event);
-			log.warn("Unable to process ecos errand {}", event.getPayload());
+			log.warn("Unable to process ecos errand with externalCaseId {}", sanitizeForLogging(event.getPayload().getExternalCaseId()));
 			return;
 		}
 
@@ -77,7 +79,7 @@ class EcosProcessor extends Processor {
 				.get(() -> ecosService.postCase(ecosCaseDTO, event.getMunicipalityId()));
 		} catch (final Exception e) {
 			cleanAttachmentBase64(event);
-			log.warn("Unable to create ecos errand {}: {}", event.getPayload(), e.getMessage());
+			log.warn("Unable to create ecos errand with externalCaseId {}: {}", sanitizeForLogging(event.getPayload().getExternalCaseId()), e.getMessage());
 		}
 	}
 
