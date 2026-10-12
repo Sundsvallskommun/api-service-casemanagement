@@ -2,12 +2,12 @@ package se.sundsvall.casemanagement.byggr;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpMethod;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import org.springframework.test.context.jdbc.Sql;
-
 import se.sundsvall.casemanagement.Application;
 import se.sundsvall.dept44.test.AbstractAppTest;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
+
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 //@Testcontainers
 @WireMockAppTestSuite(files = "classpath:/ByggrCreateCaseFailuresIT/", classes = Application.class)
