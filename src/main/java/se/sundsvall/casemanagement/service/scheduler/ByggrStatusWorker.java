@@ -57,27 +57,41 @@ public class ByggrStatusWorker {
 		final var executionInfo = executionInformationRepository.findByMunicipalityIdAndJobName(municipalityId, JOB_NAME)
 			.orElseGet(() -> initializeExecutionInfo(municipalityId));
 
-		final var lastExecution = executionInfo.getLastSuccessfulExecution();
+		final var upperBound = LocalDateTime.now(ZoneId.systemDefault());
+		final var catchUpLimit = upperBound.minus(CLOCK_SKEW_BUFFER);
 
-		LOG.info("Updating ByggR statuses for municipality {} since {}", municipalityId, lastExecution);
+		var since = executionInfo.getLastSuccessfulExecution();
+		var hasMoreBatches = true;
 
-		final var byggrBatchEnd = updateByggrStatuses(municipalityId, lastExecution);
+		while (hasMoreBatches) {
+			LOG.info("Updating ByggR statuses for municipality {} since {}", municipalityId, since);
 
-		final var nextExecution = byggrBatchEnd
-			.map(batchEnd -> batchEnd.minus(CLOCK_SKEW_BUFFER))
-			.map(batchEnd -> batchEnd.atOffset(lastExecution.getOffset()))
-			.orElseGet(OffsetDateTime::now);
+			final var sinceLocal = since.toLocalDateTime();
+			final var batchEnd = updateByggrStatuses(municipalityId, since, upperBound);
 
-		executionInfo.setLastSuccessfulExecution(nextExecution);
-		executionInformationRepository.save(executionInfo);
+			final var nextExecution = batchEnd
+				.filter(catchUpLimit::isAfter)
+				.orElse(catchUpLimit)
+				.atOffset(since.getOffset());
 
-		LOG.info("ByggR status update completed for municipality {}. Next lower bound: {}", municipalityId, nextExecution);
+			executionInfo.setLastSuccessfulExecution(nextExecution);
+			executionInformationRepository.save(executionInfo);
+
+			hasMoreBatches = batchEnd
+				.filter(catchUpLimit::isAfter)
+				.filter(sinceLocal::isBefore)
+				.isPresent();
+
+			since = nextExecution;
+		}
+
+		LOG.info("ByggR status update completed for municipality {}. Next lower bound: {}", municipalityId, since);
 	}
 
-	private Optional<LocalDateTime> updateByggrStatuses(final String municipalityId, final OffsetDateTime since) {
+	private Optional<LocalDateTime> updateByggrStatuses(final String municipalityId, final OffsetDateTime since, final LocalDateTime upperBound) {
 		final var filter = new BatchFilter()
 			.withLowerExclusiveBound(since.toLocalDateTime())
-			.withUpperInclusiveBound(LocalDateTime.now(ZoneId.systemDefault()));
+			.withUpperInclusiveBound(upperBound);
 
 		final var response = arendeExportClient.getUpdatedArenden(new GetUpdatedArenden().withFilter(filter));
 

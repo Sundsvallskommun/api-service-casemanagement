@@ -4,6 +4,7 @@ import arendeexport.Arende2;
 import arendeexport.ArendeBatch;
 import arendeexport.ArrayOfArende;
 import arendeexport.ArrayOfHandelse;
+import arendeexport.GetUpdatedArenden;
 import arendeexport.GetUpdatedArendenResponse;
 import arendeexport.Handelse;
 import generated.client.eventlog.Event;
@@ -38,6 +39,7 @@ import static org.mockito.Mockito.when;
 class ByggrStatusWorkerTest {
 
 	private static final String MUNICIPALITY_ID = "2281";
+	private static final Duration CLOCK_SKEW_BUFFER = Duration.ofMinutes(10);
 
 	@Mock
 	private ArendeExportClient arendeExportClientMock;
@@ -59,6 +61,9 @@ class ByggrStatusWorkerTest {
 
 	@Captor
 	private ArgumentCaptor<ExecutionInformationEntity> executionInfoCaptor;
+
+	@Captor
+	private ArgumentCaptor<GetUpdatedArenden> requestCaptor;
 
 	@InjectMocks
 	private ByggrStatusWorker worker;
@@ -178,37 +183,88 @@ class ByggrStatusWorkerTest {
 	}
 
 	@Test
-	void updateStatusesSetsNextExecutionFromByggrBatchEndMinusClockSkew() {
+	void updateStatusesContinuesFromBatchEndWhenBatchIsShorterThanClockSkew() {
 		// Arrange
-		final var lastExecution = OffsetDateTime.now().minusHours(1);
-		final var batchEnd = LocalDateTime.now().minusMinutes(5);
+		final var lastExecution = OffsetDateTime.parse("2026-04-29T14:05:41+02:00");
+		final var shortBatchEnd = LocalDateTime.parse("2026-04-29T14:15:41");
 		final var executionInfo = ExecutionInformationEntity.create()
 			.withMunicipalityId(MUNICIPALITY_ID)
 			.withJobName(ByggrStatusWorker.JOB_NAME)
 			.withLastSuccessfulExecution(lastExecution);
 
-		final var byggrResponse = new GetUpdatedArendenResponse();
-		final var batch = new ArendeBatch();
-		batch.setBatchEnd(batchEnd);
-		batch.setArenden(new ArrayOfArende());
-		byggrResponse.setGetUpdatedArendenResult(batch);
+		when(executionInformationRepositoryMock.findByMunicipalityIdAndJobName(MUNICIPALITY_ID, ByggrStatusWorker.JOB_NAME))
+			.thenReturn(Optional.of(executionInfo));
+		when(arendeExportClientMock.getUpdatedArenden(any()))
+			.thenReturn(createByggrResponseWithBatchEnd(shortBatchEnd))
+			.thenReturn(createEmptyByggrResponse());
+
+		// Act
+		final var before = LocalDateTime.now();
+		worker.updateStatuses(MUNICIPALITY_ID);
+		final var after = LocalDateTime.now();
+
+		// Assert
+		verify(arendeExportClientMock, times(2)).getUpdatedArenden(requestCaptor.capture());
+		final var firstFilter = requestCaptor.getAllValues().getFirst().getFilter();
+		final var secondFilter = requestCaptor.getAllValues().getLast().getFilter();
+		assertThat(firstFilter.getLowerExclusiveBound()).isEqualTo(lastExecution.toLocalDateTime());
+		assertThat(secondFilter.getLowerExclusiveBound()).isEqualTo(shortBatchEnd);
+		assertThat(secondFilter.getUpperInclusiveBound()).isEqualTo(firstFilter.getUpperInclusiveBound());
+
+		verify(executionInformationRepositoryMock, times(2)).save(executionInfo);
+		assertThat(executionInfo.getLastSuccessfulExecution().toLocalDateTime()).isBetween(before.minus(CLOCK_SKEW_BUFFER), after.minus(CLOCK_SKEW_BUFFER));
+	}
+
+	@Test
+	void updateStatusesSetsNextExecutionToUpperBoundMinusClockSkewWhenCaughtUp() {
+		// Arrange
+		final var lastExecution = OffsetDateTime.now().minusHours(1);
+		final var executionInfo = ExecutionInformationEntity.create()
+			.withMunicipalityId(MUNICIPALITY_ID)
+			.withJobName(ByggrStatusWorker.JOB_NAME)
+			.withLastSuccessfulExecution(lastExecution);
 
 		when(executionInformationRepositoryMock.findByMunicipalityIdAndJobName(MUNICIPALITY_ID, ByggrStatusWorker.JOB_NAME))
 			.thenReturn(Optional.of(executionInfo));
-		when(arendeExportClientMock.getUpdatedArenden(any())).thenReturn(byggrResponse);
+		when(arendeExportClientMock.getUpdatedArenden(any())).thenReturn(createByggrResponseWithBatchEnd(LocalDateTime.now().minusMinutes(5)));
+
+		// Act
+		final var before = OffsetDateTime.now();
+		worker.updateStatuses(MUNICIPALITY_ID);
+		final var after = OffsetDateTime.now();
+
+		// Assert
+		verify(arendeExportClientMock).getUpdatedArenden(any());
+		verify(executionInformationRepositoryMock).save(executionInfoCaptor.capture());
+		final var savedExecution = executionInfoCaptor.getValue().getLastSuccessfulExecution();
+		assertThat(savedExecution).isBetween(before.minus(CLOCK_SKEW_BUFFER), after.minus(CLOCK_SKEW_BUFFER));
+	}
+
+	@Test
+	void updateStatusesStopsWhenBatchEndIsNotAfterLowerBound() {
+		// Arrange
+		final var lastExecution = OffsetDateTime.now().minusHours(1);
+		final var batchEnd = lastExecution.toLocalDateTime().minusHours(1);
+		final var executionInfo = ExecutionInformationEntity.create()
+			.withMunicipalityId(MUNICIPALITY_ID)
+			.withJobName(ByggrStatusWorker.JOB_NAME)
+			.withLastSuccessfulExecution(lastExecution);
+
+		when(executionInformationRepositoryMock.findByMunicipalityIdAndJobName(MUNICIPALITY_ID, ByggrStatusWorker.JOB_NAME))
+			.thenReturn(Optional.of(executionInfo));
+		when(arendeExportClientMock.getUpdatedArenden(any())).thenReturn(createByggrResponseWithBatchEnd(batchEnd));
 
 		// Act
 		worker.updateStatuses(MUNICIPALITY_ID);
 
 		// Assert
-		verify(executionInformationRepositoryMock).save(executionInfoCaptor.capture());
-		final var savedExecution = executionInfoCaptor.getValue().getLastSuccessfulExecution();
-		final var expectedExecution = batchEnd.minus(Duration.ofMinutes(10)).atOffset(lastExecution.getOffset());
-		assertThat(savedExecution).isEqualTo(expectedExecution);
+		verify(arendeExportClientMock).getUpdatedArenden(any());
+		verify(executionInformationRepositoryMock).save(executionInfo);
+		assertThat(executionInfo.getLastSuccessfulExecution()).isEqualTo(batchEnd.atOffset(lastExecution.getOffset()));
 	}
 
 	@Test
-	void updateStatusesFallsBackToNowWhenBatchEndIsNull() {
+	void updateStatusesFallsBackToUpperBoundMinusClockSkewWhenBatchEndIsNull() {
 		// Arrange
 		final var lastExecution = OffsetDateTime.now().minusHours(1);
 		final var executionInfo = ExecutionInformationEntity.create()
@@ -231,7 +287,7 @@ class ByggrStatusWorkerTest {
 		// Assert
 		verify(executionInformationRepositoryMock).save(executionInfoCaptor.capture());
 		final var savedExecution = executionInfoCaptor.getValue().getLastSuccessfulExecution();
-		assertThat(savedExecution).isBetween(before, after);
+		assertThat(savedExecution).isBetween(before.minus(CLOCK_SKEW_BUFFER), after.minus(CLOCK_SKEW_BUFFER));
 	}
 
 	@Test
@@ -329,6 +385,12 @@ class ByggrStatusWorkerTest {
 		batch.setBatchEnd(LocalDateTime.now());
 		batch.setArenden(new ArrayOfArende());
 		response.setGetUpdatedArendenResult(batch);
+		return response;
+	}
+
+	private GetUpdatedArendenResponse createByggrResponseWithBatchEnd(final LocalDateTime batchEnd) {
+		final var response = createEmptyByggrResponse();
+		response.getGetUpdatedArendenResult().setBatchEnd(batchEnd);
 		return response;
 	}
 

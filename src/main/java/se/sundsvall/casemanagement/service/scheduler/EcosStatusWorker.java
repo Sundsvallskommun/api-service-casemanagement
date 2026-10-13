@@ -62,12 +62,13 @@ public class EcosStatusWorker {
 			.orElseGet(() -> initializeExecutionInfo(municipalityId));
 
 		final var lastExecution = executionInfo.getLastSuccessfulExecution();
+		final var searchStarted = now(ZoneId.systemDefault());
 
 		LOG.info("Updating ECOS statuses for municipality {} since {}", municipalityId, lastExecution);
 
 		updateEcosStatuses(municipalityId, lastExecution);
 
-		executionInfo.setLastSuccessfulExecution(now(ZoneId.systemDefault()));
+		executionInfo.setLastSuccessfulExecution(searchStarted);
 		executionInformationRepository.save(executionInfo);
 
 		LOG.info("ECOS status update completed for municipality {}", municipalityId);

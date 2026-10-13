@@ -3,6 +3,7 @@ package se.sundsvall.casemanagement.service.scheduler;
 import generated.client.eventlog.Event;
 import java.time.OffsetDateTime;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 import minutmiljo.ArrayOfOccurrenceListItemSvcDto;
 import minutmiljo.ArrayOfSearchCaseResultSvcDto;
 import minutmiljo.CaseSvcDto;
@@ -190,6 +191,31 @@ class EcosStatusWorkerTest {
 		verify(executionInformationRepositoryMock).save(executionInfoCaptor.capture());
 		final var savedExecution = executionInfoCaptor.getValue().getLastSuccessfulExecution();
 		assertThat(savedExecution).isBetween(before, after);
+	}
+
+	@Test
+	void updateStatusesSetsNextExecutionToTimeBeforeSearch() {
+		// Arrange
+		final var lastExecution = OffsetDateTime.now().minusHours(1);
+		final var executionInfo = ExecutionInformationEntity.create()
+			.withMunicipalityId(MUNICIPALITY_ID)
+			.withJobName(EcosStatusWorker.JOB_NAME)
+			.withLastSuccessfulExecution(lastExecution);
+		final var searchCalled = new AtomicReference<OffsetDateTime>();
+
+		when(executionInformationRepositoryMock.findByMunicipalityIdAndJobName(MUNICIPALITY_ID, EcosStatusWorker.JOB_NAME))
+			.thenReturn(Optional.of(executionInfo));
+		when(minutMiljoClientMock.searchCase(any())).thenAnswer(_ -> {
+			searchCalled.set(OffsetDateTime.now());
+			return createEmptyEcosResponse();
+		});
+
+		// Act
+		worker.updateStatuses(MUNICIPALITY_ID);
+
+		// Assert
+		verify(executionInformationRepositoryMock).save(executionInfoCaptor.capture());
+		assertThat(executionInfoCaptor.getValue().getLastSuccessfulExecution()).isBeforeOrEqualTo(searchCalled.get());
 	}
 
 	private SearchCaseResponse createEmptyEcosResponse() {
