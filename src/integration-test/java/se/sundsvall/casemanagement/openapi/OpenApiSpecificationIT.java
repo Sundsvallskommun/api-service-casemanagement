@@ -1,10 +1,5 @@
 package se.sundsvall.casemanagement.openapi;
 
-import static java.nio.file.Files.writeString;
-import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
-
-import tools.jackson.core.JacksonException;
-import tools.jackson.dataformat.yaml.YAMLMapper;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
@@ -20,6 +15,11 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.util.UriComponentsBuilder;
 import se.sundsvall.casemanagement.Application;
 import se.sundsvall.dept44.util.ResourceUtils;
+import tools.jackson.core.JacksonException;
+import tools.jackson.dataformat.yaml.YAMLMapper;
+
+import static java.nio.file.Files.writeString;
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 
 @ActiveProfiles("it")
 @AutoConfigureTestRestTemplate
@@ -53,7 +53,7 @@ class OpenApiSpecificationIT {
 		final var currentOpenApiSpecification = getCurrentOpenApiSpecification();
 
 		writeString(Path.of("target/openapi.yml"), currentOpenApiSpecification);
-		
+
 		assertThatJson(toJson(currentOpenApiSpecification))
 			.withOptions(List.of(Option.IGNORING_ARRAY_ORDER))
 			.whenIgnoringPaths("servers")
@@ -76,8 +76,8 @@ class OpenApiSpecificationIT {
 	/**
 	 * Attempts to convert the given YAML (no YAML-check...) to JSON.
 	 *
-	 * @param yaml the YAML to convert
-	 * @return a JSON string
+	 * @param  yaml the YAML to convert
+	 * @return      a JSON string
 	 */
 	private String toJson(final String yaml) {
 		try {

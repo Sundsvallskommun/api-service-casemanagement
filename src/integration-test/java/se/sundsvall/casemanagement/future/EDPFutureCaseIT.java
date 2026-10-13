@@ -1,11 +1,5 @@
 package se.sundsvall.casemanagement.future;
 
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
-import static org.springframework.http.HttpMethod.POST;
-import static org.springframework.http.HttpStatus.OK;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
@@ -19,6 +13,12 @@ import se.sundsvall.casemanagement.integration.db.CaseRepository;
 import se.sundsvall.casemanagement.integration.db.model.DeliveryStatus;
 import se.sundsvall.dept44.test.AbstractAppTest;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
+import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpStatus.OK;
 
 @Testcontainers
 @WireMockAppTestSuite(files = "classpath:/EDPFutureCaseIT", classes = Application.class)
@@ -59,8 +59,7 @@ class EDPFutureCaseIT extends AbstractAppTest {
 		assertThat(result).isNotNull();
 		assertThat(result.getCaseId()).isEqualTo("Inskickat");
 
-		await().atMost(15, SECONDS).until(() ->
-			caseMappingRepository.findByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID) != null);
+		await().atMost(15, SECONDS).until(() -> caseMappingRepository.findByExternalCaseIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID) != null);
 
 		verifyStubs();
 
@@ -91,10 +90,9 @@ class EDPFutureCaseIT extends AbstractAppTest {
 		assertThat(result.getCaseId()).isEqualTo("Inskickat");
 
 		// Wait for async failure handling to complete (sets DeliveryStatus.FAILED)
-		await().atMost(15, SECONDS).until(() ->
-			caseRepository.findByIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID)
-				.map(entity -> entity.getDeliveryStatus() == DeliveryStatus.FAILED)
-				.orElse(false));
+		await().atMost(15, SECONDS).until(() -> caseRepository.findByIdAndMunicipalityId(EXTERNAL_CASE_ID, MUNICIPALITY_ID)
+			.map(entity -> entity.getDeliveryStatus() == DeliveryStatus.FAILED)
+			.orElse(false));
 
 		verifyStubs();
 
