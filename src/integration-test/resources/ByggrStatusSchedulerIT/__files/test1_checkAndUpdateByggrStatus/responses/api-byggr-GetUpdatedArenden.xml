@@ -4,7 +4,7 @@
 		<GetUpdatedArendenResponse xmlns="www.tekis.se/ServiceContract">
 			<GetUpdatedArendenResult>
 				<BatchStart>2021-08-18T00:00:00</BatchStart>
-				<BatchEnd>2021-08-18T23:59:59</BatchEnd>
+				<BatchEnd>2099-12-31T23:59:59</BatchEnd>
 				<Arenden>
 					<arende arendeId="12345" dnr="BYGG 2021-000200" diarieprefix="BYGG" komkod="2281" enhetkod="SBK" arendegrupp="LOV" arendetyp="BL" arendeslag="A" arendeklass="" namndkod="SBN" kalla="3" checksum="3">
 						<status xmlns="www.tekis.se/arende">Pågående</status>
