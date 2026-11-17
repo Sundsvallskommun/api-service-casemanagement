@@ -9,7 +9,6 @@ import arendeexport.GetUpdatedArendenResponse;
 import arendeexport.Handelse;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.Comparator;
 import java.util.List;
@@ -25,6 +24,7 @@ import se.sundsvall.casemanagement.integration.eventlog.EventlogClient;
 import se.sundsvall.casemanagement.service.ByggrSystemConfigProvider;
 
 import static java.time.OffsetDateTime.now;
+import static java.time.ZoneOffset.UTC;
 
 @Component
 public class ByggrStatusWorker {
@@ -33,7 +33,11 @@ public class ByggrStatusWorker {
 
 	static final String JOB_NAME = "BYGGR_STATUS";
 
-	private static final Duration CLOCK_SKEW_BUFFER = Duration.ofMinutes(10);
+	/**
+	 * Overlap between runs, covering clock difference to ByggR (measured to a few seconds) and changes that become visible
+	 * in ByggR slightly after they are stamped. Every change within the overlap is read twice.
+	 */
+	private static final Duration CLOCK_SKEW_BUFFER = Duration.ofMinutes(2);
 
 	private final ArendeExportClient arendeExportClient;
 	private final CaseMappingRepository caseMappingRepository;
@@ -57,7 +61,8 @@ public class ByggrStatusWorker {
 		final var executionInfo = executionInformationRepository.findByMunicipalityIdAndJobName(municipalityId, JOB_NAME)
 			.orElseGet(() -> initializeExecutionInfo(municipalityId));
 
-		final var upperBound = LocalDateTime.now(ZoneId.systemDefault());
+		// ByggR stores change timestamps in UTC (without zone information), so all bounds are handled in UTC
+		final var upperBound = LocalDateTime.now(UTC);
 		final var catchUpLimit = upperBound.minus(CLOCK_SKEW_BUFFER);
 
 		var since = executionInfo.getLastSuccessfulExecution();
@@ -66,13 +71,13 @@ public class ByggrStatusWorker {
 		while (hasMoreBatches) {
 			LOG.info("Updating ByggR statuses for municipality {} since {}", municipalityId, since);
 
-			final var sinceLocal = since.toLocalDateTime();
-			final var batchEnd = updateByggrStatuses(municipalityId, since, upperBound);
+			final var sinceLocal = since.withOffsetSameInstant(UTC).toLocalDateTime();
+			final var batchEnd = updateByggrStatuses(municipalityId, sinceLocal, upperBound);
 
 			final var nextExecution = batchEnd
 				.filter(catchUpLimit::isAfter)
 				.orElse(catchUpLimit)
-				.atOffset(since.getOffset());
+				.atOffset(UTC);
 
 			executionInfo.setLastSuccessfulExecution(nextExecution);
 			executionInformationRepository.save(executionInfo);
@@ -88,9 +93,9 @@ public class ByggrStatusWorker {
 		LOG.info("ByggR status update completed for municipality {}. Next lower bound: {}", municipalityId, since);
 	}
 
-	private Optional<LocalDateTime> updateByggrStatuses(final String municipalityId, final OffsetDateTime since, final LocalDateTime upperBound) {
+	private Optional<LocalDateTime> updateByggrStatuses(final String municipalityId, final LocalDateTime lowerBound, final LocalDateTime upperBound) {
 		final var filter = new BatchFilter()
-			.withLowerExclusiveBound(since.toLocalDateTime())
+			.withLowerExclusiveBound(lowerBound)
 			.withUpperInclusiveBound(upperBound);
 
 		final var response = arendeExportClient.getUpdatedArenden(new GetUpdatedArenden().withFilter(filter));
