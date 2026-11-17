@@ -29,8 +29,8 @@ scheduler:
   byggr-status:
     cron: "-"
     name: ByggrStatusScheduler
-    lock-at-most-for: PT10M
-    maximum-execution-time: PT10M
+    lock-at-most-for: PT59M
+    maximum-execution-time: PT30M
     municipality-ids: 2281
   ecos-status:
     cron: "-"

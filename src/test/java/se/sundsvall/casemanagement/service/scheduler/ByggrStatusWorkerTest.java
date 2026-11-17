@@ -11,6 +11,7 @@ import generated.client.eventlog.Event;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,6 +28,7 @@ import se.sundsvall.casemanagement.integration.db.model.ExecutionInformationEnti
 import se.sundsvall.casemanagement.integration.eventlog.EventlogClient;
 import se.sundsvall.casemanagement.service.ByggrSystemConfigProvider;
 
+import static java.time.ZoneOffset.UTC;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -39,7 +41,7 @@ import static org.mockito.Mockito.when;
 class ByggrStatusWorkerTest {
 
 	private static final String MUNICIPALITY_ID = "2281";
-	private static final Duration CLOCK_SKEW_BUFFER = Duration.ofMinutes(10);
+	private static final Duration CLOCK_SKEW_BUFFER = Duration.ofMinutes(2);
 
 	@Mock
 	private ArendeExportClient arendeExportClientMock;
@@ -186,7 +188,8 @@ class ByggrStatusWorkerTest {
 	void updateStatusesContinuesFromBatchEndWhenBatchIsShorterThanClockSkew() {
 		// Arrange
 		final var lastExecution = OffsetDateTime.parse("2026-04-29T14:05:41+02:00");
-		final var shortBatchEnd = LocalDateTime.parse("2026-04-29T14:15:41");
+		final var lastExecutionUtc = LocalDateTime.parse("2026-04-29T12:05:41");
+		final var shortBatchEnd = LocalDateTime.parse("2026-04-29T12:15:41");
 		final var executionInfo = ExecutionInformationEntity.create()
 			.withMunicipalityId(MUNICIPALITY_ID)
 			.withJobName(ByggrStatusWorker.JOB_NAME)
@@ -199,19 +202,20 @@ class ByggrStatusWorkerTest {
 			.thenReturn(createEmptyByggrResponse());
 
 		// Act
-		final var before = LocalDateTime.now();
+		final var before = LocalDateTime.now(UTC);
 		worker.updateStatuses(MUNICIPALITY_ID);
-		final var after = LocalDateTime.now();
+		final var after = LocalDateTime.now(UTC);
 
 		// Assert
 		verify(arendeExportClientMock, times(2)).getUpdatedArenden(requestCaptor.capture());
 		final var firstFilter = requestCaptor.getAllValues().getFirst().getFilter();
 		final var secondFilter = requestCaptor.getAllValues().getLast().getFilter();
-		assertThat(firstFilter.getLowerExclusiveBound()).isEqualTo(lastExecution.toLocalDateTime());
+		assertThat(firstFilter.getLowerExclusiveBound()).isEqualTo(lastExecutionUtc);
 		assertThat(secondFilter.getLowerExclusiveBound()).isEqualTo(shortBatchEnd);
 		assertThat(secondFilter.getUpperInclusiveBound()).isEqualTo(firstFilter.getUpperInclusiveBound());
 
 		verify(executionInformationRepositoryMock, times(2)).save(executionInfo);
+		assertThat(executionInfo.getLastSuccessfulExecution().getOffset()).isEqualTo(UTC);
 		assertThat(executionInfo.getLastSuccessfulExecution().toLocalDateTime()).isBetween(before.minus(CLOCK_SKEW_BUFFER), after.minus(CLOCK_SKEW_BUFFER));
 	}
 
@@ -226,7 +230,7 @@ class ByggrStatusWorkerTest {
 
 		when(executionInformationRepositoryMock.findByMunicipalityIdAndJobName(MUNICIPALITY_ID, ByggrStatusWorker.JOB_NAME))
 			.thenReturn(Optional.of(executionInfo));
-		when(arendeExportClientMock.getUpdatedArenden(any())).thenReturn(createByggrResponseWithBatchEnd(LocalDateTime.now().minusMinutes(5)));
+		when(arendeExportClientMock.getUpdatedArenden(any())).thenReturn(createByggrResponseWithBatchEnd(LocalDateTime.now(UTC).minusMinutes(1)));
 
 		// Act
 		final var before = OffsetDateTime.now();
@@ -244,7 +248,7 @@ class ByggrStatusWorkerTest {
 	void updateStatusesStopsWhenBatchEndIsNotAfterLowerBound() {
 		// Arrange
 		final var lastExecution = OffsetDateTime.now().minusHours(1);
-		final var batchEnd = lastExecution.toLocalDateTime().minusHours(1);
+		final var batchEnd = lastExecution.withOffsetSameInstant(UTC).toLocalDateTime().minusHours(1);
 		final var executionInfo = ExecutionInformationEntity.create()
 			.withMunicipalityId(MUNICIPALITY_ID)
 			.withJobName(ByggrStatusWorker.JOB_NAME)
@@ -260,7 +264,7 @@ class ByggrStatusWorkerTest {
 		// Assert
 		verify(arendeExportClientMock).getUpdatedArenden(any());
 		verify(executionInformationRepositoryMock).save(executionInfo);
-		assertThat(executionInfo.getLastSuccessfulExecution()).isEqualTo(batchEnd.atOffset(lastExecution.getOffset()));
+		assertThat(executionInfo.getLastSuccessfulExecution()).isEqualTo(batchEnd.atOffset(UTC));
 	}
 
 	@Test
@@ -288,6 +292,32 @@ class ByggrStatusWorkerTest {
 		verify(executionInformationRepositoryMock).save(executionInfoCaptor.capture());
 		final var savedExecution = executionInfoCaptor.getValue().getLastSuccessfulExecution();
 		assertThat(savedExecution).isBetween(before.minus(CLOCK_SKEW_BUFFER), after.minus(CLOCK_SKEW_BUFFER));
+	}
+
+	@Test
+	void updateStatusesStopsAfterOneCallWhenByggrReturnsNoCases() {
+		// Arrange: stored value in local time (+01:00), as read from the database
+		final var lastExecution = OffsetDateTime.now(UTC).minusHours(1).withOffsetSameInstant(ZoneOffset.ofHours(1));
+		final var executionInfo = ExecutionInformationEntity.create()
+			.withMunicipalityId(MUNICIPALITY_ID)
+			.withJobName(ByggrStatusWorker.JOB_NAME)
+			.withLastSuccessfulExecution(lastExecution);
+
+		when(executionInformationRepositoryMock.findByMunicipalityIdAndJobName(MUNICIPALITY_ID, ByggrStatusWorker.JOB_NAME))
+			.thenReturn(Optional.of(executionInfo));
+		when(arendeExportClientMock.getUpdatedArenden(any())).thenReturn(createEmptyByggrResponse());
+
+		// Act
+		final var before = LocalDateTime.now(UTC);
+		worker.updateStatuses(MUNICIPALITY_ID);
+		final var after = LocalDateTime.now(UTC);
+
+		// Assert
+		verify(arendeExportClientMock).getUpdatedArenden(requestCaptor.capture());
+		final var filter = requestCaptor.getValue().getFilter();
+		assertThat(filter.getLowerExclusiveBound()).isEqualTo(lastExecution.withOffsetSameInstant(UTC).toLocalDateTime());
+		assertThat(filter.getUpperInclusiveBound()).isBetween(before, after);
+		verify(executionInformationRepositoryMock).save(executionInfo);
 	}
 
 	@Test
@@ -382,7 +412,8 @@ class ByggrStatusWorkerTest {
 	private GetUpdatedArendenResponse createEmptyByggrResponse() {
 		final var response = new GetUpdatedArendenResponse();
 		final var batch = new ArendeBatch();
-		batch.setBatchEnd(LocalDateTime.now());
+		// ByggR returns its current UTC time as batch end when no cases are found
+		batch.setBatchEnd(LocalDateTime.now(UTC));
 		batch.setArenden(new ArrayOfArende());
 		response.setGetUpdatedArendenResult(batch);
 		return response;
